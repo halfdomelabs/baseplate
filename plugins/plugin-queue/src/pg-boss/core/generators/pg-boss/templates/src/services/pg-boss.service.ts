@@ -18,7 +18,10 @@ import type { JobInsert, JobWithMetadata, SendOptions } from 'pg-boss';
 import { getConfig } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { DEFAULT_QUEUE_CONCURRENCY } from '%queuesImports';
+import {
+  DEFAULT_QUEUE_CONCURRENCY,
+  hasFinalAttemptFailureHandler,
+} from '%queuesImports';
 import { PgBoss } from 'pg-boss';
 
 /**
@@ -138,6 +141,10 @@ function mapPgBossJob<T>(pgJob: JobWithMetadata<T>): QueueJob<T> {
     data: pgJob.data,
     // retryCount is 0 on first attempt, so add 1 to match our interface
     attemptNumber: pgJob.retryCount + 1,
+    // retryLimit counts retries, not total attempts - the inverse of the
+    // `attempts - 1` applied at enqueue. Always populated (pg-boss defaults
+    // the column to 2), so an undeclared budget reads as 3 attempts.
+    maxAttempts: pgJob.retryLimit + 1,
   };
 }
 
@@ -209,6 +216,16 @@ export function createQueueRuntime(
       );
     }
     seenNames.add(binding.token.name);
+
+    if (
+      binding.onFinalAttemptFailure &&
+      !hasFinalAttemptFailureHandler(binding)
+    ) {
+      logger.warn(
+        { queueName: binding.token.name },
+        `Queue "${binding.token.name}" declares onFinalAttemptFailure but no options.defaultJobOptions.attempts, so the hook will never run. Declare a retry budget to enable it.`,
+      );
+    }
   }
 
   const bindingsByName = new Map(

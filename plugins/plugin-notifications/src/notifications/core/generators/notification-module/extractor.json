@@ -48,6 +48,10 @@
       "fileOptions": { "kind": "singleton" },
       "group": "queues",
       "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
         "queuesImportsProvider": {
           "importName": "queuesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"

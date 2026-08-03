@@ -18,7 +18,10 @@ import type { Redis } from 'ioredis';
 import { getConfig } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { DEFAULT_QUEUE_CONCURRENCY } from '%queuesImports';
+import {
+  DEFAULT_QUEUE_CONCURRENCY,
+  hasFinalAttemptFailureHandler,
+} from '%queuesImports';
 import { Queue as BullMQQueueBase, Worker as BullMQWorker } from 'bullmq';
 
 /**
@@ -120,6 +123,10 @@ function mapBullMQJob<T>(bullJob: Job<T>): QueueJob<T> {
     data: bullJob.data,
     // attemptsMade is 0 on first attempt, so add 1 to match our interface
     attemptNumber: bullJob.attemptsMade + 1,
+    // BullMQ defaults `attempts` to 0, meaning it will not retry - which is
+    // one attempt, not zero. Reporting the 0 as-is would make every first
+    // attempt look like a last one.
+    maxAttempts: Math.max(bullJob.opts.attempts ?? 1, 1),
   };
 }
 
@@ -179,6 +186,16 @@ export function createQueueRuntime(
       );
     }
     seenNames.add(binding.token.name);
+
+    if (
+      binding.onFinalAttemptFailure &&
+      !hasFinalAttemptFailureHandler(binding)
+    ) {
+      logger.warn(
+        { queueName: binding.token.name },
+        `Queue "${binding.token.name}" declares onFinalAttemptFailure but no options.defaultJobOptions.attempts, so the hook will never run. Declare a retry budget to enable it.`,
+      );
+    }
   }
 
   const bindingsByName = new Map(

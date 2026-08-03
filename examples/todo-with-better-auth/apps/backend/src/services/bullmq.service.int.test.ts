@@ -1,5 +1,7 @@
+import { Queue } from 'bullmq';
 import { afterEach, assert, describe, expect, it, vi } from 'vitest';
 
+import type { MockLogger } from '@src/tests/helpers/logger.test-helper.js';
 import type { QueueJob, QueueRuntime } from '@src/types/queue.types.js';
 
 import { createMockLogger } from '@src/tests/helpers/logger.test-helper.js';
@@ -9,12 +11,16 @@ import { bindQueueHandler, defineQueue } from '@src/types/queue.types.js';
 import type { RedisRuntime } from './redis.js';
 
 import { createQueueRuntime } from './bullmq.service.js';
+import { getConfig } from './config.js';
+import { logger as mockedLogger } from './logger.js';
 import { createRedisRuntime } from './redis.js';
 
 // Mock the logger module to avoid log output during tests
 vi.mock('@src/services/logger.js', () => ({
   logger: createMockLogger(),
 }));
+
+const logger = mockedLogger as unknown as MockLogger;
 
 /**
  * Note: These integration tests require a real Redis instance to run properly.
@@ -51,6 +57,23 @@ const sleep = (ms: number): Promise<void> =>
 describe('BullMQ service integration tests', () => {
   let runtime: QueueRuntime | undefined;
   let redis: RedisRuntime | undefined;
+
+  /**
+   * Counts a queue's failed jobs, to tell an exhausted job the hook recorded
+   * from one that fell through to the failed set.
+   */
+  async function getFailedJobCount(queueName: string): Promise<number> {
+    assert(redis, 'Redis runtime must be created before inspecting a queue');
+    // BullMQ applies its own `prefix`, so this connection must not also carry
+    // the global key prefix.
+    const queue = new Queue(queueName, {
+      connection: redis.createConnection({ usePrefix: false }),
+      prefix: getConfig().REDIS_KEY_PREFIX,
+    });
+    const count = await queue.getFailedCount();
+    await queue.close();
+    return count;
+  }
 
   /**
    * Builds a queue runtime over a fresh Redis connection manager. The manager
@@ -349,6 +372,122 @@ describe('BullMQ service integration tests', () => {
       expect(attempts[0]?.attemptNumber).toBe(1);
       expect(attempts[1]?.attemptNumber).toBe(2);
     });
+  });
+
+  describe('onFinalAttemptFailure', () => {
+    it('should run the hook on the last attempt and complete the job', async () => {
+      const queueName = 'test-final-attempt-queue';
+      const deferred = createDeferred();
+      const attemptNumbers: number[] = [];
+      const hookCalls: { data: unknown; error: unknown }[] = [];
+
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: (job) => {
+          attemptNumbers.push(job.attemptNumber);
+          throw new Error('always fails');
+        },
+        onFinalAttemptFailure: (jobData, error) => {
+          hookCalls.push({ data: jobData, error });
+          deferred.resolve(undefined);
+        },
+        options: {
+          defaultJobOptions: {
+            attempts: 2,
+            backoff: { type: 'fixed', delaySeconds: 1 },
+          },
+        },
+      });
+
+      runtime = createTestQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      await runtime.enqueue(token, { value: 'test' });
+      await deferred.promise;
+      // Let the worker settle the job after the handler returned.
+      await sleep(500);
+
+      // Fires once, on the attempt no retry follows - not on the way there.
+      expect(attemptNumbers).toEqual([1, 2]);
+      expect(hookCalls).toHaveLength(1);
+      expect(hookCalls[0]?.data).toEqual({ value: 'test' });
+      expect((hookCalls[0]?.error as Error).message).toBe('always fails');
+
+      // Recorded, so the job completes rather than staying in the failed set
+      // as an anomaly for someone to investigate.
+      await expect(getFailedJobCount(queueName)).resolves.toBe(0);
+    }, 15_000);
+
+    it('should honour a per-job attempts override', async () => {
+      const queueName = 'test-final-attempt-override-queue';
+      const deferred = createDeferred();
+      const hookAttemptNumbers: number[] = [];
+      let lastAttemptNumber = 0;
+
+      const token = defineQueue<Record<string, never>>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: (job) => {
+          lastAttemptNumber = job.attemptNumber;
+          throw new Error('always fails');
+        },
+        onFinalAttemptFailure: () => {
+          hookAttemptNumbers.push(lastAttemptNumber);
+          deferred.resolve(undefined);
+        },
+        options: {
+          defaultJobOptions: {
+            attempts: 2,
+            backoff: { type: 'fixed', delaySeconds: 1 },
+          },
+        },
+      });
+
+      runtime = createTestQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      // The budget the job actually carries, not the queue's declared 2 - so
+      // the hook has to read the job rather than the binding.
+      await runtime.enqueue(token, {}, { attempts: 3 });
+      await deferred.promise;
+
+      expect(hookAttemptNumbers).toEqual([3]);
+    }, 20_000);
+
+    it('should not run the hook when the queue declares no attempts', async () => {
+      const queueName = 'test-final-attempt-ungated-queue';
+      const deferred = createDeferred();
+      let hookCalls = 0;
+
+      const token = defineQueue<Record<string, never>>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          deferred.resolve(undefined);
+          throw new Error('always fails');
+        },
+        onFinalAttemptFailure: () => {
+          hookCalls += 1;
+        },
+      });
+
+      runtime = createTestQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      await runtime.enqueue(token, {});
+      await deferred.promise;
+      await sleep(500);
+
+      // Without a declared budget there is no attempt to pin "final" to, so
+      // the failure takes its normal course.
+      expect(hookCalls).toBe(0);
+      // Unreachable rather than silently inert: the misconfiguration is said
+      // out loud at startup.
+      const warning = logger.warn.mock.calls.find(
+        ([context]) =>
+          (context as { queueName?: string } | undefined)?.queueName ===
+          queueName,
+      );
+      expect(warning?.[1]).toContain('onFinalAttemptFailure');
+    }, 10_000);
   });
 
   describe('worker lifecycle', () => {
