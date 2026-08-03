@@ -11,6 +11,26 @@ import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
+const constantsNotificationCategories = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'constants-notification-categories',
+  projectExports: {
+    getNotificationCategory: { isTypeOnly: false },
+    NOTIFICATION_CATEGORIES: { isTypeOnly: false },
+    NotificationCategoryKey: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: { servicesNotificationChannel: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/constants/notification-categories.ts',
+    ),
+  },
+  variables: { TPL_CATEGORIES: {} },
+});
+
 const servicesGenericType = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -102,6 +122,7 @@ const servicesNotificationRegistry = createTsTemplateFile({
   importMapProviders: {},
   name: 'services-notification-registry',
   referencedGeneratorTemplates: {
+    constantsNotificationCategories: {},
     servicesNotificationChannel: {},
     servicesNotificationContent: {},
   },
@@ -129,6 +150,7 @@ const servicesNotificationRenderer = createTsTemplateFile({
     RenderSource: { isTypeOnly: true },
   },
   referencedGeneratorTemplates: {
+    constantsNotificationCategories: {},
     servicesNotificationContent: {},
     servicesNotificationRegistry: {},
   },
@@ -151,6 +173,7 @@ const servicesNotificationService = createTsTemplateFile({
   },
   name: 'services-notification-service',
   referencedGeneratorTemplates: {
+    constantsNotificationCategories: {},
     servicesGenericType: {},
     servicesNotificationChannel: {},
     servicesNotificationContent: {},
@@ -169,6 +192,7 @@ const servicesNotificationService = createTsTemplateFile({
 });
 
 export const mainGroup = {
+  constantsNotificationCategories,
   servicesGenericType,
   servicesNotificationChannel,
   servicesNotificationContent,

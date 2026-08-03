@@ -2,6 +2,7 @@ import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface NotificationsCoreNotificationModulePaths {
+  constantsNotificationCategories: string;
   queuesNotificationDelivery: string;
   queuesNotificationDeliveryWorker: string;
   queuesNotificationOutboxSweep: string;
@@ -41,6 +42,7 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
     return {
       providers: {
         notificationsCoreNotificationModulePaths: {
+          constantsNotificationCategories: `${moduleRoot}/constants/notification-categories.ts`,
           queuesNotificationDelivery: `${moduleRoot}/queues/notification-delivery.queue.ts`,
           queuesNotificationDeliveryWorker: `${moduleRoot}/queues/notification-delivery.worker.ts`,
           queuesNotificationOutboxSweep: `${moduleRoot}/queues/notification-outbox-sweep.queue.ts`,

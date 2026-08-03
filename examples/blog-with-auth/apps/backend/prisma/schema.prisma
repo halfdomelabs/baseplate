@@ -143,6 +143,22 @@ model NotificationDelivery {
   @@map("notification_delivery")
 }
 
+model NotificationPreference {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  scopeKind String   @map("scope_kind")
+  scopeKey  String   @map("scope_key")
+  channel   String
+  enabled   Boolean
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([userId, scopeKind, scopeKey, channel])
+  @@index([userId, scopeKey])
+  @@map("notification_preference")
+}
+
 model NotificationRequest {
   id              String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
   type            String
@@ -172,22 +188,23 @@ model RateLimiterFlexible {
 }
 
 model User {
-  id                 String             @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  email              String?            @unique
-  phone              String?
-  updatedAt          DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
-  name               String?
-  emailVerified      Boolean            @default(false) @map("email_verified")
-  accounts           UserAccount[]
-  actorNotifications Notification[]     @relation("actorNotifications")
-  authVerifications  AuthVerification[]
-  blogPosts          BlogPost[]
-  blogs              Blog[]
-  blogUsers          BlogUser[]
-  notifications      Notification[]     @relation("notifications")
-  roles              UserRole[]
-  sessions           UserSession[]
+  id                      String                   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  email                   String?                  @unique
+  phone                   String?
+  updatedAt               DateTime                 @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt               DateTime                 @default(now()) @map("created_at") @db.Timestamptz(3)
+  name                    String?
+  emailVerified           Boolean                  @default(false) @map("email_verified")
+  accounts                UserAccount[]
+  actorNotifications      Notification[]           @relation("actorNotifications")
+  authVerifications       AuthVerification[]
+  blogPosts               BlogPost[]
+  blogs                   Blog[]
+  blogUsers               BlogUser[]
+  notificationPreferences NotificationPreference[]
+  notifications           Notification[]           @relation("notifications")
+  roles                   UserRole[]
+  sessions                UserSession[]
 
   @@map("user")
 }

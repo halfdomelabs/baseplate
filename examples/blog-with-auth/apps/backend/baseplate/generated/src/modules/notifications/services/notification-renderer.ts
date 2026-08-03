@@ -2,6 +2,7 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 
 import { logError } from '@src/services/error-logger.js';
 
+import type { NotificationCategoryKey } from '../constants/notification-categories.js';
 import type {
   NotificationContent,
   NotificationParams,
@@ -117,7 +118,10 @@ export interface NotificationRenderer {
    * category is a property of the type, so it is never stored per row. Null
    * when the pinned renderer is gone.
    */
-  getCategory(type: string, templateVersion: number): string | null;
+  getCategory(
+    type: string,
+    templateVersion: number,
+  ): NotificationCategoryKey | null;
 }
 
 /**
@@ -201,7 +205,10 @@ export function createNotificationRenderer(deps: {
     );
   }
 
-  function getCategory(type: string, templateVersion: number): string | null {
+  function getCategory(
+    type: string,
+    templateVersion: number,
+  ): NotificationCategoryKey | null {
     return registry.get(registryKey(type, templateVersion))?.category ?? null;
   }
 

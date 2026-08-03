@@ -30,6 +30,17 @@ const descriptorSchema = z.object({
   includeEmailChannel: z.boolean().optional(),
   /** The app's user model; delivery reads recipient addresses from it. */
   userModelName: z.string(),
+  /** The categories notification types are grouped under, from the project definition. */
+  categories: z
+    .array(
+      z.object({
+        key: z.string(),
+        label: z.string(),
+        defaultChannels: z.array(z.string()),
+        mandatory: z.boolean(),
+      }),
+    )
+    .min(1),
 });
 
 /**
@@ -57,7 +68,7 @@ export const notificationModuleGenerator = createGenerator({
   name: 'notifications/core/notification-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeEmailChannel, userModelName }) => ({
+  buildTasks: ({ includeEmailChannel, userModelName, categories }) => ({
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.task,
     renderers: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.renderers.task,
     // The service chunks and groups delivery work with es-toolkit; declared
@@ -287,6 +298,12 @@ export const notificationModuleGenerator = createGenerator({
           .map((key) => `readonly ${key}: NotificationChannel;`)
           .join('\n');
 
+        // `as const` so the key union stays literal — a widened `string[]` would
+        // make `NotificationCategoryKey` just `string` and defeat the narrowing.
+        const categoriesFragment = `[\n${categories
+          .map((category) => JSON.stringify(category, null, 2))
+          .join(',\n')},\n] as const`;
+
         return {
           build: async (builder) => {
             const objectTypeFragment =
@@ -295,6 +312,9 @@ export const notificationModuleGenerator = createGenerator({
             await builder.apply(
               renderers.mainGroup.render({
                 variables: {
+                  constantsNotificationCategories: {
+                    TPL_CATEGORIES: tsCodeFragment(categoriesFragment),
+                  },
                   servicesNotificationChannel: {
                     TPL_CHANNEL_ENTRIES: tsCodeFragment(channelEntries),
                   },

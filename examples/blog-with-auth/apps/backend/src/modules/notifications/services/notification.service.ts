@@ -5,7 +5,10 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 import { logError } from '@src/services/error-logger.js';
 import { prisma } from '@src/services/prisma.js';
 
-import type { NotificationChannelKey } from './notification-channel.js';
+import type {
+  NotificationChannelKey,
+  NotificationRoutingTarget,
+} from './notification-channel.js';
 import type {
   NotificationParams,
   RenderContext,
@@ -23,6 +26,7 @@ import type {
   RenderSource,
 } from './notification-renderer.js';
 
+import { getNotificationCategory } from '../constants/notification-categories.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
 
 /**
@@ -255,6 +259,97 @@ export function createNotificationService(deps: {
     };
   }
 
+  /**
+   * Each recipient's routing after their preferences are applied.
+   *
+   * Resolved for the whole audience in one query BEFORE the fan-out transaction
+   * opens: the transaction's budget is `FANOUT_TRANSACTION_OPTIONS.timeout`, so
+   * a per-recipient query inside it would spend the audience cap on round trips.
+   *
+   * Both scopes are read together and combined as an AND — a type row can only
+   * narrow within an enabled category, never re-enable a disabled one. That way
+   * a settings page showing "Comments: off" cannot be silently contradicted by a
+   * type-scoped row, while "comments on, likes off" is still expressible.
+   */
+  async function resolveEffectiveChannels(
+    recipientIds: string[],
+    type: NotificationTypeDefinition,
+  ): Promise<
+    Map<string, { inApp: boolean; outbound: NotificationChannelKey[] }>
+  > {
+    const routing = resolveRouting(type);
+    const category = getNotificationCategory(type.category);
+
+    // Mandatory categories are not the user's choice, so their rows are never
+    // read — skipping the query entirely rather than reading and discarding.
+    if (category.mandatory) {
+      return new Map(recipientIds.map((id) => [id, routing]));
+    }
+
+    // One unchunked read for the whole audience: it runs outside the
+    // transaction, and rows exist only where someone has actually chosen, so
+    // the result is far smaller than the recipient  list.
+    const preferences = await prisma.notificationPreference.findMany({
+      where: {
+        userId: { in: recipientIds },
+        // One query covering both scopes; `scopeKind` disambiguates a category
+        // and a type that happen to share a key.
+        scopeKey: { in: [type.category, type.key] },
+      },
+      select: {
+        userId: true,
+        scopeKind: true,
+        scopeKey: true,
+        channel: true,
+        enabled: true,
+      },
+    });
+
+    // channel -> enabled, per user, per scope. Absence means "no opinion".
+    const categoryRows = new Map<string, Map<string, boolean>>();
+    const typeRows = new Map<string, Map<string, boolean>>();
+    for (const row of preferences) {
+      const scoped =
+        row.scopeKind === 'category' && row.scopeKey === type.category
+          ? categoryRows
+          : row.scopeKind === 'type' && row.scopeKey === type.key
+            ? typeRows
+            : undefined;
+      if (!scoped) continue;
+      const byChannel = scoped.get(row.userId) ?? new Map<string, boolean>();
+      byChannel.set(row.channel, row.enabled);
+      scoped.set(row.userId, byChannel);
+    }
+
+    // Widened to `string` for the lookup: preference rows hold whatever was
+    // written, so a row for a since-removed channel must miss rather than fail.
+    const defaultChannels = new Set<string>(category.defaultChannels);
+
+    function isAllowed(
+      recipientId: string,
+      target: NotificationRoutingTarget,
+    ): boolean {
+      const categoryEnabled =
+        categoryRows.get(recipientId)?.get(target) ??
+        defaultChannels.has(target);
+      // Type rows are pure suppression: no row means "no objection", not "on".
+      const typeEnabled = typeRows.get(recipientId)?.get(target) ?? true;
+      return categoryEnabled && typeEnabled;
+    }
+
+    return new Map(
+      recipientIds.map((recipientId) => [
+        recipientId,
+        {
+          inApp: routing.inApp && isAllowed(recipientId, 'inApp'),
+          outbound: routing.outbound.filter((channel) =>
+            isAllowed(recipientId, channel),
+          ),
+        },
+      ]),
+    );
+  }
+
   /** Recompute, broadcast the change, and return the unseen count for a user. */
   async function publishUnseenCount(userId: string): Promise<number> {
     const count = await getUnseenCount(userId);
@@ -300,7 +395,12 @@ export function createNotificationService(deps: {
 
     // Freeze a default-locale snapshot as the read-time recovery content.
     const frozen = renderer.renderForWrite(type, event);
-    const routing = resolveRouting(type);
+
+    // Resolved before the transaction opens — see `resolveEffectiveChannels`.
+    const effectiveChannels = await resolveEffectiveChannels(
+      recipientIds,
+      type,
+    );
 
     // Stamped per row rather than onto `contentColumns`: retention is a
     // property of the durable recipient row, and `NotificationRequest` has no
@@ -341,8 +441,9 @@ export function createNotificationService(deps: {
           : await tx.notificationRequest.create({ data: contentColumns });
 
         // One row per recipient regardless of channel — an email-only
-        // notification still gets one, with `inApp: false`. Chunked so no
-        // single statement grows with the audience.
+        // notification still gets one, with `inApp: false`, as does someone who
+        // has silenced every channel. Chunked so no single statement grows with
+        // the audience.
         let count = 0;
         for (const batch of chunk(recipientIds, WRITE_CHUNK_SIZE)) {
           const created = await tx.notification.createMany({
@@ -351,7 +452,7 @@ export function createNotificationService(deps: {
               ...actorSnapshot,
               requestId: request.id,
               recipientId,
-              inApp: routing.inApp,
+              inApp: effectiveChannels.get(recipientId)?.inApp ?? false,
               expiresAt,
             })),
             // A concurrent replay must short-circuit, not raise P2002.
@@ -377,13 +478,16 @@ export function createNotificationService(deps: {
         }
 
         // One row per (recipient, outbound channel), so one bounced address
-        // fails its own row instead of a whole chunk.
+        // fails its own row instead of a whole chunk. Keyed by recipient: a
+        // channel someone has silenced produces no delivery for them.
         const deliveryData = rows.flatMap((row) =>
-          routing.outbound.map((channel) => ({
-            notificationId: row.id,
-            requestId: request.id,
-            channel,
-          })),
+          (effectiveChannels.get(row.recipientId)?.outbound ?? []).map(
+            (channel) => ({
+              notificationId: row.id,
+              requestId: request.id,
+              channel,
+            }),
+          ),
         );
         for (const batch of chunk(deliveryData, WRITE_CHUNK_SIZE)) {
           await tx.notificationDelivery.createMany({
