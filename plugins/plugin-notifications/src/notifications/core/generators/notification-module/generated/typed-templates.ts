@@ -58,7 +58,7 @@ const servicesNotificationChannel = createTsTemplateFile({
       '../templates/module/services/notification-channel.ts',
     ),
   },
-  variables: { TPL_CHANNEL_ENTRIES: {} },
+  variables: { TPL_CHANNEL_ENTRIES: {}, TPL_ROUTING_TARGETS: {} },
 });
 
 const servicesNotificationContent = createTsTemplateFile({
@@ -389,6 +389,21 @@ const schemaNotificationMutations = createTsTemplateFile({
   variables: { TPL_NOTIFICATION_OBJECT_TYPE: {} },
 });
 
+const schemaNotificationPreference = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'schema',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-notification-preference',
+  referencedGeneratorTemplates: { servicesNotificationChannel: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/notification-preference.schema.ts',
+    ),
+  },
+  variables: {},
+});
+
 const schemaNotificationSubscriptions = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'schema',
@@ -408,6 +423,7 @@ export const schemaGroup = {
   schemaNotificationContentObjectTypes,
   schemaNotificationFeedQueries,
   schemaNotificationMutations,
+  schemaNotificationPreference,
   schemaNotificationSubscriptions,
 };
 

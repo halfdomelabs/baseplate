@@ -292,11 +292,19 @@ export const notificationModuleGenerator = createGenerator({
 
         // One interface member per installed channel — rendered from the same
         // source as the composition-root registry, so the two can't drift.
-        const channelEntries = installedChannelKeys(
-          includeEmailChannel ?? false,
-        )
+        const channelKeys = installedChannelKeys(includeEmailChannel ?? false);
+        const channelEntries = channelKeys
           .map((key) => `readonly ${key}: NotificationChannel;`)
           .join('\n');
+
+        // The same keys as a runtime list, for APIs that enumerate targets
+        // rather than check one. Rendered as the whole array — `'inApp'` always
+        // leads, and an app with no outbound channels gets a valid one-element
+        // array rather than a dangling comma. `as const` keeps the element type
+        // literal so it still satisfies the routing-target union.
+        const routingTargets = `[${['inApp', ...channelKeys]
+          .map((key) => `'${key}'`)
+          .join(', ')}] as const`;
 
         // `as const` so the key union stays literal — a widened `string[]` would
         // make `NotificationCategoryKey` just `string` and defeat the narrowing.
@@ -317,6 +325,7 @@ export const notificationModuleGenerator = createGenerator({
                   },
                   servicesNotificationChannel: {
                     TPL_CHANNEL_ENTRIES: tsCodeFragment(channelEntries),
+                    TPL_ROUTING_TARGETS: tsCodeFragment(routingTargets),
                   },
                   // Delivery reads recipient and actor details, so the user
                   // delegate belongs to the outbox, not the service.

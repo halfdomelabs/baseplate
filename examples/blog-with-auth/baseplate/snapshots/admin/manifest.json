@@ -1,6 +1,10 @@
 {
   "files": {
-    "added": [{ "path": "src/services/apollo/apollo.unit.test.ts" }],
+    "added": [
+      { "path": "src/routes/admin/notification-preferences/-operations.ts" },
+      { "path": "src/routes/admin/notification-preferences/index.tsx" },
+      { "path": "src/services/apollo/apollo.unit.test.ts" }
+    ],
     "deleted": [],
     "modified": [{ "diffFile": "package.json.diff", "path": "package.json" }]
   },

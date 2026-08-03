@@ -13,6 +13,7 @@ export interface NotificationsCoreNotificationModulePaths {
   schemaNotificationContentObjectTypes: string;
   schemaNotificationFeedQueries: string;
   schemaNotificationMutations: string;
+  schemaNotificationPreference: string;
   schemaNotificationSubscriptions: string;
   servicesEmailChannel: string;
   servicesGenericType: string;
@@ -53,6 +54,7 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
           schemaNotificationContentObjectTypes: `${moduleRoot}/schema/notification-content.object-types.ts`,
           schemaNotificationFeedQueries: `${moduleRoot}/schema/notification-feed.queries.ts`,
           schemaNotificationMutations: `${moduleRoot}/schema/notification.mutations.ts`,
+          schemaNotificationPreference: `${moduleRoot}/schema/notification-preference.schema.ts`,
           schemaNotificationSubscriptions: `${moduleRoot}/schema/notification.subscriptions.ts`,
           servicesEmailChannel: `${moduleRoot}/services/email-channel.ts`,
           servicesGenericType: `${moduleRoot}/services/generic-type.ts`,

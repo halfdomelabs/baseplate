@@ -57,6 +57,19 @@ const CATEGORIES_BY_KEY = new Map<
   NotificationCategory
 >(NOTIFICATION_CATEGORIES.map((category) => [category.key, category]));
 
+/**
+ * Whether an arbitrary string names a declared category.
+ *
+ * For untrusted input — API callers and stored preference rows hold plain
+ * strings, so they cannot use {@link getNotificationCategory}, which is total
+ * over the key union and throws.
+ */
+export function isNotificationCategoryKey(
+  key: string,
+): key is NotificationCategoryKey {
+  return CATEGORIES_BY_KEY.has(key as NotificationCategoryKey);
+}
+
 /** Looks up a declared category. Total over {@link NotificationCategoryKey}. */
 export function getNotificationCategory(
   key: NotificationCategoryKey,

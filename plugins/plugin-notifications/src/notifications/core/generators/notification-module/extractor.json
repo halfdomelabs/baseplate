@@ -223,6 +223,21 @@
       "sourceFile": "module/schema/notification.mutations.ts",
       "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
     },
+    "schema-notification-preference": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/notification-preference.schema.ts",
+      "referencedGeneratorTemplates": ["services-notification-channel"],
+      "sourceFile": "module/schema/notification-preference.schema.ts",
+      "variables": {}
+    },
     "schema-notification-subscriptions": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -272,7 +287,7 @@
       "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
       "referencedGeneratorTemplates": ["services-notification-renderer"],
       "sourceFile": "module/services/notification-channel.ts",
-      "variables": { "TPL_CHANNEL_ENTRIES": {} }
+      "variables": { "TPL_CHANNEL_ENTRIES": {}, "TPL_ROUTING_TARGETS": {} }
     },
     "services-notification-content": {
       "type": "ts",

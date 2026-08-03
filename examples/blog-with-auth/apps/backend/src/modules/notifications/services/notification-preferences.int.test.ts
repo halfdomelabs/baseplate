@@ -293,3 +293,147 @@ describe('notification preferences', () => {
     });
   });
 });
+
+describe('notification preference writes', () => {
+  beforeEach(resetTables);
+  afterAll(resetTables);
+
+  it('upserts rather than duplicating when a choice is changed', async () => {
+    const userId = await createUser('upsert');
+    const service = createService();
+    const scope = {
+      scopeKind: 'category' as const,
+      scopeKey: 'general',
+      channel: 'email' as const,
+    };
+
+    await service.setPreference(userId, { ...scope, enabled: true });
+    await service.setPreference(userId, { ...scope, enabled: false });
+
+    const rows = await prisma.notificationPreference.findMany({
+      where: { userId },
+    });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.enabled).toBe(false);
+  });
+
+  it('rejects an unknown category but accepts an unregistered type', async () => {
+    const userId = await createUser('validation');
+    const service = createService();
+
+    await expect(
+      service.setPreference(userId, {
+        scopeKind: 'category',
+        scopeKey: 'comnents',
+        channel: 'inApp',
+        enabled: false,
+      }),
+    ).rejects.toThrow(/Unknown notification category/);
+
+    // A type registered by a later deploy is legitimate — the row is inert
+    // until something claims that key.
+    await service.setPreference(userId, {
+      scopeKind: 'type',
+      scopeKey: 'post.liked',
+      channel: 'inApp',
+      enabled: false,
+    });
+    expect(
+      await prisma.notificationPreference.count({ where: { userId } }),
+    ).toBe(1);
+  });
+
+  it('clears only the caller’s own row', async () => {
+    const owner = await createUser('owner');
+    const other = await createUser('bystander');
+    const service = createService();
+    const scope = {
+      scopeKind: 'category' as const,
+      scopeKey: 'general',
+      channel: 'inApp' as const,
+    };
+    await service.setPreference(owner, { ...scope, enabled: false });
+    await service.setPreference(other, { ...scope, enabled: false });
+
+    expect(await service.clearPreference(owner, scope)).toBe(true);
+    // Clearing again is a no-op, not an error.
+    expect(await service.clearPreference(owner, scope)).toBe(false);
+
+    // The bystander's identical tuple is untouched.
+    expect(
+      await prisma.notificationPreference.count({ where: { userId: other } }),
+    ).toBe(1);
+  });
+
+  it('restores the category default once a choice is cleared', async () => {
+    const userId = await createUser('restore');
+    const service = createService();
+    const scope = {
+      scopeKind: 'category' as const,
+      scopeKey: 'general',
+      channel: 'inApp' as const,
+    };
+
+    await service.setPreference(userId, { ...scope, enabled: false });
+    const silenced = await service.notifyMany(BOTH_CHANNELS_TYPE, {
+      recipientIds: [userId],
+      params: { text: 'hello' },
+    });
+    expect((await readRouting(silenced.requestId, userId)).inApp).toBe(false);
+
+    await service.clearPreference(userId, scope);
+    const restored = await service.notifyMany(BOTH_CHANNELS_TYPE, {
+      recipientIds: [userId],
+      params: { text: 'hello' },
+    });
+    expect((await readRouting(restored.requestId, userId)).inApp).toBe(true);
+  });
+
+  it('reports resolved state, marking defaults and hiding mandatory channels', async () => {
+    const userId = await createUser('resolved');
+    const service = createService();
+    await service.setPreference(userId, {
+      scopeKind: 'category',
+      scopeKey: 'general',
+      channel: 'email',
+      enabled: true,
+    });
+
+    const preferences = await service.getPreferences(userId);
+    const general = preferences.find((entry) => entry.key === 'general');
+    const security = preferences.find((entry) => entry.key === 'security');
+
+    // `general` defaults to in-app only; email is the one overridden channel.
+    expect(general?.channels).toEqual([
+      { channel: 'inApp', enabled: true, isDefault: true },
+      { channel: 'email', enabled: true, isDefault: false },
+    ]);
+    // Mandatory: no per-channel state, so a settings page cannot offer a toggle
+    // that would do nothing.
+    expect(security?.mandatory).toBe(true);
+    expect(security?.channels).toBeUndefined();
+  });
+
+  it('does not surface type-scoped rows as category state', async () => {
+    const userId = await createUser('type-scoped');
+    const service = createService();
+    await service.setPreference(userId, {
+      scopeKind: 'type',
+      scopeKey: GENERIC_NOTIFICATION_TYPE.key,
+      channel: 'inApp',
+      enabled: false,
+    });
+
+    const general = (await service.getPreferences(userId)).find(
+      (entry) => entry.key === 'general',
+    );
+
+    // The settings page shows the category as still on — muting one type must
+    // not read as having disabled the whole category.
+    expect(general?.channels).toContainEqual({
+      channel: 'inApp',
+      enabled: true,
+      isDefault: true,
+    });
+  });
+});

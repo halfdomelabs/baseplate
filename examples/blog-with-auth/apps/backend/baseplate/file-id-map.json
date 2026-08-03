@@ -151,6 +151,7 @@
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:schema-notification-content-object-types": "src/modules/notifications/schema/notification-content.object-types.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:schema-notification-feed-queries": "src/modules/notifications/schema/notification-feed.queries.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:schema-notification-mutations": "src/modules/notifications/schema/notification.mutations.ts",
+  "@baseplate-dev/plugin-notifications#notifications/core/notification-module:schema-notification-preference": "src/modules/notifications/schema/notification-preference.schema.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:schema-notification-subscriptions": "src/modules/notifications/schema/notification.subscriptions.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:services-email-channel": "src/modules/notifications/services/email-channel.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:services-generic-type": "src/modules/notifications/services/generic-type.ts",

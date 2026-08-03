@@ -4,8 +4,13 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 
 import { logError } from '@src/services/error-logger.js';
 import { prisma } from '@src/services/prisma.js';
+import { BadRequestError } from '@src/utils/http-errors.js';
 
-import type { NotificationChannelKey } from './notification-channel.js';
+import type { NotificationCategoryKey } from '../constants/notification-categories.js';
+import type {
+  NotificationChannelKey,
+  NotificationRoutingTarget,
+} from './notification-channel.js';
 import type {
   NotificationParams,
   RenderContext,
@@ -23,8 +28,13 @@ import type {
   RenderSource,
 } from './notification-renderer.js';
 
-import { getNotificationCategory } from '../constants/notification-categories.js';
+import {
+  getNotificationCategory,
+  isNotificationCategoryKey,
+  NOTIFICATION_CATEGORIES,
+} from '../constants/notification-categories.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
+import { ROUTING_TARGETS } from './notification-channel.js';
 
 /**
  * Rows per insert. Bounds every statement in the fan-out, so a large audience
@@ -142,6 +152,44 @@ export interface MarkNotificationsResult {
 }
 
 /**
+ * Which preferences a row governs.
+ *
+ * `category` is what a settings page edits; `type` is what inline affordances
+ * ("stop notifying me about likes") write, and can only suppress within an
+ * already-enabled category.
+ */
+export type NotificationPreferenceScopeKind = 'category' | 'type';
+
+/** Identifies a single preference row within a user. */
+export interface PreferenceScope {
+  scopeKind: NotificationPreferenceScopeKind;
+  /** A category key or a notification type key, per `scopeKind`. */
+  scopeKey: string;
+  channel: NotificationRoutingTarget;
+}
+
+export type SetPreferenceInput = PreferenceScope & { enabled: boolean };
+
+/** One channel's resolved state for a category. */
+export interface NotificationChannelPreference {
+  channel: NotificationRoutingTarget;
+  enabled: boolean;
+  /** True when no row exists and `enabled` came from the category default. */
+  isDefault: boolean;
+}
+
+/**
+ * A category as a settings page renders it. `channels` is absent for a mandatory
+ * category: it consults no preferences, so there is nothing to toggle.
+ */
+export interface NotificationCategoryPreferences {
+  key: NotificationCategoryKey;
+  label: string;
+  mandatory: boolean;
+  channels?: NotificationChannelPreference[];
+}
+
+/**
  * The application-facing notifications capability: trigger, read, and
  * acknowledge notifications. Closes over {@link NotificationEvents} to
  * broadcast unseen-count changes and real-time updates.
@@ -217,6 +265,21 @@ export interface NotificationService {
   dismiss(userId: string, notificationId: string): Promise<UnseenCountResult>;
   /** Subscribe to real-time unseen-count changes for a user. */
   subscribeToChanges(userId: string): AsyncIterable<{ count: number }>;
+  /**
+   * Record one channel choice for a category or a type, overriding the
+   * category default. Affects future fan-outs only — rows already written keep
+   * the routing they were created with.
+   */
+  setPreference(userId: string, input: SetPreferenceInput): Promise<void>;
+  /**
+   * Drop a choice, restoring the category default. False when there was no row.
+   */
+  clearPreference(userId: string, scope: PreferenceScope): Promise<boolean>;
+  /**
+   * Every declared category with this user's resolved per-channel state, for a
+   * settings page. Category-scoped only: type rows are not surfaced here.
+   */
+  getPreferences(userId: string): Promise<NotificationCategoryPreferences[]>;
 }
 
 async function getUnseenCount(userId: string): Promise<number> {
@@ -285,7 +348,7 @@ export function createNotificationService(deps: {
 
     // One unchunked read for the whole audience: it runs outside the
     // transaction, and rows exist only where someone has actually chosen, so
-    // the result is far smaller than the recipient list.
+    // the result is far smaller than the recipient  list.
     const preferences = await prisma.notificationPreference.findMany({
       where: {
         userId: { in: recipientIds },
@@ -318,9 +381,14 @@ export function createNotificationService(deps: {
       scoped.set(row.userId, byChannel);
     }
 
-    const defaultChannels = new Set(category.defaultChannels);
+    // Widened to `string` for the lookup: preference rows hold whatever was
+    // written, so a row for a since-removed channel must miss rather than fail.
+    const defaultChannels = new Set<string>(category.defaultChannels);
 
-    function isAllowed(recipientId: string, target: string): boolean {
+    function isAllowed(
+      recipientId: string,
+      target: NotificationRoutingTarget,
+    ): boolean {
       const categoryEnabled =
         categoryRows.get(recipientId)?.get(target) ??
         defaultChannels.has(target);
@@ -629,6 +697,101 @@ export function createNotificationService(deps: {
     return events.subscribeToUnseenCount(userId);
   }
 
+  /**
+   * Record one channel choice, overriding the category default.
+   *
+   * Deliberately does not publish an unseen count: a preference governs future
+   * fan-outs, and rows already written keep the routing they were created with.
+   */
+  async function setPreference(
+    userId: string,
+    input: SetPreferenceInput,
+  ): Promise<void> {
+    const { scopeKind, scopeKey, channel, enabled } = input;
+    // Category keys are a closed generated set, so an unknown one is a caller
+    // bug. Type keys are not checked: a preference may legitimately be written
+    // for a type registered by a later deploy, and an unmatched row is inert.
+    if (scopeKind === 'category' && !isNotificationCategoryKey(scopeKey)) {
+      throw new BadRequestError(`Unknown notification category: ${scopeKey}`);
+    }
+    await prisma.notificationPreference.upsert({
+      where: {
+        userId_scopeKind_scopeKey_channel: {
+          userId,
+          scopeKind,
+          scopeKey,
+          channel,
+        },
+      },
+      update: { enabled },
+      create: { userId, scopeKind, scopeKey, channel, enabled },
+    });
+  }
+
+  /**
+   * Drop a choice, restoring the category default. Returns false when there was
+   * no row to clear.
+   */
+  async function clearPreference(
+    userId: string,
+    scope: PreferenceScope,
+  ): Promise<boolean> {
+    // Scoped by the caller's id, so a wrong tuple clears nothing rather than
+    // someone else's row.
+    const { count } = await prisma.notificationPreference.deleteMany({
+      where: { userId, ...scope },
+    });
+    return count > 0;
+  }
+
+  /**
+   * Every declared category with this user's resolved per-channel state — what a
+   * settings page renders.
+   *
+   * Category-scoped only: type rows are written by inline affordances ("stop
+   * notifying me about likes") and are not shown here, so a category cannot
+   * appear off because some unrelated type was muted.
+   */
+  async function getPreferences(
+    userId: string,
+  ): Promise<NotificationCategoryPreferences[]> {
+    const rows = await prisma.notificationPreference.findMany({
+      where: { userId, scopeKind: 'category' },
+      select: { scopeKey: true, channel: true, enabled: true },
+    });
+    const byCategory = new Map<string, Map<string, boolean>>();
+    for (const row of rows) {
+      const byChannel = byCategory.get(row.scopeKey) ?? new Map();
+      byChannel.set(row.channel, row.enabled);
+      byCategory.set(row.scopeKey, byChannel);
+    }
+
+    return NOTIFICATION_CATEGORIES.map((category) => {
+      // A mandatory category consults no preferences at all, and its defaults
+      // are not read either — the type's own `channels` decide. Reporting
+      // channel state would invite a settings page to render a toggle that
+      // cannot do anything.
+      if (category.mandatory) {
+        return { key: category.key, label: category.label, mandatory: true };
+      }
+      const overrides = byCategory.get(category.key);
+      const defaults = new Set<string>(category.defaultChannels);
+      return {
+        key: category.key,
+        label: category.label,
+        mandatory: false,
+        channels: ROUTING_TARGETS.map((channel) => {
+          const override = overrides?.get(channel);
+          return {
+            channel,
+            enabled: override ?? defaults.has(channel),
+            isDefault: override === undefined,
+          };
+        }),
+      };
+    });
+  }
+
   return {
     notify,
     notifyMany,
@@ -640,5 +803,8 @@ export function createNotificationService(deps: {
     markAllAsRead,
     dismiss,
     subscribeToChanges,
+    setPreference,
+    clearPreference,
+    getPreferences,
   };
 }

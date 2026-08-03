@@ -1,3 +1,5 @@
+import type { NotificationRoutingTarget } from '../services/notification-channel.js';
+
 /**
  * The categories notification types are grouped under, declared in the project
  * definition and generated here as a closed set.
@@ -27,8 +29,12 @@ export const NOTIFICATION_CATEGORIES = /* TPL_CATEGORIES:START */ [
 interface NotificationCategory {
   key: string;
   label: string;
-  /** Channels a type in this category routes to when the user has no preference row. */
-  readonly defaultChannels: readonly string[];
+  /**
+   * Channels a type in this category routes to when the user has no preference
+   * row. Typed as routing targets, so defaulting to a channel the app has not
+   * installed is a compile error here rather than a silently ignored entry.
+   */
+  readonly defaultChannels: readonly NotificationRoutingTarget[];
   /**
    * Delivery is not the user's choice (password resets, security alerts), so
    * preference rows are never consulted for types in this category.
@@ -50,6 +56,19 @@ const CATEGORIES_BY_KEY = new Map<
   NotificationCategoryKey,
   NotificationCategory
 >(NOTIFICATION_CATEGORIES.map((category) => [category.key, category]));
+
+/**
+ * Whether an arbitrary string names a declared category.
+ *
+ * For untrusted input — API callers and stored preference rows hold plain
+ * strings, so they cannot use {@link getNotificationCategory}, which is total
+ * over the key union and throws.
+ */
+export function isNotificationCategoryKey(
+  key: string,
+): key is NotificationCategoryKey {
+  return CATEGORIES_BY_KEY.has(key as NotificationCategoryKey);
+}
 
 /** Looks up a declared category. Total over {@link NotificationCategoryKey}. */
 export function getNotificationCategory(

@@ -29,3 +29,13 @@ export type NotificationChannelKey = keyof NotificationChannels;
  * an inline publish, and has no {@link NotificationChannel} implementation.
  */
 export type NotificationRoutingTarget = NotificationChannelKey | 'inApp';
+
+/**
+ * Every routing target, for enumerating rather than checking one — the settings
+ * API lists a state per target. Rendered from the same source as the channel
+ * interface above, so the runtime list and the compile-time union cannot drift.
+ */
+export const ROUTING_TARGETS = /* TPL_ROUTING_TARGETS:START */ [
+  'inApp',
+  'email',
+] as const /* TPL_ROUTING_TARGETS:END */ satisfies readonly NotificationRoutingTarget[];

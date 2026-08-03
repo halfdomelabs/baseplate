@@ -43,6 +43,19 @@ type ChangePasswordPayload {
   user: User!
 }
 
+"""Input type for clearNotificationPreference mutation"""
+input ClearNotificationPreferenceInput {
+  channel: NotificationChannel!
+  scopeKey: String!
+  scopeKind: NotificationPreferenceScope!
+}
+
+"""Payload type for clearNotificationPreference mutation"""
+type ClearNotificationPreferencePayload {
+  cleared: Boolean!
+  preferences: [NotificationCategoryPreference!]!
+}
+
 input CreateArticleData {
   content: String!
   title: String!
@@ -196,6 +209,7 @@ type MarkNotificationReadPayload {
 
 type Mutation {
   changePassword(input: ChangePasswordInput!): ChangePasswordPayload!
+  clearNotificationPreference(input: ClearNotificationPreferenceInput!): ClearNotificationPreferencePayload!
   createArticle(input: CreateArticleInput!): CreateArticlePayload!
   createBlogPost(input: CreateBlogPostInput!): CreateBlogPostPayload!
   createUser(input: CreateUserInput!): CreateUserPayload!
@@ -213,6 +227,7 @@ type Mutation {
   requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
   resetPasswordWithToken(input: ResetPasswordWithTokenInput!): ResetPasswordWithTokenPayload!
   resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
+  setNotificationPreference(input: SetNotificationPreferenceInput!): SetNotificationPreferencePayload!
   updateArticle(input: UpdateArticleInput!): UpdateArticlePayload!
   updateBlog(input: UpdateBlogInput!): UpdateBlogPayload!
   updateBlogPost(input: UpdateBlogPostInput!): UpdateBlogPostPayload!
@@ -232,6 +247,30 @@ type Notification {
   readAt: DateTime
   seenAt: DateTime
   type: String!
+}
+
+type NotificationCategoryPreference {
+  channels: [NotificationChannelPreference!]
+  key: String!
+  label: String!
+
+  """When true, preferences are never consulted and `channels` is null."""
+  mandatory: Boolean!
+}
+
+enum NotificationChannel {
+  email
+  inApp
+}
+
+type NotificationChannelPreference {
+  channel: NotificationChannel!
+  enabled: Boolean!
+
+  """
+  True when no preference row exists and `enabled` came from the category default.
+  """
+  isDefault: Boolean!
 }
 
 type NotificationContent {
@@ -254,6 +293,16 @@ type NotificationFeedEdge {
 type NotificationLinkSegment {
   href: String!
   value: String!
+}
+
+enum NotificationPreferenceScope {
+  """Applies to every type in a category. What a settings page edits."""
+  CATEGORY
+
+  """
+  Applies to one notification type. Can only suppress within an enabled category — never re-enable a disabled one.
+  """
+  TYPE
 }
 
 union NotificationSegment = NotificationLinkSegment | NotificationTextSegment
@@ -281,6 +330,7 @@ type Query {
   """Get the current user session"""
   currentUserSession: UserSessionPayload
   notificationFeed(after: String, before: String, first: Int, last: Int): NotificationFeedConnection!
+  notificationPreferences: [NotificationCategoryPreference!]!
   unseenNotificationCount: Int!
   user(id: Uuid!): User!
   users(skip: Int, take: Int): [User!]!
@@ -336,6 +386,19 @@ input ResetUserPasswordInput {
 """Payload type for resetUserPassword mutation"""
 type ResetUserPasswordPayload {
   user: User!
+}
+
+"""Input type for setNotificationPreference mutation"""
+input SetNotificationPreferenceInput {
+  channel: NotificationChannel!
+  enabled: Boolean!
+  scopeKey: String!
+  scopeKind: NotificationPreferenceScope!
+}
+
+"""Payload type for setNotificationPreference mutation"""
+type SetNotificationPreferencePayload {
+  preferences: [NotificationCategoryPreference!]!
 }
 
 type Subscription {
