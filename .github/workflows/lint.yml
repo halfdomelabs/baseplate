@@ -36,7 +36,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm lint
-      - run: pnpm prettier:check:affected
+      - run: pnpm oxfmt:check
       - run: pnpm versions:check
       - run: pnpm knip
       - run: pnpm metadata:check

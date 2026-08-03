@@ -30,6 +30,20 @@ const execFilePromise = promisify(execFile);
 
 const VALID_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
+// oxfmt formats these in addition to the JS/TS extensions above; prettier in the
+// examples only ever ran against VALID_EXTENSIONS, so it keeps the narrower set.
+const OXFMT_ONLY_EXTENSIONS = new Set([
+  '.json',
+  '.jsonc',
+  '.md',
+  '.mdx',
+  '.css',
+  '.scss',
+  '.yaml',
+  '.yml',
+  '.html',
+]);
+
 const ROOT_DIR = path.resolve(import.meta.dirname, '..');
 
 /**
@@ -167,10 +181,14 @@ const exampleFiles: string[] = [];
 
 for (const filePath of inputPaths) {
   const absoluteFilePath = path.resolve(filePath);
-  if (!VALID_EXTENSIONS.has(path.extname(absoluteFilePath))) continue;
-  if (absoluteFilePath.startsWith(examplesDir + path.sep)) {
-    exampleFiles.push(absoluteFilePath);
-  } else {
+  const extension = path.extname(absoluteFilePath);
+  const isExample = absoluteFilePath.startsWith(examplesDir + path.sep);
+  if (isExample) {
+    if (VALID_EXTENSIONS.has(extension)) exampleFiles.push(absoluteFilePath);
+  } else if (
+    VALID_EXTENSIONS.has(extension) ||
+    OXFMT_ONLY_EXTENSIONS.has(extension)
+  ) {
     monorepoFiles.push(absoluteFilePath);
   }
 }
@@ -180,7 +198,11 @@ if (monorepoFiles.length > 0) {
   console.info(
     `\nProcessing ${monorepoFiles.length} monorepo file(s) with oxlint + oxfmt...`,
   );
-  await runOxlint(monorepoFiles);
+  // oxlint only understands JS/TS, so it never sees the oxfmt-only extensions.
+  const lintableFiles = monorepoFiles.filter((f) =>
+    VALID_EXTENSIONS.has(path.extname(f)),
+  );
+  if (lintableFiles.length > 0) await runOxlint(lintableFiles);
   await runOxfmt(monorepoFiles);
 }
 

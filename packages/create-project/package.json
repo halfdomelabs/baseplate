@@ -13,16 +13,9 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
-  "type": "module",
-  "imports": {
-    "#src/*": {
-      "development": "./src/*",
-      "default": "./dist/*"
-    }
-  },
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "bin": "./bin/create-baseplate-project.js",
   "files": [
     "README.md",
@@ -34,13 +27,22 @@
     "templates/**/*",
     "bin/**/*"
   ],
+  "type": "module",
+  "imports": {
+    "#src/*": {
+      "development": "./src/*",
+      "default": "./dist/*"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
     "dev:start": "tsx -C development ./src/create-baseplate-project.ts",
     "lint": "oxlint && eslint .",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w -l .",
     "start": "node ./dist/create-baseplate-project.js",
     "test": "vitest",
     "typecheck": "tsc --noEmit"
@@ -61,7 +63,6 @@
     "eslint": "catalog:",
     "memfs": "4.64.0",
     "oxlint": "catalog:",
-    "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
@@ -71,9 +72,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

@@ -48,5 +48,5 @@ export default defineConfig(({ mode }) => {
         : undefined,
       watch: { ignored: ['**/baseplate/**'] },
     },
-  } /* TPL_CONFIG:END */;
+  }; /* TPL_CONFIG:END */
 });

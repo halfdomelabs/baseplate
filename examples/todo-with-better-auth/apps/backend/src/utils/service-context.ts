@@ -63,7 +63,7 @@ export function createServiceContext<TServices extends AppServices>(
     authorizerCache: new Map<string, boolean>(),
     authorizerModelCache: new Map<string, unknown>(),
     services,
-  } /* TPL_CONTEXT_OBJECT:END */;
+  }; /* TPL_CONTEXT_OBJECT:END */
 }
 
 /**

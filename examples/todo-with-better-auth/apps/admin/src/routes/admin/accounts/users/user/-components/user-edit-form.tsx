@@ -45,8 +45,7 @@ interface Props {
   submitData: (data: UserFormData) => Promise<void>;
   /* TPL_PROPS:START */
   defaultValues:
-    | FragmentType<typeof userEditFormDefaultValuesFragment>
-    | undefined;
+    FragmentType<typeof userEditFormDefaultValuesFragment> | undefined;
   /* TPL_PROPS:END */
 }
 

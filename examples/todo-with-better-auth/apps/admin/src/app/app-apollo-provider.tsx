@@ -14,9 +14,7 @@ export function AppApolloProvider({ children }: Props): ReactElement {
 
   const client = useMemo(
     () => createApolloClient(/* TPL_CREATE_ARGS:INLINE */),
-    [
-      /* TPL_MEMO_DEPENDENCIES:INLINE */
-    ],
+    [/* TPL_MEMO_DEPENDENCIES:INLINE */],
   );
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;

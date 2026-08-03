@@ -9,6 +9,16 @@ import type { TypescriptMorpher } from '#src/types.js';
 
 import { TS_MORPH_MANIPULATION_SETTINGS } from '#src/constants/ts-morph-settings.js';
 
+// The expected outputs are written in the repo's own style. The monorepo is
+// formatted by oxfmt and no longer ships a prettier config for resolveConfig to
+// find, so state the options the fixtures assume.
+const TEST_PRETTIER_CONFIG: prettier.Options = {
+  tabWidth: 2,
+  singleQuote: true,
+  trailingComma: 'all',
+  semi: true,
+};
+
 const getFileWithTsExtension = (
   directory: string,
   baseFileName: string,
@@ -59,13 +69,10 @@ export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
   );
   const testCases = collectTestCases(fullTestFolderPath);
 
-  let prettierConfig: prettier.Options | null;
+  const prettierConfig = TEST_PRETTIER_CONFIG;
 
   describe.skipIf(process.env.CI)(`Test morpher ${morpher.name}`, () => {
     test.each(testCases)('case $caseName', async ({ casePath }) => {
-      prettierConfig ??= await prettier.resolveConfig(
-        path.dirname(fileURLToPath(import.meta.url)),
-      );
       // Load files with arbitrary extensions
       const optionsPath = path.join(casePath, 'options.json');
       const inputFilename = getFileWithTsExtension(casePath, 'input');

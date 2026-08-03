@@ -75,8 +75,7 @@ describe('BullMQ service integration tests', () => {
       const queueName = 'test-basic-queue';
       const deferred = createDeferred();
       let processedJob:
-        | QueueJob<{ message: string; value: number }>
-        | undefined;
+        QueueJob<{ message: string; value: number }> | undefined;
 
       interface TestData {
         message: string;

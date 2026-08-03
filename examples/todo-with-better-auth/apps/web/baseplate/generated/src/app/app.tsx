@@ -17,6 +17,6 @@ export function App(): ReactElement {
           <Toaster />
         </AppApolloProvider>
       </AuthLoadedGate>
-    </ErrorBoundary> /* TPL_RENDER_ROOT:END */
-  );
+    </ErrorBoundary>
+  ); /* TPL_RENDER_ROOT:END */
 }

@@ -1,6 +1,0 @@
-pnpm-lock.yaml
-**/route-tree.gen.ts
-dist
-.turbo/**
-**/.env*
-**/LICENSE

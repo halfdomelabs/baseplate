@@ -59,5 +59,5 @@ export function createContextFromRequest(
       clear: (name, options) => void getReply().clearCookie(name, options),
     },
     reqInfo: request.reqInfo,
-  } /* TPL_CONTEXT_CREATOR:END */;
+  }; /* TPL_CONTEXT_CREATOR:END */
 }

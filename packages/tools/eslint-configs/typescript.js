@@ -56,6 +56,7 @@ export function generateTypescriptEslintConfig(options = {}) {
   const defaultProjectFiles = [
     'vitest.config.ts',
     'oxlint.config.ts',
+    'oxfmt.config.ts',
     ...(options.extraDefaultProjectFiles ?? []),
   ];
   return defineConfig(

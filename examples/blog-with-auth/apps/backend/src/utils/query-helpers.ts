@@ -12,8 +12,7 @@ export interface CompoundWhere<TModelName extends ModelPropName> {
 
 /** A Prisma where clause: a model's own where input, or a compound of them. */
 export type WhereClause<TModelName extends ModelPropName> =
-  | NonNullable<WhereInput<TModelName>>
-  | CompoundWhere<TModelName>;
+  NonNullable<WhereInput<TModelName>> | CompoundWhere<TModelName>;
 
 /**
  * Result of combining where clauses — either a Prisma where clause or a boolean.
@@ -22,8 +21,7 @@ export type WhereClause<TModelName extends ModelPropName> =
  * - `WhereClause` is a Prisma where clause
  */
 export type WhereResult<TModelName extends ModelPropName> =
-  | WhereClause<TModelName>
-  | boolean;
+  WhereClause<TModelName> | boolean;
 
 /**
  * Helpers for combining Prisma where clauses with proper boolean logic.

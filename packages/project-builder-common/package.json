@@ -10,26 +10,28 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-common"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
-  "type": "module",
-  "exports": {
-    ".": "./index.js"
-  },
-  "main": "./index.js",
   "files": [
     "index.js",
     "index.d.ts"
   ],
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
-    "lint": "oxlint && eslint .",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w -l ."
+    "lint": "oxlint && eslint ."
   },
   "dependencies": {
     "@baseplate-dev/plugin-ai": "workspace:*",
@@ -56,9 +58,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }
