@@ -53,18 +53,32 @@ model Blog {
 }
 
 model BlogPost {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  blogId      String   @map("blog_id") @db.Uuid
-  publisherId String   @map("publisher_id") @db.Uuid
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  blogId      String         @map("blog_id") @db.Uuid
+  publisherId String         @map("publisher_id") @db.Uuid
   title       String
   content     String
   metadata    Json?
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  blog        Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  publisher   User     @relation(fields: [publisherId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  updatedAt   DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  blog        Blog           @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  likes       BlogPostLike[]
+  publisher   User           @relation(fields: [publisherId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@map("blog_post")
+}
+
+model BlogPostLike {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([postId, userId])
+  @@index([postId, createdAt])
+  @@map("blog_post_like")
 }
 
 model BlogUser {
@@ -114,14 +128,17 @@ model Notification {
   dismissedAt     DateTime?              @map("dismissed_at") @db.Timestamptz(3)
   createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
   expiresAt       DateTime?              @map("expires_at") @db.Timestamptz(3)
+  key             String
+  feedOrderId     String                 @unique @default(dbgenerated("uuidv7()")) @map("feed_order_id") @db.Uuid
   actor           User?                  @relation("actorNotifications", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Restrict)
   deliveries      NotificationDelivery[]
   recipient       User                   @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
+  @@unique([recipientId, key])
   @@unique([requestId, recipientId])
+  @@index([recipientId, inApp, feedOrderId])
   @@index([expiresAt])
   @@index([recipientId, inApp, seenAt])
-  @@index([recipientId, inApp, id])
   @@map("notification")
 }
 
@@ -136,9 +153,10 @@ model NotificationDelivery {
   updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   notificationId String       @map("notification_id") @db.Uuid
   deliveredAt    DateTime?    @map("delivered_at") @db.Timestamptz(3)
+  feedOrderId    String       @map("feed_order_id") @db.Uuid
   notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-  @@unique([notificationId, channel])
+  @@unique([notificationId, channel, feedOrderId])
   @@index([status, createdAt])
   @@map("notification_delivery")
 }
@@ -198,6 +216,7 @@ model User {
   accounts                UserAccount[]
   actorNotifications      Notification[]           @relation("actorNotifications")
   authVerifications       AuthVerification[]
+  blogPostLikes           BlogPostLike[]
   blogPosts               BlogPost[]
   blogs                   Blog[]
   blogUsers               BlogUser[]

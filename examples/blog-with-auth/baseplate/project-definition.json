@@ -103,10 +103,7 @@
   "cliVersion": "0.6.5",
   "enums": [],
   "features": [
-    {
-      "id": "feature:I_EnFXnHjbGQ",
-      "name": "accounts"
-    },
+    { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     {
       "id": "feature:RLpN26dwQNkw",
       "name": "accounts/auth",
@@ -117,30 +114,12 @@
       "name": "accounts/users",
       "parentRef": "accounts"
     },
-    {
-      "id": "feature:ffs0IFfakTk0",
-      "name": "articles"
-    },
-    {
-      "id": "feature:XM8fb3xFc7ve",
-      "name": "auth"
-    },
-    {
-      "id": "feature:c28pJNS_89Oz",
-      "name": "blogs"
-    },
-    {
-      "id": "feature:n85yd6FGQOeu",
-      "name": "emails"
-    },
-    {
-      "id": "feature:7IVyDOEOsuGy",
-      "name": "notifications"
-    },
-    {
-      "id": "feature:IFU3VXMq1CM7",
-      "name": "utilities"
-    }
+    { "id": "feature:ffs0IFfakTk0", "name": "articles" },
+    { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
+    { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
+    { "id": "feature:n85yd6FGQOeu", "name": "emails" },
+    { "id": "feature:7IVyDOEOsuGy", "name": "notifications" },
+    { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
   ],
   "isInitialized": true,
   "libraries": [
@@ -155,35 +134,21 @@
       "featureRef": "articles",
       "graphql": {
         "mutations": {
-          "create": {
-            "enabled": true
-          },
-          "update": {
-            "enabled": true
-          }
+          "create": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
           "fields": [
-            {
-              "ref": "title"
-            },
-            {
-              "ref": "content"
-            },
-            {
-              "ref": "createdAt"
-            }
+            { "ref": "title" },
+            { "ref": "content" },
+            { "ref": "createdAt" }
           ]
         },
         "queries": {
-          "get": {
-            "enabled": true
-          },
+          "get": { "enabled": true },
           "globalRoles": ["user"],
-          "list": {
-            "enabled": true
-          }
+          "list": { "enabled": true }
         }
       },
       "id": "model:H8WxIUcjt9dy",
@@ -193,46 +158,35 @@
             "id": "model-scalar-field:adbpe9Hhybb1",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv4"
-            },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:jIanyyf_ZfcU",
             "isOptional": false,
             "name": "title",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:Dv9F1fcSohQ7",
             "isOptional": false,
             "name": "content",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:RT_HtouwECvt",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:MijHKarW5Htf",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           }
         ],
@@ -262,54 +216,42 @@
             "id": "model-scalar-field:x5uM_Nhnixmv",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv4"
-            },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:Ia5IOZYxjSk7",
             "isOptional": false,
             "name": "type",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:yO1pPNae8Ikp",
             "isOptional": false,
             "name": "identifier",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:zNj1JW0Qzts5",
             "isOptional": false,
             "name": "value",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:h8RjTcvjiTB9",
             "isOptional": true,
             "name": "userId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:Dr_czFEaco9V",
             "isOptional": true,
             "name": "metadata",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "json"
           },
           {
@@ -323,9 +265,7 @@
             "id": "model-scalar-field:i1R3iha91I8Q",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -339,32 +279,18 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "userId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
         ],
         "uniqueConstraints": [
           {
-            "fields": [
-              {
-                "fieldRef": "type"
-              },
-              {
-                "fieldRef": "identifier"
-              }
-            ],
+            "fields": [{ "fieldRef": "type" }, { "fieldRef": "identifier" }],
             "id": "model-unique-constraint:nEpGjIkLAgcn"
           }
         ]
       },
       "name": "AuthVerification",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "authorizer": {
@@ -389,36 +315,18 @@
       "featureRef": "blogs",
       "graphql": {
         "mutations": {
-          "delete": {
-            "enabled": true
-          },
-          "update": {
-            "enabled": true
-          }
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
-          "fields": [
-            {
-              "ref": "name"
-            },
-            {
-              "ref": "userId"
-            },
-            {
-              "ref": "id"
-            }
-          ]
+          "fields": [{ "ref": "name" }, { "ref": "userId" }, { "ref": "id" }]
         },
         "queries": {
-          "get": {
-            "enabled": true
-          },
+          "get": { "enabled": true },
           "globalRoles": ["public"],
           "instanceRoles": ["member"],
-          "list": {
-            "enabled": true
-          }
+          "list": { "enabled": true }
         }
       },
       "id": "model:h7nbXcuLcUmy",
@@ -428,46 +336,35 @@
             "id": "model-scalar-field:PPNcQYjHcLJM",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv4"
-            },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:5r4qOjWPHo7k",
             "isOptional": false,
             "name": "name",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:5r4qOjWPcsk",
             "isOptional": false,
             "name": "userId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:G5ODFua2_9E_",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:fOVkXTd3P1Jy",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -481,12 +378,7 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "userId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
         ]
       },
@@ -519,44 +411,24 @@
       "featureRef": "blogs",
       "graphql": {
         "mutations": {
-          "create": {
-            "enabled": true
-          },
-          "delete": {
-            "enabled": true
-          },
-          "update": {
-            "enabled": true
-          }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
           "fields": [
-            {
-              "ref": "blogId"
-            },
-            {
-              "ref": "publisherId"
-            },
-            {
-              "ref": "title"
-            },
-            {
-              "ref": "content"
-            },
-            {
-              "ref": "metadata"
-            }
+            { "ref": "blogId" },
+            { "ref": "publisherId" },
+            { "ref": "title" },
+            { "ref": "content" },
+            { "ref": "metadata" }
           ]
         },
         "queries": {
-          "get": {
-            "enabled": true
-          },
+          "get": { "enabled": true },
           "globalRoles": ["user"],
-          "list": {
-            "enabled": true
-          }
+          "list": { "enabled": true }
         }
       },
       "id": "model:ZYGsFp93vRhv",
@@ -566,73 +438,56 @@
             "id": "model-scalar-field:6AEaW6mjUeMi",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv4"
-            },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:dLndbykf8h2f",
             "isOptional": false,
             "name": "blogId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:PNfjIfpZjmkw",
             "isOptional": false,
             "name": "publisherId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:LfIe_qCQqQ42",
             "isOptional": false,
             "name": "title",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:p29bxCvmh_n8",
             "isOptional": false,
             "name": "content",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:cK70M8wINoNY",
             "isOptional": true,
             "name": "metadata",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "json"
           },
           {
             "id": "model-scalar-field:lKjrrVtoNkEP",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:wJJXYvWWcOOS",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -646,12 +501,7 @@
             "name": "publisher",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "publisherId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "publisherId" }]
           },
           {
             "foreignId": "model-foreign-relation:9CfhUjafZ9C5",
@@ -661,12 +511,7 @@
             "name": "blog",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "blogId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "blogId" }]
           }
         ]
       },
@@ -677,10 +522,7 @@
           "fields": ["blogId", "publisherId", "title", "content", "metadata"],
           "globalRoles": ["admin"]
         },
-        "delete": {
-          "enabled": true,
-          "globalRoles": ["admin"]
-        },
+        "delete": { "enabled": true, "globalRoles": ["admin"] },
         "transformers": [],
         "update": {
           "enabled": true,
@@ -688,6 +530,79 @@
           "globalRoles": ["admin"]
         }
       }
+    },
+    {
+      "featureRef": "blogs",
+      "id": "model:Q5PRCE7Zpife",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:wpD68TdtdkBQ",
+            "isOptional": false,
+            "name": "id",
+            "options": { "defaultGeneration": "uuidv7" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:e2Aue_Hqz22b",
+            "isOptional": false,
+            "name": "postId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:8uX4vyGKjiiR",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:PJRj6nnvRIKl",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [{ "fieldRef": "postId" }, { "fieldRef": "createdAt" }],
+            "id": "model-index:bYxk_MpC_fRz"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:vKUeovFTlfEj",
+            "foreignRelationName": "likes",
+            "id": "model-local-relation:ZwbqvA2AFzmq",
+            "modelRef": "BlogPost",
+            "name": "post",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "postId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:0XDsmC_RW6xm",
+            "foreignRelationName": "blogPostLikes",
+            "id": "model-local-relation:3v8abPFBnQ8U",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "postId" }, { "fieldRef": "userId" }],
+            "id": "model-unique-constraint:_qNfpSYoEtBk"
+          }
+        ]
+      },
+      "name": "BlogPostLike",
+      "service": { "transformers": [] }
     },
     {
       "authorizer": {
@@ -707,37 +622,28 @@
             "id": "model-scalar-field:EwhSjvGdsL9q",
             "isOptional": false,
             "name": "blogId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:HBbSkN0_M0TR",
             "isOptional": false,
             "name": "userId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:vQybRRnJi3TW",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:u0mMHdHGq4u6",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -751,12 +657,7 @@
             "name": "blog",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "blogId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "blogId" }]
           },
           {
             "foreignId": "model-foreign-relation:NIDv2JcxLNX3",
@@ -766,19 +667,12 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "userId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
         ]
       },
       "name": "BlogUser",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "authorizer": {
@@ -798,55 +692,42 @@
             "id": "model-scalar-field:edpeeBlxJPPt",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv4"
-            },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:edl19SCQRZdz",
             "isOptional": false,
             "name": "blogId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:7ZbaMW8463OU",
             "isOptional": false,
             "name": "userId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:Jsrk2LCnRypv",
             "isOptional": false,
             "name": "note",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:EPC6KXsCqswQ",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:49cULB6kAu9x",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -861,22 +742,14 @@
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
             "references": [
-              {
-                "foreignRef": "blogId",
-                "localRef": "blogId"
-              },
-              {
-                "foreignRef": "userId",
-                "localRef": "userId"
-              }
+              { "foreignRef": "blogId", "localRef": "blogId" },
+              { "foreignRef": "userId", "localRef": "userId" }
             ]
           }
         ]
       },
       "name": "BlogUserNote",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "notifications",
@@ -884,33 +757,15 @@
         "objectType": {
           "enabled": true,
           "fields": [
-            {
-              "ref": "id"
-            },
-            {
-              "ref": "type"
-            },
-            {
-              "ref": "entityType"
-            },
-            {
-              "ref": "entityId"
-            },
-            {
-              "ref": "seenAt"
-            },
-            {
-              "ref": "readAt"
-            },
-            {
-              "ref": "createdAt"
-            }
+            { "ref": "id" },
+            { "ref": "type" },
+            { "ref": "entityType" },
+            { "ref": "entityId" },
+            { "ref": "seenAt" },
+            { "ref": "readAt" },
+            { "ref": "createdAt" }
           ],
-          "localRelations": [
-            {
-              "ref": "actor"
-            }
-          ]
+          "localRelations": [{ "ref": "actor" }]
         }
       },
       "id": "model:cvkgEFKeYPRP",
@@ -920,54 +775,42 @@
             "id": "model-scalar-field:wYhgAJSgXPZE",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv7"
-            },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:EGERCD1_NPr0",
             "isOptional": false,
             "name": "type",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:5GzDKWmkJ8iB",
             "isOptional": false,
             "name": "templateVersion",
-            "options": {
-              "default": "1"
-            },
+            "options": { "default": "1" },
             "type": "int"
           },
           {
             "id": "model-scalar-field:IrjJTma3AkMr",
             "isOptional": false,
             "name": "recipientId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:O6ng6hjKfXbH",
             "isOptional": true,
             "name": "requestId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:tQhFu9rMDHak",
             "isOptional": false,
             "name": "inApp",
-            "options": {
-              "default": "true"
-            },
+            "options": { "default": "true" },
             "type": "boolean"
           },
           {
@@ -981,9 +824,7 @@
             "id": "model-scalar-field:HVd1HOdwIm6z",
             "isOptional": false,
             "name": "fallbackText",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -997,63 +838,49 @@
             "id": "model-scalar-field:UFM0kwRqZ154",
             "isOptional": false,
             "name": "actorKind",
-            "options": {
-              "default": "none"
-            },
+            "options": { "default": "none" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:pozZTuC2zy4h",
             "isOptional": true,
             "name": "actorId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:Uc1SBv9l_cON",
             "isOptional": true,
             "name": "actorLabel",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:NLIPFdYc2_sa",
             "isOptional": true,
             "name": "systemActorKey",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:EEWngWghmVqq",
             "isOptional": true,
             "name": "entityType",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:AbKysuvpNbzV",
             "isOptional": true,
             "name": "entityId",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:7NEEPFkucCLe",
             "isOptional": true,
             "name": "actionUrl",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1081,9 +908,7 @@
             "id": "model-scalar-field:z9x4MFHWgf6P",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
@@ -1092,44 +917,42 @@
             "name": "expiresAt",
             "options": {},
             "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:AbTgDX0MepGS",
+            "isOptional": false,
+            "name": "key",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:LJ9uDTbBXmTP",
+            "isOptional": false,
+            "name": "feedOrderId",
+            "options": { "defaultGeneration": "uuidv7" },
+            "type": "uuid"
           }
         ],
         "indexes": [
           {
             "fields": [
-              {
-                "fieldRef": "recipientId"
-              },
-              {
-                "fieldRef": "inApp"
-              },
-              {
-                "fieldRef": "id"
-              }
-            ],
-            "id": "model-index:LOfHRrzcbTPc"
-          },
-          {
-            "fields": [
-              {
-                "fieldRef": "recipientId"
-              },
-              {
-                "fieldRef": "inApp"
-              },
-              {
-                "fieldRef": "seenAt"
-              }
+              { "fieldRef": "recipientId" },
+              { "fieldRef": "inApp" },
+              { "fieldRef": "seenAt" }
             ],
             "id": "model-index:s2i28pu9v3vh"
           },
           {
-            "fields": [
-              {
-                "fieldRef": "expiresAt"
-              }
-            ],
+            "fields": [{ "fieldRef": "expiresAt" }],
             "id": "model-index:kpZb4WiynoAp"
+          },
+          {
+            "fields": [
+              { "fieldRef": "recipientId" },
+              { "fieldRef": "inApp" },
+              { "fieldRef": "feedOrderId" }
+            ],
+            "id": "model-index:hE2TdPqNl8wO"
           }
         ],
         "primaryKeyFieldRefs": ["id"],
@@ -1142,12 +965,7 @@
             "name": "recipient",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "recipientId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "recipientId" }]
           },
           {
             "foreignId": "model-foreign-relation:apiU1BBs1JBx",
@@ -1157,32 +975,29 @@
             "name": "actor",
             "onDelete": "SetNull",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "actorId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "actorId" }]
           }
         ],
         "uniqueConstraints": [
           {
             "fields": [
-              {
-                "fieldRef": "requestId"
-              },
-              {
-                "fieldRef": "recipientId"
-              }
+              { "fieldRef": "requestId" },
+              { "fieldRef": "recipientId" }
             ],
             "id": "model-unique-constraint:2EbwsuGcULVN"
+          },
+          {
+            "fields": [{ "fieldRef": "recipientId" }, { "fieldRef": "key" }],
+            "id": "model-unique-constraint:9AwEjhCny2KT"
+          },
+          {
+            "fields": [{ "fieldRef": "feedOrderId" }],
+            "id": "model-unique-constraint:PVHB0831o_Vi"
           }
         ]
       },
       "name": "Notification",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "notifications",
@@ -1193,82 +1008,63 @@
             "id": "model-scalar-field:Har4D6UNojpY",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv7"
-            },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:zS1X1uCrOrps",
             "isOptional": false,
             "name": "requestId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:eqJ_fpWYXMQ9",
             "isOptional": false,
             "name": "channel",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:QltxRt33KLfR",
             "isOptional": false,
             "name": "status",
-            "options": {
-              "default": "pending"
-            },
+            "options": { "default": "pending" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:Bn5CGx4wTZf3",
             "isOptional": false,
             "name": "attempts",
-            "options": {
-              "default": "0"
-            },
+            "options": { "default": "0" },
             "type": "int"
           },
           {
             "id": "model-scalar-field:JZandhdspVaY",
             "isOptional": true,
             "name": "lastError",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:NiTifOpe25kF",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:Mr9RzOfxqjEO",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:Hu3a3EEgUzDa",
             "isOptional": false,
             "name": "notificationId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1277,18 +1073,18 @@
             "name": "deliveredAt",
             "options": {},
             "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:REMEJMP9Jfli",
+            "isOptional": false,
+            "name": "feedOrderId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
           }
         ],
         "indexes": [
           {
-            "fields": [
-              {
-                "fieldRef": "status"
-              },
-              {
-                "fieldRef": "createdAt"
-              }
-            ],
+            "fields": [{ "fieldRef": "status" }, { "fieldRef": "createdAt" }],
             "id": "model-index:NUIkdGa2KCUF"
           }
         ],
@@ -1302,32 +1098,22 @@
             "name": "notification",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "notificationId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "notificationId" }]
           }
         ],
         "uniqueConstraints": [
           {
             "fields": [
-              {
-                "fieldRef": "notificationId"
-              },
-              {
-                "fieldRef": "channel"
-              }
+              { "fieldRef": "notificationId" },
+              { "fieldRef": "channel" },
+              { "fieldRef": "feedOrderId" }
             ],
-            "id": "model-unique-constraint:StmCMZD0UQBh"
+            "id": "model-unique-constraint:IqxSxaq54cW5"
           }
         ]
       },
       "name": "NotificationDelivery",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "notifications",
@@ -1338,45 +1124,35 @@
             "id": "model-scalar-field:6SFmGn4aGjbs",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv7"
-            },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:xSM90aPLhP6_",
             "isOptional": false,
             "name": "userId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:roi8YOzRNmaD",
             "isOptional": false,
             "name": "scopeKind",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:FWJ1xc6fI6YJ",
             "isOptional": false,
             "name": "scopeKey",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:hFcbq7tRLxrI",
             "isOptional": false,
             "name": "channel",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1390,32 +1166,20 @@
             "id": "model-scalar-field:7YqNBMAAUwLz",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:YCWPPRua1xkx",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           }
         ],
         "indexes": [
           {
-            "fields": [
-              {
-                "fieldRef": "userId"
-              },
-              {
-                "fieldRef": "scopeKey"
-              }
-            ],
+            "fields": [{ "fieldRef": "userId" }, { "fieldRef": "scopeKey" }],
             "id": "model-index:swJS11hjB94w"
           }
         ],
@@ -1429,38 +1193,23 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "userId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
         ],
         "uniqueConstraints": [
           {
             "fields": [
-              {
-                "fieldRef": "userId"
-              },
-              {
-                "fieldRef": "scopeKind"
-              },
-              {
-                "fieldRef": "scopeKey"
-              },
-              {
-                "fieldRef": "channel"
-              }
+              { "fieldRef": "userId" },
+              { "fieldRef": "scopeKind" },
+              { "fieldRef": "scopeKey" },
+              { "fieldRef": "channel" }
             ],
             "id": "model-unique-constraint:plN5dks8NQMO"
           }
         ]
       },
       "name": "NotificationPreference",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "notifications",
@@ -1471,27 +1220,21 @@
             "id": "model-scalar-field:BV9CMlJTJN9j",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv7"
-            },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:FY249MTV2fb5",
             "isOptional": false,
             "name": "type",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:PE_4ktl9BClx",
             "isOptional": false,
             "name": "templateVersion",
-            "options": {
-              "default": "1"
-            },
+            "options": { "default": "1" },
             "type": "int"
           },
           {
@@ -1505,54 +1248,42 @@
             "id": "model-scalar-field:sW92YwQPRtB_",
             "isOptional": true,
             "name": "idempotencyKey",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:D9qx4YUuXaYb",
             "isOptional": false,
             "name": "actorKind",
-            "options": {
-              "default": "none"
-            },
+            "options": { "default": "none" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:rJisDjUJCJ6n",
             "isOptional": true,
             "name": "actorId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:m38nAmETWD3A",
             "isOptional": true,
             "name": "entityType",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:dTLfxZB3046X",
             "isOptional": true,
             "name": "entityId",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:W_q7qWEYHQ7m",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
@@ -1566,39 +1297,29 @@
             "id": "model-scalar-field:XCHIhjW4eBPx",
             "isOptional": false,
             "name": "fallbackText",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:CYzHPgzLVRLj",
             "isOptional": true,
             "name": "actionUrl",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:syW_IDebLE_G",
             "isOptional": false,
             "name": "fanoutStatus",
-            "options": {
-              "default": "pending"
-            },
+            "options": { "default": "pending" },
             "type": "string"
           }
         ],
         "indexes": [
           {
             "fields": [
-              {
-                "fieldRef": "fanoutStatus"
-              },
-              {
-                "fieldRef": "createdAt"
-              }
+              { "fieldRef": "fanoutStatus" },
+              { "fieldRef": "createdAt" }
             ],
             "id": "model-index:xORdaZkIz0Is"
           }
@@ -1606,19 +1327,13 @@
         "primaryKeyFieldRefs": ["id"],
         "uniqueConstraints": [
           {
-            "fields": [
-              {
-                "fieldRef": "idempotencyKey"
-              }
-            ],
+            "fields": [{ "fieldRef": "idempotencyKey" }],
             "id": "model-unique-constraint:fty0wHJD0aSy"
           }
         ]
       },
       "name": "NotificationRequest",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "utilities",
@@ -1629,18 +1344,14 @@
             "id": "model-scalar-field:FwFLIDsUpJbX",
             "isOptional": false,
             "name": "key",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:5CkPRDkMexZG",
             "isOptional": false,
             "name": "points",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "int"
           },
           {
@@ -1654,9 +1365,7 @@
         "primaryKeyFieldRefs": ["key"]
       },
       "name": "RateLimiterFlexible",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "authorizer": {
@@ -1671,48 +1380,28 @@
       "featureRef": "accounts/users",
       "graphql": {
         "mutations": {
-          "create": {
-            "enabled": true
-          },
-          "delete": {
-            "enabled": true
-          },
-          "update": {
-            "enabled": true
-          }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
           "fields": [
-            {
-              "ref": "id"
-            },
+            { "ref": "id" },
             {
               "globalRoles": ["admin"],
               "instanceRoles": ["self"],
               "ref": "email"
             },
-            {
-              "ref": "name"
-            },
-            {
-              "ref": "emailVerified"
-            }
+            { "ref": "name" },
+            { "ref": "emailVerified" }
           ],
-          "foreignRelations": [
-            {
-              "ref": "roles"
-            }
-          ]
+          "foreignRelations": [{ "ref": "roles" }]
         },
         "queries": {
-          "get": {
-            "enabled": true
-          },
+          "get": { "enabled": true },
           "globalRoles": ["user", "admin"],
-          "list": {
-            "enabled": true
-          }
+          "list": { "enabled": true }
         }
       },
       "id": "model:jZxZ8T0aLW5C",
@@ -1722,75 +1411,56 @@
             "id": "model-scalar-field:iZSakQLjj07M",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv7"
-            },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:XrDYaOEQ6GZC",
             "isOptional": true,
             "name": "email",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:HQJa_S0ldCJR",
             "isOptional": true,
             "name": "phone",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:AETlnfzdbjWt",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:ejT1yp4u8OHD",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:Nt9rwwOeW9zR",
             "isOptional": true,
             "name": "name",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:3oj4N7YBdqYo",
             "isOptional": false,
             "name": "emailVerified",
-            "options": {
-              "default": "false"
-            },
+            "options": { "default": "false" },
             "type": "boolean"
           }
         ],
         "primaryKeyFieldRefs": ["id"],
         "uniqueConstraints": [
           {
-            "fields": [
-              {
-                "fieldRef": "email"
-              }
-            ],
+            "fields": [{ "fieldRef": "email" }],
             "id": "model-unique-constraint:WvWsWRCXbTuy"
           }
         ]
@@ -1802,10 +1472,7 @@
           "fields": ["name", "emailVerified", "email"],
           "globalRoles": ["admin"]
         },
-        "delete": {
-          "enabled": true,
-          "globalRoles": ["admin"]
-        },
+        "delete": { "enabled": true, "globalRoles": ["admin"] },
         "transformers": [],
         "update": {
           "enabled": true,
@@ -1823,64 +1490,49 @@
             "id": "model-scalar-field:z6JrpgbtlGck",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv7"
-            },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:aJSc9y1cCfDp",
             "isOptional": false,
             "name": "userId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:98UwMjc3dVa1",
             "isOptional": false,
             "name": "providerId",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:fm33dSfRzjKE",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:UKyqtZ6HlWKN",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:zBHXTEcLfpva",
             "isOptional": false,
             "name": "accountId",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:9QYbV59Qh4mv",
             "isOptional": true,
             "name": "password",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           }
         ],
@@ -1894,46 +1546,28 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "userId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
         ],
         "uniqueConstraints": [
           {
             "fields": [
-              {
-                "fieldRef": "accountId"
-              },
-              {
-                "fieldRef": "providerId"
-              }
+              { "fieldRef": "accountId" },
+              { "fieldRef": "providerId" }
             ],
             "id": "model-unique-constraint:CpwfAV4CBvIu"
           }
         ]
       },
       "name": "UserAccount",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
           "enabled": true,
-          "fields": [
-            {
-              "ref": "userId"
-            },
-            {
-              "ref": "role"
-            }
-          ]
+          "fields": [{ "ref": "userId" }, { "ref": "role" }]
         }
       },
       "id": "model:3BNvsyfylc9c",
@@ -1943,37 +1577,28 @@
             "id": "model-scalar-field:7f865kOwXryv",
             "isOptional": false,
             "name": "userId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:1SNeYwyIj_Jy",
             "isOptional": false,
             "name": "role",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:SGKA5W77rUL5",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:uT7TyReHg24r",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -1987,19 +1612,12 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "userId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
         ]
       },
       "name": "UserRole",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "accounts/users",
@@ -2010,27 +1628,21 @@
             "id": "model-scalar-field:CjiJr2PTCCeT",
             "isOptional": false,
             "name": "id",
-            "options": {
-              "defaultGeneration": "uuidv7"
-            },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:wIR0RC08zqov",
             "isOptional": false,
             "name": "token",
-            "options": {
-              "default": ""
-            },
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:7Y3oZIHFIY2V",
             "isOptional": false,
             "name": "userId",
-            "options": {
-              "defaultGeneration": "none"
-            },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -2044,29 +1656,21 @@
             "id": "model-scalar-field:sEIUglst63xV",
             "isOptional": false,
             "name": "renewedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": false
-            },
+            "options": { "defaultToNow": true, "updatedAt": false },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:SFSrsPqRYtLD",
             "isOptional": false,
             "name": "createdAt",
-            "options": {
-              "defaultToNow": true
-            },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:__RpraUxczSN",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           }
         ],
@@ -2080,29 +1684,18 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              {
-                "foreignRef": "id",
-                "localRef": "userId"
-              }
-            ]
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
         ],
         "uniqueConstraints": [
           {
-            "fields": [
-              {
-                "fieldRef": "token"
-              }
-            ],
+            "fields": [{ "fieldRef": "token" }],
             "id": "model-unique-constraint:4JFxyTcYT1LM"
           }
         ]
       },
       "name": "UserSession",
-      "service": {
-        "transformers": []
-      }
+      "service": { "transformers": [] }
     }
   ],
   "plugins": [
@@ -2149,10 +1742,7 @@
       "version": "1.0.0"
     },
     {
-      "config": {
-        "devAgentsOptions": {},
-        "enabledAgents": ["claude-code"]
-      },
+      "config": { "devAgentsOptions": {}, "enabledAgents": ["claude-code"] },
       "id": "plugin:baseplate-dev_plugin-ai_dev-agents",
       "name": "dev-agents",
       "packageName": "@baseplate-dev/plugin-ai",
@@ -2206,20 +1796,14 @@
       "version": "0.1.0"
     },
     {
-      "config": {
-        "pgBossOptions": {
-          "deleteAfterDays": 7
-        }
-      },
+      "config": { "pgBossOptions": { "deleteAfterDays": 7 } },
       "id": "plugin:baseplate-dev_plugin-queue_pg-boss",
       "name": "pg-boss",
       "packageName": "@baseplate-dev/plugin-queue",
       "version": "0.1.0"
     },
     {
-      "config": {
-        "postmarkOptions": {}
-      },
+      "config": { "postmarkOptions": {} },
       "id": "plugin:baseplate-dev_plugin-email_postmark",
       "name": "postmark",
       "packageName": "@baseplate-dev/plugin-email",
@@ -2235,19 +1819,14 @@
       "version": "0.1.0"
     },
     {
-      "config": {
-        "rateLimitFeatureRef": "utilities",
-        "rateLimitOptions": {}
-      },
+      "config": { "rateLimitFeatureRef": "utilities", "rateLimitOptions": {} },
       "id": "plugin:baseplate-dev_plugin-rate-limit_rate-limit",
       "name": "rate-limit",
       "packageName": "@baseplate-dev/plugin-rate-limit",
       "version": "0.1.0"
     },
     {
-      "config": {
-        "sentryOptions": {}
-      },
+      "config": { "sentryOptions": {} },
       "id": "plugin:baseplate-dev_plugin-observability_sentry",
       "name": "sentry",
       "packageName": "@baseplate-dev/plugin-observability",
@@ -2261,14 +1840,7 @@
       "packageScope": "",
       "portOffset": 5000
     },
-    "infrastructure": {
-      "redis": {
-        "enabled": true
-      }
-    },
-    "templateExtractor": {
-      "fileIdRegexWhitelist": "",
-      "writeMetadata": true
-    }
+    "infrastructure": { "redis": { "enabled": true } },
+    "templateExtractor": { "fileIdRegexWhitelist": "", "writeMetadata": true }
   }
 }

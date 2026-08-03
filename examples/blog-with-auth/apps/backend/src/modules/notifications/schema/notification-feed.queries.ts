@@ -21,16 +21,14 @@ function feedFilter(recipientId: string): Prisma.NotificationWhereInput {
 /**
  * The current user's notification feed, newest first, scoped to the session.
  *
- * Sorted by `id`, not `createdAt`: `id` is a uuidv7, so it is already
- * time-ordered, and it is unique — which `createdAt` is not, since its
- * millisecond precision ties under fast inserts and `now()` is frozen across a
- * transaction. One unique sort key keeps cursor paging total.
+ * Sorted by `feedOrderId`, a uuidv7 reissued whenever a keyed row's state
+ * really changes, so a replaced row resurfaces.
  */
 builder.queryField('notificationFeed', (t) =>
   t.prismaConnection(
     {
       type: 'Notification',
-      cursor: 'id',
+      cursor: 'feedOrderId',
       maxSize: MAX_PAGE_SIZE,
       defaultSize: DEFAULT_PAGE_SIZE,
       authorize: ['user'],
@@ -42,7 +40,7 @@ builder.queryField('notificationFeed', (t) =>
         prisma.notification.findMany({
           ...query,
           where: feedFilter(context.auth.userIdOrThrow()),
-          orderBy: { id: 'desc' },
+          orderBy: { feedOrderId: 'desc' },
         }),
     },
     { name: 'NotificationFeedConnection' },

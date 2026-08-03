@@ -1,4 +1,4 @@
-import { chunk, groupBy } from 'es-toolkit';
+import { chunk, groupBy, partition } from 'es-toolkit';
 
 import type { QueueService } from '@src/types/queue.types.js';
 
@@ -12,10 +12,21 @@ import type {
 } from './notification-channel.js';
 
 import { notificationDeliveryQueue } from '../queues/notification-delivery.queue.js';
+import { isCallerKey } from './notification-registry.js';
 import { RENDER_SOURCE_SELECT } from './notification-renderer.js';
 
 /** Rows per delivery job. */
 const DELIVERY_CHUNK_SIZE = 100;
+
+/**
+ * How long a keyed notification's outbound send waits before it is eligible.
+ *
+ * A keyed row is replaced in place, so the delay lets a burst of activity
+ * settle into one email instead of one per event: the job renders whatever the
+ * row says when it finally runs. Applied only to keyed rows — an unkeyed
+ * notification is a single fact and goes out immediately.
+ */
+const KEYED_DELIVERY_DELAY_SECONDS = 5 * 60;
 
 /** One chunk of one channel's fan-out, as handed to the delivery worker. */
 export interface DeliverChunkInput {
@@ -141,12 +152,16 @@ export interface NotificationOutbox {
 }
 
 /**
- * Update one delivery, only while it is still `pending`. Guards every write in
- * the worker, so a row settled by a concurrent job is never overwritten.
+ * Update a notification's deliveries, only while they are still `pending`.
+ * Guards every write in the worker, so a row settled by a concurrent job is
+ * never overwritten.
+ *
+ * Addressed by delivery id, not (notification, channel): a keyed row is
+ * replaced in place, so the pair would also match generations armed after this
+ * job's read, which it has not sent.
  */
-async function updatePendingDelivery(
-  notificationId: string,
-  channel: string,
+async function updatePendingDeliveries(
+  deliveryIds: string[],
   data: {
     status?: 'delivered' | 'skipped' | 'failed';
     lastError?: string;
@@ -155,7 +170,7 @@ async function updatePendingDelivery(
   },
 ): Promise<void> {
   await prisma.notificationDelivery.updateMany({
-    where: { notificationId, channel, status: 'pending' },
+    where: { id: { in: deliveryIds }, status: 'pending' },
     data,
   });
 }
@@ -322,25 +337,43 @@ export function createNotificationOutbox(deps: {
   async function completeFanout(requestId: string): Promise<number> {
     const pending = await prisma.notificationDelivery.findMany({
       where: { requestId, status: 'pending' },
-      select: { channel: true, notificationId: true },
+      select: {
+        channel: true,
+        notificationId: true,
+        // Keyed rows debounce; unkeyed ones go out immediately. Read from the
+        // row rather than passed in, so the sweeper's re-run makes the same
+        // choice as the original hand-off.
+        notification: { select: { key: true } },
+      },
       orderBy: { id: 'asc' },
     });
 
-    const byChannel = groupBy(pending, (delivery) => delivery.channel);
+    // The delay belongs to the job, so one job cannot hold both kinds.
+    const [debounced, immediate] = partition(pending, (delivery) =>
+      isCallerKey(delivery.notification.key),
+    );
 
     let enqueued = 0;
-    for (const [channel, deliveries] of Object.entries(byChannel)) {
-      const jobs = chunk(deliveries, DELIVERY_CHUNK_SIZE).map((batch) => ({
-        data: {
-          requestId,
-          channel,
-          notificationIds: batch.map((delivery) => delivery.notificationId),
-        },
-      }));
+    for (const [rows, delaySeconds] of [
+      [immediate, undefined],
+      [debounced, KEYED_DELIVERY_DELAY_SECONDS],
+    ] as const) {
+      for (const [channel, deliveries] of Object.entries(
+        groupBy(rows, (delivery) => delivery.channel),
+      )) {
+        const jobs = chunk(deliveries, DELIVERY_CHUNK_SIZE).map((batch) => ({
+          data: {
+            requestId,
+            channel,
+            notificationIds: batch.map((delivery) => delivery.notificationId),
+          },
+          ...(delaySeconds === undefined ? {} : { options: { delaySeconds } }),
+        }));
 
-      // One round trip per channel, atomic across its chunks.
-      await queue.enqueueBulk(notificationDeliveryQueue, jobs);
-      enqueued += jobs.length;
+        // One round trip per channel, atomic across its chunks.
+        await queue.enqueueBulk(notificationDeliveryQueue, jobs);
+        enqueued += jobs.length;
+      }
     }
 
     // Last, so the flag means "everything was handed off", not "we started".
@@ -401,18 +434,34 @@ export function createNotificationOutbox(deps: {
     // still to send. Read once here, so a row settled by a job running
     // concurrently with this one can still be sent twice — the accepted
     // duplicate-send edge.
-    const stillToSend = new Map(
-      (
-        await prisma.notificationDelivery.findMany({
-          where: {
-            notificationId: { in: notificationIds },
-            channel,
-            status: 'pending',
-          },
-          select: { notificationId: true, createdAt: true },
-        })
-      ).map((delivery) => [delivery.notificationId, delivery.createdAt]),
-    );
+    //
+    // All pending generations for a notification, not just one: content is
+    // re-read live above, so a single send satisfies every generation this job
+    // saw, and settling them together stops a burst sending the same email
+    // twice. A generation armed after this read stays pending for its own job.
+    const stillToSend = new Map<
+      string,
+      { ids: string[]; oldestCreatedAt: Date }
+    >();
+    for (const delivery of await prisma.notificationDelivery.findMany({
+      where: {
+        notificationId: { in: notificationIds },
+        channel,
+        status: 'pending',
+      },
+      select: { id: true, notificationId: true, createdAt: true },
+      orderBy: { id: 'asc' },
+    })) {
+      const entry = stillToSend.get(delivery.notificationId);
+      if (entry) {
+        entry.ids.push(delivery.id);
+      } else {
+        stillToSend.set(delivery.notificationId, {
+          ids: [delivery.id],
+          oldestCreatedAt: delivery.createdAt,
+        });
+      }
+    }
 
     const byId = new Map(rows.map((row) => [row.id, row]));
     let delivered = 0;
@@ -421,12 +470,14 @@ export function createNotificationOutbox(deps: {
     let firstError: Error | undefined;
 
     for (const notificationId of notificationIds) {
-      const createdAt = stillToSend.get(notificationId);
-      if (!createdAt) continue;
+      const delivery = stillToSend.get(notificationId);
+      if (!delivery) continue;
 
       // Perishable: a notification held up long enough is not worth sending.
-      if (input.expireBefore && createdAt < input.expireBefore) {
-        await updatePendingDelivery(notificationId, channel, {
+      // Judged on the oldest pending generation, so a row that kept being
+      // replaced past the horizon still expires.
+      if (input.expireBefore && delivery.oldestCreatedAt < input.expireBefore) {
+        await updatePendingDeliveries(delivery.ids, {
           status: 'skipped',
           lastError: 'stale',
         });
@@ -438,7 +489,7 @@ export function createNotificationOutbox(deps: {
       const recipient = row && recipients.get(row.recipientId);
       // The row or its recipient is gone; nothing will ever deliver it.
       if (!row || !recipient) {
-        await updatePendingDelivery(notificationId, channel, {
+        await updatePendingDeliveries(delivery.ids, {
           status: 'skipped',
           lastError: row
             ? 'recipient no longer exists'
@@ -458,7 +509,10 @@ export function createNotificationOutbox(deps: {
         // Settled before the next row, so a later throw cannot re-send this
         // one. If this write itself fails the row stays pending and may send
         // twice.
-        await updatePendingDelivery(notificationId, channel, {
+        // Every generation read at the start of this job, not just the one it
+        // was armed for: the content delivered was read live, so it is current
+        // for all of them and a second send would be a duplicate.
+        await updatePendingDeliveries(delivery.ids, {
           status: 'delivered',
           deliveredAt: new Date(),
         });
@@ -474,7 +528,7 @@ export function createNotificationOutbox(deps: {
           error instanceof Error ? error.message : String(error);
         // On the queue's last attempt nothing will retry this, so record the
         // outcome; otherwise leave it pending and let the queue come back.
-        await updatePendingDelivery(notificationId, channel, {
+        await updatePendingDeliveries(delivery.ids, {
           ...(input.isFinalAttempt ? { status: 'failed' as const } : {}),
           attempts: { increment: 1 },
           lastError,

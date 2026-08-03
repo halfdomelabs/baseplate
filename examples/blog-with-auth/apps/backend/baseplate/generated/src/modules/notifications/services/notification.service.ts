@@ -1,7 +1,6 @@
-import { chunk } from 'es-toolkit';
+import { chunk, isEqual } from 'es-toolkit';
 
-import type { Prisma } from '@src/generated/prisma/client.js';
-
+import { Prisma } from '@src/generated/prisma/client.js';
 import { logError } from '@src/services/error-logger.js';
 import { prisma } from '@src/services/prisma.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
@@ -35,6 +34,7 @@ import {
 } from '../constants/notification-categories.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
 import { ROUTING_TARGETS } from './notification-channel.js';
+import { generatedKey, isCallerKey } from './notification-registry.js';
 
 /**
  * Rows per insert. Bounds every statement in the fan-out, so a large audience
@@ -90,6 +90,26 @@ function actorColumns(input: { actorId?: string }): {
     : { actorKind: 'none', actorId: null };
 }
 
+/**
+ * Params as the JSON column will read them back.
+ *
+ * Not a deep clone: the round-trip drops undefined-valued keys exactly as the
+ * column does, which is what lets a stored value compare equal to the params a
+ * later call recomputes.
+ */
+function asStoredJson(params: NotificationParams): Prisma.InputJsonValue {
+  // eslint-disable-next-line unicorn/prefer-structured-clone -- structuredClone keeps undefined-valued keys; dropping them is the point.
+  return JSON.parse(JSON.stringify(params)) as Prisma.InputJsonValue;
+}
+
+/** True for Prisma's unique-constraint violation. */
+function isUniqueConstraintError(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2002'
+  );
+}
+
 /** Input to trigger a notification. The type is the definition, not a key. */
 export interface NotifyInput<P extends NotificationParams> {
   recipientId: string;
@@ -105,30 +125,72 @@ export interface NotifyInput<P extends NotificationParams> {
   entityType?: string;
   entityId?: string;
   /**
-   * Opt-in dedupe key, stable for the triggering fact (`comment:${id}`). When
-   * omitted every call is a distinct request, so two legitimately identical
-   * notifications are never collapsed.
+   * Stable identity of the FACT this notification is about
+   * (`post:${postId}:likes`), unique per recipient.
+   *
+   * Passing one gives replace semantics: one row per (recipient, key),
+   * rewritten in place by later calls, and retractable by the same key.
+   *
+   * The caller must then pass the WHOLE current state of the fact in `params`,
+   * recomputed on every event that changes it — including events that shrink
+   * it, like an unlike. This service stores what it is given; it never folds or
+   * accumulates.
+   *
+   * Omit it for fire-and-forget notifications ("your export is ready").
+   */
+  key?: string;
+}
+
+/**
+ * Input to notify many recipients from a single fan-out.
+ *
+ * `key` is omitted rather than rejected at runtime: replace semantics need a
+ * read-compare-write per recipient, which the bulk path cannot do.
+ */
+export interface NotifyManyInput<P extends NotificationParams> extends Omit<
+  NotifyInput<P>,
+  'recipientId' | 'key'
+> {
+  recipientIds: string[];
+  /**
+   * Stable identity of this fan-out. A replay carrying the same one resolves to
+   * the original request and writes no second copy for anyone in the audience.
    */
   idempotencyKey?: string;
 }
 
-/** Input to notify many recipients from a single fan-out. */
-export interface NotifyManyInput<P extends NotificationParams> extends Omit<
-  NotifyInput<P>,
-  'recipientId'
-> {
-  recipientIds: string[];
-}
-
 /** The dispatch a notify call created; the worker resolves it into deliveries. */
 export interface NotifyResult {
-  requestId: string;
+  /**
+   * Null when the call wrote nothing: a keyed notify whose recomputed state
+   * matched what was already stored, so there was no dispatch to create.
+   */
+  requestId: string | null;
 }
 
 /** Result of a fan-out. */
 export interface NotifyManyResult extends NotifyResult {
-  /** Rows written, across all channels. Zero on a replay. */
+  /** Always written, so never null. */
+  requestId: string;
+  /** Rows written, across all channels. */
   createdCount: number;
+}
+
+/** Input to withdraw a notification. */
+export interface RetractInput {
+  recipientId: string;
+  /** The same `key` the `notify` call carried. */
+  key: string;
+}
+
+/** Outcome of a retraction. */
+export interface RetractResult {
+  /**
+   * False when there was nothing to withdraw — no row at that key, or one
+   * already retracted. Retraction racing retention is benign, so this is a
+   * return value rather than a throw.
+   */
+  retracted: boolean;
 }
 
 /** Options for the `notifyText` one-off sugar. */
@@ -199,6 +261,12 @@ export interface NotificationService {
    * Trigger a notification. Takes the definition itself, so `params` are
    * checked against the renderer that will consume them.
    *
+   * Pass `input.key` to make the notification **keyed**: one row per
+   * (recipient, key), replaced in place as the underlying fact evolves, and
+   * withdrawable via {@link NotificationService.retract}. See `NotifyInput.key`
+   * for the recompute contract that carries. Without a key each call is its own
+   * row, as before.
+   *
    * Returns the dispatch handle rather than a row: a notification is one
    * request that may materialize a row per recipient across several channels.
    */
@@ -213,13 +281,34 @@ export interface NotificationService {
    * Fan-out is inline: the whole audience lands in one transaction, in bounded
    * batches. The batches bound each statement, not the transaction, so caller
    * latency and {@link FANOUT_TRANSACTION_OPTIONS} are what cap the audience —
-   * past a few thousand recipients this wants a fan-out worker. The idempotency
-   * key and `@@unique(requestId, recipientId)` already make that rerun-safe.
+   * past a few thousand recipients this wants a fan-out worker.
+   *
+   * Pass `input.idempotencyKey` to make a replay safe: it resolves to the
+   * original request, and `@@unique(requestId, recipientId)` then makes the
+   * row writes skip. Without one, a replayed fan-out notifies the audience
+   * twice.
    */
   notifyMany<P extends NotificationParams>(
     type: NotificationTypeDefinition<P>,
     input: NotifyManyInput<P>,
   ): Promise<NotifyManyResult>;
+  /**
+   * Withdraw a notification whose triggering fact is gone — the last like was
+   * undone, the comment was deleted.
+   *
+   * Settles any pending deliveries as `skipped`, so a debounced email that has
+   * not left yet never leaves, and soft-deletes the row. An email already sent
+   * cannot be recalled.
+   *
+   * The inverse of a keyed {@link NotificationService.notify}: both are writes
+   * against the same (recipient, key) row, so a later notify at that key revives
+   * it rather than adding a second one. Returns `retracted: false` when there is
+   * nothing there — racing retention is benign.
+   */
+  retract<P extends NotificationParams>(
+    type: NotificationTypeDefinition<P>,
+    input: RetractInput,
+  ): Promise<RetractResult>;
   /**
    * Send a plain-text notification without defining a type, via the built-in
    * `generic` type. For one-off notifications ("Your export is ready").
@@ -600,10 +689,14 @@ export function createNotificationService(deps: {
     // together.
     const { requestId, createdCount, inAppRecipientIds } =
       await prisma.$transaction(async (tx) => {
+        // The bulk path has no per-row upsert target to dedupe against — its
+        // rows are unkeyed, and their generated key is scoped to the request —
+        // so replay safety still rests on resolving to the SAME request. A
+        // replayed call therefore reuses the original request id, and the
+        // unique on (requestId, recipientId) makes `skipDuplicates` below skip.
         const request = input.idempotencyKey
           ? await tx.notificationRequest.upsert({
               where: { idempotencyKey: input.idempotencyKey },
-              // A replay resolves to the existing request and writes no rows.
               update: {},
               create: {
                 ...contentColumns,
@@ -624,6 +717,10 @@ export function createNotificationService(deps: {
               ...actorSnapshot,
               requestId: request.id,
               recipientId,
+              // Unkeyed: each row is its own fact, so it collapses with nothing
+              // and cannot be retracted. Scoped by request id so two fan-outs
+              // of the same type never collide on it.
+              key: generatedKey(request.id),
               inApp: effectiveChannels.get(recipientId)?.inApp ?? false,
               expiresAt,
             })),
@@ -639,12 +736,18 @@ export function createNotificationService(deps: {
           id: string;
           recipientId: string;
           inApp: boolean;
+          feedOrderId: string;
         }[] = [];
         for (const batch of chunk(recipientIds, WRITE_CHUNK_SIZE)) {
           rows.push(
             ...(await tx.notification.findMany({
               where: { requestId: request.id, recipientId: { in: batch } },
-              select: { id: true, recipientId: true, inApp: true },
+              select: {
+                id: true,
+                recipientId: true,
+                inApp: true,
+                feedOrderId: true,
+              },
             })),
           );
         }
@@ -658,6 +761,10 @@ export function createNotificationService(deps: {
               notificationId: row.id,
               requestId: request.id,
               channel,
+              // The generation this delivery serves. Constant here — an
+              // unkeyed row is never replaced — but carried so both write
+              // paths populate the column the same way.
+              feedOrderId: row.feedOrderId,
             }),
           ),
         );
@@ -693,13 +800,252 @@ export function createNotificationService(deps: {
     return { requestId, createdCount };
   }
 
-  /** Single-recipient sugar over {@link notifyMany}. */
+  /**
+   * Replace one keyed row, or leave it untouched when nothing really changed.
+   *
+   * Read-then-branch rather than a bare upsert: deciding whether this is a real
+   * change needs the stored params to compare against, which an upsert's
+   * `update` clause cannot see.
+   */
+  async function notifyKeyed<P extends NotificationParams>(
+    type: NotificationTypeDefinition<P>,
+    input: NotifyInput<P> & { key: string },
+  ): Promise<NotifyResult> {
+    const params = type.paramsSchema.parse(input.params);
+    const { recipientId, key } = input;
+
+    const event: NotificationEvent<P> = {
+      params,
+      actor: input.actorLabel ? { label: input.actorLabel } : undefined,
+      entityType: input.entityType,
+      entityId: input.entityId,
+    };
+    const frozen = renderer.renderForWrite(type, event);
+
+    const effectiveChannels = await resolveEffectiveChannels(
+      [recipientId],
+      type,
+    );
+    const routing = effectiveChannels.get(recipientId) ?? {
+      inApp: false,
+      outbound: [],
+    };
+
+    const normalizedParams = asStoredJson(params);
+
+    const contentColumns = {
+      type: type.key,
+      templateVersion: type.version,
+      params: normalizedParams,
+      segments: frozen.segments,
+      fallbackText: frozen.fallbackText,
+      actionUrl: frozen.actionUrl,
+      ...actorColumns(input),
+      entityType: input.entityType ?? null,
+      entityId: input.entityId ?? null,
+    };
+
+    const { requestId, changed, publishTo } = await prisma.$transaction(
+      async (tx) => {
+        const existing = await tx.notification.findUnique({
+          where: { recipientId_key: { recipientId, key } },
+          select: {
+            id: true,
+            params: true,
+            feedOrderId: true,
+            seenAt: true,
+            dismissedAt: true,
+          },
+        });
+
+        // Nothing really changed: the caller recomputed and got what is
+        // already stored. Writing anyway would resurface the row, re-arm a
+        // delivery and bump the badge for a non-event — which is exactly the
+        // like/unlike/like oscillation this absorbs.
+        //
+        // A retracted row is never a no-op, however identical its params: the
+        // fact came back (unlike then re-like), so the row has to be revived.
+        if (
+          existing?.dismissedAt === null &&
+          isEqual(existing.params, normalizedParams)
+        ) {
+          return { requestId: null, changed: false, publishTo: null };
+        }
+
+        const request = await tx.notificationRequest.create({
+          data: contentColumns,
+        });
+
+        const expiresAt = new Date(Date.now() + RETENTION_MS);
+        const actorSnapshot = { actorLabel: input.actorLabel ?? null };
+        // Asked of the database, which owns the column's `uuidv7()` default:
+        // generating one here would make inserts and updates disagree about
+        // where the value comes from. Node has no uuidv7 of its own yet.
+        const [generated] = await tx.$queryRaw<
+          [{ feedOrderId: string }]
+        >`SELECT uuidv7() AS "feedOrderId"`;
+        const { feedOrderId } = generated;
+
+        const row = existing
+          ? await tx.notification.update({
+              where: { id: existing.id },
+              // Re-frozen from the new params — leaving the old snapshot would
+              // make the fallback render a stale count.
+              data: {
+                ...contentColumns,
+                ...actorSnapshot,
+                requestId: request.id,
+                inApp: routing.inApp,
+                expiresAt,
+                feedOrderId,
+                // New activity, so the row is unacknowledged again. Clearing
+                // `dismissedAt` is what revives a retracted row.
+                seenAt: null,
+                readAt: null,
+                dismissedAt: null,
+              },
+              select: { id: true, feedOrderId: true },
+            })
+          : await tx.notification.create({
+              data: {
+                ...contentColumns,
+                ...actorSnapshot,
+                requestId: request.id,
+                recipientId,
+                key,
+                inApp: routing.inApp,
+                expiresAt,
+                feedOrderId,
+              },
+              select: { id: true, feedOrderId: true },
+            });
+
+        // One per channel per generation. `skipDuplicates` because a retry that
+        // lands on the same generation must not arm a second send.
+        if (routing.outbound.length > 0) {
+          await tx.notificationDelivery.createMany({
+            data: routing.outbound.map((channel) => ({
+              notificationId: row.id,
+              requestId: request.id,
+              channel,
+              feedOrderId: row.feedOrderId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+
+        // Only when the badge could actually move: a brand new row always
+        // bumps it, and so does one coming back from seen or retracted, but
+        // replacing a row that is already unseen does not — its content updates
+        // silently, so a busy thread stays one unseen row rather than bumping
+        // the badge per event.
+        const badgeMoved = existing
+          ? existing.seenAt !== null || existing.dismissedAt !== null
+          : true;
+
+        return {
+          requestId: request.id,
+          changed: true,
+          publishTo: routing.inApp && badgeMoved ? recipientId : null,
+        };
+      },
+      FANOUT_TRANSACTION_OPTIONS,
+    );
+
+    if (!changed || requestId === null) {
+      return { requestId: null };
+    }
+
+    if (publishTo) await publishUnseenCounts([publishTo]);
+
+    try {
+      await outbox.completeFanout(requestId);
+    } catch (error) {
+      logError(error, { source: 'notification-fanout', requestId });
+    }
+
+    return { requestId };
+  }
+
   async function notify<P extends NotificationParams>(
     type: NotificationTypeDefinition<P>,
     input: NotifyInput<P>,
   ): Promise<NotifyResult> {
+    if (input.key !== undefined) {
+      // The generated-key prefix is reserved: a caller's key that carried it
+      // would replace and retract like a keyed row, but the outbox would read
+      // it as generated and skip the debounce.
+      if (!isCallerKey(input.key)) {
+        throw new BadRequestError(
+          `Notification key "${input.key}" uses a reserved prefix.`,
+        );
+      }
+      const keyed = { ...input, key: input.key };
+      try {
+        return await notifyKeyed(type, keyed);
+      } catch (error) {
+        // Two first-writes for the same key raced: both read no row, both
+        // created. The loser retries, now finding the winner's row and taking
+        // the update branch. Last-writer-wins is correct here — both computed
+        // from the same source of truth, so either result is current.
+        if (isUniqueConstraintError(error)) {
+          return await notifyKeyed(type, keyed);
+        }
+        throw error;
+      }
+    }
     const { recipientId, ...rest } = input;
     return notifyMany(type, { ...rest, recipientIds: [recipientId] });
+  }
+
+  async function retract<P extends NotificationParams>(
+    type: NotificationTypeDefinition<P>,
+    input: RetractInput,
+  ): Promise<RetractResult> {
+    const { recipientId, key } = input;
+
+    const { retracted, wasUnseen } = await prisma.$transaction(async (tx) => {
+      const row = await tx.notification.findUnique({
+        where: { recipientId_key: { recipientId, key } },
+        select: { id: true, type: true, seenAt: true, dismissedAt: true },
+      });
+
+      // Nothing to withdraw. Racing retention, or a caller retracting twice —
+      // both benign, so this reports rather than throws.
+      if (row?.dismissedAt !== null) {
+        return { retracted: false, wasUnseen: false };
+      }
+
+      // Guards against a key collision across types withdrawing the wrong row.
+      if (row.type !== type.key) {
+        throw new BadRequestError(
+          `Notification "${key}" belongs to type "${row.type}", not "${type.key}".`,
+        );
+      }
+
+      // Anything still queued must not go out. In-flight jobs already skip
+      // rows that are no longer `pending`, so a debounced email dies unsent;
+      // one already delivered is settled and stays that way.
+      await tx.notificationDelivery.updateMany({
+        where: { notificationId: row.id, status: 'pending' },
+        data: { status: 'skipped', lastError: 'retracted' },
+      });
+
+      // The existing soft delete, reused: every read path already filters
+      // `dismissedAt`, so retraction cannot leave a row visible through a
+      // filter someone forgot to add. A later notify at this key clears it.
+      await tx.notification.update({
+        where: { id: row.id },
+        data: { dismissedAt: new Date() },
+      });
+
+      return { retracted: true, wasUnseen: row.seenAt === null };
+    });
+
+    // Only an unseen row was contributing to the badge.
+    if (wasUnseen) await publishUnseenCounts([recipientId]);
+
+    return { retracted };
   }
 
   function notifyText(
@@ -812,6 +1158,7 @@ export function createNotificationService(deps: {
   return {
     notify,
     notifyMany,
+    retract,
     notifyText,
     renderContent: (row, ctx, actor) => renderer.renderContent(row, ctx, actor),
     getUnseenCount,

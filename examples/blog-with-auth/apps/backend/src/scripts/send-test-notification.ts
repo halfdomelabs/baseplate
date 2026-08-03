@@ -53,7 +53,8 @@ const SCENARIOS: Record<
     params: {
       postId: '00000000-0000-0000-0000-000000000000',
       postTitle: 'Hello world',
-      likerName: 'Grace Hopper',
+      likerNames: ['Grace Hopper', 'Ada Lovelace'],
+      count: 4,
     },
   },
   security: {

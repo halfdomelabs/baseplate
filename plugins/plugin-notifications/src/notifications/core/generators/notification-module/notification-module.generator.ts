@@ -71,10 +71,11 @@ export const notificationModuleGenerator = createGenerator({
   buildTasks: ({ includeEmailChannel, userModelName, categories }) => ({
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.task,
     renderers: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.renderers.task,
-    // The service chunks and groups delivery work with es-toolkit; declared
-    // here rather than relied on from another generator's contribution.
+    // The service chunks and groups delivery work with es-toolkit, and mints
+    // `feedOrderId` with uuid; declared here rather than relied on from another
+    // generator's contribution.
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(FASTIFY_PACKAGES, ['es-toolkit']),
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['es-toolkit', 'uuid']),
     }),
     appRuntimeConfig: createGeneratorTask({
       dependencies: {

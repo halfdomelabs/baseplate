@@ -33,10 +33,13 @@ export const POST_COMMENTED_TYPE = defineNotificationType({
 });
 
 /**
- * Someone liked a post — the noisy type the ticket's motivating case names
- * ("I want comments but not likes"). Shares the `general` category with
- * comments, so silencing it needs a type-scoped preference rather than a
- * category one.
+ * Likes on a post, as one keyed notification per post rather than one per like.
+ *
+ * The params are the post's whole current like state, recomputed by
+ * `blog-post-like.service.ts` on every like AND unlike — so `render` states how
+ * things stand now ("Alice and 2 others liked X") rather than describing an
+ * event. Phrasing it as a delta ("2 new likes") would need a window boundary
+ * the renderer never sees.
  */
 export const POST_LIKED_TYPE = defineNotificationType({
   key: 'post.liked',
@@ -45,17 +48,29 @@ export const POST_LIKED_TYPE = defineNotificationType({
   paramsSchema: z.object({
     postId: z.string(),
     postTitle: z.string(),
-    likerName: z.string(),
+    /** The most recent likers, capped — `count` carries the real total. */
+    likerNames: z.array(z.string()),
+    count: z.number(),
   }),
   channels: ['inApp'],
-  render: (event) => ({
-    body: [
-      { type: 'text', value: event.params.likerName, bold: true },
-      { type: 'text', value: ' liked ' },
-      { type: 'text', value: event.params.postTitle, bold: true },
-    ],
-    actionUrl: `/admin/blogs/posts/${event.params.postId}`,
-  }),
+  render: (event) => {
+    const { likerNames, count, postTitle, postId } = event.params;
+    const [first = 'Someone'] = likerNames;
+    const others = count - 1;
+    return {
+      body: [
+        { type: 'text', value: first, bold: true },
+        {
+          type: 'text',
+          value:
+            others > 0 ? ` and ${others} other${others > 1 ? 's' : ''}` : '',
+        },
+        { type: 'text', value: ' liked ' },
+        { type: 'text', value: postTitle, bold: true },
+      ],
+      actionUrl: `/admin/blogs/posts/${postId}`,
+    };
+  },
 });
 
 /**

@@ -132,8 +132,32 @@ export function createNotificationsPartialDefinition(
               isOptional: true,
             },
 
-            // NOTE: digest/aggregation grouping columns are deferred to the digest
-            // engine, when their shape can be designed correctly.
+            // --- Identity ---
+            // The stable identity of the FACT this row is about, chosen by the
+            // caller (`post:123:likes`). One row per (recipient, key), replaced
+            // in place as the fact evolves — the one-notification-per-thread
+            // model. This single column is idempotency, aggregation, and
+            // retraction at once: replaying identical state is a no-op,
+            // collapsing is just replacing at the same key, and withdrawing is a
+            // lookup on it.
+            //
+            // Callers that omit a key get a generated one, which collapses with
+            // nothing and cannot be retracted — the fire-and-forget default.
+            {
+              name: 'key',
+              type: 'string',
+            },
+            // Feed sort key, reissued whenever the row's state really changes,
+            // so an evolving row resurfaces to the top. Separate from `id`
+            // because `id` cannot be reissued: `NotificationDelivery` cascades
+            // off it. Not `updatedAt` either — that bumps on any write, so
+            // marking a row read would resurface it, and its ties break cursor
+            // pagination.
+            {
+              name: 'feedOrderId',
+              type: 'uuid',
+              options: { defaultGeneration: 'uuidv7' },
+            },
 
             // --- State ---
             {
@@ -180,15 +204,16 @@ export function createNotificationsPartialDefinition(
           // every query filters on it — a partial index WHERE inApp would be
           // ideal but the schema layer has no `where`, so the column sits in
           // the key instead and email-only rows cost size, not scans.
-          // The feed sorts by `id` alone — a uuidv7 is both time-ordered and
-          // unique, so it is a total order on its own, which is what cursor
-          // pagination needs.
+          // The feed sorts by `feedOrderId` alone — a uuidv7 is both
+          // time-ordered and unique, so it is a total order on its own, which
+          // is what cursor pagination needs. Sorting by the reissued key rather
+          // than `id` is what lets a replaced row resurface.
           indexes: [
             {
               fields: [
                 { fieldRef: 'recipientId' },
                 { fieldRef: 'inApp' },
-                { fieldRef: 'id' },
+                { fieldRef: 'feedOrderId' },
               ],
             },
             {
@@ -204,13 +229,25 @@ export function createNotificationsPartialDefinition(
               fields: [{ fieldRef: 'expiresAt' }],
             },
           ],
-          // Idempotency layer 2, and the delivery worker's read path. UNIQUE
-          // rather than a plain index: it is what makes `createMany`'s
-          // `skipDuplicates` actually skip, so replaying a request cannot
-          // write a second copy of the same person's notification.
           uniqueConstraints: [
+            // Idempotency layer 2, and the delivery worker's read path. UNIQUE
+            // rather than a plain index: it is what makes `createMany`'s
+            // `skipDuplicates` actually skip, so replaying a request cannot
+            // write a second copy of the same person's notification.
             {
               fields: [{ fieldRef: 'requestId' }, { fieldRef: 'recipientId' }],
+            },
+            // One row per (recipient, fact). The upsert target for every write
+            // and the lookup for every retraction — which is why the retract
+            // path needs no index of its own.
+            {
+              fields: [{ fieldRef: 'recipientId' }, { fieldRef: 'key' }],
+            },
+            // Single-field, so this emits an inline `@unique` rather than a
+            // composite. Required: Pothos types a connection's `cursor` as a
+            // unique field, and `feedOrderId` is the feed cursor.
+            {
+              fields: [{ fieldRef: 'feedOrderId' }],
             },
           ],
           relations: [
@@ -375,6 +412,19 @@ export function createNotificationsPartialDefinition(
               name: 'channel',
               type: 'string',
             },
+            // Which generation of the notification this delivery serves —
+            // a copy of the row's `feedOrderId` at the time it was armed.
+            //
+            // A keyed row is replaced in place, so without this a re-armed
+            // delivery would collide with the settled one from the previous
+            // generation and be skipped: the second burst of activity would
+            // never send. Carrying it makes each real change eligible for one
+            // fresh delivery per channel, while replays inside a generation
+            // still collapse.
+            {
+              name: 'feedOrderId',
+              type: 'uuid',
+            },
             // pending | delivered | failed | skipped. A ledger the queue never
             // reads: it records what happened, for digests, support questions
             // and retention. A plain string rather than an enum, which would
@@ -413,12 +463,18 @@ export function createNotificationsPartialDefinition(
             },
           ],
           primaryKeyFieldRefs: ['id'],
-          // One row per recipient per channel, so a concurrent replay collides
+          // One row per channel per generation, so a concurrent replay collides
           // here instead of double-enqueuing, and one bounced address fails its
-          // own row rather than a whole chunk.
+          // own row rather than a whole chunk. `feedOrderId` is in the key so a
+          // replaced row can arm a fresh send without colliding with the
+          // settled delivery of the generation before it.
           uniqueConstraints: [
             {
-              fields: [{ fieldRef: 'notificationId' }, { fieldRef: 'channel' }],
+              fields: [
+                { fieldRef: 'notificationId' },
+                { fieldRef: 'channel' },
+                { fieldRef: 'feedOrderId' },
+              ],
             },
           ],
           // The sweeper's scan: stale rows still `pending`.

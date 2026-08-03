@@ -273,7 +273,7 @@ describe('notification outbox', () => {
     expect(queue.enqueued).toHaveLength(1);
   });
 
-  it('replaying an idempotency key writes no second copy', async () => {
+  it('replaying the same key writes no second copy', async () => {
     const a = await createUser(0);
     const queue = createFakeQueue();
     const service = createService({
@@ -281,45 +281,262 @@ describe('notification outbox', () => {
       channel: createRecordingChannel(),
     });
     const input = {
-      recipientIds: [a],
+      recipientId: a,
       params: { text: 'hello' },
-      idempotencyKey: 'comment:42',
+      key: 'comment:42',
+    };
+
+    await service.notify(GENERIC_NOTIFICATION_TYPE, input);
+    await service.notify(GENERIC_NOTIFICATION_TYPE, input);
+
+    // Identical state, so the second call is a no-op: the unique on
+    // (recipientId, key) means there is one row, and the deep-equal check
+    // means it was not even rewritten.
+    expect(await prisma.notification.count()).toBe(1);
+  });
+
+  it('a replay whose delivery already went out enqueues nothing new', async () => {
+    const a = await createUser(0);
+    const queue = createFakeQueue();
+    const service = createService({
+      queue,
+      channel: createRecordingChannel(),
+    });
+    const input = {
+      recipientId: a,
+      params: { text: 'hello' },
+      key: 'comment:43',
+    };
+
+    const { requestId } = await service.notify(EMAIL_ONLY_TYPE, input);
+    // A first write always dispatches; only a no-op replay returns null.
+    expect(requestId).not.toBeNull();
+    await prisma.notificationDelivery.updateMany({
+      where: { requestId: requestId ?? undefined },
+      data: { status: 'delivered' },
+    });
+    queue.enqueued.length = 0;
+
+    await service.notify(EMAIL_ONLY_TYPE, input);
+
+    // The replay changed nothing, so no new generation and no re-arm.
+    expect(queue.enqueued).toHaveLength(0);
+  });
+
+  it('a real change replaces the row in place and re-arms delivery', async () => {
+    const a = await createUser(0);
+    const queue = createFakeQueue();
+    const service = createService({
+      queue,
+      channel: createRecordingChannel(),
+    });
+    const key = 'post:7:likes';
+
+    const first = await service.notify(EMAIL_ONLY_TYPE, {
+      recipientId: a,
+      params: { text: 'Alice liked your post' },
+      key,
+    });
+    expect(first.requestId).not.toBeNull();
+    await prisma.notificationDelivery.updateMany({
+      where: { requestId: first.requestId ?? undefined },
+      data: { status: 'delivered' },
+    });
+    const before = await prisma.notification.findFirstOrThrow({
+      where: { recipientId: a, key },
+      select: { id: true, feedOrderId: true },
+    });
+    queue.enqueued.length = 0;
+
+    await service.notify(EMAIL_ONLY_TYPE, {
+      recipientId: a,
+      params: { text: 'Alice and 2 others liked your post' },
+      key,
+    });
+
+    const after = await prisma.notification.findFirstOrThrow({
+      where: { recipientId: a, key },
+      select: { id: true, feedOrderId: true, fallbackText: true },
+    });
+
+    // Still one row, same identity — deliveries cascade off `id`, so it must
+    // survive. Only the sort key is reissued, which is what resurfaces it.
+    expect(await prisma.notification.count()).toBe(1);
+    expect(after.id).toBe(before.id);
+    expect(after.feedOrderId).not.toBe(before.feedOrderId);
+    expect(after.fallbackText).toBe('Alice and 2 others liked your post');
+
+    // The settled delivery belonged to the previous generation, so the new one
+    // is free to arm without colliding.
+    expect(queue.enqueued).toHaveLength(1);
+  });
+
+  it('retracting settles pending deliveries and hides the row', async () => {
+    const a = await createUser(0);
+    const queue = createFakeQueue();
+    const service = createService({
+      queue,
+      channel: createRecordingChannel(),
+    });
+    const key = 'post:8:likes';
+
+    await service.notify(EMAIL_ONLY_TYPE, {
+      recipientId: a,
+      params: { text: 'Alice liked your post' },
+      key,
+    });
+
+    const result = await service.retract(EMAIL_ONLY_TYPE, {
+      recipientId: a,
+      key,
+    });
+
+    const row = await prisma.notification.findFirstOrThrow({
+      where: { recipientId: a, key },
+      select: { dismissedAt: true },
+    });
+    const deliveries = await prisma.notificationDelivery.findMany({
+      select: { status: true, lastError: true },
+    });
+
+    expect(result.retracted).toBe(true);
+    // Soft-deleted rather than removed, so the row keeps its deliveries and
+    // every read path already filters it out.
+    expect(row.dismissedAt).not.toBeNull();
+    expect(deliveries[0]?.status).toBe('skipped');
+    expect(deliveries[0]?.lastError).toBe('retracted');
+  });
+
+  it('settles every generation it read, so one burst sends one email', async () => {
+    const a = await createUser(0);
+    const channel = createRecordingChannel();
+    const service = createService({ queue: createFakeQueue(), channel });
+    const key = 'post:11:likes';
+
+    // A burst: two likes inside the debounce window, so the row is replaced
+    // and both generations are armed and pending when the job finally runs.
+    const first = await service.notify(EMAIL_ONLY_TYPE, {
+      recipientId: a,
+      params: { text: 'Alice liked your post' },
+      key,
+    });
+    await service.notify(EMAIL_ONLY_TYPE, {
+      recipientId: a,
+      params: { text: 'Alice and Bob liked your post' },
+      key,
+    });
+
+    const row = await prisma.notification.findFirstOrThrow({
+      where: { recipientId: a, key },
+      select: { id: true },
+    });
+    await service.outbox.deliverChunk({
+      requestId: first.requestId ?? '',
+      channel: 'email',
+      notificationIds: [row.id],
+      isFinalAttempt: false,
+    });
+
+    const deliveries = await prisma.notificationDelivery.findMany({
+      where: { notificationId: row.id },
+      select: { status: true },
+    });
+
+    // Content is read live, so the one send already carries the latest state
+    // and satisfies both generations. Leaving the second pending would mail
+    // the same thing again when its own job fires — the duplicate the
+    // debounce exists to prevent.
+    expect(channel.deliveries).toHaveLength(1);
+    expect(deliveries).toHaveLength(2);
+    expect(
+      deliveries.every((delivery) => delivery.status === 'delivered'),
+    ).toBe(true);
+  });
+
+  it('reports nothing to retract when the row is already gone', async () => {
+    const a = await createUser(0);
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createRecordingChannel(),
+    });
+
+    const result = await service.retract(EMAIL_ONLY_TYPE, {
+      recipientId: a,
+      key: 'never:written',
+    });
+
+    expect(result.retracted).toBe(false);
+  });
+
+  it('re-notifying after a retraction revives the row', async () => {
+    const a = await createUser(0);
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createRecordingChannel(),
+    });
+    const key = 'post:9:likes';
+
+    await service.notify(GENERIC_NOTIFICATION_TYPE, {
+      recipientId: a,
+      params: { text: 'Alice liked your post' },
+      key,
+    });
+    await service.retract(GENERIC_NOTIFICATION_TYPE, { recipientId: a, key });
+    await service.notify(GENERIC_NOTIFICATION_TYPE, {
+      recipientId: a,
+      params: { text: 'Bob liked your post' },
+      key,
+    });
+
+    const row = await prisma.notification.findFirstOrThrow({
+      where: { recipientId: a, key },
+      select: { dismissedAt: true, fallbackText: true },
+    });
+
+    // Retraction and re-notification are the two directions of one upsert, so
+    // a later like clears the soft delete rather than stacking a second row.
+    expect(await prisma.notification.count()).toBe(1);
+    expect(row.dismissedAt).toBeNull();
+    expect(row.fallbackText).toBe('Bob liked your post');
+  });
+
+  it('replaying a bulk fan-out with the same idempotency key writes no second copy', async () => {
+    const recipientIds = await createUsers(2);
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createRecordingChannel(),
+    });
+    const input = {
+      recipientIds,
+      params: { text: 'hello' },
+      idempotencyKey: 'digest:2026-08-03',
     };
 
     const first = await service.notifyMany(GENERIC_NOTIFICATION_TYPE, input);
     const second = await service.notifyMany(GENERIC_NOTIFICATION_TYPE, input);
 
-    // Same request, and the replay materializes nothing new — this is what the
-    // unique on (requestId, recipientId) buys via `skipDuplicates`.
+    // The replay resolves to the same request, so `@@unique(requestId,
+    // recipientId)` makes its row writes skip rather than notifying twice.
     expect(second.requestId).toBe(first.requestId);
     expect(second.createdCount).toBe(0);
-    expect(await prisma.notification.count()).toBe(1);
+    expect(await prisma.notification.count()).toBe(2);
     expect(await prisma.notificationRequest.count()).toBe(1);
   });
 
-  it('a replay whose deliveries already went out re-enqueues nothing', async () => {
-    const a = await createUser(0);
-    const queue = createFakeQueue();
+  it('replaying a bulk fan-out without an idempotency key notifies again', async () => {
+    const recipientIds = await createUsers(2);
     const service = createService({
-      queue,
+      queue: createFakeQueue(),
       channel: createRecordingChannel(),
     });
-    const input = {
-      recipientIds: [a],
-      params: { text: 'hello' },
-      idempotencyKey: 'comment:43',
-    };
+    const input = { recipientIds, params: { text: 'hello' } };
 
-    const { requestId } = await service.notifyMany(EMAIL_ONLY_TYPE, input);
-    await prisma.notificationDelivery.updateMany({
-      where: { requestId },
-      data: { status: 'delivered' },
-    });
-    queue.enqueued.length = 0;
+    await service.notifyMany(GENERIC_NOTIFICATION_TYPE, input);
+    await service.notifyMany(GENERIC_NOTIFICATION_TYPE, input);
 
-    await service.notifyMany(EMAIL_ONLY_TYPE, input);
-
-    expect(queue.enqueued).toHaveLength(0);
+    // Documented behaviour, not an accident: without a key each fan-out is its
+    // own dispatch, so a caller that retries has to supply one.
+    expect(await prisma.notification.count()).toBe(4);
   });
 
   it('leaves the delivery pending when the enqueue fails', async () => {
