@@ -41,8 +41,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
     .map((match) => {
       const { crumb } =
         (match.loaderData as
-          | { crumb?: string | Promise<string> }
-          | undefined) ?? {};
+          { crumb?: string | Promise<string> } | undefined) ?? {};
       if (!crumb) return undefined;
       return {
         id: match.id,

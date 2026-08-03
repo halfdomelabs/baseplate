@@ -77,8 +77,7 @@ interface Props {
   submitData: (data: TodoListFormData) => Promise<void>;
   /* TPL_PROPS:START */
   defaultValues:
-    | FragmentType<typeof todoListEditFormDefaultValuesFragment>
-    | undefined;
+    FragmentType<typeof todoListEditFormDefaultValuesFragment> | undefined;
   ownerOptions: FragmentType<typeof todoListEditFormOwnerOptionsFragment>[];
   /* TPL_PROPS:END */
 }
