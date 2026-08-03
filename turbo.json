@@ -41,6 +41,7 @@
       "outputLogs": "errors-only"
     },
     "typecheck": {
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$"]
     },
     "dev": {
