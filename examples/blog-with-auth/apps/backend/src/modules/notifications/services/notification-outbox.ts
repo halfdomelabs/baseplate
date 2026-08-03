@@ -24,12 +24,6 @@ export interface DeliverChunkInput {
   channel: string;
   /** The rows this job settles. */
   notificationIds: string[];
-  /**
-   * True when the queue will not retry this job again. The worker settles a
-   * failure as `failed` instead of rethrowing, so exhaustion is recorded
-   * rather than left pending.
-   */
-  isFinalAttempt: boolean;
   /** Deliveries older than this are abandoned unsent — notifications perish. */
   expireBefore?: Date;
 }
@@ -38,12 +32,25 @@ export interface DeliverChunkResult {
   /** Rows delivered. */
   delivered: number;
   /**
-   * Rows whose channel raised an error. Left `pending` for the queue's retry,
-   * or settled `failed` on the final attempt.
+   * Rows whose channel raised an error. Left `pending` for the queue's retry;
+   * settled `failed` by the delivery queue's exhaustion hook once retries run
+   * out.
    */
   errored: number;
   /** Rows abandoned unsent: vanished, stale, or unroutable. */
   skipped: number;
+}
+
+/**
+ * The chunk whose retries the delivery queue has spent. Structurally the job
+ * payload, so the hook can pass it straight through.
+ */
+export interface FailExhaustedDeliveriesInput {
+  /** Unused here; part of the job payload this is passed as. */
+  requestId: string;
+  channel: string;
+  /** The rows to settle, the same set the exhausted job was delivering. */
+  notificationIds: string[];
 }
 
 /** Bounds one fan-out sweep. */
@@ -105,6 +112,15 @@ export interface NotificationOutbox {
   completeFanout(requestId: string): Promise<number>;
   /** Deliver one chunk of one channel's fan-out. Called by the delivery worker. */
   deliverChunk(input: DeliverChunkInput): Promise<DeliverChunkResult>;
+  /**
+   * Settle a chunk's still-`pending` rows as `failed`, once the delivery queue
+   * has spent its retries on them. Called by the delivery queue's
+   * `onFinalAttemptFailure`, so exhaustion is recorded rather than left for
+   * the sweeper to expire — which would fire an alarm meant for lost jobs.
+   *
+   * Per-row `lastError` breadcrumbs written during delivery are preserved.
+   */
+  failExhaustedDeliveries(input: FailExhaustedDeliveriesInput): Promise<number>;
   /**
    * Re-run the hand-off for requests whose fan-out was interrupted. Called by
    * the sweep worker; covers the only gap the queue's durability cannot — a
@@ -185,6 +201,30 @@ async function resolveActors(
         select: { id: true, name: true },
       });
   return new Map(users.map((user) => [user.id, { name: user.name }]));
+}
+
+/**
+ * Settles a chunk's leftover rows as `failed`; see
+ * {@link NotificationOutbox.failExhaustedDeliveries}.
+ */
+async function failExhaustedDeliveries(
+  input: FailExhaustedDeliveriesInput,
+): Promise<number> {
+  const { channel, notificationIds } = input;
+
+  // Only rows still pending: anything delivered or skipped during the failed
+  // attempt is already settled, and this must not undo it. `lastError` is left
+  // as delivery wrote it, so the per-row reason survives.
+  const { count } = await prisma.notificationDelivery.updateMany({
+    where: {
+      notificationId: { in: notificationIds },
+      channel,
+      status: 'pending',
+    },
+    data: { status: 'failed' },
+  });
+
+  return count;
 }
 
 async function expireStaleDeliveries(
@@ -472,10 +512,10 @@ export function createNotificationOutbox(deps: {
         });
         const lastError =
           error instanceof Error ? error.message : String(error);
-        // On the queue's last attempt nothing will retry this, so record the
-        // outcome; otherwise leave it pending and let the queue come back.
+        // Left pending with breadcrumbs so the queue can come back to it.
+        // Settling an exhausted row is the delivery queue's
+        // `onFinalAttemptFailure`, not this loop's job.
         await updatePendingDelivery(notificationId, channel, {
-          ...(input.isFinalAttempt ? { status: 'failed' as const } : {}),
           attempts: { increment: 1 },
           lastError,
         });
@@ -486,9 +526,9 @@ export function createNotificationOutbox(deps: {
     }
 
     // Thrown after the loop, so one bad row cannot strand the rest of the
-    // chunk. On the final attempt the rows are already settled, so the job
-    // succeeds rather than landing in the DLQ.
-    if (firstError && !input.isFinalAttempt) throw firstError;
+    // chunk. Always thrown: the queue needs the failure to retry, and to know
+    // when to run the exhaustion hook.
+    if (firstError) throw firstError;
 
     return { delivered, errored, skipped };
   }
@@ -523,6 +563,7 @@ export function createNotificationOutbox(deps: {
     installedChannels,
     completeFanout,
     deliverChunk,
+    failExhaustedDeliveries,
     sweepStaleRequests,
     expireStaleDeliveries,
     deleteExpiredNotifications,

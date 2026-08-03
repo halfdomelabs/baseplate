@@ -72,8 +72,7 @@ const MIME_TYPE_PATTERN = /^[a-z]+\/[a-z0-9!#$&^_.+-]+$/i;
  * `INVALID_FILE_EXTENSION`: the extension contradicts a well-formed type.
  */
 export type InvalidMimeTypeCode =
-  | 'UNRECOGNIZED_FILE_TYPE'
-  | 'INVALID_FILE_EXTENSION';
+  'UNRECOGNIZED_FILE_TYPE' | 'INVALID_FILE_EXTENSION';
 
 /** Thrown when a declared mime type is unusable or contradicts its filename. */
 export class InvalidMimeTypeError extends Error {

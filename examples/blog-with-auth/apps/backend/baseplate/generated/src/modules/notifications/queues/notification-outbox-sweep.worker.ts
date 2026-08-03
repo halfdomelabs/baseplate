@@ -22,8 +22,9 @@ const SWEEP_BATCH_SIZE = 100;
  * The expiry pass should match nothing — the delivery worker expires rows as it
  * goes — so a non-zero count is logged as an error.
  *
- * For alerting: an exhausted delivery is settled `failed` rather than rethrown,
- * so it never reaches the DLQ. Channel health is the `failed` count.
+ * For alerting: an exhausted delivery is settled `failed` by the delivery
+ * queue's `onFinalAttemptFailure`, so the job completes rather than ending in
+ * the backend's failed state. Channel health is the `failed` count.
  */
 export const notificationOutboxSweepWorker = bindQueueHandler(
   notificationOutboxSweepQueue,

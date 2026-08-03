@@ -59,6 +59,23 @@ export interface QueueHandlerBindingConfig<T> {
   repeatable?: RepeatableConfig | RepeatableConfig[];
 
   /**
+   * Records what the exhausted retries were going to do, when the handler
+   * throws on the attempt no retry follows. Declared here beside the retry
+   * budget, so consumers do not each re-derive "is this the last attempt?"
+   * from attempt metadata.
+   *
+   * The throw is caught and the job completes normally, so an exhausted job
+   * is not left in the backend's failed state - it is a recorded outcome
+   * rather than an anomaly. If this hook itself throws, the job does fail,
+   * carrying the handler's error as `cause`.
+   *
+   * Requires `options.defaultJobOptions.attempts`: without a declared retry
+   * budget there is no attempt this can be pinned to, and it never fires
+   * (a warning is logged at startup).
+   */
+  onFinalAttemptFailure?: QueueFinalAttemptFailureHandler<T>;
+
+  /**
    * Advanced options for the queue's behavior.
    */
   options?: {
@@ -106,6 +123,21 @@ export type QueueJobHandler<T, K extends keyof RuntimeServices = never> = (
 ) => unknown;
 
 /**
+ * Runs when a handler throws on the attempt no retry follows. Receives the
+ * payload rather than the job, since what is left to do is record an outcome
+ * for the work, not inspect the attempt that failed.
+ *
+ * `ctx` is the full {@link SystemServiceContext}, deliberately un-narrowed:
+ * `K` is inferred from the handler's `ctx` annotation alone.
+ * @template T The type of the data in the job payload.
+ */
+export type QueueFinalAttemptFailureHandler<T> = (
+  jobData: T,
+  error: unknown,
+  ctx: SystemServiceContext,
+) => Promise<void> | void;
+
+/**
  * The configuration accepted by {@link bindQueueHandler}: a handler or
  * lazyHandler (exactly one), plus the shared binding options.
  * @template T The type of the data in the job payload.
@@ -146,6 +178,30 @@ export interface QueueHandlerBinding extends Omit<
 }
 
 /**
+ * Whether a binding's {@link QueueHandlerBindingConfig.onFinalAttemptFailure}
+ * can ever run: it needs a retry budget declared on the queue to pin "final"
+ * to.
+ *
+ * The declared budget is the signal, not the job's own `maxAttempts`, because
+ * the backends disagree on what an undeclared budget looks like - pg-boss
+ * defaults `retryLimit` to 2 and reports it indistinguishably from a queue
+ * that asked for 3 attempts, while BullMQ reports 0. Reading "was this
+ * declared?" off the job is therefore impossible on pg-boss and actively
+ * dangerous on BullMQ, where a raw 0 would make attempt 1 look final and
+ * swallow the first failure of every queue that never set `attempts`.
+ * @param binding The binding to check.
+ * @returns True when the hook is declared alongside a retry budget.
+ */
+export function hasFinalAttemptFailureHandler(
+  binding: QueueHandlerBinding,
+): boolean {
+  return (
+    !!binding.onFinalAttemptFailure &&
+    binding.options?.defaultJobOptions?.attempts !== undefined
+  );
+}
+
+/**
  * Binds a handler to a {@link QueueToken}. Place this call in a file separate
  * from the token definition and from any enqueue-side code, so importing the
  * token never pulls in the handler's dependencies.
@@ -178,18 +234,47 @@ export function bindQueueHandler<T, K extends keyof RuntimeServices = never>(
     return handler;
   }
 
-  return {
+  const binding: QueueHandlerBinding = {
     token,
     repeatable: config.repeatable,
     options: config.options,
+    onFinalAttemptFailure: config.onFinalAttemptFailure as
+      | QueueFinalAttemptFailureHandler<unknown>
+      | undefined,
     async resolve(): Promise<void> {
       await ensureHandler();
     },
     async invoke(job, ctx): Promise<unknown> {
       const handler = await ensureHandler();
-      return handler(job as QueueJob<T>, ctx);
+      try {
+        return await handler(job as QueueJob<T>, ctx);
+      } catch (error) {
+        const onFinalAttemptFailure = config.onFinalAttemptFailure;
+        // Rethrowing here is what makes the backend retry, so only the last
+        // attempt may be swallowed - and only into the hook, never silently.
+        if (
+          !onFinalAttemptFailure ||
+          !hasFinalAttemptFailureHandler(binding) ||
+          job.attemptNumber < job.maxAttempts
+        ) {
+          throw error;
+        }
+        try {
+          await onFinalAttemptFailure(job.data as T, error, ctx);
+        } catch (hookError) {
+          // Both errors are kept whole: the hook's failure is what to fix, the
+          // handler's is what the job was doing when it ran out of attempts.
+          throw new AggregateError(
+            [hookError, error],
+            `onFinalAttemptFailure for queue "${token.name}" threw while recording an exhausted job.`,
+          );
+        }
+        return { finalAttemptFailureRecorded: true };
+      }
     },
   };
+
+  return binding;
 }
 
 /**
@@ -260,6 +345,13 @@ export interface QueueJob<T> {
    * The current attempt number for this job (starts at 1).
    */
   attemptNumber: number;
+  /**
+   * Total attempts this job gets, as the backend will actually apply it -
+   * including a per-job `attempts` override, and including each backend's own
+   * default when the queue declared none (pg-boss retries twice; BullMQ does
+   * not retry). `attemptNumber === maxAttempts` is the last attempt.
+   */
+  maxAttempts: number;
 }
 
 /**

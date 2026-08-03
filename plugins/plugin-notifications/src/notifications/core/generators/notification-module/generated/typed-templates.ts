@@ -225,6 +225,7 @@ const queuesNotificationDeliveryWorker = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'queues',
   importMapProviders: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     queuesImports: queuesImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },
