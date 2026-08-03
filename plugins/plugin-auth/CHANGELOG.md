@@ -1,25 +1,5 @@
 # @baseplate-dev/plugin-auth
 
-## 1.0.8
-
-### Patch Changes
-
-- [#985](https://github.com/halfdomelabs/baseplate/pull/985) [`2ec1006`](https://github.com/halfdomelabs/baseplate/commit/2ec1006a5327ec48b5b1319e85d87f0885dddc95) Thanks [@kingston](https://github.com/kingston)! - Backend environment configuration is now exposed via a lazy `getConfig()` (plus an `isDevelopment()` helper) instead of a module-scope `config` constant, so backend modules can be imported by tooling and tests without a fully configured environment, and invalid configuration now fails with a readable list of the offending variables.
-
-- [#983](https://github.com/halfdomelabs/baseplate/pull/983) [`f750e01`](https://github.com/halfdomelabs/baseplate/commit/f750e01aebbee8e826aa1fc259f56f43ce8793c2) Thanks [@kingston](https://github.com/kingston)! - Successful logins no longer count against the per-IP login rate limit, so users behind a shared IP are no longer locked out by ordinary repeated logins.
-
-- Updated dependencies [[`4c9acc4`](https://github.com/halfdomelabs/baseplate/commit/4c9acc48cc5b62aa3a642aef2ef3ed6d22fd2017), [`425d568`](https://github.com/halfdomelabs/baseplate/commit/425d568b1c98487b283fea7a65c429babc993da6), [`2ec1006`](https://github.com/halfdomelabs/baseplate/commit/2ec1006a5327ec48b5b1319e85d87f0885dddc95), [`3785e88`](https://github.com/halfdomelabs/baseplate/commit/3785e88c3cdc2ae3160a1b266f5f5695d1292a13), [`99fec21`](https://github.com/halfdomelabs/baseplate/commit/99fec214709952d17fb804832866d4bdc6bcc363), [`cc8dff2`](https://github.com/halfdomelabs/baseplate/commit/cc8dff2511ee87947b84401d2d9f37ba9cfa263b), [`eb22c19`](https://github.com/halfdomelabs/baseplate/commit/eb22c1994fa9e369b5b7b79b6394550889dd99b8), [`eb22c19`](https://github.com/halfdomelabs/baseplate/commit/eb22c1994fa9e369b5b7b79b6394550889dd99b8), [`3e3cf59`](https://github.com/halfdomelabs/baseplate/commit/3e3cf5967aadb12d473e509a5f225bbdaa79dc0e), [`380a4e2`](https://github.com/halfdomelabs/baseplate/commit/380a4e25f097f867e679b30993b5cb62ca8e8c79)]:
-  - @baseplate-dev/react-generators@1.0.0
-  - @baseplate-dev/core-generators@1.0.0
-  - @baseplate-dev/fastify-generators@1.0.0
-  - @baseplate-dev/plugin-email@1.0.0
-  - @baseplate-dev/plugin-queue@1.0.0
-  - @baseplate-dev/ui-components@1.0.0
-  - @baseplate-dev/project-builder-lib@1.0.0
-  - @baseplate-dev/plugin-rate-limit@1.0.0
-  - @baseplate-dev/sync@1.0.0
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.15
 
 ### Patch Changes

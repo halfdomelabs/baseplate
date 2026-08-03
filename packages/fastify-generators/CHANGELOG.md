@@ -1,24 +1,5 @@
 # @baseplate-dev/fastify-generators
 
-## 1.0.8
-
-### Patch Changes
-
-- [#977](https://github.com/halfdomelabs/baseplate/pull/977) [`425d568`](https://github.com/halfdomelabs/baseplate/commit/425d568b1c98487b283fea7a65c429babc993da6) Thanks [@kingston](https://github.com/kingston)! - Generated GraphQL `where` filters now permit the full configured nesting depth of `AND`/`OR`/`NOT` clauses instead of rejecting queries one level early, and model authorizers and query helpers now typecheck in projects with many models.
-
-- [#985](https://github.com/halfdomelabs/baseplate/pull/985) [`2ec1006`](https://github.com/halfdomelabs/baseplate/commit/2ec1006a5327ec48b5b1319e85d87f0885dddc95) Thanks [@kingston](https://github.com/kingston)! - Backend environment configuration is now exposed via a lazy `getConfig()` (plus an `isDevelopment()` helper) instead of a module-scope `config` constant, so backend modules can be imported by tooling and tests without a fully configured environment, and invalid configuration now fails with a readable list of the offending variables.
-
-- [#991](https://github.com/halfdomelabs/baseplate/pull/991) [`3785e88`](https://github.com/halfdomelabs/baseplate/commit/3785e88c3cdc2ae3160a1b266f5f5695d1292a13) Thanks [@kingston](https://github.com/kingston)! - Backend services are now split into a public `AppServices` tier reachable from request contexts and an `InternalServices` tier that only workers and scripts can reach, so a resolver naming an internal service is a compile error. The email transport and the notification outbox are now internal, so request-scoped code can no longer reach them to bypass their queues.
-
-- [#984](https://github.com/halfdomelabs/baseplate/pull/984) [`eb22c19`](https://github.com/halfdomelabs/baseplate/commit/eb22c1994fa9e369b5b7b79b6394550889dd99b8) Thanks [@kingston](https://github.com/kingston)! - Generated backends no longer install the unused `pg-connection-string` dependency, and the unused `destroyTestDatabase` test helper has been removed.
-
-- [#988](https://github.com/halfdomelabs/baseplate/pull/988) [`380a4e2`](https://github.com/halfdomelabs/baseplate/commit/380a4e25f097f867e679b30993b5cb62ca8e8c79) Thanks [@kingston](https://github.com/kingston)! - Generated projects now pin pnpm 11.18.0 and use current versions of their runtime dependencies, including major upgrades to bullmq, Stripe, pino, mime-types, react-dropzone and react-day-picker, so a synced project needs a fresh install and may need changes where it calls those libraries directly. File uploads also accept legacy JPEG extensions such as `.jfif` that were previously rejected, and an unrecognized Stripe subscription status now fails the webhook instead of writing a bad value.
-
-- Updated dependencies [[`4c9acc4`](https://github.com/halfdomelabs/baseplate/commit/4c9acc48cc5b62aa3a642aef2ef3ed6d22fd2017), [`3e3cf59`](https://github.com/halfdomelabs/baseplate/commit/3e3cf5967aadb12d473e509a5f225bbdaa79dc0e), [`380a4e2`](https://github.com/halfdomelabs/baseplate/commit/380a4e25f097f867e679b30993b5cb62ca8e8c79)]:
-  - @baseplate-dev/core-generators@1.0.0
-  - @baseplate-dev/sync@1.0.0
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.15
 
 ### Patch Changes

@@ -1,21 +1,5 @@
 # @baseplate-dev/project-builder-dev
 
-## 1.0.8
-
-### Patch Changes
-
-- [#973](https://github.com/halfdomelabs/baseplate/pull/973) [`80eb474`](https://github.com/halfdomelabs/baseplate/commit/80eb4741492d10682572b8639fd723c02a9be164) Thanks [@kingston](https://github.com/kingston)! - Adds a `diff-examples` command that reports which example projects are out of sync with the generators.
-
-- [#990](https://github.com/halfdomelabs/baseplate/pull/990) [`cc8dff2`](https://github.com/halfdomelabs/baseplate/commit/cc8dff2511ee87947b84401d2d9f37ba9cfa263b) Thanks [@kingston](https://github.com/kingston)! - CLI commands now error on unexpected extra arguments instead of silently ignoring them.
-
-- [#988](https://github.com/halfdomelabs/baseplate/pull/988) [`380a4e2`](https://github.com/halfdomelabs/baseplate/commit/380a4e25f097f867e679b30993b5cb62ca8e8c79) Thanks [@kingston](https://github.com/kingston)! - Generated projects now pin pnpm 11.18.0 and use current versions of their runtime dependencies, including major upgrades to bullmq, Stripe, pino, mime-types, react-dropzone and react-day-picker, so a synced project needs a fresh install and may need changes where it calls those libraries directly. File uploads also accept legacy JPEG extensions such as `.jfif` that were previously rejected, and an unrecognized Stripe subscription status now fails the webhook instead of writing a bad value.
-
-- Updated dependencies [[`80eb474`](https://github.com/halfdomelabs/baseplate/commit/80eb4741492d10682572b8639fd723c02a9be164), [`4c9acc4`](https://github.com/halfdomelabs/baseplate/commit/4c9acc48cc5b62aa3a642aef2ef3ed6d22fd2017), [`3e3cf59`](https://github.com/halfdomelabs/baseplate/commit/3e3cf5967aadb12d473e509a5f225bbdaa79dc0e)]:
-  - @baseplate-dev/project-builder-server@1.0.0
-  - @baseplate-dev/project-builder-lib@1.0.0
-  - @baseplate-dev/project-builder-web@1.0.0
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.15
 
 ### Patch Changes

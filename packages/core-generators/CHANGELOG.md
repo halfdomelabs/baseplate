@@ -1,21 +1,5 @@
 # @baseplate-dev/core-generators
 
-## 1.0.8
-
-### Minor Changes
-
-- [#976](https://github.com/halfdomelabs/baseplate/pull/976) [`3e3cf59`](https://github.com/halfdomelabs/baseplate/commit/3e3cf5967aadb12d473e509a5f225bbdaa79dc0e) Thanks [@kingston](https://github.com/kingston)! - You can now create `react-library` packages for sharing JSX components and hooks across a monorepo, with Tailwind and lint/prettier tooling configured for you. Pick libraries to import from a web app's settings page and the app sources its shared UI components from them instead of generating a local copy.
-
-### Patch Changes
-
-- [#980](https://github.com/halfdomelabs/baseplate/pull/980) [`4c9acc4`](https://github.com/halfdomelabs/baseplate/commit/4c9acc48cc5b62aa3a642aef2ef3ed6d22fd2017) Thanks [@kingston](https://github.com/kingston)! - Generated web apps and React library packages now ship a working component test environment (jsdom plus Testing Library), so you can write React component tests without any tooling setup.
-
-- [#988](https://github.com/halfdomelabs/baseplate/pull/988) [`380a4e2`](https://github.com/halfdomelabs/baseplate/commit/380a4e25f097f867e679b30993b5cb62ca8e8c79) Thanks [@kingston](https://github.com/kingston)! - Generated projects now pin pnpm 11.18.0 and use current versions of their runtime dependencies, including major upgrades to bullmq, Stripe, pino, mime-types, react-dropzone and react-day-picker, so a synced project needs a fresh install and may need changes where it calls those libraries directly. File uploads also accept legacy JPEG extensions such as `.jfif` that were previously rejected, and an unrecognized Stripe subscription status now fails the webhook instead of writing a bad value.
-
-- Updated dependencies []:
-  - @baseplate-dev/sync@1.0.0
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.15
 
 ### Patch Changes

@@ -1,18 +1,5 @@
 # @baseplate-dev/project-builder-lib
 
-## 1.0.8
-
-### Minor Changes
-
-- [#976](https://github.com/halfdomelabs/baseplate/pull/976) [`3e3cf59`](https://github.com/halfdomelabs/baseplate/commit/3e3cf5967aadb12d473e509a5f225bbdaa79dc0e) Thanks [@kingston](https://github.com/kingston)! - You can now create `react-library` packages for sharing JSX components and hooks across a monorepo, with Tailwind and lint/prettier tooling configured for you. Pick libraries to import from a web app's settings page and the app sources its shared UI components from them instead of generating a local copy.
-
-### Patch Changes
-
-- Updated dependencies [[`99fec21`](https://github.com/halfdomelabs/baseplate/commit/99fec214709952d17fb804832866d4bdc6bcc363), [`cc8dff2`](https://github.com/halfdomelabs/baseplate/commit/cc8dff2511ee87947b84401d2d9f37ba9cfa263b)]:
-  - @baseplate-dev/ui-components@1.0.0
-  - @baseplate-dev/sync@1.0.0
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.15
 
 ### Patch Changes

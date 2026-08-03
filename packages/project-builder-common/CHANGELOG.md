@@ -1,23 +1,5 @@
 # @baseplate-dev/project-builder-common
 
-## 1.0.8
-
-### Patch Changes
-
-- Updated dependencies [[`80eb474`](https://github.com/halfdomelabs/baseplate/commit/80eb4741492d10682572b8639fd723c02a9be164), [`4c9acc4`](https://github.com/halfdomelabs/baseplate/commit/4c9acc48cc5b62aa3a642aef2ef3ed6d22fd2017), [`2ec1006`](https://github.com/halfdomelabs/baseplate/commit/2ec1006a5327ec48b5b1319e85d87f0885dddc95), [`a232b6b`](https://github.com/halfdomelabs/baseplate/commit/a232b6b1a86b1c0f638c58ee561abc0c9433ce42), [`d41d590`](https://github.com/halfdomelabs/baseplate/commit/d41d590e28d281ac6cb80eb837e8c4eaac42591c), [`ecdccaa`](https://github.com/halfdomelabs/baseplate/commit/ecdccaa7ee48a8f7ee706ad6bb5dac809d741897), [`3785e88`](https://github.com/halfdomelabs/baseplate/commit/3785e88c3cdc2ae3160a1b266f5f5695d1292a13), [`f750e01`](https://github.com/halfdomelabs/baseplate/commit/f750e01aebbee8e826aa1fc259f56f43ce8793c2), [`eb22c19`](https://github.com/halfdomelabs/baseplate/commit/eb22c1994fa9e369b5b7b79b6394550889dd99b8), [`b0a39f0`](https://github.com/halfdomelabs/baseplate/commit/b0a39f06ad71e88440a94a2ce8a5e8be7cdbdb32), [`3e3cf59`](https://github.com/halfdomelabs/baseplate/commit/3e3cf5967aadb12d473e509a5f225bbdaa79dc0e), [`d41d590`](https://github.com/halfdomelabs/baseplate/commit/d41d590e28d281ac6cb80eb837e8c4eaac42591c), [`380a4e2`](https://github.com/halfdomelabs/baseplate/commit/380a4e25f097f867e679b30993b5cb62ca8e8c79)]:
-  - @baseplate-dev/project-builder-server@1.0.0
-  - @baseplate-dev/plugin-auth@1.0.0
-  - @baseplate-dev/plugin-email@1.0.0
-  - @baseplate-dev/plugin-payments@1.0.0
-  - @baseplate-dev/plugin-queue@1.0.0
-  - @baseplate-dev/plugin-storage@1.0.0
-  - @baseplate-dev/plugin-observability@1.0.0
-  - @baseplate-dev/plugin-notifications@1.0.0
-  - @baseplate-dev/project-builder-lib@1.0.0
-  - @baseplate-dev/plugin-rate-limit@1.0.0
-  - @baseplate-dev/plugin-ai@1.0.0
-  - @baseplate-dev/sync@1.0.0
-
 ## 0.6.15
 
 ### Patch Changes

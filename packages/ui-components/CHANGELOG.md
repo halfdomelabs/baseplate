@@ -1,16 +1,5 @@
 # @baseplate-dev/ui-components
 
-## 1.0.8
-
-### Patch Changes
-
-- [#981](https://github.com/halfdomelabs/baseplate/pull/981) [`99fec21`](https://github.com/halfdomelabs/baseplate/commit/99fec214709952d17fb804832866d4bdc6bcc363) Thanks [@kingston](https://github.com/kingston)! - Adds Radio and Number field components and controllers, and form fields now share a single empty-value convention so clearing an optional field is saved instead of being silently ignored — numeric inputs no longer submit `NaN` when cleared.
-
-- [#990](https://github.com/halfdomelabs/baseplate/pull/990) [`cc8dff2`](https://github.com/halfdomelabs/baseplate/commit/cc8dff2511ee87947b84401d2d9f37ba9cfa263b) Thanks [@kingston](https://github.com/kingston)! - The calendar component now uses react-day-picker 10, matching the version used in generated projects.
-
-- Updated dependencies []:
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.15
 
 ### Patch Changes
