@@ -8,4 +8,6 @@ export const NOTIFICATION_MODELS = {
   notificationRequest: 'NotificationRequest',
   /** Per-recipient, per-channel delivery state. */
   notificationDelivery: 'NotificationDelivery',
+  /** Sparse per-user channel overrides; absence of a row means "use the default". */
+  notificationPreference: 'NotificationPreference',
 } as const;

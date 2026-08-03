@@ -5,6 +5,7 @@ import {
   webAppSchemaExtensionSpec,
 } from '@baseplate-dev/project-builder-lib';
 
+import { NOTIFICATIONS_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
 import { createNotificationsBackendSubscriptionsChecker } from './schema/notification-backend-issue-checker.js';
 import { createNotificationsWebSubscriptionsChecker } from './schema/notification-web-issue-checker.js';
 import { createNotificationsPluginDefinitionSchema } from './schema/plugin-definition.js';
@@ -25,6 +26,10 @@ export default createPluginModule({
     pluginConfig.schemas.set(
       pluginKey,
       createNotificationsPluginDefinitionSchema,
+    );
+    pluginConfig.migrations.set(
+      pluginKey,
+      NOTIFICATIONS_PLUGIN_CONFIG_MIGRATIONS,
     );
     webAppSchemaExtension.schemas.set(
       pluginKey,

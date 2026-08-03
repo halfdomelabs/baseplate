@@ -30,6 +30,17 @@ const descriptorSchema = z.object({
   includeEmailChannel: z.boolean().optional(),
   /** The app's user model; delivery reads recipient addresses from it. */
   userModelName: z.string(),
+  /** The categories notification types are grouped under, from the project definition. */
+  categories: z
+    .array(
+      z.object({
+        key: z.string(),
+        label: z.string(),
+        defaultChannels: z.array(z.string()),
+        mandatory: z.boolean(),
+      }),
+    )
+    .min(1),
 });
 
 /**
@@ -57,7 +68,7 @@ export const notificationModuleGenerator = createGenerator({
   name: 'notifications/core/notification-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeEmailChannel, userModelName }) => ({
+  buildTasks: ({ includeEmailChannel, userModelName, categories }) => ({
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.task,
     renderers: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.renderers.task,
     // The service chunks and groups delivery work with es-toolkit; declared
@@ -270,11 +281,25 @@ export const notificationModuleGenerator = createGenerator({
 
         // One interface member per installed channel — rendered from the same
         // source as the composition-root registry, so the two can't drift.
-        const channelEntries = installedChannelKeys(
-          includeEmailChannel ?? false,
-        )
+        const channelKeys = installedChannelKeys(includeEmailChannel ?? false);
+        const channelEntries = channelKeys
           .map((key) => `readonly ${key}: NotificationChannel;`)
           .join('\n');
+
+        // The same keys as a runtime list, for APIs that enumerate targets
+        // rather than check one. Rendered as the whole array — `'inApp'` always
+        // leads, and an app with no outbound channels gets a valid one-element
+        // array rather than a dangling comma. `as const` keeps the element type
+        // literal so it still satisfies the routing-target union.
+        const routingTargets = `[${['inApp', ...channelKeys]
+          .map((key) => `'${key}'`)
+          .join(', ')}] as const`;
+
+        // `as const` so the key union stays literal — a widened `string[]` would
+        // make `NotificationCategoryKey` just `string` and defeat the narrowing.
+        const categoriesFragment = `[\n${categories
+          .map((category) => JSON.stringify(category, null, 2))
+          .join(',\n')},\n] as const`;
 
         return {
           build: async (builder) => {
@@ -284,8 +309,12 @@ export const notificationModuleGenerator = createGenerator({
             await builder.apply(
               renderers.mainGroup.render({
                 variables: {
+                  constantsNotificationCategories: {
+                    TPL_CATEGORIES: tsCodeFragment(categoriesFragment),
+                  },
                   servicesNotificationChannel: {
                     TPL_CHANNEL_ENTRIES: tsCodeFragment(channelEntries),
+                    TPL_ROUTING_TARGETS: tsCodeFragment(routingTargets),
                   },
                   // Delivery reads recipient and actor details, so the user
                   // delegate belongs to the outbox, not the service.

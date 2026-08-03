@@ -34,7 +34,11 @@ import type {
 } from '../schema/plugin-definition.js';
 
 import { createNotificationsPartialDefinition } from '../schema/models.js';
-import { createNotificationsPluginDefinitionSchema } from '../schema/plugin-definition.js';
+import {
+  buildDefaultNotificationCategory,
+  createNotificationsPluginDefinitionSchema,
+} from '../schema/plugin-definition.js';
+import NotificationCategoryEditorForm from './notification-category-editor-form.js';
 
 export function NotificationsDefinitionEditor({
   definition: pluginMetadata,
@@ -58,6 +62,7 @@ export function NotificationsDefinitionEditor({
         definition,
         'notifications',
       ),
+      categories: [buildDefaultNotificationCategory()],
     } satisfies NotificationsPluginDefinition;
   }, [definition, pluginMetadata?.config]);
 
@@ -169,6 +174,7 @@ export function NotificationsDefinitionEditor({
               />
             </SectionListSectionContent>
           </SectionListSection>
+          <NotificationCategoryEditorForm control={control} />
         </SectionList>
       </div>
 

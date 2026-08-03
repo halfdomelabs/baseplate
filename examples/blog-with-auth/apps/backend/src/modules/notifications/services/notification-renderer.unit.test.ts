@@ -60,7 +60,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.live',
         version: 1,
-        category: 'test',
+        category: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
         render: (event) => ({ body: `${event.params.name} commented` }),
@@ -82,7 +82,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.versioned',
         version: 1,
-        category: 'test',
+        category: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
         render: (event) => ({ body: `v1: ${event.params.name}` }),
@@ -90,7 +90,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.versioned',
         version: 2,
-        category: 'test',
+        category: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
         render: (event) => ({ body: `v2: ${event.params.name}` }),
@@ -109,7 +109,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.atomic',
         version: 1,
-        category: 'test',
+        category: 'general',
         paramsSchema: z.object({ postId: z.string() }),
         channels: ['inApp'],
         render: (event) => ({
@@ -138,7 +138,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.drift',
         version: 1,
-        category: 'test',
+        category: 'general',
         paramsSchema: z.object({ title: z.string() }),
         channels: ['inApp'],
         render: (event) => ({ body: event.params.title }),
@@ -159,7 +159,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.unsafe-url',
         version: 1,
-        category: 'test',
+        category: 'general',
         paramsSchema: z.object({}),
         channels: ['inApp'],
         render: () => ({
@@ -181,7 +181,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.unsafe-segment',
         version: 1,
-        category: 'test',
+        category: 'general',
         paramsSchema: z.object({}),
         channels: ['inApp'],
         render: () => ({
@@ -201,7 +201,7 @@ describe('renderContent (actor identity)', () => {
   const actorEcho = defineNotificationType({
     key: 'test.actor',
     version: 1,
-    category: 'test',
+    category: 'general',
     paramsSchema: z.object({}),
     channels: ['inApp'],
     render: (event) => ({ body: event.actor?.label ?? 'someone' }),
@@ -235,7 +235,7 @@ describe('renderSingle (arity dispatch)', () => {
       defineNotificationType({
         key: 'test.aggregatable',
         version: 1,
-        category: 'test',
+        category: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
         aggregate: { groupBy: ['entityType', 'entityId'] },
@@ -258,7 +258,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
     const first = defineNotificationType({
       key: 'test.dup',
       version: 1,
-      category: 'test',
+      category: 'general',
       paramsSchema: z.object({}),
       channels: ['inApp'],
       render: () => ({ body: 'first' }),
@@ -266,7 +266,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
     const second = defineNotificationType({
       key: 'test.dup',
       version: 1,
-      category: 'test',
+      category: 'general',
       paramsSchema: z.object({}),
       channels: ['inApp'],
       render: () => ({ body: 'second' }),
@@ -285,7 +285,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
         defineNotificationType({
           key: 'test.multiversion',
           version: 1,
-          category: 'test',
+          category: 'general',
           paramsSchema: z.object({}),
           channels: ['inApp'],
           render: () => ({ body: 'v1' }),
@@ -293,7 +293,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
         defineNotificationType({
           key: 'test.multiversion',
           version: 2,
-          category: 'test',
+          category: 'general',
           paramsSchema: z.object({}),
           channels: ['inApp'],
           render: () => ({ body: 'v2' }),

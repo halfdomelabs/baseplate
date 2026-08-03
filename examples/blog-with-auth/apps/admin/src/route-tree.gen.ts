@@ -18,6 +18,7 @@ import { Route as AuthResetPasswordRouteImport } from './routes/auth_/reset-pass
 import { Route as AuthRegisterRouteImport } from './routes/auth_/register'
 import { Route as AuthLoginRouteImport } from './routes/auth_/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth_/forgot-password'
+import { Route as AdminNotificationPreferencesIndexRouteImport } from './routes/admin/notification-preferences/index'
 import { Route as AdminAccountsUsersRouteRouteImport } from './routes/admin/accounts/users/route'
 import { Route as AdminAccountsUsersIndexRouteImport } from './routes/admin/accounts/users/index'
 import { Route as AdminAccountsUsersNewRouteImport } from './routes/admin/accounts/users/new'
@@ -68,6 +69,12 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AdminNotificationPreferencesIndexRoute =
+  AdminNotificationPreferencesIndexRouteImport.update({
+    id: '/notification-preferences/',
+    path: '/notification-preferences/',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminAccountsUsersRouteRoute = AdminAccountsUsersRouteRouteImport.update({
   id: '/accounts/users',
   path: '/accounts/users',
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/accounts/users': typeof AdminAccountsUsersRouteRouteWithChildren
+  '/admin/notification-preferences/': typeof AdminNotificationPreferencesIndexRoute
   '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute
   '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute
   '/admin/accounts/users/': typeof AdminAccountsUsersIndexRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/notification-preferences': typeof AdminNotificationPreferencesIndexRoute
   '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute
   '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute
   '/admin/accounts/users': typeof AdminAccountsUsersIndexRoute
@@ -129,6 +138,7 @@ export interface FileRoutesById {
   '/auth_/verify-email': typeof AuthVerifyEmailRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/accounts/users': typeof AdminAccountsUsersRouteRouteWithChildren
+  '/admin/notification-preferences/': typeof AdminNotificationPreferencesIndexRoute
   '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute
   '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute
   '/admin/accounts/users/': typeof AdminAccountsUsersIndexRoute
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/admin/'
     | '/admin/accounts/users'
+    | '/admin/notification-preferences/'
     | '/admin/accounts/users/$id'
     | '/admin/accounts/users/new'
     | '/admin/accounts/users/'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/admin'
+    | '/admin/notification-preferences'
     | '/admin/accounts/users/$id'
     | '/admin/accounts/users/new'
     | '/admin/accounts/users'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
     | '/auth_/verify-email'
     | '/admin/'
     | '/admin/accounts/users'
+    | '/admin/notification-preferences/'
     | '/admin/accounts/users/$id'
     | '/admin/accounts/users/new'
     | '/admin/accounts/users/'
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/admin/notification-preferences/': {
+      id: '/admin/notification-preferences/'
+      path: '/notification-preferences'
+      fullPath: '/admin/notification-preferences/'
+      preLoaderRoute: typeof AdminNotificationPreferencesIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/accounts/users': {
       id: '/admin/accounts/users'
       path: '/accounts/users'
@@ -302,11 +322,14 @@ const AdminAccountsUsersRouteRouteWithChildren =
 interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAccountsUsersRouteRoute: typeof AdminAccountsUsersRouteRouteWithChildren
+  AdminNotificationPreferencesIndexRoute: typeof AdminNotificationPreferencesIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminAccountsUsersRouteRoute: AdminAccountsUsersRouteRouteWithChildren,
+  AdminNotificationPreferencesIndexRoute:
+    AdminNotificationPreferencesIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

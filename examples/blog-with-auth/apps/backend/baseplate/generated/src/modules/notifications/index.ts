@@ -9,6 +9,7 @@ import { GENERIC_NOTIFICATION_TYPE } from './services/generic-type.js';
 import './schema/notification-content.field.js';
 import './schema/notification-content.object-types.js';
 import './schema/notification-feed.queries.js';
+import './schema/notification-preference.schema.js';
 import './schema/notification.mutations.js';
 import './schema/notification.object-type.js';
 import './schema/notification.subscriptions.js';

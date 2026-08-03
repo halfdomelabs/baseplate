@@ -19,10 +19,23 @@ import { createNotificationService } from './notification.service.js';
  * happens on a replay and on a sweep of a job that already ran.
  */
 
-/** An email-only variant, to prove rows are written for non-feed channels too. */
+/**
+ * An email-only variant, to prove rows are written for non-feed channels too.
+ *
+ * In the `security` category, which is mandatory — so these tests exercise
+ * outbox behaviour without also depending on preference resolution.
+ */
 const EMAIL_ONLY_TYPE: NotificationTypeDefinition<{ text: string }> = {
   ...GENERIC_NOTIFICATION_TYPE,
+  category: 'security',
   channels: ['email'],
+};
+
+/** Feed + email, likewise mandatory so a delivery row is always written. */
+const FEED_AND_EMAIL_TYPE: NotificationTypeDefinition<{ text: string }> = {
+  ...GENERIC_NOTIFICATION_TYPE,
+  category: 'security',
+  channels: ['inApp', 'email'],
 };
 
 /** Records every delivery the channel receives, so tests can assert on shape. */
@@ -638,10 +651,10 @@ describe('notification outbox', () => {
       queue: createFakeQueue({ failing: true }),
       channel: createRecordingChannel(),
     });
-    const { requestId } = await service.notifyMany(
-      { ...GENERIC_NOTIFICATION_TYPE, channels: ['inApp', 'email'] },
-      { recipientIds: [a], params: { text: 'hello' } },
-    );
+    const { requestId } = await service.notifyMany(FEED_AND_EMAIL_TYPE, {
+      recipientIds: [a],
+      params: { text: 'hello' },
+    });
     const row = await prisma.notification.findFirstOrThrow({
       where: { requestId },
     });
@@ -713,10 +726,10 @@ describe('notification outbox', () => {
         queue: createFakeQueue({ failing: true }),
         channel: createRecordingChannel(),
       });
-      const { requestId } = await service.notifyMany(
-        { ...GENERIC_NOTIFICATION_TYPE, channels: ['inApp', 'email'] },
-        { recipientIds: [a], params: { text: 'hello' } },
-      );
+      const { requestId } = await service.notifyMany(FEED_AND_EMAIL_TYPE, {
+        recipientIds: [a],
+        params: { text: 'hello' },
+      });
       const row = await prisma.notification.findFirstOrThrow({
         where: { requestId },
       });
@@ -803,10 +816,10 @@ describe('notification outbox', () => {
         queue: createFakeQueue({ failing: true }),
         channel: createRecordingChannel(),
       });
-      const { requestId } = await service.notifyMany(
-        { ...GENERIC_NOTIFICATION_TYPE, channels: ['inApp', 'email'] },
-        { recipientIds: [a], params: { text: 'hello' } },
-      );
+      const { requestId } = await service.notifyMany(FEED_AND_EMAIL_TYPE, {
+        recipientIds: [a],
+        params: { text: 'hello' },
+      });
       // The enqueue failed, so the fan-out is still pending; settle it to
       // isolate the delivery check from the `fanoutStatus` one.
       await prisma.notificationRequest.updateMany({
@@ -870,10 +883,10 @@ describe('notification outbox', () => {
         channel: createRecordingChannel(),
       });
       for (const recipientId of recipientIds) {
-        await service.notifyMany(
-          { ...GENERIC_NOTIFICATION_TYPE, channels: ['inApp', 'email'] },
-          { recipientIds: [recipientId], params: { text: 'hello' } },
-        );
+        await service.notifyMany(FEED_AND_EMAIL_TYPE, {
+          recipientIds: [recipientId],
+          params: { text: 'hello' },
+        });
       }
       await prisma.notificationRequest.updateMany({
         data: { fanoutStatus: 'done' },
