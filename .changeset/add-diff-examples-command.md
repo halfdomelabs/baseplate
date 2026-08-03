@@ -3,4 +3,4 @@
 '@baseplate-dev/project-builder-server': patch
 ---
 
-Add a `diff-examples` command (and `pnpm check:examples` now runs it first) to catch example projects that are out of sync with the generators before pushing, instead of only finding out from CI.
+Adds a `diff-examples` command that reports which example projects are out of sync with the generators.

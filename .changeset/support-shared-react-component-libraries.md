@@ -6,4 +6,4 @@
 '@baseplate-dev/project-builder-web': minor
 ---
 
-React library packages now support Tailwind (with matching lint/prettier tooling) and peer dependencies on react/react-dom, and web apps can import them as shared component libraries — pick libraries to import from the web app's settings page and the generated app gets a workspace dependency plus Tailwind class scanning for the library's source automatically.
+You can now create `react-library` packages for sharing JSX components and hooks across a monorepo, with Tailwind and lint/prettier tooling configured for you. Pick libraries to import from a web app's settings page and the app sources its shared UI components from them instead of generating a local copy.
