@@ -2,11 +2,9 @@
 import type { NotificationTypeDefinition } from '@src/modules/notifications/services/notification-registry.js';
 
 import { BLOG_NOTIFICATION_TYPES } from '@src/modules/blogs/notifications/blog-notification-types.js';
-import { createNotificationRenderer } from '@src/modules/notifications/services/notification-renderer.js';
 import { prisma } from '@src/services/prisma.js';
 
-import { createAppRuntime } from '../utils/app-runtime.js';
-import { createSystemServiceContext } from '../utils/service-context.js';
+import { withScriptContext } from '../utils/service-context.js';
 
 /**
  * Dev helper: fire a notification at a user so you can watch the admin bell
@@ -94,37 +92,27 @@ async function main(): Promise<void> {
     );
   }
 
-  // The example types are not registered on a module (module contents are
-  // generated), so the renderer is overridden here with the example types —
-  // enough for a script that only writes notifications.
-  const runtime = createAppRuntime({
-    overrides: {
-      notificationRenderer: createNotificationRenderer({
-        notificationTypes: BLOG_NOTIFICATION_TYPES,
-      }),
-    },
-  });
-
-  try {
-    const context = createSystemServiceContext(runtime.services);
-    const { requestId } = scenario.type
-      ? await context.services.notification.notify(scenario.type, {
+  // The default runtime is enough to WRITE: `renderForWrite` takes the type as
+  // an argument, so the frozen snapshot does not go through the registry. The
+  // registry only matters when reading rows back, which the app does with its
+  // own runtime.
+  const { requestId } = await withScriptContext((context) =>
+    scenario.type
+      ? context.services.notification.notify(scenario.type, {
           recipientId: recipient.id,
           params: scenario.params ?? {},
           actorLabel: 'Test Script',
         })
-      : await context.services.notification.notifyText(
+      : context.services.notification.notifyText(
           recipient.id,
           'Test notification 👋',
           { actionUrl: '/admin/accounts/users' },
-        );
+        ),
+  );
 
-    console.info(
-      `Queued ${scenarioArg} notification ${requestId} for ${recipient.email} (${recipient.id})`,
-    );
-  } finally {
-    await runtime.dispose();
-  }
+  console.info(
+    `Queued ${scenarioArg} notification ${requestId} for ${recipient.email} (${recipient.id})`,
+  );
 }
 
 main()
@@ -133,7 +121,7 @@ main()
     process.exitCode = 1;
   })
   .finally(async () => {
-    // runtime.dispose() quits the pubsub Redis connections gracefully
+    // withScriptContext's runtime.dispose() quits the pubsub Redis connections gracefully
     // (draining in-flight commands), so the PUBLISH is flushed before this
     // resolves.
     await prisma.$disconnect();
