@@ -1,5 +1,18 @@
 # @baseplate-dev/create-project
 
+## 0.6.16
+
+### Patch Changes
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - CLI commands now error on unexpected extra arguments instead of silently ignoring them.
+
+- Updated dependencies [[`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`4e1fe85`](https://github.com/halfdomelabs/baseplate/commit/4e1fe85079027b2b0ed990440d99dd3eb1d59e9c), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552)]:
+  - @baseplate-dev/project-builder-server@0.6.16
+  - @baseplate-dev/project-builder-cli@0.6.16
+  - @baseplate-dev/project-builder-lib@0.6.16
+  - @baseplate-dev/sync@0.6.16
+  - @baseplate-dev/utils@0.6.16
+
 ## 0.6.15
 
 ### Patch Changes
