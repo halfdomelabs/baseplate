@@ -17,9 +17,10 @@ import { NOTIFICATION_MODELS } from '#src/notifications/constants/model-names.js
  * sparse per-user overrides on the Builder-declared topic defaults.
  *
  * Render-at-read content model: `params` (render inputs) are the source of truth,
- * re-rendered per request; frozen `segments` + `fallbackText` are the fallback
- * for retired types / param drift. Actor is discriminated via `actorKind`.
- * `recipientId`/`actorId` are the only FKs; `requestId` is an FK-less ref.
+ * re-rendered per request; `frozenContent` is the plain-text fallback for
+ * retired types / param drift. Whoever triggered a notification travels in
+ * `params`, so there are no actor columns. `recipientId` is the only FK;
+ * `requestId` is an FK-less ref.
  */
 export function createNotificationsPartialDefinition(
   notificationsFeatureName: string,
@@ -76,18 +77,6 @@ export function createNotificationsPartialDefinition(
               options: { default: 'true' },
             },
 
-            // Frozen fallback snapshot (see header): the feed renders from
-            // `params`; these are used only on retired type / param drift.
-            {
-              name: 'segments',
-              type: 'json',
-            },
-            // Plain-text flattening: SMS / a11y / list display / catalog-miss.
-            {
-              name: 'fallbackText',
-              type: 'string',
-            },
-
             // Render source of truth: must be JSON-serializable + snapshot-complete.
             {
               name: 'params',
@@ -95,27 +84,13 @@ export function createNotificationsPartialDefinition(
               isOptional: true,
             },
 
-            // Actor (discriminated by actorKind: user | system | none).
+            // Frozen fallback snapshot (see header): plain strings, read only
+            // on retired type / param drift. One blob rather than a column per
+            // field because nothing queries it — it is read back whole or not
+            // at all, and a project widens its shape in generated code.
             {
-              name: 'actorKind',
-              type: 'string',
-              options: { default: 'none' },
-            },
-            {
-              name: 'actorId',
-              type: 'uuid',
-              isOptional: true,
-            },
-            // Frozen name fallback for a deleted human actor.
-            {
-              name: 'actorLabel',
-              type: 'string',
-              isOptional: true,
-            },
-            // Indexes the SYSTEM_ACTORS config dictionary (kind = 'system').
-            {
-              name: 'systemActorKey',
-              type: 'string',
+              name: 'frozenContent',
+              type: 'json',
               isOptional: true,
             },
 
@@ -153,11 +128,6 @@ export function createNotificationsPartialDefinition(
             },
 
             // --- State ---
-            {
-              name: 'actionUrl',
-              type: 'string',
-              isOptional: true,
-            },
             {
               name: 'seenAt',
               type: 'dateTime',
@@ -265,15 +235,6 @@ export function createNotificationsPartialDefinition(
               onDelete: 'Cascade',
               onUpdate: 'Restrict',
             },
-            // Live actor resolution (fresh name/avatar for human actors).
-            {
-              name: 'actor',
-              references: [{ localRef: 'actorId', foreignRef: 'id' }],
-              modelRef: userModelName,
-              foreignRelationName: 'actorNotifications',
-              onDelete: 'SetNull',
-              onUpdate: 'Restrict',
-            },
           ],
         },
         graphql: {
@@ -290,7 +251,6 @@ export function createNotificationsPartialDefinition(
               { ref: 'readAt' },
               { ref: 'createdAt' },
             ],
-            localRelations: [{ ref: 'actor' }],
           },
         },
       },
@@ -323,28 +283,10 @@ export function createNotificationsPartialDefinition(
               type: 'json',
               isOptional: true,
             },
-            // The frozen fallback snapshot, same as Notification.segments.
+            // The frozen fallback snapshot, same as Notification.frozenContent.
             {
-              name: 'segments',
+              name: 'frozenContent',
               type: 'json',
-            },
-            {
-              name: 'fallbackText',
-              type: 'string',
-            },
-            {
-              name: 'actionUrl',
-              type: 'string',
-              isOptional: true,
-            },
-            {
-              name: 'actorKind',
-              type: 'string',
-              options: { default: 'none' },
-            },
-            {
-              name: 'actorId',
-              type: 'uuid',
               isOptional: true,
             },
             // pending | done. Flipped once every row and delivery job for this

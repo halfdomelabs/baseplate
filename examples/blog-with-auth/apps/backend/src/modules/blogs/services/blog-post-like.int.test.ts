@@ -4,6 +4,7 @@ import type { QueueService } from '@src/types/queue.types.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { GENERIC_NOTIFICATION_TYPE } from '@src/modules/notifications/services/generic-type.js';
+import { frozenNotificationContentSchema } from '@src/modules/notifications/services/notification-content.js';
 import { createNotificationOutbox } from '@src/modules/notifications/services/notification-outbox.js';
 import { createNotificationRenderer } from '@src/modules/notifications/services/notification-renderer.js';
 import { createNotificationService } from '@src/modules/notifications/services/notification.service.js';
@@ -11,6 +12,11 @@ import { prisma } from '@src/services/prisma.js';
 
 import { POST_LIKED_TYPE } from '../notifications/blog-notification-types.js';
 import { likeBlogPost, unlikeBlogPost } from './blog-post-like.service.js';
+
+/** Read the stored snapshot's title, which the DB hands back as raw JSON. */
+function frozenText(frozenContent: unknown): string {
+  return frozenNotificationContentSchema.parse(frozenContent).title;
+}
 
 /**
  * The end-to-end case keyed notifications exist for: many likes on one post
@@ -113,12 +119,12 @@ describe('blog post likes', () => {
 
     const rows = await prisma.notification.findMany({
       where: { recipientId: author.id },
-      select: { fallbackText: true, params: true },
+      select: { frozenContent: true, params: true },
     });
 
     // One row, not one per like — that is the whole point.
     expect(rows).toHaveLength(1);
-    expect(rows[0]?.fallbackText).toBe(
+    expect(frozenText(rows[0]?.frozenContent)).toBe(
       `${bob.name} and 1 other liked Hello world`,
     );
     expect(rows[0]?.params).toMatchObject({ count: 2 });
@@ -255,14 +261,16 @@ describe('blog post likes', () => {
 
     const row = await prisma.notification.findFirstOrThrow({
       where: { recipientId: author.id },
-      select: { fallbackText: true, dismissedAt: true, params: true },
+      select: { frozenContent: true, dismissedAt: true, params: true },
     });
 
     // Replace-downward: the row survives, still visible, with the smaller
     // count a fold would have got wrong.
     expect(row.dismissedAt).toBeNull();
     expect(row.params).toMatchObject({ count: 1 });
-    expect(row.fallbackText).toBe(`${alice.name} liked Hello world`);
+    expect(frozenText(row.frozenContent)).toBe(
+      `${alice.name} liked Hello world`,
+    );
   });
 
   it('does not notify an author who likes their own post', async () => {

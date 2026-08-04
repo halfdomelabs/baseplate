@@ -113,14 +113,8 @@ model Notification {
   recipientId     String                 @map("recipient_id") @db.Uuid
   requestId       String?                @map("request_id") @db.Uuid
   inApp           Boolean                @default(true) @map("in_app")
-  segments        Json
-  fallbackText    String                 @map("fallback_text")
   params          Json?
-  actorKind       String                 @default("none") @map("actor_kind")
-  actorId         String?                @map("actor_id") @db.Uuid
-  actorLabel      String?                @map("actor_label")
-  systemActorKey  String?                @map("system_actor_key")
-  actionUrl       String?                @map("action_url")
+  frozenContent   Json?                  @map("frozen_content")
   seenAt          DateTime?              @map("seen_at") @db.Timestamptz(3)
   readAt          DateTime?              @map("read_at") @db.Timestamptz(3)
   dismissedAt     DateTime?              @map("dismissed_at") @db.Timestamptz(3)
@@ -128,9 +122,8 @@ model Notification {
   expiresAt       DateTime?              @map("expires_at") @db.Timestamptz(3)
   groupKey        String                 @map("group_key")
   feedSortKey     String                 @unique @default(dbgenerated("uuidv7()")) @map("feed_sort_key") @db.Uuid
-  actor           User?                  @relation("actorNotifications", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Restrict)
   deliveries      NotificationDelivery[]
-  recipient       User                   @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  recipient       User                   @relation(fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([type, groupKey, recipientId])
   @@unique([requestId, recipientId])
@@ -180,12 +173,8 @@ model NotificationRequest {
   type            String
   templateVersion Int      @default(1) @map("template_version")
   params          Json?
-  actorKind       String   @default("none") @map("actor_kind")
-  actorId         String?  @map("actor_id") @db.Uuid
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  segments        Json
-  fallbackText    String   @map("fallback_text")
-  actionUrl       String?  @map("action_url")
+  frozenContent   Json?    @map("frozen_content")
   fanoutStatus    String   @default("pending") @map("fanout_status")
 
   @@index([fanoutStatus, createdAt])
@@ -209,14 +198,13 @@ model User {
   name                    String?
   emailVerified           Boolean                  @default(false) @map("email_verified")
   accounts                UserAccount[]
-  actorNotifications      Notification[]           @relation("actorNotifications")
   authVerifications       AuthVerification[]
   blogPostLikes           BlogPostLike[]
   blogPosts               BlogPost[]
   blogs                   Blog[]
   blogUsers               BlogUser[]
   notificationPreferences NotificationPreference[]
-  notifications           Notification[]           @relation("notifications")
+  notifications           Notification[]
   roles                   UserRole[]
   sessions                UserSession[]
 

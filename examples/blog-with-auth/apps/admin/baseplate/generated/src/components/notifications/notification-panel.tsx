@@ -21,7 +21,7 @@ import {
 } from './notification-operations';
 
 type NotificationItem = ResultOf<typeof notificationItemFragment>;
-type Segment = NotificationItem['content']['segments'][number];
+type Segment = NotificationItem['content']['title'][number];
 
 /**
  * Resolves an action URL against the current origin. Returns the in-app path
@@ -39,45 +39,27 @@ function resolveInAppPath(url: string): string | null {
   }
 }
 
-/** Two-letter initials from a display name, e.g. "Dana Mehta" -> "DM". */
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  const first = parts.at(0)?.[0] ?? '';
-  const last = parts.length > 1 ? (parts.at(-1)?.[0] ?? '') : '';
-  return (first + last).toUpperCase();
-}
-
-/** Avatar circle: actor initials when the notification has an actor, else a generic bell icon. */
-function NotificationAvatar({
-  actor,
-}: {
-  actor: NotificationItem['actor'];
-}): ReactElement {
+function NotificationAvatar(): ReactElement {
   return (
     <div className="flex size-8 flex-none items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-      {actor?.name ? (
-        getInitials(actor.name)
-      ) : (
-        <MdNotifications className="size-4" />
-      )}
+      <MdNotifications className="size-4" />
     </div>
   );
 }
 
-/** Render one content segment (a real GraphQL union — text or link). */
+/** Render one content segment (a real GraphQL union — text, emphasis or link). */
 function SegmentView({ segment }: { segment: Segment }): ReactElement | null {
   switch (segment.__typename) {
     case 'NotificationTextSegment': {
-      return segment.bold ? (
-        <strong className="font-semibold">{segment.value}</strong>
-      ) : (
-        <span>{segment.value}</span>
-      );
+      return <span>{segment.text}</span>;
+    }
+    case 'NotificationEmphasisSegment': {
+      return <strong className="font-semibold">{segment.text}</strong>;
     }
     case 'NotificationLinkSegment': {
       return (
-        <a href={segment.href} className="text-primary underline">
-          {segment.value}
+        <a href={segment.url} className="text-primary underline">
+          {segment.text}
         </a>
       );
     }
@@ -85,6 +67,17 @@ function SegmentView({ segment }: { segment: Segment }): ReactElement | null {
       return null;
     }
   }
+}
+
+/** Render a run of segments as one line of text. */
+function SegmentLine({ segments }: { segments: Segment[] }): ReactElement {
+  return (
+    <>
+      {segments.map((segment, index) => (
+        <SegmentView key={index} segment={segment} />
+      ))}
+    </>
+  );
 }
 
 interface Props {
@@ -197,17 +190,16 @@ export function NotificationPanel({
                     }
                   }}
                 >
-                  <NotificationAvatar actor={item.actor} />
+                  <NotificationAvatar />
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <span className="text-sm">
-                      {content.segments.length > 0 ? (
-                        content.segments.map((segment, index) => (
-                          <SegmentView key={index} segment={segment} />
-                        ))
-                      ) : (
-                        <span>{content.fallbackText}</span>
-                      )}
+                      <SegmentLine segments={content.title} />
                     </span>
+                    {content.body && content.body.length > 0 && (
+                      <span className="text-sm text-muted-foreground">
+                        <SegmentLine segments={content.body} />
+                      </span>
+                    )}
                     <span className="text-xs text-muted-foreground">
                       {new Date(item.createdAt).toLocaleString()}
                     </span>

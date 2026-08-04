@@ -7,12 +7,19 @@ import type { NotificationSegment } from './notification-content.js';
 import type { AnyNotificationType } from './notification-registry.js';
 import type { RenderSource } from './notification-renderer.js';
 
+import { segmentsToText } from './notification-content.js';
 import { defineNotificationType } from './notification-registry.js';
 import { createNotificationRenderer } from './notification-renderer.js';
 
 vi.mock('@src/services/error-logger.js', () => ({ logError: vi.fn() }));
 
-const FROZEN: NotificationSegment[] = [{ type: 'text', value: 'FROZEN v1' }];
+/** The stored snapshot every test row carries, as plain strings. */
+const FROZEN = { title: 'FROZEN v1', actionUrl: '/frozen' };
+
+/** The same snapshot as `renderContent` hands it back: one text segment. */
+const FROZEN_RENDERED: NotificationSegment[] = [
+  { kind: 'text', text: 'FROZEN v1' },
+];
 
 /** Build a renderer whose registry holds exactly the supplied types. */
 function rendererWith(
@@ -44,11 +51,7 @@ function makeRow(
     type,
     templateVersion,
     params,
-    segments: FROZEN,
-    fallbackText: 'FROZEN v1',
-    actionUrl: '/frozen',
-    actorId: null,
-    actorLabel: null,
+    frozenContent: FROZEN,
   };
 }
 
@@ -61,16 +64,14 @@ describe('renderContent (versioned render-at-read)', () => {
         topic: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: (event) => ({ body: `${event.params.name} commented` }),
+        render: (params) => ({ title: `${params.name} commented` }),
       }),
     ]);
 
     const content = renderContent(makeRow('test.live', 1, { name: 'Alice' }));
 
-    expect(content.segments).toEqual([
-      { type: 'text', value: 'Alice commented' },
-    ]);
-    expect(content.fallbackText).toBe('Alice commented');
+    expect(content.title).toEqual([{ kind: 'text', text: 'Alice commented' }]);
+    expect(segmentsToText(content.title)).toBe('Alice commented');
   });
 
   it('PINS a row to the renderer version that created it', () => {
@@ -83,7 +84,7 @@ describe('renderContent (versioned render-at-read)', () => {
         topic: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: (event) => ({ body: `v1: ${event.params.name}` }),
+        render: (params) => ({ title: `v1: ${params.name}` }),
       }),
       defineNotificationType({
         key: 'test.versioned',
@@ -91,15 +92,15 @@ describe('renderContent (versioned render-at-read)', () => {
         topic: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: (event) => ({ body: `v2: ${event.params.name}` }),
+        render: (params) => ({ title: `v2: ${params.name}` }),
       }),
     ]);
 
     const oldRow = renderContent(makeRow('test.versioned', 1, { name: 'Al' }));
     const newRow = renderContent(makeRow('test.versioned', 2, { name: 'Al' }));
 
-    expect(oldRow.segments).toEqual([{ type: 'text', value: 'v1: Al' }]);
-    expect(newRow.segments).toEqual([{ type: 'text', value: 'v2: Al' }]);
+    expect(oldRow.title).toEqual([{ kind: 'text', text: 'v1: Al' }]);
+    expect(newRow.title).toEqual([{ kind: 'text', text: 'v2: Al' }]);
   });
 
   it('renders content ATOMICALLY (segments, text and actionUrl from one render)', () => {
@@ -110,9 +111,9 @@ describe('renderContent (versioned render-at-read)', () => {
         topic: 'general',
         paramsSchema: z.object({ postId: z.string() }),
         channels: ['inApp'],
-        render: (event) => ({
-          body: 'commented on your post',
-          actionUrl: `/posts/${event.params.postId}`,
+        render: (params) => ({
+          title: 'commented on your post',
+          actionUrl: `/posts/${params.postId}`,
         }),
       }),
     ]);
@@ -121,13 +122,13 @@ describe('renderContent (versioned render-at-read)', () => {
 
     // The action URL is re-derived at read — not the frozen '/frozen' column.
     expect(content.actionUrl).toBe('/posts/p9');
-    expect(content.fallbackText).toBe('commented on your post');
+    expect(segmentsToText(content.title)).toBe('commented on your post');
   });
 
   it('falls back to the frozen snapshot when the renderer is retired', () => {
     const renderContent = renderWith([]);
     const content = renderContent(makeRow('test.gone', 1, { name: 'Bob' }));
-    expect(content.segments).toEqual(FROZEN);
+    expect(content.title).toEqual(FROZEN_RENDERED);
     expect(content.actionUrl).toBe('/frozen');
   });
 
@@ -139,17 +140,17 @@ describe('renderContent (versioned render-at-read)', () => {
         topic: 'general',
         paramsSchema: z.object({ title: z.string() }),
         channels: ['inApp'],
-        render: (event) => ({ body: event.params.title }),
+        render: (params) => ({ title: params.title }),
       }),
     ]);
 
     // Row predates the `title` param → schema validation fails → frozen.
     const drifted = renderContent(makeRow('test.drift', 1, { old: 1 }));
-    expect(drifted.segments).toEqual(FROZEN);
+    expect(drifted.title).toEqual(FROZEN_RENDERED);
 
     // Current shape still renders live.
     const current = renderContent(makeRow('test.drift', 1, { title: 'Hi' }));
-    expect(current.segments).toEqual([{ type: 'text', value: 'Hi' }]);
+    expect(current.title).toEqual([{ kind: 'text', text: 'Hi' }]);
   });
 
   it('rejects unsafe actionUrl schemes', () => {
@@ -161,7 +162,7 @@ describe('renderContent (versioned render-at-read)', () => {
         paramsSchema: z.object({}),
         channels: ['inApp'],
         render: () => ({
-          body: 'hi',
+          title: 'hi',
           actionUrl: 'javascript:alert(1)',
         }),
       }),
@@ -183,51 +184,57 @@ describe('renderContent (versioned render-at-read)', () => {
         paramsSchema: z.object({}),
         channels: ['inApp'],
         render: () => ({
-          body: [{ type: 'link', value: 'click', href: 'javascript:alert(1)' }],
+          title: [{ kind: 'link', text: 'click', url: 'javascript:alert(1)' }],
         }),
       }),
     ]);
 
-    expect(
-      renderContent(makeRow('test.unsafe-segment', 1, {})).segments,
-    ).toEqual(FROZEN);
+    expect(renderContent(makeRow('test.unsafe-segment', 1, {})).title).toEqual(
+      FROZEN_RENDERED,
+    );
   });
 });
 
-describe('renderContent (actor identity)', () => {
-  /** A type whose copy is entirely the actor label, so tests read the chain. */
-  const actorEcho = defineNotificationType({
-    key: 'test.actor',
+describe('renderContent (title and body)', () => {
+  const titleAndBody = defineNotificationType({
+    key: 'test.both',
     version: 1,
     topic: 'general',
-    paramsSchema: z.object({}),
+    paramsSchema: z.object({ who: z.string() }),
     channels: ['inApp'],
-    render: (event) => ({ body: event.actor?.label ?? 'someone' }),
+    render: (params) => ({
+      title: `${params.who} signed in`,
+      body: 'From a new device',
+    }),
   });
 
-  function renderActor(row: RenderSource, actor?: { label: string }): string {
-    return rendererWith([actorEcho]).renderContent(row, undefined, actor)
-      .fallbackText;
-  }
+  it('renders title and body as separate segment runs', () => {
+    const content = rendererWith([titleAndBody]).renderContent(
+      makeRow('test.both', 1, { who: 'Alice' }),
+    );
 
-  it('prefers a caller-resolved actor over the row snapshot', () => {
-    const row = { ...makeRow('test.actor', 1, {}), actorLabel: 'Old Name' };
-
-    expect(renderActor(row, { label: 'New Name' })).toBe('New Name');
+    expect(content.title).toEqual([{ kind: 'text', text: 'Alice signed in' }]);
+    expect(content.body).toEqual([{ kind: 'text', text: 'From a new device' }]);
   });
 
-  it('falls back to the actorLabel snapshot when no actor is passed', () => {
-    const row = { ...makeRow('test.actor', 1, {}), actorLabel: 'Snapshot' };
+  it('leaves body null when a type renders only a title', () => {
+    const titleOnly = defineNotificationType({
+      key: 'test.title-only',
+      version: 1,
+      topic: 'general',
+      paramsSchema: z.object({}),
+      channels: ['inApp'],
+      render: () => ({ title: 'Just a title' }),
+    });
 
-    expect(renderActor(row)).toBe('Snapshot');
-  });
-
-  it('leaves the actor undefined when the row has no snapshot', () => {
-    expect(renderActor(makeRow('test.actor', 1, {}))).toBe('someone');
+    expect(
+      rendererWith([titleOnly]).renderContent(makeRow('test.title-only', 1, {}))
+        .body,
+    ).toBeNull();
   });
 });
 
-describe('renderSingle (aggregate state)', () => {
+describe('render (aggregate state)', () => {
   // A keyed row stores the caller's recomputed aggregate, so `render` reads a
   // count out of `params` rather than being handed a batch of events. The same
   // renderer therefore covers one actor and many.
@@ -237,11 +244,11 @@ describe('renderSingle (aggregate state)', () => {
     topic: 'general',
     paramsSchema: z.object({ sample: z.array(z.string()), count: z.number() }),
     channels: ['inApp'],
-    render: (event) => {
-      const [first] = event.params.sample;
-      const others = event.params.count - 1;
+    render: (params) => {
+      const [first] = params.sample;
+      const others = params.count - 1;
       return {
-        body: others > 0 ? `${first} and ${others} others` : `${first}`,
+        title: others > 0 ? `${first} and ${others} others` : `${first}`,
       };
     },
   });
@@ -251,7 +258,7 @@ describe('renderSingle (aggregate state)', () => {
       makeRow('test.likes', 1, { sample: ['Alice'], count: 1 }),
     );
 
-    expect(content.fallbackText).toBe('Alice');
+    expect(segmentsToText(content.title)).toBe('Alice');
   });
 
   it('renders a collapsed group from the same renderer', () => {
@@ -259,7 +266,7 @@ describe('renderSingle (aggregate state)', () => {
       makeRow('test.likes', 1, { sample: ['Alice', 'Bob'], count: 4 }),
     );
 
-    expect(content.fallbackText).toBe('Alice and 3 others');
+    expect(segmentsToText(content.title)).toBe('Alice and 3 others');
   });
 });
 
@@ -271,7 +278,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
       topic: 'general',
       paramsSchema: z.object({}),
       channels: ['inApp'],
-      render: () => ({ body: 'first' }),
+      render: () => ({ title: 'first' }),
     });
     const second = defineNotificationType({
       key: 'test.dup',
@@ -279,7 +286,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
       topic: 'general',
       paramsSchema: z.object({}),
       channels: ['inApp'],
-      render: () => ({ body: 'second' }),
+      render: () => ({ title: 'second' }),
     });
 
     // The collision surfaces deterministically at runtime construction — citing
@@ -298,7 +305,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
           topic: 'general',
           paramsSchema: z.object({}),
           channels: ['inApp'],
-          render: () => ({ body: 'v1' }),
+          render: () => ({ title: 'v1' }),
         }),
         defineNotificationType({
           key: 'test.multiversion',
@@ -306,7 +313,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
           topic: 'general',
           paramsSchema: z.object({}),
           channels: ['inApp'],
-          render: () => ({ body: 'v2' }),
+          render: () => ({ title: 'v2' }),
         }),
       ]),
     ).not.toThrow();

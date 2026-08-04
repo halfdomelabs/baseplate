@@ -10,22 +10,32 @@ export const notificationItemFragment = graphql(`
     type
     readAt
     createdAt
-    actor {
-      id
-      name
-    }
     content(locale: "en") {
-      fallbackText
       actionUrl
-      segments {
+      title {
         __typename
         ... on NotificationTextSegment {
-          value
-          bold
+          text
+        }
+        ... on NotificationEmphasisSegment {
+          text
         }
         ... on NotificationLinkSegment {
-          value
-          href
+          text
+          url
+        }
+      }
+      body {
+        __typename
+        ... on NotificationTextSegment {
+          text
+        }
+        ... on NotificationEmphasisSegment {
+          text
+        }
+        ... on NotificationLinkSegment {
+          text
+          url
         }
       }
     }

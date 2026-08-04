@@ -91,8 +91,7 @@ async function createNotification(
       inApp: overrides.inApp ?? true,
       dismissedAt: overrides.dismissedAt ?? null,
       params: { text: 'hi' },
-      segments: [{ type: 'text', value: 'hi' }],
-      fallbackText: 'hi',
+      frozenContent: { title: 'hi' },
     },
     select: { id: true },
   });

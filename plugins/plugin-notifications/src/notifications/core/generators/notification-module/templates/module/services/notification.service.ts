@@ -20,8 +20,6 @@ import type { NotificationOutbox } from '$servicesNotificationOutbox';
 import type {
   AnyNotificationType,
   BatchedNotificationType,
-  NotificationActor,
-  NotificationEvent,
   NotificationParamsSchema,
   PlainNotificationType,
 } from '$servicesNotificationRegistry';
@@ -40,6 +38,7 @@ import {
 } from '$constantsNotificationTopics';
 import { GENERIC_NOTIFICATION_TYPE } from '$servicesGenericType';
 import { ROUTING_TARGETS } from '$servicesNotificationChannel';
+import { toFrozenContent } from '$servicesNotificationContent';
 import { generatedKey } from '$servicesNotificationRegistry';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
 import { Prisma } from '%prismaGeneratedImports';
@@ -88,20 +87,6 @@ async function countUnseenFor(
 }
 
 /**
- * Actor identity shared by the request and its rows. The `actorLabel` snapshot
- * lives only on {@link Notification}, so it is stamped per row rather than
- * added here.
- */
-function actorColumns(input: { actorId?: string }): {
-  actorKind: string;
-  actorId: string | null;
-} {
-  return input.actorId
-    ? { actorKind: 'user', actorId: input.actorId }
-    : { actorKind: 'none', actorId: null };
-}
-
-/**
  * Whether stored params and freshly computed ones hold the same value.
  *
  * Compared structurally rather than by serializing: jsonb does not preserve key
@@ -146,13 +131,6 @@ function isUniqueConstraintError(error: unknown): boolean {
 /** Fields every notify call carries, whatever shape supplies the params. */
 interface NotifyInputBase {
   recipientId: string;
-  actorId?: string;
-  /**
-   * Display name snapshotted onto the row, surviving a rename or deletion of
-   * the actor. Also how a non-user actor is named, until system actors get a
-   * locale-aware key lookup.
-   */
-  actorLabel?: string;
 }
 
 /**
@@ -255,8 +233,6 @@ export interface RetractResult {
 /** Options for the `notifyText` one-off sugar. */
 export interface NotifyTextOptions {
   actionUrl?: string;
-  actorId?: string;
-  actorLabel?: string;
 }
 
 /** Result of a mutation that can change the unseen (badge) count. */
@@ -395,11 +371,7 @@ export interface NotificationService {
    * {@link NotificationRenderer}; see its docs for the version-pinning and
    * fallback rules.
    */
-  renderContent(
-    row: RenderSource,
-    ctx?: RenderContext,
-    actor?: NotificationActor,
-  ): RenderedContent;
+  renderContent(row: RenderSource, ctx?: RenderContext): RenderedContent;
   /**
    * Count of unseen notifications — the bell badge. Seen (opening the panel)
    * clears the badge; read (clicking one) clears its highlight. `readAt`
@@ -722,29 +694,18 @@ export function createNotificationService(deps: {
     const params = type.paramsSchema.parse(input.params);
     const recipientIds = [...new Set(input.recipientIds)];
 
-    const event: NotificationEvent<z.output<PSchema>> = {
-      params,
-      actor: input.actorLabel ? { label: input.actorLabel } : undefined,
-    };
-
-    const frozen = renderer.renderForWrite(type, event);
+    const frozen = renderer.renderForWrite(type, params);
 
     const routingByRecipient = await resolveRouting(recipientIds, type);
 
     // Row-only: `NotificationRequest` is disposable once its deliveries settle.
     const expiresAt = new Date(Date.now() + RETENTION_MS);
 
-    // Row-only: the snapshot exists to survive the live user row.
-    const actorSnapshot = { actorLabel: input.actorLabel ?? null };
-
     const contentColumns = {
       type: type.key,
       templateVersion: type.version,
       params: params as Prisma.InputJsonValue,
-      segments: frozen.segments,
-      fallbackText: frozen.fallbackText,
-      actionUrl: frozen.actionUrl,
-      ...actorColumns(input),
+      frozenContent: toFrozenContent(frozen),
     };
 
     // A `groupKey` for the whole fan-out, derived once from the params every
@@ -773,7 +734,6 @@ export function createNotificationService(deps: {
           const created = await tx.notification.createMany({
             data: batch.map((recipientId) => ({
               ...contentColumns,
-              ...actorSnapshot,
               requestId: request.id,
               recipientId,
               // A type deriving no key gets one scoped to this request, so it
@@ -882,11 +842,7 @@ export function createNotificationService(deps: {
     const params = type.paramsSchema.parse(input.params);
     const { recipientId, groupKey } = input;
 
-    const event: NotificationEvent = {
-      params,
-      actor: input.actorLabel ? { label: input.actorLabel } : undefined,
-    };
-    const frozen = renderer.renderForWrite(type, event);
+    const frozen = renderer.renderForWrite(type, params);
 
     const routingByRecipient = await resolveRouting([recipientId], type);
     const routing = routingByRecipient.get(recipientId) ?? {
@@ -898,10 +854,7 @@ export function createNotificationService(deps: {
       type: type.key,
       templateVersion: type.version,
       params: params as Prisma.InputJsonValue,
-      segments: frozen.segments,
-      fallbackText: frozen.fallbackText,
-      actionUrl: frozen.actionUrl,
-      ...actorColumns(input),
+      frozenContent: toFrozenContent(frozen),
     };
 
     const { requestId, changed, publishTo } = await prisma.$transaction(
@@ -942,7 +895,6 @@ export function createNotificationService(deps: {
         });
 
         const expiresAt = new Date(Date.now() + RETENTION_MS);
-        const actorSnapshot = { actorLabel: input.actorLabel ?? null };
         // Swap for node:crypto once it ships uuidv7.
         const feedSortKey = uuidv7();
 
@@ -953,7 +905,6 @@ export function createNotificationService(deps: {
               // make the fallback render a stale count.
               data: {
                 ...contentColumns,
-                ...actorSnapshot,
                 requestId: request.id,
                 inApp: routing.inApp,
                 expiresAt,
@@ -969,7 +920,6 @@ export function createNotificationService(deps: {
           : await tx.notification.create({
               data: {
                 ...contentColumns,
-                ...actorSnapshot,
                 requestId: request.id,
                 recipientId,
                 groupKey,
@@ -1031,7 +981,7 @@ export function createNotificationService(deps: {
     type: T,
     input: NotifyInput<T>,
   ): Promise<NotifyResult> {
-    const { recipientId, actorId, actorLabel } = input;
+    const { recipientId } = input;
     const { params, groupKey } = await resolvePayload(type, input);
 
     // No derived key: every call is its own row, so the bulk path's
@@ -1041,12 +991,10 @@ export function createNotificationService(deps: {
       return notifyMany(type as PlainNotificationType, {
         recipientIds: [recipientId],
         params,
-        actorId,
-        actorLabel,
       });
     }
 
-    const deduplicated = { recipientId, actorId, actorLabel, params, groupKey };
+    const deduplicated = { recipientId, params, groupKey };
     try {
       return await notifyDeduplicated(type, deduplicated);
     } catch (error) {
@@ -1125,8 +1073,6 @@ export function createNotificationService(deps: {
     return notify(GENERIC_NOTIFICATION_TYPE, {
       recipientId,
       params: { text, actionUrl: options.actionUrl },
-      actorId: options.actorId,
-      actorLabel: options.actorLabel,
     });
   }
 
@@ -1228,7 +1174,7 @@ export function createNotificationService(deps: {
     notifyMany,
     retract,
     notifyText,
-    renderContent: (row, ctx, actor) => renderer.renderContent(row, ctx, actor),
+    renderContent: (row, ctx) => renderer.renderContent(row, ctx),
     getUnseenCount,
     getUnreadCount,
     markAsRead,

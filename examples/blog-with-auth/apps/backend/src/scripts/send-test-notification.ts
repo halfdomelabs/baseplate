@@ -58,7 +58,6 @@ const SCENARIOS: Record<
     send: (notification, recipientId) =>
       notification.notify(POST_COMMENTED_TYPE, {
         recipientId,
-        actorLabel: 'Test Script',
         params: {
           postId: SAMPLE_POST_ID,
           postTitle: 'Hello world',
@@ -72,7 +71,6 @@ const SCENARIOS: Record<
     send: (notification, recipientId) =>
       notification.notify(POST_LIKED_TYPE, {
         recipientId,
-        actorLabel: 'Test Script',
         input: { postId: SAMPLE_POST_ID },
       }),
   },
@@ -82,7 +80,6 @@ const SCENARIOS: Record<
     send: (notification, recipientId) =>
       notification.notify(SECURITY_ALERT_TYPE, {
         recipientId,
-        actorLabel: 'Test Script',
         params: { action: 'New sign-in', ipAddress: '203.0.113.4' },
       }),
   },

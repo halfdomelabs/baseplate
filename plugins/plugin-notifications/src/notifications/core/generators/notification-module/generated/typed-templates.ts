@@ -446,6 +446,7 @@ const servicesEmailChannel = createTsTemplateFile({
   name: 'services-email-channel',
   referencedGeneratorTemplates: {
     servicesNotificationChannel: {},
+    servicesNotificationContent: {},
     servicesNotificationRenderer: {},
   },
   source: {

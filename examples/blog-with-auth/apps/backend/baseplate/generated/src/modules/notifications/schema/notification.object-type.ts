@@ -7,6 +7,5 @@ export const notificationObjectType = builder.prismaObject('Notification', {
     seenAt: t.expose('seenAt', { nullable: true, type: 'DateTime' }),
     readAt: t.expose('readAt', { nullable: true, type: 'DateTime' }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    actor: t.relation('actor', { nullable: true }),
   }),
 });

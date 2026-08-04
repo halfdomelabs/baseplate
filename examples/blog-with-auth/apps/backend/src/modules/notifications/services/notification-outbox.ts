@@ -204,20 +204,6 @@ async function resolveRecipients(
   return new Map(users.map((user) => [user.id, { email: user.email }]));
 }
 
-/** Actor presentation fields, read live so a rename is reflected. */
-async function resolveActors(
-  actorIds: string[],
-): Promise<Map<string, { name: string | null }>> {
-  if (actorIds.length === 0) return new Map();
-  const users =
-    await /* TPL_USER_DELEGATE:START */ prisma.user /* TPL_USER_DELEGATE:END */
-      .findMany({
-        where: { id: { in: actorIds } },
-        select: { id: true, name: true },
-      });
-  return new Map(users.map((user) => [user.id, { name: user.name }]));
-}
-
 /**
  * Settles a chunk's leftover rows as `failed`; see
  * {@link NotificationOutbox.failExhaustedDeliveries}.
@@ -460,13 +446,7 @@ export function createNotificationOutbox(deps: {
     });
 
     const recipientIds = rows.map((row) => row.recipientId);
-    const actorIds = [
-      ...new Set(rows.map((row) => row.actorId).filter((id) => id !== null)),
-    ];
-    const [recipients, actors] = await Promise.all([
-      resolveRecipients(recipientIds),
-      resolveActors(actorIds),
-    ]);
+    const recipients = await resolveRecipients(recipientIds);
 
     // What stops a duplicate job re-sending: a row already settled is not
     // still to send. Read once here, so a row settled by a job running
@@ -542,7 +522,6 @@ export function createNotificationOutbox(deps: {
           recipientId: row.recipientId,
           notification: row,
           recipient,
-          actor: row.actorId ? (actors.get(row.actorId) ?? null) : null,
         });
         // Settled before the next row, so a later throw cannot re-send this
         // one. If this write itself fails the row stays pending and may send

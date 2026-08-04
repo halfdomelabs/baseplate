@@ -15,8 +15,8 @@ export const GENERIC_NOTIFICATION_TYPE = defineNotificationType({
   topic: 'general',
   paramsSchema: genericParamsSchema,
   channels: ['inApp'],
-  render: (event) => ({
-    body: event.params.text,
-    actionUrl: event.params.actionUrl,
+  render: (params) => ({
+    title: params.text,
+    actionUrl: params.actionUrl,
   }),
 });
