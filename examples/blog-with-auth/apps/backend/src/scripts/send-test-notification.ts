@@ -1,7 +1,11 @@
 #!/usr/bin/env node
-import type { NotificationTypeDefinition } from '@src/modules/notifications/services/notification-registry.js';
+import type { NotificationService } from '@src/modules/notifications/services/notification.service.js';
 
-import { BLOG_NOTIFICATION_TYPES } from '@src/modules/blogs/notifications/blog-notification-types.js';
+import {
+  POST_COMMENTED_TYPE,
+  POST_LIKED_TYPE,
+  SECURITY_ALERT_TYPE,
+} from '@src/modules/blogs/notifications/blog-notification-types.js';
 import { prisma } from '@src/services/prisma.js';
 
 import { withScriptContext } from '../utils/service-context.js';
@@ -18,50 +22,69 @@ import { withScriptContext } from '../utils/service-context.js';
  * first user. The bell moves ONLY via the pubsub -> SSE path (a separate
  * process), so a moving badge proves the real-time channel end to end.
  *
- * To see preferences working, turn a category off at
+ * To see preferences working, turn a topic off at
  * /admin/notification-preferences and re-run: `comment` and `like` stop
- * arriving, while `security` still does — its category is mandatory.
+ * arriving, while `security` still does — it belongs to no topic at all.
  */
 
-const [POST_COMMENTED_TYPE, POST_LIKED_TYPE, SECURITY_ALERT_TYPE] =
-  BLOG_NOTIFICATION_TYPES;
+const SAMPLE_POST_ID = '00000000-0000-0000-0000-000000000000';
 
-/** The notifications this script can send, by CLI argument. */
+/**
+ * The notifications this script can send, by CLI argument.
+ *
+ * Each carries its own `send` rather than a shared `(type, params)` pair: a
+ * batched type takes `input` and a plain one takes `params`, and the whole point
+ * of the two constructors is that those are not interchangeable.
+ */
 const SCENARIOS: Record<
   string,
   {
     description: string;
-    type?: NotificationTypeDefinition;
-    params?: Record<string, unknown>;
+    send: (
+      notification: NotificationService,
+      recipientId: string,
+    ) => Promise<{ requestId: string | null }>;
   }
 > = {
   text: {
-    description: 'Plain text via notifyText (generic type, category "general")',
+    description: 'Plain text via notifyText (generic type, topic "general")',
+    send: (notification, recipientId) =>
+      notification.notifyText(recipientId, 'Test notification 👋', {
+        actionUrl: '/admin/accounts/users',
+      }),
   },
   comment: {
-    description: 'post.commented — category "general", in-app + email',
-    type: POST_COMMENTED_TYPE,
-    params: {
-      postId: '00000000-0000-0000-0000-000000000000',
-      postTitle: 'Hello world',
-      commenterName: 'Ada Lovelace',
-    },
+    description: 'post.commented — topic "general", in-app + email',
+    send: (notification, recipientId) =>
+      notification.notify(POST_COMMENTED_TYPE, {
+        recipientId,
+        actorLabel: 'Test Script',
+        params: {
+          postId: SAMPLE_POST_ID,
+          postTitle: 'Hello world',
+          commenterName: 'Ada Lovelace',
+        },
+      }),
   },
   like: {
-    description: 'post.liked — category "general", in-app only',
-    type: POST_LIKED_TYPE,
-    params: {
-      postId: '00000000-0000-0000-0000-000000000000',
-      postTitle: 'Hello world',
-      likerNames: ['Grace Hopper', 'Ada Lovelace'],
-      count: 4,
-    },
+    description:
+      'post.liked — topic "general", in-app only. Batched: params come from the like table, so this needs a real post id',
+    send: (notification, recipientId) =>
+      notification.notify(POST_LIKED_TYPE, {
+        recipientId,
+        actorLabel: 'Test Script',
+        input: { postId: SAMPLE_POST_ID },
+      }),
   },
   security: {
     description:
-      'account.securityAlert — category "security" (mandatory: ignores preferences)',
-    type: SECURITY_ALERT_TYPE,
-    params: { action: 'New sign-in', ipAddress: '203.0.113.4' },
+      'account.securityAlert — topic-less, so it ignores preferences entirely',
+    send: (notification, recipientId) =>
+      notification.notify(SECURITY_ALERT_TYPE, {
+        recipientId,
+        actorLabel: 'Test Script',
+        params: { action: 'New sign-in', ipAddress: '203.0.113.4' },
+      }),
   },
 };
 
@@ -98,17 +121,7 @@ async function main(): Promise<void> {
   // registry only matters when reading rows back, which the app does with its
   // own runtime.
   const { requestId } = await withScriptContext((context) =>
-    scenario.type
-      ? context.services.notification.notify(scenario.type, {
-          recipientId: recipient.id,
-          params: scenario.params ?? {},
-          actorLabel: 'Test Script',
-        })
-      : context.services.notification.notifyText(
-          recipient.id,
-          'Test notification 👋',
-          { actionUrl: '/admin/accounts/users' },
-        ),
+    scenario.send(context.services.notification, recipient.id),
   );
 
   console.info(

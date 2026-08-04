@@ -1,4 +1,6 @@
-import { chunk, isEqual } from 'es-toolkit';
+import type { z } from 'zod';
+
+import { chunk, isEqual, omitBy } from 'es-toolkit';
 import { v7 as uuidv7 } from 'uuid';
 
 import { Prisma } from '@src/generated/prisma/client.js';
@@ -6,7 +8,12 @@ import { logError } from '@src/services/error-logger.js';
 import { prisma } from '@src/services/prisma.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 
-import type { NotificationCategoryKey } from '../constants/notification-categories.js';
+import type {
+  NotificationChannelSetting,
+  NotificationMode,
+  NotificationTopic,
+  NotificationTopicKey,
+} from '../constants/notification-topics.js';
 import type {
   NotificationChannelKey,
   NotificationRoutingTarget,
@@ -19,9 +26,12 @@ import type {
 import type { NotificationEvents } from './notification-events.js';
 import type { NotificationOutbox } from './notification-outbox.js';
 import type {
+  AnyNotificationType,
+  BatchedNotificationType,
   NotificationActor,
   NotificationEvent,
-  NotificationTypeDefinition,
+  NotificationParamsSchema,
+  PlainNotificationType,
 } from './notification-registry.js';
 import type {
   NotificationRenderer,
@@ -29,10 +39,12 @@ import type {
 } from './notification-renderer.js';
 
 import {
-  getNotificationCategory,
-  isNotificationCategoryKey,
-  NOTIFICATION_CATEGORIES,
-} from '../constants/notification-categories.js';
+  getNotificationTopic,
+  isNotificationTopicKey,
+  isOutboundTarget,
+  NOTIFICATION_TOPICS,
+  resolveChannelSetting,
+} from '../constants/notification-topics.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
 import { ROUTING_TARGETS } from './notification-channel.js';
 import { generatedKey } from './notification-registry.js';
@@ -92,15 +104,34 @@ function actorColumns(input: { actorId?: string }): {
 }
 
 /**
- * Params as the JSON column will read them back.
+ * Whether stored params and freshly computed ones hold the same value.
  *
- * Not a deep clone: the round-trip drops undefined-valued keys exactly as the
- * column does, which is what lets a stored value compare equal to the params a
- * later call recomputes.
+ * Compared structurally rather than by serializing: jsonb does not preserve key
+ * order, so the two sides agree on content but not on layout. Undefined-valued
+ * keys are dropped first, since the column drops them on write.
  */
-function asStoredJson(params: NotificationParams): Prisma.InputJsonValue {
-  // eslint-disable-next-line unicorn/prefer-structured-clone -- structuredClone keeps undefined-valued keys; dropping them is the point.
-  return JSON.parse(JSON.stringify(params)) as Prisma.InputJsonValue;
+function paramsMatch(
+  stored: Prisma.JsonValue,
+  computed: NotificationParams,
+): boolean {
+  return isEqual(stored, omitBy(computed, (value) => value === undefined));
+}
+
+/**
+ * The group key a call names, without resolving params.
+ *
+ * Separate from the params path because retraction needs only the key: running
+ * a batched type's `resolveParams` here would read state to compute something
+ * the caller then discards, and that read can legitimately fail — the fact
+ * being withdrawn is often gone, which is why it is being withdrawn.
+ */
+function resolveGroupKey(
+  type: AnyNotificationType,
+  payload: { params?: NotificationParams; input?: unknown },
+): string | undefined {
+  return type.kind === 'batched'
+    ? type.groupKey(type.inputSchema.parse(payload.input))
+    : type.groupKey?.(type.paramsSchema.parse(payload.params));
 }
 
 /** True for Prisma's unique-constraint violation. */
@@ -111,10 +142,9 @@ function isUniqueConstraintError(error: unknown): boolean {
   );
 }
 
-/** Input to trigger a notification. The type is the definition, not a key. */
-export interface NotifyInput<P extends NotificationParams> {
+/** Fields every notify call carries, whatever shape supplies the params. */
+interface NotifyInputBase {
   recipientId: string;
-  params: P;
   actorId?: string;
   /**
    * Display name snapshotted onto the row, surviving a rename or deletion of
@@ -122,42 +152,67 @@ export interface NotifyInput<P extends NotificationParams> {
    * locale-aware key lookup.
    */
   actorLabel?: string;
-  /** Polymorphic subject reference (no FK). */
-  entityType?: string;
-  entityId?: string;
-  /**
-   * Stable identity of the FACT this notification is about
-   * (`post:${postId}:likes`), unique per recipient.
-   *
-   * Passing one gives replace semantics: one row per (recipient, key),
-   * rewritten in place by later calls, and retractable by the same key.
-   *
-   * The caller must then pass the WHOLE current state of the fact in `params`,
-   * recomputed on every event that changes it — including events that shrink
-   * it, like an unlike. This service stores what it is given; it never folds or
-   * accumulates.
-   *
-   * Omit it for fire-and-forget notifications ("your export is ready").
-   */
-  key?: string;
 }
+
+/**
+ * Resolve a call's payload into the params and group key the write paths take.
+ *
+ * The one place the two type shapes converge: a batched type computes its own
+ * params from `input`, a plain type is handed them, and both derive their
+ * group key from whichever of the two the type declared it over.
+ */
+async function resolvePayload(
+  type: AnyNotificationType,
+  payload: { params?: NotificationParams; input?: unknown },
+): Promise<{ params: NotificationParams; groupKey: string | undefined }> {
+  if (type.kind === 'batched') {
+    const parsedInput: unknown = type.inputSchema.parse(payload.input);
+    return {
+      params: await type.resolveParams(parsedInput),
+      groupKey: type.groupKey(parsedInput),
+    };
+  }
+  const params = type.paramsSchema.parse(payload.params);
+  return { params, groupKey: type.groupKey?.(params) };
+}
+
+/**
+ * Input to trigger a notification.
+ *
+ * Note there is no `key`: the collapse key is derived by the type from what it
+ * is given, never passed here. A call site that could write its own key could
+ * write a different one on the retraction path, and the withdrawal would
+ * silently miss.
+ */
+export type NotifyInput<
+  T extends AnyNotificationType,
+> = NotifyInputBase & NotifyPayload<T>;
+
+/**
+ * The params half of a notify call, by type shape.
+ *
+ * A plain type takes finished `params`; a batched type takes `input` and
+ * computes params itself. Making this a union is what makes passing the wrong
+ * one a compile error rather than a runtime surprise.
+ */
+export type NotifyPayload<
+  T extends AnyNotificationType,
+> =
+  T extends BatchedNotificationType<NotificationParamsSchema, infer ISchema>
+    ? { input: z.output<ISchema> }
+    : T extends PlainNotificationType<infer PSchema>
+      ? { params: z.output<PSchema> }
+      : never;
 
 /**
  * Input to notify many recipients from a single fan-out.
  *
- * `key` is omitted rather than rejected at runtime: replace semantics need a
- * read-compare-write per recipient, which the bulk path cannot do.
+ * Plain types only — see {@link NotificationService.notifyMany}.
  */
-export interface NotifyManyInput<P extends NotificationParams> extends Omit<
-  NotifyInput<P>,
-  'recipientId' | 'key'
-> {
+export interface NotifyManyInput<P extends NotificationParams>
+  extends Omit<NotifyInputBase, 'recipientId'> {
   recipientIds: string[];
-  /**
-   * Stable identity of this fan-out. A replay carrying the same one resolves to
-   * the original request and writes no second copy for anyone in the audience.
-   */
-  idempotencyKey?: string;
+  params: P;
 }
 
 /** The dispatch a notify call created; the worker resolves it into deliveries. */
@@ -177,12 +232,15 @@ export interface NotifyManyResult extends NotifyResult {
   createdCount: number;
 }
 
-/** Input to withdraw a notification. */
-export interface RetractInput {
-  recipientId: string;
-  /** The same `key` the `notify` call carried. */
-  key: string;
-}
+/**
+ * Input to withdraw a notification.
+ *
+ * Carries the same shape the `notify` call did, so the type derives the same
+ * `groupKey` on both sides — which is the whole reason the key is not passed.
+ */
+export type RetractInput<
+  T extends AnyNotificationType,
+> = { recipientId: string } & NotifyPayload<T>;
 
 /** Outcome of a retraction. */
 export interface RetractResult {
@@ -214,42 +272,44 @@ export interface MarkNotificationsResult {
   unseenCount: number;
 }
 
-/**
- * Which preferences a row governs.
- *
- * `category` is what a settings page edits; `type` is what inline affordances
- * ("stop notifying me about likes") write, and can only suppress within an
- * already-enabled category.
- */
-export type NotificationPreferenceScopeKind = 'category' | 'type';
-
 /** Identifies a single preference row within a user. */
 export interface PreferenceScope {
-  scopeKind: NotificationPreferenceScopeKind;
-  /** A category key or a notification type key, per `scopeKind`. */
-  scopeKey: string;
+  topicKey: string;
   channel: NotificationRoutingTarget;
 }
 
-export type SetPreferenceInput = PreferenceScope & { enabled: boolean };
+export type SetPreferenceInput = PreferenceScope & {
+  mode: NotificationMode;
+  /** Only stored for `digest`; absent inherits the topic's window. */
+  digestWindowSeconds?: number;
+}
 
-/** One channel's resolved state for a category. */
-export interface NotificationChannelPreference {
+/** One channel's resolved state for a topic. */
+export interface NotificationChannelPreference
+  extends NotificationChannelSetting {
   channel: NotificationRoutingTarget;
-  enabled: boolean;
-  /** True when no row exists and `enabled` came from the category default. */
+  /** True when no row exists and the setting came from the topic default. */
   isDefault: boolean;
 }
 
 /**
- * A category as a settings page renders it. `channels` is absent for a mandatory
- * category: it consults no preferences, so there is nothing to toggle.
+ * Where one recipient's copy of a notification goes.
+ *
+ * Outbound entries carry their mode rather than just the channel: `digest`
+ * deliveries are armed the same way immediate ones are, and the outbox decides
+ * when to send. The feed has no such split, so `inApp` stays a boolean.
  */
-export interface NotificationCategoryPreferences {
-  key: NotificationCategoryKey;
+export interface RecipientRouting {
+  inApp: boolean;
+  outbound: { channel: NotificationChannelKey; mode: NotificationMode }[];
+}
+
+/** A topic as a settings page renders it. */
+export interface NotificationTopicPreferences {
+  key: NotificationTopicKey;
   label: string;
-  mandatory: boolean;
-  channels?: NotificationChannelPreference[];
+  description?: string;
+  channels: NotificationChannelPreference[];
 }
 
 /**
@@ -259,39 +319,48 @@ export interface NotificationCategoryPreferences {
  */
 export interface NotificationService {
   /**
-   * Trigger a notification. Takes the definition itself, so `params` are
-   * checked against the renderer that will consume them.
+   * Trigger a notification. Takes the definition itself, so the payload is
+   * checked against the renderer that will consume it.
    *
-   * Pass `input.key` to make the notification **keyed**: one row per
-   * (recipient, key), replaced in place as the underlying fact evolves, and
-   * withdrawable via {@link NotificationService.retract}. See `NotifyInput.key`
-   * for the recompute contract that carries. Without a key each call is its own
-   * row, as before.
+   * Whether the notification collapses is the type's choice, not the call's: a
+   * type deriving a `groupKey` gets one row per (type, key, recipient),
+   * replaced in place as the underlying fact evolves and withdrawable via
+   * {@link NotificationService.retract}. A type deriving none writes a fresh row
+   * per call.
    *
    * Returns the dispatch handle rather than a row: a notification is one
    * request that may materialize a row per recipient across several channels.
    */
-  notify<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    input: NotifyInput<P>,
+  notify<T extends AnyNotificationType>(
+    type: T,
+    input: NotifyInput<T>,
   ): Promise<NotifyResult>;
   /**
    * Trigger one notification for many recipients: a single request plus a row
    * per recipient, with outbound delivery handed to the queue in chunks.
+   *
+   * Plain types only. A batched type resolves its params from input, which the
+   * bulk path cannot do per recipient, and derives a `groupKey`, whose replace
+   * semantics need a read-compare-write the bulk path also cannot do. Passing
+   * one is a compile error.
    *
    * Fan-out is inline: the whole audience lands in one transaction, in bounded
    * batches. The batches bound each statement, not the transaction, so caller
    * latency and {@link FANOUT_TRANSACTION_OPTIONS} are what cap the audience —
    * past a few thousand recipients this wants a fan-out worker.
    *
-   * Pass `input.idempotencyKey` to make a replay safe: it resolves to the
-   * original request, and `@@unique(requestId, recipientId)` then makes the
-   * row writes skip. Without one, a replayed fan-out notifies the audience
-   * twice.
+   * A replay writes a second request but no second row for anyone already
+   * notified: the type's `groupKey` (or the generated one) is unique per
+   * recipient, so the row writes skip.
+   *
+   * Note the asymmetry with {@link NotificationService.notify}: a collapsing
+   * type reached through this path skips an existing row rather than replacing
+   * it, because the bulk path has no read-compare-write per recipient. Use
+   * `notify` when the row must reflect new state.
    */
-  notifyMany<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    input: NotifyManyInput<P>,
+  notifyMany<PSchema extends NotificationParamsSchema>(
+    type: PlainNotificationType<PSchema>,
+    input: NotifyManyInput<z.output<PSchema>>,
   ): Promise<NotifyManyResult>;
   /**
    * Withdraw a notification whose triggering fact is gone — the last like was
@@ -301,14 +370,17 @@ export interface NotificationService {
    * not left yet never leaves, and soft-deletes the row. An email already sent
    * cannot be recalled.
    *
-   * The inverse of a keyed {@link NotificationService.notify}: both are writes
-   * against the same (recipient, key) row, so a later notify at that key revives
-   * it rather than adding a second one. Returns `retracted: false` when there is
-   * nothing there — racing retention is benign.
+   * The inverse of a collapsing {@link NotificationService.notify}: both are
+   * writes against the same (type, groupKey, recipient) row, so a later notify
+   * revives it rather than adding a second one. Returns `retracted: false` when
+   * there is nothing there — racing retention is benign.
+   *
+   * Takes the same payload the notify call did rather than a key, so both sides
+   * run the type's own `groupKey` and cannot disagree.
    */
-  retract<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    input: RetractInput,
+  retract<T extends AnyNotificationType>(
+    type: T,
+    input: RetractInput<T>,
   ): Promise<RetractResult>;
   /**
    * Send a plain-text notification without defining a type, via the built-in
@@ -330,14 +402,14 @@ export interface NotificationService {
     actor?: NotificationActor,
   ): RenderedContent;
   /**
-   * Count of UNSEEN notifications — the bell badge. Seen (opening the panel)
+   * Count of unseen notifications — the bell badge. Seen (opening the panel)
    * clears the badge; read (clicking one) clears its highlight. `readAt`
    * always implies `seenAt` (see the read mutations), so this never counts a
    * row already read.
    */
   getUnseenCount(userId: string): Promise<number>;
   /**
-   * Count of UNREAD notifications — the panel header. Unlike the unseen count,
+   * Count of unread notifications — the panel header. Unlike the unseen count,
    * opening the panel does not clear this; reading or dismissing a row does.
    */
   getUnreadCount(userId: string): Promise<number>;
@@ -361,20 +433,21 @@ export interface NotificationService {
   /** Subscribe to real-time unseen-count changes for a user. */
   subscribeToChanges(userId: string): AsyncIterable<{ count: number }>;
   /**
-   * Record one channel choice for a category or a type, overriding the
-   * category default. Affects future fan-outs only — rows already written keep
-   * the routing they were created with.
+   * Record one channel choice for a topic, overriding the topic default.
+   * Affects future fan-outs only — rows already written keep the routing they
+   * were created with.
    */
   setPreference(userId: string, input: SetPreferenceInput): Promise<void>;
   /**
-   * Drop a choice, restoring the category default. False when there was no row.
+   * Drop a choice, restoring the topic default. False when there was no row.
    */
   clearPreference(userId: string, scope: PreferenceScope): Promise<boolean>;
   /**
-   * Every declared category with this user's resolved per-channel state, for a
-   * settings page. Category-scoped only: type rows are not surfaced here.
+   * Every declared topic with this user's resolved per-channel state, for a
+   * settings page. Types outside every topic are deliberately absent: they
+   * consult no preference, so there is nothing to render.
    */
-  getPreferences(userId: string): Promise<NotificationCategoryPreferences[]>;
+  getPreferences(userId: string): Promise<NotificationTopicPreferences[]>;
 }
 
 async function getUnseenCount(userId: string): Promise<number> {
@@ -400,7 +473,7 @@ async function getUnreadCount(userId: string): Promise<number> {
 }
 
 /**
- * Record one channel choice, overriding the category default.
+ * Record one channel choice, overriding the topic default.
  *
  * Deliberately does not publish an unseen count: a preference governs future
  * fan-outs, and rows already written keep the routing they were created with.
@@ -409,30 +482,36 @@ async function setPreference(
   userId: string,
   input: SetPreferenceInput,
 ): Promise<void> {
-  const { scopeKind, scopeKey, channel, enabled } = input;
-  // Category keys are a closed generated set, so an unknown one is a caller
-  // bug. Type keys are not checked: a preference may legitimately be written
-  // for a type registered by a later deploy, and an unmatched row is inert.
-  if (scopeKind === 'category' && !isNotificationCategoryKey(scopeKey)) {
-    throw new BadRequestError(`Unknown notification category: ${scopeKey}`);
+  const { topicKey, channel, mode, digestWindowSeconds } = input;
+  // Topic keys are a closed generated set, so an unknown one is a caller bug
+  // rather than a row worth storing — unlike v4's type scope, every preference
+  // now names something the generated const can confirm exists.
+  if (!isNotificationTopicKey(topicKey)) {
+    throw new BadRequestError(`Unknown notification topic: ${topicKey}`);
   }
+  // The feed has no window to batch over, so `digest` is outbound-only.
+  if (mode === 'digest' && !isOutboundTarget(channel)) {
+    throw new BadRequestError(`Channel ${channel} cannot be digested`);
+  }
+  // Only meaningful for `digest`; storing it otherwise would resurrect a stale
+  // window if the user later switched back.
+  const window = mode === 'digest' ? (digestWindowSeconds ?? null) : null;
   await prisma.notificationPreference.upsert({
-    where: {
-      userId_scopeKind_scopeKey_channel: {
-        userId,
-        scopeKind,
-        scopeKey,
-        channel,
-      },
+    where: { userId_topicKey_channel: { userId, topicKey, channel } },
+    update: { mode, digestWindowSeconds: window },
+    create: {
+      userId,
+      topicKey,
+      channel,
+      mode,
+      digestWindowSeconds: window,
     },
-    update: { enabled },
-    create: { userId, scopeKind, scopeKey, channel, enabled },
   });
 }
 
 /**
- * Drop a choice, restoring the category default. Returns false when there was
- * no row to clear.
+ * Drop a choice, restoring the topic default. Returns false when there was no
+ * row to clear.
  */
 async function clearPreference(
   userId: string,
@@ -447,47 +526,43 @@ async function clearPreference(
 }
 
 /**
- * Every declared category with this user's resolved per-channel state — what a
+ * Every declared topic with this user's resolved per-channel state — what a
  * settings page renders.
- *
- * Category-scoped only: type rows are written by inline affordances ("stop
- * notifying me about likes") and are not shown here, so a category cannot
- * appear off because some unrelated type was muted.
  */
 async function getPreferences(
   userId: string,
-): Promise<NotificationCategoryPreferences[]> {
+): Promise<NotificationTopicPreferences[]> {
   const rows = await prisma.notificationPreference.findMany({
-    where: { userId, scopeKind: 'category' },
-    select: { scopeKey: true, channel: true, enabled: true },
+    where: { userId },
+    select: {
+      topicKey: true,
+      channel: true,
+      mode: true,
+      digestWindowSeconds: true,
+    },
   });
-  const byCategory = new Map<string, Map<string, boolean>>();
+  const byTopic = new Map<string, Map<string, NotificationChannelSetting>>();
   for (const row of rows) {
     const byChannel =
-      byCategory.get(row.scopeKey) ?? new Map<string, boolean>();
-    byChannel.set(row.channel, row.enabled);
-    byCategory.set(row.scopeKey, byChannel);
+      byTopic.get(row.topicKey) ?? new Map<string, NotificationChannelSetting>();
+    byChannel.set(row.channel, {
+      mode: row.mode as NotificationMode,
+      digestWindowSeconds: row.digestWindowSeconds ?? undefined,
+    });
+    byTopic.set(row.topicKey, byChannel);
   }
 
-  return NOTIFICATION_CATEGORIES.map((category) => {
-    // A mandatory category consults no preferences at all, and its defaults
-    // are not read either — the type's own `channels` decide. Reporting
-    // channel state would invite a settings page to render a toggle that
-    // cannot do anything.
-    if (category.mandatory) {
-      return { key: category.key, label: category.label, mandatory: true };
-    }
-    const overrides = byCategory.get(category.key);
-    const defaults = new Set<string>(category.defaultChannels);
+  return (NOTIFICATION_TOPICS as readonly NotificationTopic[]).map((topic) => {
+    const overrides = byTopic.get(topic.key);
     return {
-      key: category.key,
-      label: category.label,
-      mandatory: false,
+      key: topic.key as NotificationTopicKey,
+      label: topic.label,
+      description: topic.description,
       channels: ROUTING_TARGETS.map((channel) => {
         const override = overrides?.get(channel);
         return {
           channel,
-          enabled: override ?? defaults.has(channel),
+          ...resolveChannelSetting(topic, channel, override),
           isDefault: override === undefined,
         };
       }),
@@ -508,105 +583,104 @@ export function createNotificationService(deps: {
   const { events, renderer, outbox } = deps;
 
   /**
-   * How a type is delivered, split by mechanism: in-app is a flag on the row
-   * plus an inline publish, outbound channels are queued jobs.
+   * A type's routing ceiling: where it may go, before any user says otherwise.
+   *
+   * `channels` is optional on a type and defaults to every configured target,
+   * so a type opts out of a channel rather than opting into all of them.
    */
-  function resolveRouting(type: NotificationTypeDefinition): {
+  function routingCeiling(type: AnyNotificationType): {
     inApp: boolean;
     outbound: NotificationChannelKey[];
   } {
+    const targets = type.channels ?? ROUTING_TARGETS;
     return {
-      inApp: type.channels.includes('inApp'),
-      outbound: outbox.installedChannels(type.channels),
+      inApp: targets.includes('inApp'),
+      outbound: outbox.installedChannels(targets),
     };
   }
 
   /**
    * Each recipient's routing after their preferences are applied.
    *
-   * Resolved for the whole audience in one query BEFORE the fan-out transaction
+   * Resolved for the whole audience in one query before the fan-out transaction
    * opens: the transaction's budget is `FANOUT_TRANSACTION_OPTIONS.timeout`, so
    * a per-recipient query inside it would spend the audience cap on round trips.
    *
-   * Both scopes are read together and combined as an AND — a type row can only
-   * narrow within an enabled category, never re-enable a disabled one. That way
-   * a settings page showing "Comments: off" cannot be silently contradicted by a
-   * type-scoped row, while "comments on, likes off" is still expressible.
+   * A topic-less type skips the query entirely and uses its ceiling verbatim.
+   * That is the v5 replacement for `mandatory`: there is no preference row to
+   * read because there is no topic to scope one to, so a security alert is
+   * unsuppressible by construction rather than by a flag someone can flip.
    */
-  async function resolveEffectiveChannels(
+  async function resolveRouting(
     recipientIds: string[],
-    type: NotificationTypeDefinition,
-  ): Promise<
-    Map<string, { inApp: boolean; outbound: NotificationChannelKey[] }>
-  > {
-    const routing = resolveRouting(type);
-    const category = getNotificationCategory(type.category);
+    type: AnyNotificationType,
+  ): Promise<Map<string, RecipientRouting>> {
+    const ceiling = routingCeiling(type);
 
-    // Mandatory categories are not the user's choice, so their rows are never
-    // read — skipping the query entirely rather than reading and discarding.
-    if (category.mandatory) {
+    if (type.topic === undefined) {
+      const routing: RecipientRouting = {
+        inApp: ceiling.inApp,
+        outbound: ceiling.outbound.map((channel) => ({
+          channel,
+          mode: 'immediate' as const,
+        })),
+      };
       return new Map(recipientIds.map((id) => [id, routing]));
     }
 
+    const topic = getNotificationTopic(type.topic);
+
     // One unchunked read for the whole audience: it runs outside the
     // transaction, and rows exist only where someone has actually chosen, so
-    // the result is far smaller than the recipient  list.
+    // the result is far smaller than the recipient list.
     const preferences = await prisma.notificationPreference.findMany({
-      where: {
-        userId: { in: recipientIds },
-        // One query covering both scopes; `scopeKind` disambiguates a category
-        // and a type that happen to share a key.
-        scopeKey: { in: [type.category, type.key] },
-      },
+      where: { userId: { in: recipientIds }, topicKey: type.topic },
       select: {
         userId: true,
-        scopeKind: true,
-        scopeKey: true,
         channel: true,
-        enabled: true,
+        mode: true,
+        digestWindowSeconds: true,
       },
     });
 
-    // channel -> enabled, per user, per scope. Absence means "no opinion".
-    const categoryRows = new Map<string, Map<string, boolean>>();
-    const typeRows = new Map<string, Map<string, boolean>>();
+    // channel -> setting, per user. Absence means "use the topic default".
+    const overrides = new Map<string, Map<string, NotificationChannelSetting>>();
     for (const row of preferences) {
-      const scoped =
-        row.scopeKind === 'category' && row.scopeKey === type.category
-          ? categoryRows
-          : row.scopeKind === 'type' && row.scopeKey === type.key
-            ? typeRows
-            : undefined;
-      if (!scoped) continue;
-      const byChannel = scoped.get(row.userId) ?? new Map<string, boolean>();
-      byChannel.set(row.channel, row.enabled);
-      scoped.set(row.userId, byChannel);
+      const byChannel =
+        overrides.get(row.userId) ??
+        new Map<string, NotificationChannelSetting>();
+      byChannel.set(row.channel, {
+        mode: row.mode as NotificationMode,
+        digestWindowSeconds: row.digestWindowSeconds ?? undefined,
+      });
+      overrides.set(row.userId, byChannel);
     }
 
-    // Widened to `string` for the lookup: preference rows hold whatever was
-    // written, so a row for a since-removed channel must miss rather than fail.
-    const defaultChannels = new Set<string>(category.defaultChannels);
-
-    function isAllowed(
+    function settingFor(
       recipientId: string,
       target: NotificationRoutingTarget,
-    ): boolean {
-      const categoryEnabled =
-        categoryRows.get(recipientId)?.get(target) ??
-        defaultChannels.has(target);
-      // Type rows are pure suppression: no row means "no objection", not "on".
-      const typeEnabled = typeRows.get(recipientId)?.get(target) ?? true;
-      return categoryEnabled && typeEnabled;
+    ): NotificationChannelSetting {
+      return resolveChannelSetting(
+        topic,
+        target,
+        overrides.get(recipientId)?.get(target),
+      );
     }
 
     return new Map(
       recipientIds.map((recipientId) => [
         recipientId,
         {
-          inApp: routing.inApp && isAllowed(recipientId, 'inApp'),
-          outbound: routing.outbound.filter((channel) =>
-            isAllowed(recipientId, channel),
-          ),
+          // The ceiling still wins: a preference can narrow where a type goes,
+          // never widen it past what the type declared.
+          inApp:
+            ceiling.inApp && settingFor(recipientId, 'inApp').mode !== 'off',
+          outbound: ceiling.outbound
+            .map((channel) => ({
+              channel,
+              mode: settingFor(recipientId, channel).mode,
+            }))
+            .filter((entry) => entry.mode !== 'off'),
         },
       ]),
     );
@@ -638,42 +712,28 @@ export function createNotificationService(deps: {
     }
   }
 
-  async function notifyMany<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    input: NotifyManyInput<P>,
+  async function notifyMany<PSchema extends NotificationParamsSchema>(
+    type: PlainNotificationType<PSchema>,
+    input: NotifyManyInput<z.output<PSchema>>,
   ): Promise<NotifyManyResult> {
-    // Fail fast: invalid params would persist rows that fall back to the
-    // frozen snapshot on every read.
     const params = type.paramsSchema.parse(input.params);
     const recipientIds = [...new Set(input.recipientIds)];
 
-    // Same chain as the read path, so a row and its frozen snapshot agree.
-    const event: NotificationEvent<P> = {
+    const event: NotificationEvent<z.output<PSchema>> = {
       params,
       actor: input.actorLabel ? { label: input.actorLabel } : undefined,
-      entityType: input.entityType,
-      entityId: input.entityId,
     };
 
-    // Freeze a default-locale snapshot as the read-time recovery content.
     const frozen = renderer.renderForWrite(type, event);
 
-    // Resolved before the transaction opens — see `resolveEffectiveChannels`.
-    const effectiveChannels = await resolveEffectiveChannels(
-      recipientIds,
-      type,
-    );
+    const routingByRecipient = await resolveRouting(recipientIds, type);
 
-    // Stamped per row rather than onto `contentColumns`: retention is a
-    // property of the durable recipient row, and `NotificationRequest` has no
-    // such column — it is disposable once its deliveries settle.
+    // Row-only: `NotificationRequest` is disposable once its deliveries settle.
     const expiresAt = new Date(Date.now() + RETENTION_MS);
 
-    // Likewise row-only: the actor snapshot exists to survive the live user
-    // row, which only the durable notification outlives.
+    // Row-only: the snapshot exists to survive the live user row.
     const actorSnapshot = { actorLabel: input.actorLabel ?? null };
 
-    // Copied onto every row, so the request and its rows cannot disagree.
     const contentColumns = {
       type: type.key,
       templateVersion: type.version,
@@ -682,29 +742,24 @@ export function createNotificationService(deps: {
       fallbackText: frozen.fallbackText,
       actionUrl: frozen.actionUrl,
       ...actorColumns(input),
-      entityType: input.entityType ?? null,
-      entityId: input.entityId ?? null,
     };
+
+    // A `groupKey` for the whole fan-out, derived once from the params every
+    // row shares. A type deriving none gets a per-request generated key below,
+    // which collapses with nothing.
+    const sharedGroupKey = type.groupKey?.(params);
 
     // The request, every recipient's row, and every delivery to make land
     // together.
     const { requestId, createdCount, inAppRecipientIds } =
       await prisma.$transaction(async (tx) => {
-        // The bulk path has no per-row upsert target to dedupe against — its
-        // rows are unkeyed, and their generated key is scoped to the request —
-        // so replay safety still rests on resolving to the SAME request. A
-        // replayed call therefore reuses the original request id, and the
-        // unique on (requestId, recipientId) makes `skipDuplicates` below skip.
-        const request = input.idempotencyKey
-          ? await tx.notificationRequest.upsert({
-              where: { idempotencyKey: input.idempotencyKey },
-              update: {},
-              create: {
-                ...contentColumns,
-                idempotencyKey: input.idempotencyKey,
-              },
-            })
-          : await tx.notificationRequest.create({ data: contentColumns });
+        // Always a fresh request: it is a dispatch record, not an idempotency
+        // boundary. Replay safety rests on the row unique below instead, so a
+        // replayed fan-out writes a second request but no second notification
+        // for anyone who already has one.
+        const request = await tx.notificationRequest.create({
+          data: contentColumns,
+        });
 
         // One row per recipient regardless of channel — an email-only
         // notification still gets one, with `inApp: false`, as does someone who
@@ -718,12 +773,12 @@ export function createNotificationService(deps: {
               ...actorSnapshot,
               requestId: request.id,
               recipientId,
-              // Unkeyed: each row is its own fact, so it collapses with nothing
-              // and cannot be retracted. Scoped by request id so two fan-outs
-              // of the same type never collide on it.
-              key: generatedKey(request.id),
-              feedOrderId: uuidv7(),
-              inApp: effectiveChannels.get(recipientId)?.inApp ?? false,
+              // A type deriving no key gets one scoped to this request, so it
+              // collapses with nothing and cannot be retracted — the
+              // fire-and-forget default.
+              groupKey: sharedGroupKey ?? generatedKey(request.id),
+              feedSortKey: uuidv7(),
+              inApp: routingByRecipient.get(recipientId)?.inApp ?? false,
               expiresAt,
             })),
             // A concurrent replay must short-circuit, not raise P2002.
@@ -734,21 +789,29 @@ export function createNotificationService(deps: {
 
         // Read back, not derived from the write: `createManyAndReturn` omits
         // rows it skipped, so a replay would return none of the ids needed.
+        // Matched on the group key rather than this request's id: a replay
+        // resolves to the rows the original request wrote, which carry a
+        // different `requestId`.
+        const groupKey = sharedGroupKey ?? generatedKey(request.id);
         const rows: {
           id: string;
           recipientId: string;
           inApp: boolean;
-          feedOrderId: string;
+          feedSortKey: string;
         }[] = [];
         for (const batch of chunk(recipientIds, WRITE_CHUNK_SIZE)) {
           rows.push(
             ...(await tx.notification.findMany({
-              where: { requestId: request.id, recipientId: { in: batch } },
+              where: {
+                type: type.key,
+                groupKey,
+                recipientId: { in: batch },
+              },
               select: {
                 id: true,
                 recipientId: true,
                 inApp: true,
-                feedOrderId: true,
+                feedSortKey: true,
               },
             })),
           );
@@ -758,15 +821,15 @@ export function createNotificationService(deps: {
         // fails its own row instead of a whole chunk. Keyed by recipient: a
         // channel someone has silenced produces no delivery for them.
         const deliveryData = rows.flatMap((row) =>
-          (effectiveChannels.get(row.recipientId)?.outbound ?? []).map(
-            (channel) => ({
+          (routingByRecipient.get(row.recipientId)?.outbound ?? []).map(
+            ({ channel }) => ({
               notificationId: row.id,
               requestId: request.id,
               channel,
-              // The generation this delivery serves. Constant here — an
-              // unkeyed row is never replaced — but carried so both write
-              // paths populate the column the same way.
-              feedOrderId: row.feedOrderId,
+              // The generation this delivery serves. Constant for a
+              // non-collapsing row, but carried so both write paths populate
+              // the column the same way.
+              feedSortKey: row.feedSortKey,
             }),
           ),
         );
@@ -809,52 +872,49 @@ export function createNotificationService(deps: {
    * change needs the stored params to compare against, which an upsert's
    * `update` clause cannot see.
    */
-  async function notifyKeyed<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    input: NotifyInput<P> & { key: string },
+  async function notifyDeduplicated(
+    type: AnyNotificationType,
+    input: NotifyInputBase & { params: NotificationParams; groupKey: string },
   ): Promise<NotifyResult> {
     const params = type.paramsSchema.parse(input.params);
-    const { recipientId, key } = input;
+    const { recipientId, groupKey } = input;
 
-    const event: NotificationEvent<P> = {
+    const event: NotificationEvent = {
       params,
       actor: input.actorLabel ? { label: input.actorLabel } : undefined,
-      entityType: input.entityType,
-      entityId: input.entityId,
     };
     const frozen = renderer.renderForWrite(type, event);
 
-    const effectiveChannels = await resolveEffectiveChannels(
-      [recipientId],
-      type,
-    );
-    const routing = effectiveChannels.get(recipientId) ?? {
+    const routingByRecipient = await resolveRouting([recipientId], type);
+    const routing = routingByRecipient.get(recipientId) ?? {
       inApp: false,
       outbound: [],
     };
 
-    const normalizedParams = asStoredJson(params);
-
     const contentColumns = {
       type: type.key,
       templateVersion: type.version,
-      params: normalizedParams,
+      params: params as Prisma.InputJsonValue,
       segments: frozen.segments,
       fallbackText: frozen.fallbackText,
       actionUrl: frozen.actionUrl,
       ...actorColumns(input),
-      entityType: input.entityType ?? null,
-      entityId: input.entityId ?? null,
     };
 
     const { requestId, changed, publishTo } = await prisma.$transaction(
       async (tx) => {
         const existing = await tx.notification.findUnique({
-          where: { recipientId_key: { recipientId, key } },
+          where: {
+            type_groupKey_recipientId: {
+              type: type.key,
+              groupKey,
+              recipientId,
+            },
+          },
           select: {
             id: true,
             params: true,
-            feedOrderId: true,
+            feedSortKey: true,
             seenAt: true,
             dismissedAt: true,
           },
@@ -869,7 +929,7 @@ export function createNotificationService(deps: {
         // fact came back (unlike then re-like), so the row has to be revived.
         if (
           existing?.dismissedAt === null &&
-          isEqual(existing.params, normalizedParams)
+          paramsMatch(existing.params, params)
         ) {
           return { requestId: null, changed: false, publishTo: null };
         }
@@ -881,7 +941,7 @@ export function createNotificationService(deps: {
         const expiresAt = new Date(Date.now() + RETENTION_MS);
         const actorSnapshot = { actorLabel: input.actorLabel ?? null };
         // Swap for node:crypto once it ships uuidv7.
-        const feedOrderId = uuidv7();
+        const feedSortKey = uuidv7();
 
         const row = existing
           ? await tx.notification.update({
@@ -894,14 +954,14 @@ export function createNotificationService(deps: {
                 requestId: request.id,
                 inApp: routing.inApp,
                 expiresAt,
-                feedOrderId,
+                feedSortKey,
                 // New activity, so the row is unacknowledged again. Clearing
                 // `dismissedAt` is what revives a retracted row.
                 seenAt: null,
                 readAt: null,
                 dismissedAt: null,
               },
-              select: { id: true, feedOrderId: true },
+              select: { id: true, feedSortKey: true },
             })
           : await tx.notification.create({
               data: {
@@ -909,23 +969,23 @@ export function createNotificationService(deps: {
                 ...actorSnapshot,
                 requestId: request.id,
                 recipientId,
-                key,
+                groupKey,
                 inApp: routing.inApp,
                 expiresAt,
-                feedOrderId,
+                feedSortKey,
               },
-              select: { id: true, feedOrderId: true },
+              select: { id: true, feedSortKey: true },
             });
 
         // One per channel per generation. `skipDuplicates` because a retry that
         // lands on the same generation must not arm a second send.
         if (routing.outbound.length > 0) {
           await tx.notificationDelivery.createMany({
-            data: routing.outbound.map((channel) => ({
+            data: routing.outbound.map(({ channel }) => ({
               notificationId: row.id,
               requestId: request.id,
               channel,
-              feedOrderId: row.feedOrderId,
+              feedSortKey: row.feedSortKey,
             })),
             skipDuplicates: true,
           });
@@ -964,52 +1024,73 @@ export function createNotificationService(deps: {
     return { requestId };
   }
 
-  async function notify<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    input: NotifyInput<P>,
+  async function notify<T extends AnyNotificationType>(
+    type: T,
+    input: NotifyInput<T>,
   ): Promise<NotifyResult> {
-    if (input.key !== undefined) {
-      const keyed = { ...input, key: input.key };
-      try {
-        return await notifyKeyed(type, keyed);
-      } catch (error) {
-        // Two first-writes for the same key raced: both read no row, both
-        // created. The loser retries, now finding the winner's row and taking
-        // the update branch. Last-writer-wins is correct here — both computed
-        // from the same source of truth, so either result is current.
-        if (isUniqueConstraintError(error)) {
-          return await notifyKeyed(type, keyed);
-        }
-        throw error;
-      }
+    const { recipientId, actorId, actorLabel } = input;
+    const { params, groupKey } = await resolvePayload(
+      type,
+      input,
+    );
+
+    // No derived key: every call is its own row, so the bulk path's
+    // single-recipient case is exactly right. Only a plain type gets here — a
+    // batched type's `groupKey` is required — which the cast recovers.
+    if (groupKey === undefined) {
+      return notifyMany(type as PlainNotificationType, {
+        recipientIds: [recipientId],
+        params,
+        actorId,
+        actorLabel,
+      });
     }
-    const { recipientId, ...rest } = input;
-    return notifyMany(type, { ...rest, recipientIds: [recipientId] });
+
+    const deduplicated = { recipientId, actorId, actorLabel, params, groupKey };
+    try {
+      return await notifyDeduplicated(type, deduplicated);
+    } catch (error) {
+      // Two first-writes for the same key raced: both read no row, both
+      // created. The loser retries, now finding the winner's row and taking
+      // the update branch. Last-writer-wins is correct here — both computed
+      // from the same source of truth, so either result is current.
+      if (isUniqueConstraintError(error)) {
+        return await notifyDeduplicated(type, deduplicated);
+      }
+      throw error;
+    }
   }
 
-  async function retract<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    input: RetractInput,
+  async function retract<T extends AnyNotificationType>(
+    type: T,
+    input: RetractInput<T>,
   ): Promise<RetractResult> {
-    const { recipientId, key } = input;
+    const { recipientId } = input;
+    // Key only: a withdrawal must not depend on the state it is withdrawing,
+    // which for a batched type may already be gone.
+    const groupKey = resolveGroupKey(type, input);
+
+    // A type deriving no key writes a fresh row per call, so there is no single
+    // row a withdrawal could name. A caller reaching here has misunderstood the
+    // type, which is worth an error rather than a silent no-op.
+    if (groupKey === undefined) {
+      throw new BadRequestError(
+        `Notification type "${type.key}" derives no group key, so it cannot be retracted.`,
+      );
+    }
 
     const { retracted, wasUnseen } = await prisma.$transaction(async (tx) => {
       const row = await tx.notification.findUnique({
-        where: { recipientId_key: { recipientId, key } },
-        select: { id: true, type: true, seenAt: true, dismissedAt: true },
+        where: {
+          type_groupKey_recipientId: { type: type.key, groupKey, recipientId },
+        },
+        select: { id: true, seenAt: true, dismissedAt: true },
       });
 
       // Nothing to withdraw. Racing retention, or a caller retracting twice —
       // both benign, so this reports rather than throws.
       if (row?.dismissedAt !== null) {
         return { retracted: false, wasUnseen: false };
-      }
-
-      // Guards against a key collision across types withdrawing the wrong row.
-      if (row.type !== type.key) {
-        throw new BadRequestError(
-          `Notification "${key}" belongs to type "${row.type}", not "${type.key}".`,
-        );
       }
 
       // Anything still queued must not go out. In-flight jobs already skip
@@ -1031,7 +1112,6 @@ export function createNotificationService(deps: {
       return { retracted: true, wasUnseen: row.seenAt === null };
     });
 
-    // Only an unseen row was contributing to the badge.
     if (wasUnseen) await publishUnseenCounts([recipientId]);
 
     return { retracted };
@@ -1107,7 +1187,6 @@ export function createNotificationService(deps: {
       inApp: true,
       dismissedAt: null,
     };
-    // Read implies seen.
     const [read] = await prisma.$transaction([
       prisma.notification.updateMany({
         where: { ...feedScope, readAt: null },

@@ -1,20 +1,23 @@
 import { graphql } from '@src/gql';
 
 /**
- * Every declared category with the current user's resolved state.
+ * Every declared topic with the current user's resolved state.
  *
- * `isDefault` distinguishes "on because the project defaults it on" from "on
- * because this user chose it", which is what lets the page offer a reset.
+ * `isDefault` distinguishes "immediate because the project defaults it on" from
+ * "immediate because this user chose it", which is what lets the page offer a
+ * reset. Types belonging to no topic are absent by construction — they consult
+ * no preference, so there is nothing here to render.
  */
 export const notificationPreferencesQuery = graphql(`
   query NotificationPreferences {
     notificationPreferences {
       key
       label
-      mandatory
+      description
       channels {
         channel
-        enabled
+        mode
+        digestWindowSeconds
         isDefault
       }
     }
@@ -31,10 +34,11 @@ export const setNotificationPreferenceMutation = graphql(`
       preferences {
         key
         label
-        mandatory
+        description
         channels {
           channel
-          enabled
+          mode
+          digestWindowSeconds
           isDefault
         }
       }
@@ -51,10 +55,11 @@ export const clearNotificationPreferenceMutation = graphql(`
       preferences {
         key
         label
-        mandatory
+        description
         channels {
           channel
-          enabled
+          mode
+          digestWindowSeconds
           isDefault
         }
       }

@@ -1,4 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 
 import type { QueueService } from '@src/types/queue.types.js';
 
@@ -6,10 +7,10 @@ import { prisma } from '@src/services/prisma.js';
 
 import type { NotificationChannel } from './notification-channel.js';
 import type { NotificationOutbox } from './notification-outbox.js';
-import type { NotificationTypeDefinition } from './notification-registry.js';
 
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
 import { createNotificationOutbox } from './notification-outbox.js';
+import { defineNotificationType } from './notification-registry.js';
 import { createNotificationRenderer } from './notification-renderer.js';
 import { createNotificationService } from './notification.service.js';
 
@@ -22,21 +23,61 @@ import { createNotificationService } from './notification.service.js';
 /**
  * An email-only variant, to prove rows are written for non-feed channels too.
  *
- * In the `security` category, which is mandatory — so these tests exercise
- * outbox behaviour without also depending on preference resolution.
+ * It belongs to no topic, so these tests exercise outbox behaviour without also
+ * depending on preference resolution — a type in no topic reads no preference row.
  */
-const EMAIL_ONLY_TYPE: NotificationTypeDefinition<{ text: string }> = {
+const EMAIL_ONLY_TYPE = defineNotificationType({
   ...GENERIC_NOTIFICATION_TYPE,
-  category: 'security',
+  topic: undefined,
   channels: ['email'],
-};
+});
 
-/** Feed + email, likewise mandatory so a delivery row is always written. */
-const FEED_AND_EMAIL_TYPE: NotificationTypeDefinition<{ text: string }> = {
+/** Feed + email, likewise topic-less so a delivery row is always written. */
+const FEED_AND_EMAIL_TYPE = defineNotificationType({
   ...GENERIC_NOTIFICATION_TYPE,
-  category: 'security',
+  topic: undefined,
   channels: ['inApp', 'email'],
-};
+});
+
+/**
+ * A collapsing variant: derives a group key from `text`, so repeated notifies
+ * about the same text replace one row rather than adding more.
+ */
+const COLLAPSING_TYPE = defineNotificationType({
+  ...GENERIC_NOTIFICATION_TYPE,
+  topic: undefined,
+  groupKey: ({ text }) => `test:${text}`,
+});
+
+/**
+ * Params for the like-thread fixtures below: `postId` is what the key is
+ * derived from, so evolving `text` replaces one row rather than adding more —
+ * the state-phrased contract a collapsing type places on its params.
+ */
+const likeThreadParamsSchema = z.object({
+  postId: z.string(),
+  text: z.string(),
+});
+
+/** A collapsing like-thread, feed + email. */
+const LIKE_THREAD_TYPE = defineNotificationType({
+  key: 'test.likeThread',
+  version: 1,
+  paramsSchema: likeThreadParamsSchema,
+  groupKey: ({ postId }) => `post:${postId}:likes`,
+  channels: ['inApp', 'email'],
+  render: (event) => ({ body: event.params.text }),
+});
+
+/** The same, email-only, for the outbound debounce. */
+const LIKE_THREAD_EMAIL_TYPE = defineNotificationType({
+  key: 'test.likeThreadEmail',
+  version: 1,
+  paramsSchema: likeThreadParamsSchema,
+  groupKey: ({ postId }) => `post:${postId}:likes`,
+  channels: ['email'],
+  render: (event) => ({ body: event.params.text }),
+});
 
 /** Records every delivery the channel receives, so tests can assert on shape. */
 function createRecordingChannel(): NotificationChannel & {
@@ -109,7 +150,11 @@ function createService(deps: {
       subscribeToUnseenCount: vi.fn(),
     },
     renderer: createNotificationRenderer({
-      notificationTypes: [GENERIC_NOTIFICATION_TYPE],
+      notificationTypes: [
+        GENERIC_NOTIFICATION_TYPE,
+        LIKE_THREAD_TYPE,
+        LIKE_THREAD_EMAIL_TYPE,
+      ],
     }),
     outbox,
   });
@@ -280,18 +325,14 @@ describe('notification outbox', () => {
       queue,
       channel: createRecordingChannel(),
     });
-    const input = {
-      recipientId: a,
-      params: { text: 'hello' },
-      key: 'comment:42',
-    };
+    const input = { recipientId: a, params: { text: 'hello' } };
 
-    await service.notify(GENERIC_NOTIFICATION_TYPE, input);
-    await service.notify(GENERIC_NOTIFICATION_TYPE, input);
+    await service.notify(COLLAPSING_TYPE, input);
+    await service.notify(COLLAPSING_TYPE, input);
 
     // Identical state, so the second call is a no-op: the unique on
-    // (recipientId, key) means there is one row, and the deep-equal check
-    // means it was not even rewritten.
+    // (type, groupKey, recipientId) means there is one row, and the deep-equal
+    // check means it was not even rewritten.
     expect(await prisma.notification.count()).toBe(1);
   });
 
@@ -302,13 +343,11 @@ describe('notification outbox', () => {
       queue,
       channel: createRecordingChannel(),
     });
-    const input = {
-      recipientId: a,
-      params: { text: 'hello' },
-      key: 'comment:43',
-    };
+    // Both calls use the same type: `type` is part of the unique key now, so
+    // notifying a different type would be a different row rather than a replay.
+    const input = { recipientId: a, params: { postId: '7', text: 'hello' } };
 
-    const { requestId } = await service.notify(EMAIL_ONLY_TYPE, input);
+    const { requestId } = await service.notify(LIKE_THREAD_EMAIL_TYPE, input);
     // A first write always dispatches; only a no-op replay returns null.
     expect(requestId).not.toBeNull();
     await prisma.notificationDelivery.updateMany({
@@ -317,7 +356,7 @@ describe('notification outbox', () => {
     });
     queue.enqueued.length = 0;
 
-    await service.notify(EMAIL_ONLY_TYPE, input);
+    await service.notify(LIKE_THREAD_EMAIL_TYPE, input);
 
     // The replay changed nothing, so no new generation and no re-arm.
     expect(queue.enqueued).toHaveLength(0);
@@ -330,12 +369,11 @@ describe('notification outbox', () => {
       queue,
       channel: createRecordingChannel(),
     });
-    const key = 'post:7:likes';
+    const postId = '7';
 
-    const first = await service.notify(EMAIL_ONLY_TYPE, {
+    const first = await service.notify(LIKE_THREAD_EMAIL_TYPE, {
       recipientId: a,
-      params: { text: 'Alice liked your post' },
-      key,
+      params: { postId, text: 'Alice liked your post' },
     });
     expect(first.requestId).not.toBeNull();
     await prisma.notificationDelivery.updateMany({
@@ -343,27 +381,26 @@ describe('notification outbox', () => {
       data: { status: 'delivered' },
     });
     const before = await prisma.notification.findFirstOrThrow({
-      where: { recipientId: a, key },
-      select: { id: true, feedOrderId: true },
+      where: { recipientId: a, groupKey: `post:${postId}:likes` },
+      select: { id: true, feedSortKey: true },
     });
     queue.enqueued.length = 0;
 
-    await service.notify(EMAIL_ONLY_TYPE, {
+    await service.notify(LIKE_THREAD_EMAIL_TYPE, {
       recipientId: a,
-      params: { text: 'Alice and 2 others liked your post' },
-      key,
+      params: { postId, text: 'Alice and 2 others liked your post' },
     });
 
     const after = await prisma.notification.findFirstOrThrow({
-      where: { recipientId: a, key },
-      select: { id: true, feedOrderId: true, fallbackText: true },
+      where: { recipientId: a, groupKey: `post:${postId}:likes` },
+      select: { id: true, feedSortKey: true, fallbackText: true },
     });
 
     // Still one row, same identity — deliveries cascade off `id`, so it must
     // survive. Only the sort key is reissued, which is what resurfaces it.
     expect(await prisma.notification.count()).toBe(1);
     expect(after.id).toBe(before.id);
-    expect(after.feedOrderId).not.toBe(before.feedOrderId);
+    expect(after.feedSortKey).not.toBe(before.feedSortKey);
     expect(after.fallbackText).toBe('Alice and 2 others liked your post');
 
     // The settled delivery belonged to the previous generation, so the new one
@@ -378,21 +415,20 @@ describe('notification outbox', () => {
       queue,
       channel: createRecordingChannel(),
     });
-    const key = 'post:8:likes';
+    const postId = '8';
 
-    await service.notify(EMAIL_ONLY_TYPE, {
+    await service.notify(LIKE_THREAD_EMAIL_TYPE, {
       recipientId: a,
-      params: { text: 'Alice liked your post' },
-      key,
+      params: { postId, text: 'Alice liked your post' },
     });
 
-    const result = await service.retract(EMAIL_ONLY_TYPE, {
+    const result = await service.retract(LIKE_THREAD_EMAIL_TYPE, {
       recipientId: a,
-      key,
+      params: { postId, text: '' },
     });
 
     const row = await prisma.notification.findFirstOrThrow({
-      where: { recipientId: a, key },
+      where: { recipientId: a, groupKey: `post:${postId}:likes` },
       select: { dismissedAt: true },
     });
     const deliveries = await prisma.notificationDelivery.findMany({
@@ -411,23 +447,21 @@ describe('notification outbox', () => {
     const a = await createUser(0);
     const channel = createRecordingChannel();
     const service = createService({ queue: createFakeQueue(), channel });
-    const key = 'post:11:likes';
+    const postId = '11';
 
     // A burst: two likes inside the debounce window, so the row is replaced
     // and both generations are armed and pending when the job finally runs.
-    const first = await service.notify(EMAIL_ONLY_TYPE, {
+    const first = await service.notify(LIKE_THREAD_EMAIL_TYPE, {
       recipientId: a,
-      params: { text: 'Alice liked your post' },
-      key,
+      params: { postId, text: 'Alice liked your post' },
     });
-    await service.notify(EMAIL_ONLY_TYPE, {
+    await service.notify(LIKE_THREAD_EMAIL_TYPE, {
       recipientId: a,
-      params: { text: 'Alice and Bob liked your post' },
-      key,
+      params: { postId, text: 'Alice and Bob liked your post' },
     });
 
     const row = await prisma.notification.findFirstOrThrow({
-      where: { recipientId: a, key },
+      where: { recipientId: a, groupKey: `post:${postId}:likes` },
       select: { id: true },
     });
     await service.outbox.deliverChunk({
@@ -459,9 +493,9 @@ describe('notification outbox', () => {
       channel: createRecordingChannel(),
     });
 
-    const result = await service.retract(EMAIL_ONLY_TYPE, {
+    const result = await service.retract(LIKE_THREAD_TYPE, {
       recipientId: a,
-      key: 'never:written',
+      params: { postId: 'never-written', text: '' },
     });
 
     expect(result.retracted).toBe(false);
@@ -473,22 +507,23 @@ describe('notification outbox', () => {
       queue: createFakeQueue(),
       channel: createRecordingChannel(),
     });
-    const key = 'post:9:likes';
+    const postId = '9';
 
-    await service.notify(GENERIC_NOTIFICATION_TYPE, {
+    await service.notify(LIKE_THREAD_TYPE, {
       recipientId: a,
-      params: { text: 'Alice liked your post' },
-      key,
+      params: { postId, text: 'Alice liked your post' },
     });
-    await service.retract(GENERIC_NOTIFICATION_TYPE, { recipientId: a, key });
-    await service.notify(GENERIC_NOTIFICATION_TYPE, {
+    await service.retract(LIKE_THREAD_TYPE, {
       recipientId: a,
-      params: { text: 'Bob liked your post' },
-      key,
+      params: { postId, text: '' },
+    });
+    await service.notify(LIKE_THREAD_TYPE, {
+      recipientId: a,
+      params: { postId, text: 'Bob liked your post' },
     });
 
     const row = await prisma.notification.findFirstOrThrow({
-      where: { recipientId: a, key },
+      where: { recipientId: a, groupKey: `post:${postId}:likes` },
       select: { dismissedAt: true, fallbackText: true },
     });
 
@@ -499,30 +534,28 @@ describe('notification outbox', () => {
     expect(row.fallbackText).toBe('Bob liked your post');
   });
 
-  it('replaying a bulk fan-out with the same idempotency key writes no second copy', async () => {
+  it('replaying a bulk fan-out of a collapsing type writes no second copy', async () => {
     const recipientIds = await createUsers(2);
     const service = createService({
       queue: createFakeQueue(),
       channel: createRecordingChannel(),
     });
-    const input = {
-      recipientIds,
-      params: { text: 'hello' },
-      idempotencyKey: 'digest:2026-08-03',
-    };
+    const input = { recipientIds, params: { text: 'hello' } };
 
-    const first = await service.notifyMany(GENERIC_NOTIFICATION_TYPE, input);
-    const second = await service.notifyMany(GENERIC_NOTIFICATION_TYPE, input);
+    const first = await service.notifyMany(COLLAPSING_TYPE, input);
+    const second = await service.notifyMany(COLLAPSING_TYPE, input);
 
-    // The replay resolves to the same request, so `@@unique(requestId,
-    // recipientId)` makes its row writes skip rather than notifying twice.
-    expect(second.requestId).toBe(first.requestId);
+    // Dedupe moved from a caller-supplied idempotency key to the type's own
+    // group key: the replay writes a second request — it is only a dispatch
+    // record — but `@@unique(type, groupKey, recipientId)` makes its row
+    // writes skip rather than notifying twice.
+    expect(second.requestId).not.toBe(first.requestId);
     expect(second.createdCount).toBe(0);
     expect(await prisma.notification.count()).toBe(2);
-    expect(await prisma.notificationRequest.count()).toBe(1);
+    expect(await prisma.notificationRequest.count()).toBe(2);
   });
 
-  it('replaying a bulk fan-out without an idempotency key notifies again', async () => {
+  it('replaying a bulk fan-out of a non-collapsing type notifies again', async () => {
     const recipientIds = await createUsers(2);
     const service = createService({
       queue: createFakeQueue(),
@@ -533,8 +566,9 @@ describe('notification outbox', () => {
     await service.notifyMany(GENERIC_NOTIFICATION_TYPE, input);
     await service.notifyMany(GENERIC_NOTIFICATION_TYPE, input);
 
-    // Documented behaviour, not an accident: without a key each fan-out is its
-    // own dispatch, so a caller that retries has to supply one.
+    // Documented behaviour, not an accident: a type deriving no group key gets
+    // one scoped to its request, so each fan-out is its own dispatch and a
+    // caller that wants collapsing declares a `groupKey` on the type.
     expect(await prisma.notification.count()).toBe(4);
   });
 

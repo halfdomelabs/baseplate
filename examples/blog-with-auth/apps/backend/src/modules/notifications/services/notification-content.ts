@@ -29,7 +29,7 @@ export function isSafeUrl(url: string): boolean {
  * structural (values can't be confused with markup). Growing the union is
  * additive; shrinking it is a migration.
  */
-export const notificationSegmentSchema = z.discriminatedUnion('type', [
+const notificationSegmentSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('text'),
     value: z.string(),
@@ -79,7 +79,7 @@ export interface RenderedContent {
 
 /**
  * Normalize authored content into the segment IR (the only place formats live)
- * AND validate it through the schema — so a renderer that emits an unsafe `href`
+ * and validate it through the schema — so a renderer that emits an unsafe `href`
  * (e.g. `javascript:`) is rejected here, not surfaced to a channel or GraphQL.
  * Throws on invalid segments; callers that render at read catch and fall back.
  */

@@ -2,17 +2,16 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 
 import { logError } from '@src/services/error-logger.js';
 
-import type { NotificationCategoryKey } from '../constants/notification-categories.js';
+import type { NotificationTopicKey } from '../constants/notification-topics.js';
 import type {
   NotificationContent,
-  NotificationParams,
   RenderContext,
   RenderedContent,
 } from './notification-content.js';
 import type {
+  AnyNotificationType,
   NotificationActor,
   NotificationEvent,
-  NotificationTypeDefinition,
 } from './notification-registry.js';
 
 import {
@@ -24,7 +23,7 @@ import {
 import { renderSingle } from './notification-registry.js';
 
 /** Default render locale until i18n lands. */
-export const DEFAULT_LOCALE = 'en';
+const DEFAULT_LOCALE = 'en';
 
 /** Columns `renderContent` reads; the GraphQL field spreads this into its `select`. */
 export const RENDER_SOURCE_SELECT = {
@@ -37,8 +36,6 @@ export const RENDER_SOURCE_SELECT = {
   actionUrl: true,
   actorId: true,
   actorLabel: true,
-  entityType: true,
-  entityId: true,
 } satisfies Prisma.NotificationSelect;
 
 /** Row shape `renderContent` accepts (feed/notify rows are supersets). */
@@ -60,13 +57,13 @@ function frozenContent(row: RenderSource): RenderedContent {
   };
 }
 
-/** Registry key: a row's renderer is pinned by BOTH its type and its version. */
+/** Registry key: a row's renderer is pinned by both its type and its version. */
 function registryKey(key: string, version: number): string {
   return `${key}@${version}`;
 }
 
 /** Project a renderer's output into the served content (one render, all fields). */
-export function toRenderedContent(
+function toRenderedContent(
   content: NotificationContent,
 ): RenderedContent {
   const segments = toSegments(content.body);
@@ -88,8 +85,8 @@ export function toRenderedContent(
  */
 export interface NotificationRenderer {
   /**
-   * Render a row's content at read time, ATOMICALLY: segments, fallbackText and
-   * actionUrl all come from a single invocation of the renderer that CREATED
+   * Render a row's content at read time, atomically: segments, fallbackText and
+   * actionUrl all come from a single invocation of the renderer that created
    * the row — resolved by `(type, templateVersion)` against the per-runtime
    * registry, never "whatever is deployed now". A copy/param refactor bumps the
    * version, so history can't be silently rewritten. Falls back to the frozen
@@ -109,34 +106,44 @@ export interface NotificationRenderer {
    * Render content for a not-yet-persisted event, in the default locale. The
    * frozen snapshot `notify` stores as read-time recovery content.
    */
-  renderForWrite<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    event: NotificationEvent<P>,
+  renderForWrite(
+    type: AnyNotificationType,
+    event: NotificationEvent,
   ): RenderedContent;
   /**
-   * A row's category, resolved from the registry rather than the row — the
-   * category is a property of the type, so it is never stored per row. Null
-   * when the pinned renderer is gone.
+   * A row's topic, resolved from the registry rather than the row — the topic
+   * is a property of the type, so it is never stored per row. Null when the
+   * pinned renderer is gone, and also when the type belongs to no topic.
    */
-  getCategory(
-    type: string,
-    templateVersion: number,
-  ): NotificationCategoryKey | null;
+  getTopic(type: string, templateVersion: number): NotificationTopicKey | null;
+}
+
+/**
+ * Render content for a not-yet-persisted event, in the default locale. Outside
+ * the factory because it consults no registry — the caller passes the type in.
+ */
+function renderForWrite(
+  type: AnyNotificationType,
+  event: NotificationEvent,
+): RenderedContent {
+  return toRenderedContent(
+    renderSingle(type, event, { locale: DEFAULT_LOCALE }),
+  );
 }
 
 /**
  * Creates the {@link NotificationRenderer} over a fixed set of types.
  *
- * Duplicate `(key, version)` pairs fail HERE — deterministically at runtime
+ * Duplicate `(key, version)` pairs fail here — deterministically at runtime
  * construction — instead of at whatever import happened to load a colliding
  * definition first.
  */
 export function createNotificationRenderer(deps: {
-  notificationTypes: NotificationTypeDefinition[];
+  notificationTypes: AnyNotificationType[];
 }): NotificationRenderer {
   const { notificationTypes } = deps;
 
-  const registry = new Map<string, NotificationTypeDefinition>();
+  const registry = new Map<string, AnyNotificationType>();
   for (const type of notificationTypes) {
     const id = registryKey(type.key, type.version);
     if (registry.has(id)) {
@@ -177,8 +184,6 @@ export function createNotificationRenderer(deps: {
     const event: NotificationEvent = {
       params: params.data,
       actor: actor ?? (row.actorLabel ? { label: row.actorLabel } : undefined),
-      entityType: row.entityType ?? undefined,
-      entityId: row.entityId ?? undefined,
     };
 
     try {
@@ -196,21 +201,12 @@ export function createNotificationRenderer(deps: {
     }
   }
 
-  function renderForWrite<P extends NotificationParams>(
-    type: NotificationTypeDefinition<P>,
-    event: NotificationEvent<P>,
-  ): RenderedContent {
-    return toRenderedContent(
-      renderSingle(type, event, { locale: DEFAULT_LOCALE }),
-    );
-  }
-
-  function getCategory(
+  function getTopic(
     type: string,
     templateVersion: number,
-  ): NotificationCategoryKey | null {
-    return registry.get(registryKey(type, templateVersion))?.category ?? null;
+  ): NotificationTopicKey | null {
+    return registry.get(registryKey(type, templateVersion))?.topic ?? null;
   }
 
-  return { renderContent, renderForWrite, getCategory };
+  return { renderContent, renderForWrite, getTopic };
 }

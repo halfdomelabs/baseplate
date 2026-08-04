@@ -85,8 +85,8 @@ async function createNotification(
       templateVersion: 1,
       recipientId,
       // Distinct per row: these are unrelated facts, so none should collapse
-      // into another under `@@unique([recipientId, key])`.
-      key: `test:${(notificationSeq += 1)}`,
+      // into another under `@@unique([type, groupKey, recipientId])`.
+      groupKey: `test:${(notificationSeq += 1)}`,
       // Rows exist for every channel; only in-app ones reach the feed.
       inApp: overrides.inApp ?? true,
       dismissedAt: overrides.dismissedAt ?? null,

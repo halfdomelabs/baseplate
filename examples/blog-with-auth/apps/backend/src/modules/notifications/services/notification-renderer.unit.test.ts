@@ -4,7 +4,7 @@ import { z } from 'zod';
 import type { Prisma } from '@src/generated/prisma/client.js';
 
 import type { NotificationSegment } from './notification-content.js';
-import type { NotificationTypeDefinition } from './notification-registry.js';
+import type { AnyNotificationType } from './notification-registry.js';
 import type { RenderSource } from './notification-renderer.js';
 
 import { defineNotificationType } from './notification-registry.js';
@@ -16,7 +16,7 @@ const FROZEN: NotificationSegment[] = [{ type: 'text', value: 'FROZEN v1' }];
 
 /** Build a renderer whose registry holds exactly the supplied types. */
 function rendererWith(
-  notificationTypes: NotificationTypeDefinition[],
+  notificationTypes: AnyNotificationType[],
 ): ReturnType<typeof createNotificationRenderer> {
   return createNotificationRenderer({ notificationTypes });
 }
@@ -27,7 +27,7 @@ function rendererWith(
  * pulling it off the object bare would trip `@typescript-eslint/unbound-method`.
  */
 function renderWith(
-  notificationTypes: NotificationTypeDefinition[],
+  notificationTypes: AnyNotificationType[],
 ): ReturnType<typeof createNotificationRenderer>['renderContent'] {
   const renderer = rendererWith(notificationTypes);
   return (row, ctx) => renderer.renderContent(row, ctx);
@@ -49,8 +49,6 @@ function makeRow(
     actionUrl: '/frozen',
     actorId: null,
     actorLabel: null,
-    entityType: null,
-    entityId: null,
   };
 }
 
@@ -60,7 +58,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.live',
         version: 1,
-        category: 'general',
+        topic: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
         render: (event) => ({ body: `${event.params.name} commented` }),
@@ -82,7 +80,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.versioned',
         version: 1,
-        category: 'general',
+        topic: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
         render: (event) => ({ body: `v1: ${event.params.name}` }),
@@ -90,7 +88,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.versioned',
         version: 2,
-        category: 'general',
+        topic: 'general',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
         render: (event) => ({ body: `v2: ${event.params.name}` }),
@@ -109,7 +107,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.atomic',
         version: 1,
-        category: 'general',
+        topic: 'general',
         paramsSchema: z.object({ postId: z.string() }),
         channels: ['inApp'],
         render: (event) => ({
@@ -121,7 +119,7 @@ describe('renderContent (versioned render-at-read)', () => {
 
     const content = renderContent(makeRow('test.atomic', 1, { postId: 'p9' }));
 
-    // The action URL is re-derived at read — NOT the frozen '/frozen' column.
+    // The action URL is re-derived at read — not the frozen '/frozen' column.
     expect(content.actionUrl).toBe('/posts/p9');
     expect(content.fallbackText).toBe('commented on your post');
   });
@@ -138,7 +136,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.drift',
         version: 1,
-        category: 'general',
+        topic: 'general',
         paramsSchema: z.object({ title: z.string() }),
         channels: ['inApp'],
         render: (event) => ({ body: event.params.title }),
@@ -159,7 +157,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.unsafe-url',
         version: 1,
-        category: 'general',
+        topic: 'general',
         paramsSchema: z.object({}),
         channels: ['inApp'],
         render: () => ({
@@ -175,13 +173,13 @@ describe('renderContent (versioned render-at-read)', () => {
   });
 
   it('rejects an unsafe href in a LIVE renderer segment (falls back to frozen)', () => {
-    // A renderer emitting a `javascript:` link must NOT reach the client: the
+    // A renderer emitting a `javascript:` link must not reach the client: the
     // segment schema rejects it, render throws, and we fall back to frozen.
     const renderContent = renderWith([
       defineNotificationType({
         key: 'test.unsafe-segment',
         version: 1,
-        category: 'general',
+        topic: 'general',
         paramsSchema: z.object({}),
         channels: ['inApp'],
         render: () => ({
@@ -201,7 +199,7 @@ describe('renderContent (actor identity)', () => {
   const actorEcho = defineNotificationType({
     key: 'test.actor',
     version: 1,
-    category: 'general',
+    topic: 'general',
     paramsSchema: z.object({}),
     channels: ['inApp'],
     render: (event) => ({ body: event.actor?.label ?? 'someone' }),
@@ -236,7 +234,7 @@ describe('renderSingle (aggregate state)', () => {
   const likesType = defineNotificationType({
     key: 'test.likes',
     version: 1,
-    category: 'general',
+    topic: 'general',
     paramsSchema: z.object({ sample: z.array(z.string()), count: z.number() }),
     channels: ['inApp'],
     render: (event) => {
@@ -270,7 +268,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
     const first = defineNotificationType({
       key: 'test.dup',
       version: 1,
-      category: 'general',
+      topic: 'general',
       paramsSchema: z.object({}),
       channels: ['inApp'],
       render: () => ({ body: 'first' }),
@@ -278,7 +276,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
     const second = defineNotificationType({
       key: 'test.dup',
       version: 1,
-      category: 'general',
+      topic: 'general',
       paramsSchema: z.object({}),
       channels: ['inApp'],
       render: () => ({ body: 'second' }),
@@ -297,7 +295,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
         defineNotificationType({
           key: 'test.multiversion',
           version: 1,
-          category: 'general',
+          topic: 'general',
           paramsSchema: z.object({}),
           channels: ['inApp'],
           render: () => ({ body: 'v1' }),
@@ -305,7 +303,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
         defineNotificationType({
           key: 'test.multiversion',
           version: 2,
-          category: 'general',
+          topic: 'general',
           paramsSchema: z.object({}),
           channels: ['inApp'],
           render: () => ({ body: 'v2' }),
