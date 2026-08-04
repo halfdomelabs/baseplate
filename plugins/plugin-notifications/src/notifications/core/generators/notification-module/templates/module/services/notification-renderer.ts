@@ -106,6 +106,11 @@ export interface NotificationRenderer {
    * pinned renderer is gone, and also when the type belongs to no topic.
    */
   getTopic(type: string, templateVersion: number): NotificationTopicKey | null;
+  /**
+   * The type a row is pinned to, or null when that renderer is gone. Read by
+   * the outbox, which needs the type itself to re-resolve params at delivery.
+   */
+  getType(type: string, templateVersion: number): AnyNotificationType | null;
 }
 
 /**
@@ -188,5 +193,12 @@ export function createNotificationRenderer(deps: {
     return registry.get(registryKey(type, templateVersion))?.topic ?? null;
   }
 
-  return { renderContent, renderForWrite, getTopic };
+  function getType(
+    type: string,
+    templateVersion: number,
+  ): AnyNotificationType | null {
+    return registry.get(registryKey(type, templateVersion)) ?? null;
+  }
+
+  return { renderContent, renderForWrite, getTopic, getType };
 }

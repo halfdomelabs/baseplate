@@ -11,7 +11,10 @@ import type {
   NotificationChannels,
   NotificationRoutingTarget,
 } from './notification-channel.js';
-import type { NotificationRenderer, RenderSource } from './notification-renderer.js';
+import type {
+  NotificationRenderer,
+  RenderSource,
+} from './notification-renderer.js';
 
 import { notificationDeliveryQueue } from '../queues/notification-delivery.queue.js';
 import { isGeneratedKey } from './notification-registry.js';

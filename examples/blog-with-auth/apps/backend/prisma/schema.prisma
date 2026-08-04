@@ -148,8 +148,8 @@ model NotificationDelivery {
   notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([notificationId, channel, feedSortKey])
-  @@index([status, createdAt])
   @@index([notificationId, channel, status, deliveredAt])
+  @@index([status, createdAt])
   @@map("notification_delivery")
 }
 

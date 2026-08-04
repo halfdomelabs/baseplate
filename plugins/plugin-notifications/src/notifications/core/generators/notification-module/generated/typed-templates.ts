@@ -105,6 +105,7 @@ const servicesNotificationOutbox = createTsTemplateFile({
   group: 'main',
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
     queuesImports: queuesImportsProvider,
   },

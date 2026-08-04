@@ -97,7 +97,9 @@ export const POST_LIKED_TYPE = defineBatchedNotificationType({
             {
               kind: 'text',
               text:
-                others > 0 ? ` and ${others} other${others > 1 ? 's' : ''}` : '',
+                others > 0
+                  ? ` and ${others} other${others > 1 ? 's' : ''}`
+                  : '',
             },
             { kind: 'text', text: ' liked ' },
             { kind: 'emphasis', text: postTitle },
