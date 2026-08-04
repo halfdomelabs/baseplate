@@ -251,7 +251,6 @@ type Mutation {
 }
 
 type Notification {
-  actor: User
   content(locale: String! = "en"): NotificationContent!
   createdAt: DateTime!
   id: ID!
@@ -282,8 +281,12 @@ type NotificationChannelPreference {
 
 type NotificationContent {
   actionUrl: String
-  fallbackText: String!
-  segments: [NotificationSegment!]!
+  body: [NotificationSegment!]
+  title: [NotificationSegment!]!
+}
+
+type NotificationEmphasisSegment {
+  text: String!
 }
 
 type NotificationFeedConnection {
@@ -298,8 +301,8 @@ type NotificationFeedEdge {
 }
 
 type NotificationLinkSegment {
-  href: String!
-  value: String!
+  text: String!
+  url: String!
 }
 
 enum NotificationMode {
@@ -308,11 +311,10 @@ enum NotificationMode {
   OFF
 }
 
-union NotificationSegment = NotificationLinkSegment | NotificationTextSegment
+union NotificationSegment = NotificationEmphasisSegment | NotificationLinkSegment | NotificationTextSegment
 
 type NotificationTextSegment {
-  bold: Boolean!
-  value: String!
+  text: String!
 }
 
 type NotificationTopicPreference {

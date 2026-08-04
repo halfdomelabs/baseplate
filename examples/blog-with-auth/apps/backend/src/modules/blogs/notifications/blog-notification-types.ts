@@ -28,13 +28,13 @@ export const POST_COMMENTED_TYPE = defineNotificationType({
     commenterName: z.string(),
   }),
   channels: ['inApp', 'email'],
-  render: (event) => ({
-    body: [
-      { type: 'text', value: event.params.commenterName, bold: true },
-      { type: 'text', value: ' commented on ' },
-      { type: 'text', value: event.params.postTitle, bold: true },
+  render: (params) => ({
+    title: [
+      { kind: 'emphasis', text: params.commenterName },
+      { kind: 'text', text: ' commented on ' },
+      { kind: 'emphasis', text: params.postTitle },
     ],
-    actionUrl: `/admin/blogs/posts/${event.params.postId}`,
+    actionUrl: `/admin/blogs/posts/${params.postId}`,
   }),
 });
 
@@ -73,20 +73,20 @@ export const POST_LIKED_TYPE = defineBatchedNotificationType({
   }),
   resolveParams: ({ postId }) => summarizePostLikes(postId, ACTOR_SAMPLE_SIZE),
   channels: ['inApp'],
-  render: (event) => {
-    const { likerNames, count, postTitle, postId } = event.params;
+  render: (params) => {
+    const { likerNames, count, postTitle, postId } = params;
     const [first = 'Someone'] = likerNames;
     const others = count - 1;
     return {
-      body: [
-        { type: 'text', value: first, bold: true },
+      title: [
+        { kind: 'emphasis', text: first },
         {
-          type: 'text',
-          value:
+          kind: 'text',
+          text:
             others > 0 ? ` and ${others} other${others > 1 ? 's' : ''}` : '',
         },
-        { type: 'text', value: ' liked ' },
-        { type: 'text', value: postTitle, bold: true },
+        { kind: 'text', text: ' liked ' },
+        { kind: 'emphasis', text: postTitle },
       ],
       actionUrl: `/admin/blogs/posts/${postId}`,
     };
@@ -109,14 +109,14 @@ export const SECURITY_ALERT_TYPE = defineNotificationType({
     ipAddress: z.string().optional(),
   }),
   channels: ['inApp', 'email'],
-  render: (event) => ({
-    body: [
-      { type: 'text', value: 'Security alert: ', bold: true },
-      { type: 'text', value: event.params.action },
-      ...(event.params.ipAddress
-        ? [{ type: 'text' as const, value: ` from ${event.params.ipAddress}` }]
-        : []),
+  render: (params) => ({
+    title: [
+      { kind: 'emphasis', text: 'Security alert: ' },
+      { kind: 'text', text: params.action },
     ],
+    // The detail line the title deliberately omits: the feed shows the title
+    // alone, while email and push have room for both.
+    body: params.ipAddress ? `Signed in from ${params.ipAddress}` : undefined,
     actionUrl: '/admin/accounts/users',
   }),
 });

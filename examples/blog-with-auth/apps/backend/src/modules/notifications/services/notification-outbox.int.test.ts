@@ -9,10 +9,16 @@ import type { NotificationChannel } from './notification-channel.js';
 import type { NotificationOutbox } from './notification-outbox.js';
 
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
+import { frozenNotificationContentSchema } from './notification-content.js';
 import { createNotificationOutbox } from './notification-outbox.js';
 import { defineNotificationType } from './notification-registry.js';
 import { createNotificationRenderer } from './notification-renderer.js';
 import { createNotificationService } from './notification.service.js';
+
+/** Read the stored snapshot's title, which the DB hands back as raw JSON. */
+function frozenText(frozenContent: unknown): string {
+  return frozenNotificationContentSchema.parse(frozenContent).title;
+}
 
 /**
  * Exercises the outbox invariants against a real database: what is written in
@@ -66,7 +72,7 @@ const LIKE_THREAD_TYPE = defineNotificationType({
   paramsSchema: likeThreadParamsSchema,
   groupKey: ({ postId }) => `post:${postId}:likes`,
   channels: ['inApp', 'email'],
-  render: (event) => ({ body: event.params.text }),
+  render: (params) => ({ title: params.text }),
 });
 
 /** The same, email-only, for the outbound debounce. */
@@ -76,7 +82,7 @@ const LIKE_THREAD_EMAIL_TYPE = defineNotificationType({
   paramsSchema: likeThreadParamsSchema,
   groupKey: ({ postId }) => `post:${postId}:likes`,
   channels: ['email'],
-  render: (event) => ({ body: event.params.text }),
+  render: (params) => ({ title: params.text }),
 });
 
 /** Records every delivery the channel receives, so tests can assert on shape. */
@@ -393,7 +399,7 @@ describe('notification outbox', () => {
 
     const after = await prisma.notification.findFirstOrThrow({
       where: { recipientId: a, groupKey: `post:${postId}:likes` },
-      select: { id: true, feedSortKey: true, fallbackText: true },
+      select: { id: true, feedSortKey: true, frozenContent: true },
     });
 
     // Still one row, same identity — deliveries cascade off `id`, so it must
@@ -401,7 +407,9 @@ describe('notification outbox', () => {
     expect(await prisma.notification.count()).toBe(1);
     expect(after.id).toBe(before.id);
     expect(after.feedSortKey).not.toBe(before.feedSortKey);
-    expect(after.fallbackText).toBe('Alice and 2 others liked your post');
+    expect(frozenText(after.frozenContent)).toBe(
+      'Alice and 2 others liked your post',
+    );
 
     // The settled delivery belonged to the previous generation, so the new one
     // is free to arm without colliding.
@@ -524,14 +532,14 @@ describe('notification outbox', () => {
 
     const row = await prisma.notification.findFirstOrThrow({
       where: { recipientId: a, groupKey: `post:${postId}:likes` },
-      select: { dismissedAt: true, fallbackText: true },
+      select: { dismissedAt: true, frozenContent: true },
     });
 
     // Retraction and re-notification are the two directions of one upsert, so
     // a later like clears the soft delete rather than stacking a second row.
     expect(await prisma.notification.count()).toBe(1);
     expect(row.dismissedAt).toBeNull();
-    expect(row.fallbackText).toBe('Bob liked your post');
+    expect(frozenText(row.frozenContent)).toBe('Bob liked your post');
   });
 
   it('replaying a bulk fan-out of a collapsing type writes no second copy', async () => {

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Column, Row } from 'react-email';
 
 import { Button } from '../../components/button.js';
 import { EmailLayout } from '../../components/layout.js';
@@ -15,77 +14,42 @@ import { defineEmail } from '../../types/email-component.types.js';
  * feed shows.
  */
 type NotificationEmailSegment =
-  | { type: 'text'; value: string; bold?: boolean }
-  | { type: 'link'; value: string; href: string };
+  | { kind: 'text'; text: string }
+  | { kind: 'emphasis'; text: string }
+  | { kind: 'link'; text: string; url: string };
 
 interface NotificationProps {
-  /** The actor's display name. Absent = a system notification. */
-  actorName?: string;
-  /** Structured content segments. Falls back to `body` when empty. */
-  segments?: NotificationEmailSegment[];
-  /** Plain-text rendering, used for the subject and when `segments` is empty. */
-  body: string;
+  /** The subject line, flattened to plain text by the caller. */
+  subject: string;
+  /** The headline, as segments. */
+  title: NotificationEmailSegment[];
+  /** Optional detail shown beneath the title. */
+  body?: NotificationEmailSegment[];
   /** Where the notification points, if any. Rendered as a button. */
   actionUrl?: string;
 }
 
-/** Two-letter initials from a name, e.g. "Dana Mehta" -> "DM". */
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  const first = parts.at(0)?.[0] ?? '';
-  const last = parts.length > 1 ? (parts.at(-1)?.[0] ?? '') : '';
-  return (first + last).toUpperCase();
-}
-
-/**
- * Avatar circle with initials — the actor's when present, otherwise the brand's
- * (system notifications). Initials render identically across every mail client,
- * unlike an emoji or icon font.
- */
-function NotificationAvatar({
-  actorName,
-}: {
-  actorName?: string;
-}): React.ReactElement {
-  const isActor = actorName !== undefined;
-  const initials = getInitials(actorName ?? theme.branding.name);
-  return (
-    <div
-      style={{
-        width: '40px',
-        height: '40px',
-        borderRadius: '9999px',
-        backgroundColor: isActor ? theme.colors.primary : theme.colors.muted,
-        color: isActor
-          ? theme.colors.primaryForeground
-          : theme.colors.mutedForeground,
-        fontSize: '14px',
-        fontWeight: theme.typography.weights.semibold,
-        lineHeight: '40px',
-        textAlign: 'center',
-      }}
-    >
-      {initials}
-    </div>
-  );
-}
-
-/** Render one content segment (text — optionally bold — or a link). */
+/** Render one content segment (plain text, emphasized text, or a link). */
 function SegmentView({
   segment,
 }: {
   segment: NotificationEmailSegment;
 }): React.ReactElement {
-  if (segment.type === 'link') {
-    return <Link href={segment.href}>{segment.value}</Link>;
+  switch (segment.kind) {
+    case 'link': {
+      return <Link href={segment.url}>{segment.text}</Link>;
+    }
+    case 'emphasis': {
+      return (
+        <strong style={{ fontWeight: theme.typography.weights.semibold }}>
+          {segment.text}
+        </strong>
+      );
+    }
+    case 'text': {
+      return <>{segment.text}</>;
+    }
   }
-  return segment.bold ? (
-    <strong style={{ fontWeight: theme.typography.weights.semibold }}>
-      {segment.value}
-    </strong>
-  ) : (
-    <>{segment.value}</>
-  );
 }
 
 /**
@@ -93,48 +57,37 @@ function SegmentView({
  * component instead of this one when it needs bespoke copy or layout.
  */
 export default defineEmail<NotificationProps>(NotificationEmail, {
-  subject: ({ body }) => body,
+  subject: ({ subject }) => subject,
   previewProps: {
-    actorName: 'Dana Mehta',
-    segments: [
-      { type: 'text', value: 'Dana Mehta', bold: true },
-      { type: 'text', value: ' commented on your post ' },
+    subject: 'Dana Mehta commented on your post Hello World',
+    title: [
+      { kind: 'emphasis', text: 'Dana Mehta' },
+      { kind: 'text', text: ' commented on your post ' },
       {
-        type: 'link',
-        value: 'Hello World',
-        href: 'https://example.com/posts/1',
+        kind: 'link',
+        text: 'Hello World',
+        url: 'https://example.com/posts/1',
       },
     ],
-    body: 'Dana Mehta commented on your post Hello World',
+    body: [{ kind: 'text', text: 'Looks great — shipping this today.' }],
     actionUrl: 'https://example.com/posts/1',
   },
 });
 
 function NotificationEmail({
-  actorName,
-  segments,
+  subject,
+  title,
   body,
   actionUrl,
 }: NotificationProps): React.ReactElement {
-  const hasSegments = segments !== undefined && segments.length > 0;
-  const heading = actorName
-    ? `You received a notification from ${actorName}`
-    : 'You have a new notification';
   return (
-    <EmailLayout previewText={body}>
-      <Row>
-        <Column style={{ width: '40px', verticalAlign: 'middle' }}>
-          <NotificationAvatar actorName={actorName} />
-        </Column>
-        <Column style={{ paddingLeft: '12px', verticalAlign: 'middle' }}>
-          <Text
-            variant="small"
-            style={{ margin: 0, color: theme.colors.mutedForeground }}
-          >
-            {heading}
-          </Text>
-        </Column>
-      </Row>
+    <EmailLayout previewText={subject}>
+      <Text
+        variant="small"
+        style={{ margin: 0, color: theme.colors.mutedForeground }}
+      >
+        You have a new notification
+      </Text>
 
       <Section
         spacing="none"
@@ -147,12 +100,22 @@ function NotificationEmail({
         }}
       >
         <Text style={{ margin: 0 }}>
-          {hasSegments
-            ? segments.map((segment, index) => (
-                <SegmentView key={index} segment={segment} />
-              ))
-            : body}
+          {title.map((segment, index) => (
+            <SegmentView key={index} segment={segment} />
+          ))}
         </Text>
+        {body && body.length > 0 ? (
+          <Text
+            style={{
+              margin: '8px 0 0',
+              color: theme.colors.mutedForeground,
+            }}
+          >
+            {body.map((segment, index) => (
+              <SegmentView key={index} segment={segment} />
+            ))}
+          </Text>
+        ) : null}
       </Section>
 
       {actionUrl ? (
