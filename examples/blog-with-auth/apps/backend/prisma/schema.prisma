@@ -149,6 +149,7 @@ model NotificationDelivery {
 
   @@unique([notificationId, channel, feedSortKey])
   @@index([status, createdAt])
+  @@index([notificationId, channel, status, deliveredAt])
   @@map("notification_delivery")
 }
 

@@ -406,9 +406,22 @@ export function createNotificationsPartialDefinition(
               ],
             },
           ],
-          // The sweeper's scan: stale rows still `pending`.
           indexes: [
+            // The sweeper's scan: stale rows still `pending`.
             { fields: [{ fieldRef: 'status' }, { fieldRef: 'createdAt' }] },
+            // The delta anchor: when this row was last delivered on this
+            // channel, read once per chunk before an outbound send. Equality
+            // columns lead so the MAX(deliveredAt) aggregate reads off the
+            // index tail. `status` is in the key because only `delivered` rows
+            // count — an abandoned delivery never sets `deliveredAt`.
+            {
+              fields: [
+                { fieldRef: 'notificationId' },
+                { fieldRef: 'channel' },
+                { fieldRef: 'status' },
+                { fieldRef: 'deliveredAt' },
+              ],
+            },
           ],
           // Only the notification is a relation. `requestId` stays a plain
           // denormalized column: the request is transient, so a FK would tie a
