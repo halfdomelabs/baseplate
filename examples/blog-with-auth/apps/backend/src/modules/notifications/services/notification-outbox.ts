@@ -9,10 +9,10 @@ import type {
   NotificationChannelKey,
   NotificationChannels,
   NotificationRoutingTarget,
-} from './notification-channel.js';
+} from '../channels/types.js';
 
 import { notificationDeliveryQueue } from '../queues/notification-delivery.queue.js';
-import { isGeneratedKey } from './notification-registry.js';
+import { isGeneratedKey } from '../registry.js';
 import { RENDER_SOURCE_SELECT } from './notification-renderer.js';
 
 /** Rows per delivery job. */

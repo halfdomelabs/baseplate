@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
-import type { AnyNotificationType } from '../modules/notifications/services/notification-registry.js';
+import type { AnyNotificationType } from '../modules/notifications/registry.js';
 import type { QueueHandlerBinding } from '../types/queue.types.js';
 import type { AppServices } from './runtime-services.js';
 

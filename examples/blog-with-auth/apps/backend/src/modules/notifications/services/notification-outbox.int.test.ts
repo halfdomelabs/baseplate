@@ -5,13 +5,13 @@ import type { QueueService } from '@src/types/queue.types.js';
 
 import { prisma } from '@src/services/prisma.js';
 
-import type { NotificationChannel } from './notification-channel.js';
+import type { NotificationChannel } from '../channels/types.js';
 import type { NotificationOutbox } from './notification-outbox.js';
 
+import { defineNotificationType } from '../registry.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
 import { frozenNotificationContentSchema } from './notification-content.js';
 import { createNotificationOutbox } from './notification-outbox.js';
-import { defineNotificationType } from './notification-registry.js';
 import { createNotificationRenderer } from './notification-renderer.js';
 import { createNotificationService } from './notification.service.js';
 
