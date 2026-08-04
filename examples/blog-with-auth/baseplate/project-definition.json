@@ -762,8 +762,7 @@
             { "ref": "seenAt" },
             { "ref": "readAt" },
             { "ref": "createdAt" }
-          ],
-          "localRelations": [{ "ref": "actor" }]
+          ]
         }
       },
       "id": "model:cvkgEFKeYPRP",
@@ -812,20 +811,6 @@
             "type": "boolean"
           },
           {
-            "id": "model-scalar-field:AgKCMj6lv0P0",
-            "isOptional": false,
-            "name": "segments",
-            "options": {},
-            "type": "json"
-          },
-          {
-            "id": "model-scalar-field:HVd1HOdwIm6z",
-            "isOptional": false,
-            "name": "fallbackText",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
             "id": "model-scalar-field:pvklBj1i7oLL",
             "isOptional": true,
             "name": "params",
@@ -833,39 +818,11 @@
             "type": "json"
           },
           {
-            "id": "model-scalar-field:UFM0kwRqZ154",
-            "isOptional": false,
-            "name": "actorKind",
-            "options": { "default": "none" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:pozZTuC2zy4h",
+            "id": "model-scalar-field:AgKCMj6lv0P0",
             "isOptional": true,
-            "name": "actorId",
-            "options": { "defaultGeneration": "none" },
-            "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:Uc1SBv9l_cON",
-            "isOptional": true,
-            "name": "actorLabel",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:NLIPFdYc2_sa",
-            "isOptional": true,
-            "name": "systemActorKey",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:7NEEPFkucCLe",
-            "isOptional": true,
-            "name": "actionUrl",
-            "options": { "default": "" },
-            "type": "string"
+            "name": "frozenContent",
+            "options": {},
+            "type": "json"
           },
           {
             "id": "model-scalar-field:kNtg8f3YNfMI",
@@ -950,16 +907,6 @@
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
             "references": [{ "foreignRef": "id", "localRef": "recipientId" }]
-          },
-          {
-            "foreignId": "model-foreign-relation:apiU1BBs1JBx",
-            "foreignRelationName": "actorNotifications",
-            "id": "model-local-relation:FBTJYfdrMUPR",
-            "modelRef": "User",
-            "name": "actor",
-            "onDelete": "SetNull",
-            "onUpdate": "Restrict",
-            "references": [{ "foreignRef": "id", "localRef": "actorId" }]
           }
         ],
         "uniqueConstraints": [
@@ -1232,20 +1179,6 @@
             "type": "json"
           },
           {
-            "id": "model-scalar-field:D9qx4YUuXaYb",
-            "isOptional": false,
-            "name": "actorKind",
-            "options": { "default": "none" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:rJisDjUJCJ6n",
-            "isOptional": true,
-            "name": "actorId",
-            "options": { "defaultGeneration": "none" },
-            "type": "uuid"
-          },
-          {
             "id": "model-scalar-field:W_q7qWEYHQ7m",
             "isOptional": false,
             "name": "createdAt",
@@ -1254,24 +1187,10 @@
           },
           {
             "id": "model-scalar-field:aYNhDl6qRgsd",
-            "isOptional": false,
-            "name": "segments",
+            "isOptional": true,
+            "name": "frozenContent",
             "options": {},
             "type": "json"
-          },
-          {
-            "id": "model-scalar-field:XCHIhjW4eBPx",
-            "isOptional": false,
-            "name": "fallbackText",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:CYzHPgzLVRLj",
-            "isOptional": true,
-            "name": "actionUrl",
-            "options": { "default": "" },
-            "type": "string"
           },
           {
             "id": "model-scalar-field:syW_IDebLE_G",

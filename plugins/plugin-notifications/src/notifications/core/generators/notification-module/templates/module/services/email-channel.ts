@@ -4,6 +4,8 @@ import type { NotificationChannel } from '$servicesNotificationChannel';
 import type { NotificationRenderer } from '$servicesNotificationRenderer';
 import type { EmailService } from '%emailModuleImports';
 
+import { segmentsToText } from '$servicesNotificationContent';
+
 /**
  * The email channel: renders at delivery time — not from a frozen snapshot —
  * so a copy fix reaches mail that has not gone out yet, and sends one message
@@ -15,25 +17,17 @@ export function createEmailChannel(deps: {
 }): NotificationChannel {
   const { email, renderer } = deps;
   return {
-    deliver: async ({ notification, recipient, actor }) => {
+    deliver: async ({ notification, recipient }) => {
       if (!recipient.email) return;
 
-      // Live name where the actor still exists, else the row's snapshot — a
-      // rename between notify and delivery therefore reaches mail before it
-      // reaches the frozen feed copy.
-      const actorName = actor?.name ?? notification.actorLabel ?? undefined;
-      const content = renderer.renderContent(
-        notification,
-        undefined,
-        actorName ? { label: actorName } : undefined,
-      );
+      const content = renderer.renderContent(notification);
 
       await email.send(TPL_NOTIFICATION_EMAIL, {
         to: recipient.email,
         data: {
-          actorName,
-          segments: content.segments,
-          body: content.fallbackText,
+          subject: segmentsToText(content.title),
+          title: content.title,
+          body: content.body ?? undefined,
           actionUrl: content.actionUrl ?? undefined,
         },
       });

@@ -8,27 +8,6 @@ import type {
   RenderContext,
 } from './notification-content.js';
 
-/**
- * Who triggered a notification, as display identity.
- *
- * An input to rendering: the renderer decides copy from "who did this" rather
- * than inventing it, and holds no I/O of its own. The label is the caller's
- * `actorLabel` snapshot, or the system actor key when there is no user row.
- * Only the delivery path resolves live identity, which it passes in explicitly.
- */
-export interface NotificationActor {
-  label: string;
-  avatarUrl?: string;
-}
-
-/** A single event feeding a render. */
-export interface NotificationEvent<
-  P extends NotificationParams = NotificationParams,
-> {
-  params: P;
-  actor?: NotificationActor;
-}
-
 /** A schema whose output is usable as notification params. */
 export type NotificationParamsSchema = z.ZodType<NotificationParams>;
 
@@ -51,10 +30,14 @@ interface NotificationTypeBase<PSchema extends NotificationParamsSchema> {
    * Allowed channels for this type.
    */
   channels?: readonly NotificationRoutingTarget[];
-  render(
-    event: NotificationEvent<z.output<PSchema>>,
-    ctx: RenderContext,
-  ): NotificationContent;
+  /**
+   * Builds the content from stored params.
+   *
+   * Params are the whole input: whoever triggered the notification travels in
+   * them, typed by this type's own `paramsSchema`, so names render from the same
+   * source on every channel.
+   */
+  render(params: z.output<PSchema>, ctx: RenderContext): NotificationContent;
 }
 
 /**
@@ -128,20 +111,6 @@ export function generatedKey(requestId: string): string {
 /** Whether a row's `groupKey` was minted for it rather than derived by its type. */
 export function isGeneratedKey(groupKey: string): boolean {
   return groupKey.startsWith(GENERATED_KEY_PREFIX);
-}
-
-/**
- * Render one row's event.
- *
- * A plain call now that arity is fixed — kept as the single seam every render
- * goes through, and the place a future arity change would land.
- */
-export function renderSingle(
-  type: AnyNotificationType,
-  event: NotificationEvent,
-  ctx: RenderContext,
-): NotificationContent {
-  return type.render(event, ctx);
 }
 
 /**

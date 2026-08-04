@@ -3,23 +3,18 @@
 import type { NotificationTopicKey } from '$constantsNotificationTopics';
 import type {
   NotificationContent,
+  NotificationParams,
   RenderContext,
   RenderedContent,
 } from '$servicesNotificationContent';
-import type {
-  AnyNotificationType,
-  NotificationActor,
-  NotificationEvent,
-} from '$servicesNotificationRegistry';
+import type { AnyNotificationType } from '$servicesNotificationRegistry';
 import type { Prisma } from '%prismaGeneratedImports';
 
 import {
+  frozenNotificationContentSchema,
   isSafeUrl,
-  notificationSegmentsSchema,
-  segmentsToText,
   toSegments,
 } from '$servicesNotificationContent';
-import { renderSingle } from '$servicesNotificationRegistry';
 import { logError } from '%errorHandlerServiceImports';
 
 /** Default render locale until i18n lands. */
@@ -31,11 +26,7 @@ export const RENDER_SOURCE_SELECT = {
   type: true,
   templateVersion: true,
   params: true,
-  segments: true,
-  fallbackText: true,
-  actionUrl: true,
-  actorId: true,
-  actorLabel: true,
+  frozenContent: true,
 } satisfies Prisma.NotificationSelect;
 
 /** Row shape `renderContent` accepts (feed/notify rows are supersets). */
@@ -47,13 +38,21 @@ export type RenderSource = Prisma.NotificationGetPayload<{
  * The frozen snapshot persisted at notify time — the recovery content used when
  * the row's renderer is gone or its params no longer validate. Parsed, not cast:
  * the DB guarantees no shape.
+ *
+ * Its plain strings become single text segments, so a caller sees the same shape
+ * whichever path produced it. Formatting is lost, which is the accepted cost of
+ * a fallback that never needs migrating.
  */
 function frozenContent(row: RenderSource): RenderedContent {
-  const parsed = notificationSegmentsSchema.safeParse(row.segments);
+  const parsed = frozenNotificationContentSchema.safeParse(row.frozenContent);
+  if (!parsed.success) {
+    return { title: [], body: null, actionUrl: null };
+  }
+  const { title, body, actionUrl } = parsed.data;
   return {
-    segments: parsed.success ? parsed.data : [],
-    fallbackText: row.fallbackText,
-    actionUrl: row.actionUrl,
+    title: [{ kind: 'text', text: title }],
+    body: body === undefined ? null : [{ kind: 'text', text: body }],
+    actionUrl: actionUrl ?? null,
   };
 }
 
@@ -64,15 +63,16 @@ function registryKey(key: string, version: number): string {
 
 /** Project a renderer's output into the served content (one render, all fields). */
 function toRenderedContent(content: NotificationContent): RenderedContent {
-  const segments = toSegments(content.body);
-  const actionUrl =
-    content.actionUrl && isSafeUrl(content.actionUrl)
-      ? content.actionUrl
-      : null;
   return {
-    segments,
-    fallbackText: segmentsToText(segments),
-    actionUrl,
+    title: toSegments(content.title),
+    body: content.body === undefined ? null : toSegments(content.body),
+    // Dropped rather than stored when unsafe: a `javascript:` action would
+    // otherwise reach the client, which link segments are already guarded from
+    // by the segment schema.
+    actionUrl:
+      content.actionUrl && isSafeUrl(content.actionUrl)
+        ? content.actionUrl
+        : null,
   };
 }
 
@@ -83,30 +83,22 @@ function toRenderedContent(content: NotificationContent): RenderedContent {
  */
 export interface NotificationRenderer {
   /**
-   * Render a row's content at read time, atomically: segments, fallbackText and
-   * actionUrl all come from a single invocation of the renderer that created
+   * Render a row's content at read time, atomically: title, body, actionUrl and
+   * extraData all come from a single invocation of the renderer that created
    * the row — resolved by `(type, templateVersion)` against the per-runtime
    * registry, never "whatever is deployed now". A copy/param refactor bumps the
    * version, so history can't be silently rewritten. Falls back to the frozen
    * snapshot (and logs) when the pinned renderer is gone or params no longer
    * satisfy it.
-   *
-   * `actor` overrides the row's `actorLabel` snapshot with live identity, for
-   * callers that already resolved it (the delivery path). Omit it on the read
-   * path, which has only the row.
    */
-  renderContent(
-    row: RenderSource,
-    ctx?: RenderContext,
-    actor?: NotificationActor,
-  ): RenderedContent;
+  renderContent(row: RenderSource, ctx?: RenderContext): RenderedContent;
   /**
-   * Render content for a not-yet-persisted event, in the default locale. The
-   * frozen snapshot `notify` stores as read-time recovery content.
+   * Render content for not-yet-persisted params, in the default locale. What
+   * `notify` flattens into the frozen snapshot it stores.
    */
   renderForWrite(
     type: AnyNotificationType,
-    event: NotificationEvent,
+    params: NotificationParams,
   ): RenderedContent;
   /**
    * A row's topic, resolved from the registry rather than the row — the topic
@@ -117,16 +109,14 @@ export interface NotificationRenderer {
 }
 
 /**
- * Render content for a not-yet-persisted event, in the default locale. Outside
+ * Render content for not-yet-persisted params, in the default locale. Outside
  * the factory because it consults no registry — the caller passes the type in.
  */
 function renderForWrite(
   type: AnyNotificationType,
-  event: NotificationEvent,
+  params: NotificationParams,
 ): RenderedContent {
-  return toRenderedContent(
-    renderSingle(type, event, { locale: DEFAULT_LOCALE }),
-  );
+  return toRenderedContent(type.render(params, { locale: DEFAULT_LOCALE }));
 }
 
 /**
@@ -153,7 +143,6 @@ export function createNotificationRenderer(deps: {
   function renderContent(
     row: RenderSource,
     ctx?: RenderContext,
-    actor?: NotificationActor,
   ): RenderedContent {
     const type = registry.get(registryKey(row.type, row.templateVersion));
     if (!type) {
@@ -177,16 +166,9 @@ export function createNotificationRenderer(deps: {
       return frozenContent(row);
     }
 
-    // Live identity where the caller resolved it, else the write-time snapshot
-    // — which is also what names an actor whose user row is gone.
-    const event: NotificationEvent = {
-      params: params.data,
-      actor: actor ?? (row.actorLabel ? { label: row.actorLabel } : undefined),
-    };
-
     try {
       return toRenderedContent(
-        renderSingle(type, event, ctx ?? { locale: DEFAULT_LOCALE }),
+        type.render(params.data, ctx ?? { locale: DEFAULT_LOCALE }),
       );
     } catch (error) {
       logError(error, {

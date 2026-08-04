@@ -6,7 +6,6 @@ export interface ChannelDelivery {
   notification: RenderSource;
   /** Contact details, resolved by the service. */
   recipient: { email: string | null };
-  actor: { name: string | null } | null;
 }
 
 /** A delivery channel (in-app, email, slack...). */
