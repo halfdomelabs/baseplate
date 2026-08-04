@@ -120,23 +120,21 @@ model Notification {
   actorId         String?                @map("actor_id") @db.Uuid
   actorLabel      String?                @map("actor_label")
   systemActorKey  String?                @map("system_actor_key")
-  entityType      String?                @map("entity_type")
-  entityId        String?                @map("entity_id")
   actionUrl       String?                @map("action_url")
   seenAt          DateTime?              @map("seen_at") @db.Timestamptz(3)
   readAt          DateTime?              @map("read_at") @db.Timestamptz(3)
   dismissedAt     DateTime?              @map("dismissed_at") @db.Timestamptz(3)
   createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
   expiresAt       DateTime?              @map("expires_at") @db.Timestamptz(3)
-  key             String
-  feedOrderId     String                 @unique @default(dbgenerated("uuidv7()")) @map("feed_order_id") @db.Uuid
+  groupKey        String                 @map("group_key")
+  feedSortKey     String                 @unique @default(dbgenerated("uuidv7()")) @map("feed_sort_key") @db.Uuid
   actor           User?                  @relation("actorNotifications", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Restrict)
   deliveries      NotificationDelivery[]
   recipient       User                   @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-  @@unique([recipientId, key])
+  @@unique([type, groupKey, recipientId])
   @@unique([requestId, recipientId])
-  @@index([recipientId, inApp, feedOrderId])
+  @@index([recipientId, inApp, feedSortKey])
   @@index([expiresAt])
   @@index([recipientId, inApp, seenAt])
   @@map("notification")
@@ -153,27 +151,27 @@ model NotificationDelivery {
   updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   notificationId String       @map("notification_id") @db.Uuid
   deliveredAt    DateTime?    @map("delivered_at") @db.Timestamptz(3)
-  feedOrderId    String       @map("feed_order_id") @db.Uuid
+  feedSortKey    String       @map("feed_sort_key") @db.Uuid
   notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-  @@unique([notificationId, channel, feedOrderId])
+  @@unique([notificationId, channel, feedSortKey])
   @@index([status, createdAt])
   @@map("notification_delivery")
 }
 
 model NotificationPreference {
-  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  scopeKind String   @map("scope_kind")
-  scopeKey  String   @map("scope_key")
-  channel   String
-  enabled   Boolean
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  id                  String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  userId              String   @map("user_id") @db.Uuid
+  topicKey            String   @map("topic_key")
+  channel             String
+  mode                String
+  digestWindowSeconds Int?     @map("digest_window_seconds")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-  @@unique([userId, scopeKind, scopeKey, channel])
-  @@index([userId, scopeKey])
+  @@unique([userId, topicKey, channel])
+  @@index([userId, topicKey])
   @@map("notification_preference")
 }
 
@@ -182,11 +180,8 @@ model NotificationRequest {
   type            String
   templateVersion Int      @default(1) @map("template_version")
   params          Json?
-  idempotencyKey  String?  @unique @map("idempotency_key")
   actorKind       String   @default("none") @map("actor_kind")
   actorId         String?  @map("actor_id") @db.Uuid
-  entityType      String?  @map("entity_type")
-  entityId        String?  @map("entity_id")
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   segments        Json
   fallbackText    String   @map("fallback_text")

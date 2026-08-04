@@ -1,10 +1,16 @@
 import { z } from 'zod';
 
-import { defineNotificationType } from '@src/modules/notifications/services/notification-registry.js';
+import {
+  defineBatchedNotificationType,
+  defineNotificationType,
+} from '@src/modules/notifications/services/notification-registry.js';
+
+import { summarizePostLikes } from '../services/blog-post-like.service.js';
 
 /**
- * Example notification types, one per category, so the preference matrix can be
- * exercised end to end from the admin settings page.
+ * Example notification types, covering both constructors and both the
+ * in-a-topic and topic-less paths, so the preference matrix can be exercised
+ * end to end from the admin settings page.
  *
  * They live here rather than in the notifications module because notification
  * types belong to the feature that raises them — the module owns delivery, not
@@ -15,7 +21,7 @@ import { defineNotificationType } from '@src/modules/notifications/services/noti
 export const POST_COMMENTED_TYPE = defineNotificationType({
   key: 'post.commented',
   version: 1,
-  category: 'general',
+  topic: 'general',
   paramsSchema: z.object({
     postId: z.string(),
     postTitle: z.string(),
@@ -33,18 +39,31 @@ export const POST_COMMENTED_TYPE = defineNotificationType({
 });
 
 /**
- * Likes on a post, as one keyed notification per post rather than one per like.
- *
- * The params are the post's whole current like state, recomputed by
- * `blog-post-like.service.ts` on every like AND unlike — so `render` states how
- * things stand now ("Alice and 2 others liked X") rather than describing an
- * event. Phrasing it as a delta ("2 new likes") would need a window boundary
- * the renderer never sees.
+ * How many likers a notification names before collapsing the rest into a count.
+ * Bounded so the stored params never grow with a viral post.
  */
-export const POST_LIKED_TYPE = defineNotificationType({
+const ACTOR_SAMPLE_SIZE = 3;
+
+/**
+ * Likes on a post, as one collapsing notification per post rather than one per
+ * like.
+ *
+ * BATCHED because the caller should not have to know how a like notification is
+ * aggregated: it says "this post was liked" and `resolveParams` reads the post's
+ * whole current like state. That state is what `render` sees, so the copy states
+ * how things stand now ("Alice and 2 others liked X") rather than describing an
+ * event — phrasing it as a delta ("2 new likes") would need a window boundary
+ * the renderer never sees.
+ *
+ * The group key comes from `postId` alone, so the like path and the unlike path
+ * cannot disagree about which row to replace or withdraw.
+ */
+export const POST_LIKED_TYPE = defineBatchedNotificationType({
   key: 'post.liked',
   version: 1,
-  category: 'general',
+  topic: 'general',
+  inputSchema: z.object({ postId: z.string() }),
+  groupKey: ({ postId }) => `blogPost:${postId}:likes`,
   paramsSchema: z.object({
     postId: z.string(),
     postTitle: z.string(),
@@ -52,6 +71,7 @@ export const POST_LIKED_TYPE = defineNotificationType({
     likerNames: z.array(z.string()),
     count: z.number(),
   }),
+  resolveParams: ({ postId }) => summarizePostLikes(postId, ACTOR_SAMPLE_SIZE),
   channels: ['inApp'],
   render: (event) => {
     const { likerNames, count, postTitle, postId } = event.params;
@@ -74,13 +94,16 @@ export const POST_LIKED_TYPE = defineNotificationType({
 });
 
 /**
- * A security alert. In the `security` category, which is mandatory — this one
- * arrives however the recipient has set their preferences.
+ * A security alert.
+ *
+ * This type belongs to no topic, and that is the whole mechanism: a type in no
+ * topic consults no preference row, so it arrives however the recipient has set
+ * their settings. There is no `mandatory` flag to set — not belonging to a topic
+ * is the flag, so no settings page can render a toggle that would silence it.
  */
 export const SECURITY_ALERT_TYPE = defineNotificationType({
   key: 'account.securityAlert',
   version: 1,
-  category: 'security',
   paramsSchema: z.object({
     action: z.string(),
     ipAddress: z.string().optional(),

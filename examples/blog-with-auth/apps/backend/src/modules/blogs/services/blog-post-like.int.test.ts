@@ -133,19 +133,19 @@ describe('blog post likes', () => {
     await likeBlogPost(postId, createContext(alice.id));
     const before = await prisma.notification.findFirstOrThrow({
       where: { recipientId: author.id },
-      select: { id: true, feedOrderId: true },
+      select: { id: true, feedSortKey: true },
     });
 
     await likeBlogPost(postId, createContext(bob.id));
     const after = await prisma.notification.findFirstOrThrow({
       where: { recipientId: author.id },
-      select: { id: true, feedOrderId: true },
+      select: { id: true, feedSortKey: true },
     });
 
     // Same row — deliveries cascade off `id` — but a new sort key, so it
     // returns to the top of the feed.
     expect(after.id).toBe(before.id);
-    expect(after.feedOrderId).not.toBe(before.feedOrderId);
+    expect(after.feedSortKey).not.toBe(before.feedSortKey);
   });
 
   it('leaves the row untouched when the same like is retried', async () => {
@@ -157,7 +157,7 @@ describe('blog post likes', () => {
     await likeBlogPost(postId, context);
     const before = await prisma.notification.findFirstOrThrow({
       where: { recipientId: author.id },
-      select: { feedOrderId: true, seenAt: true },
+      select: { feedSortKey: true, seenAt: true },
     });
     await prisma.notification.updateMany({
       where: { recipientId: author.id },
@@ -168,12 +168,12 @@ describe('blog post likes', () => {
 
     const after = await prisma.notification.findFirstOrThrow({
       where: { recipientId: author.id },
-      select: { feedOrderId: true, seenAt: true },
+      select: { feedSortKey: true, seenAt: true },
     });
 
     // Recomputed to the same state, so nothing is rewritten and an
     // acknowledged row is not dragged back to unseen.
-    expect(after.feedOrderId).toBe(before.feedOrderId);
+    expect(after.feedSortKey).toBe(before.feedSortKey);
     expect(after.seenAt).not.toBeNull();
   });
 
@@ -192,6 +192,27 @@ describe('blog post likes', () => {
     });
 
     expect(row.dismissedAt).not.toBeNull();
+  });
+
+  it('withdraws even when the post it was about is gone', async () => {
+    const author = await createUser();
+    const alice = await createUser();
+    const postId = await createPost(author.id);
+    const context = createContext(alice.id);
+
+    await likeBlogPost(postId, context);
+
+    // Retraction derives its key from the INPUT, so it must not need the state
+    // it is withdrawing — which for a deleted post can no longer be read.
+    await prisma.blogPostLike.deleteMany({ where: { postId } });
+    await prisma.blogPost.delete({ where: { id: postId } });
+
+    await expect(
+      context.services.notification.retract(POST_LIKED_TYPE, {
+        recipientId: author.id,
+        input: { postId },
+      }),
+    ).resolves.toEqual({ retracted: true });
   });
 
   it('revives the notification when the same user likes again', async () => {

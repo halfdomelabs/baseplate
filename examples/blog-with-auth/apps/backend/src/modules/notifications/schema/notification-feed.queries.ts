@@ -21,14 +21,14 @@ function feedFilter(recipientId: string): Prisma.NotificationWhereInput {
 /**
  * The current user's notification feed, newest first, scoped to the session.
  *
- * Sorted by `feedOrderId`, a uuidv7 reissued whenever a keyed row's state
+ * Sorted by `feedSortKey`, a uuidv7 reissued whenever a collapsing row's state
  * really changes, so a replaced row resurfaces.
  */
 builder.queryField('notificationFeed', (t) =>
   t.prismaConnection(
     {
       type: 'Notification',
-      cursor: 'feedOrderId',
+      cursor: 'feedSortKey',
       maxSize: MAX_PAGE_SIZE,
       defaultSize: DEFAULT_PAGE_SIZE,
       authorize: ['user'],
@@ -40,7 +40,7 @@ builder.queryField('notificationFeed', (t) =>
         prisma.notification.findMany({
           ...query,
           where: feedFilter(context.auth.userIdOrThrow()),
-          orderBy: { feedOrderId: 'desc' },
+          orderBy: { feedSortKey: 'desc' },
         }),
     },
     { name: 'NotificationFeedConnection' },

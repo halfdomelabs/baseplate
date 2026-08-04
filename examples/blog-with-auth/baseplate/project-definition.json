@@ -759,8 +759,6 @@
           "fields": [
             { "ref": "id" },
             { "ref": "type" },
-            { "ref": "entityType" },
-            { "ref": "entityId" },
             { "ref": "seenAt" },
             { "ref": "readAt" },
             { "ref": "createdAt" }
@@ -863,20 +861,6 @@
             "type": "string"
           },
           {
-            "id": "model-scalar-field:EEWngWghmVqq",
-            "isOptional": true,
-            "name": "entityType",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:AbKysuvpNbzV",
-            "isOptional": true,
-            "name": "entityId",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
             "id": "model-scalar-field:7NEEPFkucCLe",
             "isOptional": true,
             "name": "actionUrl",
@@ -921,14 +905,14 @@
           {
             "id": "model-scalar-field:AbTgDX0MepGS",
             "isOptional": false,
-            "name": "key",
+            "name": "groupKey",
             "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:LJ9uDTbBXmTP",
             "isOptional": false,
-            "name": "feedOrderId",
+            "name": "feedSortKey",
             "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           }
@@ -950,7 +934,7 @@
             "fields": [
               { "fieldRef": "recipientId" },
               { "fieldRef": "inApp" },
-              { "fieldRef": "feedOrderId" }
+              { "fieldRef": "feedSortKey" }
             ],
             "id": "model-index:hE2TdPqNl8wO"
           }
@@ -987,11 +971,15 @@
             "id": "model-unique-constraint:2EbwsuGcULVN"
           },
           {
-            "fields": [{ "fieldRef": "recipientId" }, { "fieldRef": "key" }],
+            "fields": [
+              { "fieldRef": "type" },
+              { "fieldRef": "groupKey" },
+              { "fieldRef": "recipientId" }
+            ],
             "id": "model-unique-constraint:9AwEjhCny2KT"
           },
           {
-            "fields": [{ "fieldRef": "feedOrderId" }],
+            "fields": [{ "fieldRef": "feedSortKey" }],
             "id": "model-unique-constraint:PVHB0831o_Vi"
           }
         ]
@@ -1077,7 +1065,7 @@
           {
             "id": "model-scalar-field:REMEJMP9Jfli",
             "isOptional": false,
-            "name": "feedOrderId",
+            "name": "feedSortKey",
             "options": { "defaultGeneration": "none" },
             "type": "uuid"
           }
@@ -1106,7 +1094,7 @@
             "fields": [
               { "fieldRef": "notificationId" },
               { "fieldRef": "channel" },
-              { "fieldRef": "feedOrderId" }
+              { "fieldRef": "feedSortKey" }
             ],
             "id": "model-unique-constraint:IqxSxaq54cW5"
           }
@@ -1135,16 +1123,9 @@
             "type": "uuid"
           },
           {
-            "id": "model-scalar-field:roi8YOzRNmaD",
-            "isOptional": false,
-            "name": "scopeKind",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
             "id": "model-scalar-field:FWJ1xc6fI6YJ",
             "isOptional": false,
-            "name": "scopeKey",
+            "name": "topicKey",
             "options": { "default": "" },
             "type": "string"
           },
@@ -1158,9 +1139,16 @@
           {
             "id": "model-scalar-field:iArZVBUZA7GO",
             "isOptional": false,
-            "name": "enabled",
+            "name": "mode",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:p2ybirGc82H_",
+            "isOptional": true,
+            "name": "digestWindowSeconds",
             "options": {},
-            "type": "boolean"
+            "type": "int"
           },
           {
             "id": "model-scalar-field:7YqNBMAAUwLz",
@@ -1179,7 +1167,7 @@
         ],
         "indexes": [
           {
-            "fields": [{ "fieldRef": "userId" }, { "fieldRef": "scopeKey" }],
+            "fields": [{ "fieldRef": "userId" }, { "fieldRef": "topicKey" }],
             "id": "model-index:swJS11hjB94w"
           }
         ],
@@ -1200,8 +1188,7 @@
           {
             "fields": [
               { "fieldRef": "userId" },
-              { "fieldRef": "scopeKind" },
-              { "fieldRef": "scopeKey" },
+              { "fieldRef": "topicKey" },
               { "fieldRef": "channel" }
             ],
             "id": "model-unique-constraint:plN5dks8NQMO"
@@ -1245,13 +1232,6 @@
             "type": "json"
           },
           {
-            "id": "model-scalar-field:sW92YwQPRtB_",
-            "isOptional": true,
-            "name": "idempotencyKey",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
             "id": "model-scalar-field:D9qx4YUuXaYb",
             "isOptional": false,
             "name": "actorKind",
@@ -1264,20 +1244,6 @@
             "name": "actorId",
             "options": { "defaultGeneration": "none" },
             "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:m38nAmETWD3A",
-            "isOptional": true,
-            "name": "entityType",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:dTLfxZB3046X",
-            "isOptional": true,
-            "name": "entityId",
-            "options": { "default": "" },
-            "type": "string"
           },
           {
             "id": "model-scalar-field:W_q7qWEYHQ7m",
@@ -1324,13 +1290,7 @@
             "id": "model-index:xORdaZkIz0Is"
           }
         ],
-        "primaryKeyFieldRefs": ["id"],
-        "uniqueConstraints": [
-          {
-            "fields": [{ "fieldRef": "idempotencyKey" }],
-            "id": "model-unique-constraint:fty0wHJD0aSy"
-          }
-        ]
+        "primaryKeyFieldRefs": ["id"]
       },
       "name": "NotificationRequest",
       "service": { "transformers": [] }
@@ -1771,25 +1731,20 @@
     },
     {
       "config": {
-        "categories": [
+        "notificationsFeatureRef": "notifications",
+        "topics": [
           {
-            "defaultChannels": ["inApp"],
-            "id": "notification-category:X3h8hHa1SQtT",
+            "defaults": {
+              "email": { "mode": "immediate" },
+              "inApp": { "mode": "immediate" }
+            },
+            "id": "notification-topic:G5QaL9PYnnRL",
             "key": "general",
-            "label": "General",
-            "mandatory": false
-          },
-          {
-            "defaultChannels": ["inApp", "email"],
-            "id": "notification-category:y0AYI2qO5KhI",
-            "key": "security",
-            "label": "Security",
-            "mandatory": true
+            "label": "General"
           }
-        ],
-        "notificationsFeatureRef": "notifications"
+        ]
       },
-      "configSchemaVersion": 1,
+      "configSchemaVersion": 2,
       "id": "plugin:baseplate-dev_plugin-notifications_notifications",
       "name": "notifications",
       "packageName": "@baseplate-dev/plugin-notifications",

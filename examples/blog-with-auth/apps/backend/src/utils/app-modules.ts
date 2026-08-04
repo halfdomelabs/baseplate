@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
-import type { NotificationTypeDefinition } from '../modules/notifications/services/notification-registry.js';
+import type { AnyNotificationType } from '../modules/notifications/services/notification-registry.js';
 import type { QueueHandlerBinding } from '../types/queue.types.js';
 import type { AppServices } from './runtime-services.js';
 
@@ -23,7 +23,7 @@ export type AppPlugin =
 export interface AppModule {
   children?: AppModule[];
   /* TPL_MODULE_FIELDS:START */
-  notificationTypes?: NotificationTypeDefinition[];
+  notificationTypes?: AnyNotificationType[];
   plugins?: AppPlugin[];
   queues?: QueueHandlerBinding[];
   /* TPL_MODULE_FIELDS:END */

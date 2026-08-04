@@ -100,8 +100,7 @@ export async function cachedSet<T>(
 ): Promise<Set<T>> {
   const cacheKey = `roleset:${key}`;
   const existing = ctx.authorizerModelCache.get(cacheKey) as
-    | Promise<Set<T>>
-    | undefined;
+    Promise<Set<T>> | undefined;
   if (existing !== undefined) return existing;
 
   const promise = compute().catch((err: unknown) => {
@@ -130,8 +129,7 @@ function cachedBoolean(
 
   const inflightKey = `inflight:${key}`;
   const existing = ctx.authorizerModelCache.get(inflightKey) as
-    | Promise<boolean>
-    | undefined;
+    Promise<boolean> | undefined;
   if (existing !== undefined) return existing;
 
   const promise = compute().then(

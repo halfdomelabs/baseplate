@@ -30,14 +30,20 @@ const descriptorSchema = z.object({
   includeEmailChannel: z.boolean().optional(),
   /** The app's user model; delivery reads recipient addresses from it. */
   userModelName: z.string(),
-  /** The categories notification types are grouped under, from the project definition. */
-  categories: z
+  /** The topics notification types are grouped under, from the project definition. */
+  topics: z
     .array(
       z.object({
         key: z.string(),
         label: z.string(),
-        defaultChannels: z.array(z.string()),
-        mandatory: z.boolean(),
+        description: z.string().optional(),
+        defaults: z.record(
+          z.string(),
+          z.object({
+            mode: z.string(),
+            windowSeconds: z.number().optional(),
+          }),
+        ),
       }),
     )
     .min(1),
@@ -68,7 +74,7 @@ export const notificationModuleGenerator = createGenerator({
   name: 'notifications/core/notification-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeEmailChannel, userModelName, categories }) => ({
+  buildTasks: ({ includeEmailChannel, userModelName, topics }) => ({
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.task,
     renderers: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.renderers.task,
     // The service chunks and groups delivery work with es-toolkit, and mints
@@ -181,7 +187,7 @@ export const notificationModuleGenerator = createGenerator({
         appModuleFieldTypes.setFieldType(
           'notificationTypes',
           TsCodeUtils.typeImportFragment(
-            'NotificationTypeDefinition',
+            'AnyNotificationType',
             paths.servicesNotificationRegistry,
           ),
         );
@@ -297,9 +303,9 @@ export const notificationModuleGenerator = createGenerator({
           .join(', ')}] as const`;
 
         // `as const` so the key union stays literal — a widened `string[]` would
-        // make `NotificationCategoryKey` just `string` and defeat the narrowing.
-        const categoriesFragment = `[\n${categories
-          .map((category) => JSON.stringify(category, null, 2))
+        // make `NotificationTopicKey` just `string` and defeat the narrowing.
+        const topicsFragment = `[\n${topics
+          .map((topic) => JSON.stringify(topic, null, 2))
           .join(',\n')},\n] as const`;
 
         return {
@@ -310,8 +316,8 @@ export const notificationModuleGenerator = createGenerator({
             await builder.apply(
               renderers.mainGroup.render({
                 variables: {
-                  constantsNotificationCategories: {
-                    TPL_CATEGORIES: tsCodeFragment(categoriesFragment),
+                  constantsNotificationTopics: {
+                    TPL_TOPICS: tsCodeFragment(topicsFragment),
                   },
                   servicesNotificationChannel: {
                     TPL_CHANNEL_ENTRIES: tsCodeFragment(channelEntries),

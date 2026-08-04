@@ -14,13 +14,12 @@ import { NOTIFICATION_MODELS } from '#src/notifications/constants/model-names.js
  * in-app-only table could not do for an email-only type.
  * `NotificationRequest` is TRANSIENT dispatch state, and `NotificationDelivery`
  * is per-recipient, per-channel delivery state. `NotificationPreference` holds
- * sparse per-user overrides on the Builder-declared category defaults.
+ * sparse per-user overrides on the Builder-declared topic defaults.
  *
  * Render-at-read content model: `params` (render inputs) are the source of truth,
  * re-rendered per request; frozen `segments` + `fallbackText` are the fallback
  * for retired types / param drift. Actor is discriminated via `actorKind`.
- * `recipientId`/`actorId` are the only FKs; `entityType`/`entityId` and
- * `requestId` are FK-less refs. Digest grouping columns are deferred.
+ * `recipientId`/`actorId` are the only FKs; `requestId` is an FK-less ref.
  */
 export function createNotificationsPartialDefinition(
   notificationsFeatureName: string,
@@ -53,11 +52,11 @@ export function createNotificationsPartialDefinition(
               name: 'recipientId',
               type: 'uuid',
             },
-            // The dispatch that produced this row. Deliberately FK-LESS (like
-            // entityType/entityId): the request is transient and disposable
-            // once its deliveries settle, while this row is durable — a
-            // relation would tie their lifetimes together. Still the fan-out
-            // dedupe key via @@unique(requestId, recipientId).
+            // The dispatch that produced this row. Deliberately FK-LESS: the
+            // request is transient and disposable once its deliveries settle,
+            // while this row is durable — a relation would tie their lifetimes
+            // together. Still the fan-out dedupe key via
+            // @@unique(requestId, recipientId).
             {
               name: 'requestId',
               type: 'uuid',
@@ -120,31 +119,22 @@ export function createNotificationsPartialDefinition(
               isOptional: true,
             },
 
-            // Polymorphic subject reference (no FK).
-            {
-              name: 'entityType',
-              type: 'string',
-              isOptional: true,
-            },
-            {
-              name: 'entityId',
-              type: 'string',
-              isOptional: true,
-            },
-
             // --- Identity ---
-            // The stable identity of the FACT this row is about, chosen by the
-            // caller (`post:123:likes`). One row per (recipient, key), replaced
-            // in place as the fact evolves — the one-notification-per-thread
-            // model. This single column is idempotency, aggregation, and
-            // retraction at once: replaying identical state is a no-op,
-            // collapsing is just replacing at the same key, and withdrawing is a
-            // lookup on it.
+            // The stable identity of the FACT this row is about, DERIVED BY THE
+            // TYPE from its input (`post:123:likes`) rather than passed at a
+            // call site — the like-side and unlike-side paths must produce
+            // byte-identical keys or a retraction silently misses. One row per
+            // (type, groupKey, recipient), replaced in place as the fact
+            // evolves — the one-notification-per-thread model. This single
+            // column is idempotency, aggregation, and retraction at once:
+            // replaying identical state is a no-op, collapsing is just
+            // replacing at the same key, and withdrawing is a lookup on it.
             //
-            // Callers that omit a key get a generated one, which collapses with
-            // nothing and cannot be retracted — the fire-and-forget default.
+            // Types that derive no key get a generated one, which collapses
+            // with nothing and cannot be retracted — the fire-and-forget
+            // default.
             {
-              name: 'key',
+              name: 'groupKey',
               type: 'string',
             },
             // Feed sort key, reissued whenever the row's state really changes,
@@ -152,9 +142,12 @@ export function createNotificationsPartialDefinition(
             // because `id` cannot be reissued: `NotificationDelivery` cascades
             // off it. Not `updatedAt` either — that bumps on any write, so
             // marking a row read would resurface it, and its ties break cursor
-            // pagination.
+            // pagination. A plain `DateTime` was considered and rejected:
+            // `timestamp(3)` ties under the per-recipient upsert loop, and a
+            // Relay cursor over a non-unique column silently skips or repeats
+            // rows at the page boundary.
             {
-              name: 'feedOrderId',
+              name: 'feedSortKey',
               type: 'uuid',
               options: { defaultGeneration: 'uuidv7' },
             },
@@ -204,7 +197,7 @@ export function createNotificationsPartialDefinition(
           // every query filters on it — a partial index WHERE inApp would be
           // ideal but the schema layer has no `where`, so the column sits in
           // the key instead and email-only rows cost size, not scans.
-          // The feed sorts by `feedOrderId` alone — a uuidv7 is both
+          // The feed sorts by `feedSortKey` alone — a uuidv7 is both
           // time-ordered and unique, so it is a total order on its own, which
           // is what cursor pagination needs. Sorting by the reissued key rather
           // than `id` is what lets a replaced row resurface.
@@ -213,7 +206,7 @@ export function createNotificationsPartialDefinition(
               fields: [
                 { fieldRef: 'recipientId' },
                 { fieldRef: 'inApp' },
-                { fieldRef: 'feedOrderId' },
+                { fieldRef: 'feedSortKey' },
               ],
             },
             {
@@ -237,17 +230,30 @@ export function createNotificationsPartialDefinition(
             {
               fields: [{ fieldRef: 'requestId' }, { fieldRef: 'recipientId' }],
             },
-            // One row per (recipient, fact). The upsert target for every write
-            // and the lookup for every retraction — which is why the retract
-            // path needs no index of its own.
+            // One row per (type, fact, recipient). The upsert target for every
+            // write and the lookup for every retraction — which is why the
+            // retract path needs no index of its own.
+            //
+            // THE COLUMN ORDER IS LOAD-BEARING. `groupKey` is
+            // recipient-independent, so leading with `(type, groupKey)` makes
+            // "every recipient holding this fact" an indexed prefix scan. That
+            // is what lets a bulk retraction find the whole audience of a
+            // withdrawn fact without entity columns to look it up by. Ordering
+            // it `(recipientId, type, groupKey)` would serve the single-row
+            // upsert equally well but force a full scan for that audience
+            // query.
             {
-              fields: [{ fieldRef: 'recipientId' }, { fieldRef: 'key' }],
+              fields: [
+                { fieldRef: 'type' },
+                { fieldRef: 'groupKey' },
+                { fieldRef: 'recipientId' },
+              ],
             },
             // Single-field, so this emits an inline `@unique` rather than a
             // composite. Required: Pothos types a connection's `cursor` as a
-            // unique field, and `feedOrderId` is the feed cursor.
+            // unique field, and `feedSortKey` is the feed cursor.
             {
-              fields: [{ fieldRef: 'feedOrderId' }],
+              fields: [{ fieldRef: 'feedSortKey' }],
             },
           ],
           relations: [
@@ -280,8 +286,6 @@ export function createNotificationsPartialDefinition(
             fields: [
               { ref: 'id' },
               { ref: 'type' },
-              { ref: 'entityType' },
-              { ref: 'entityId' },
               { ref: 'seenAt' },
               { ref: 'readAt' },
               { ref: 'createdAt' },
@@ -333,14 +337,6 @@ export function createNotificationsPartialDefinition(
               type: 'string',
               isOptional: true,
             },
-            // Caller-supplied dedupe key. Optional: absent means "always a new
-            // request", so two legitimately identical notifications are never
-            // collapsed. Present means at-most-once per key.
-            {
-              name: 'idempotencyKey',
-              type: 'string',
-              isOptional: true,
-            },
             {
               name: 'actorKind',
               type: 'string',
@@ -349,16 +345,6 @@ export function createNotificationsPartialDefinition(
             {
               name: 'actorId',
               type: 'uuid',
-              isOptional: true,
-            },
-            {
-              name: 'entityType',
-              type: 'string',
-              isOptional: true,
-            },
-            {
-              name: 'entityId',
-              type: 'string',
               isOptional: true,
             },
             // pending | done. Flipped once every row and delivery job for this
@@ -377,8 +363,9 @@ export function createNotificationsPartialDefinition(
             },
           ],
           primaryKeyFieldRefs: ['id'],
-          // Idempotency layer 1: the upsert target.
-          uniqueConstraints: [{ fields: [{ fieldRef: 'idempotencyKey' }] }],
+          // No dedupe key of its own: row-level upsert on `groupKey` is the
+          // idempotency boundary, so a request is always a fresh dispatch
+          // record and replaying one collapses at the notification instead.
           // The sweeper's scan.
           indexes: [
             {
@@ -413,7 +400,7 @@ export function createNotificationsPartialDefinition(
               type: 'string',
             },
             // Which generation of the notification this delivery serves —
-            // a copy of the row's `feedOrderId` at the time it was armed.
+            // a copy of the row's `feedSortKey` at the time it was armed.
             //
             // A keyed row is replaced in place, so without this a re-armed
             // delivery would collide with the settled one from the previous
@@ -422,7 +409,7 @@ export function createNotificationsPartialDefinition(
             // fresh delivery per channel, while replays inside a generation
             // still collapse.
             {
-              name: 'feedOrderId',
+              name: 'feedSortKey',
               type: 'uuid',
             },
             // pending | delivered | failed | skipped. A ledger the queue never
@@ -465,7 +452,7 @@ export function createNotificationsPartialDefinition(
           primaryKeyFieldRefs: ['id'],
           // One row per channel per generation, so a concurrent replay collides
           // here instead of double-enqueuing, and one bounced address fails its
-          // own row rather than a whole chunk. `feedOrderId` is in the key so a
+          // own row rather than a whole chunk. `feedSortKey` is in the key so a
           // replaced row can arm a fresh send without colliding with the
           // settled delivery of the generation before it.
           uniqueConstraints: [
@@ -473,7 +460,7 @@ export function createNotificationsPartialDefinition(
               fields: [
                 { fieldRef: 'notificationId' },
                 { fieldRef: 'channel' },
-                { fieldRef: 'feedOrderId' },
+                { fieldRef: 'feedSortKey' },
               ],
             },
           ],
@@ -497,9 +484,10 @@ export function createNotificationsPartialDefinition(
         },
       },
       // --- Preferences ---
-      // Sparse overrides on the Builder-declared category defaults: a row exists
+      // Sparse overrides on the Builder-declared topic defaults: a row exists
       // only where a user has actually chosen. Absence means "use the default",
-      // so shipping a new category needs no backfill.
+      // so shipping a new topic needs no backfill — and truncating the table
+      // returns every user to the Builder defaults rather than to "off".
       {
         name: NOTIFICATION_MODELS.notificationPreference,
         featureRef: notificationsFeatureName,
@@ -514,20 +502,18 @@ export function createNotificationsPartialDefinition(
               name: 'userId',
               type: 'uuid',
             },
-            // category | type. A plain string rather than an enum, which would
-            // surface this infrastructure model in the enum catalog. Entity-level
-            // muting would add a third value here rather than a new table.
-            {
-              name: 'scopeKind',
-              type: 'string',
-            },
-            // A category key or a notification type key, depending on
-            // `scopeKind` — never a Builder entity id. Keeping keys puts the
+            // A topic key — never a Builder entity id. Keeping keys puts the
             // generated const, the runtime lookup and this column on one
-            // identifier; renaming a category is a data migration for these rows
+            // identifier; renaming a topic is a data migration for these rows
             // as well as a compile error at every `defineNotificationType` site.
+            //
+            // Topics are the ONLY preference scope. A type outside every topic
+            // consults no preference at all, so there is nothing to scope a row
+            // to — which is what makes topic membership, rather than a
+            // `mandatory` flag, the thing that decides whether a notification
+            // is user-controllable.
             {
-              name: 'scopeKey',
+              name: 'topicKey',
               type: 'string',
             },
             // A routing target (`'inApp'` or an installed channel key), NOT a
@@ -538,12 +524,22 @@ export function createNotificationsPartialDefinition(
               name: 'channel',
               type: 'string',
             },
-            // Boolean for now. Digests (per-user/type windows) are the natural
-            // next value here — `mode: 'off' | 'immediate' | 'digest'` — so that
-            // work should upgrade this column rather than add a parallel table.
+            // off | immediate | digest. A plain string rather than an enum,
+            // which would surface this infrastructure model in the enum
+            // catalog. `digest` is outbound-only — the feed has no window to
+            // batch over, so `inApp` accepts `off | immediate` only.
             {
-              name: 'enabled',
-              type: 'boolean',
+              name: 'mode',
+              type: 'string',
+            },
+            // Only meaningful when `mode` is `digest`. Optional rather than
+            // defaulted: absence means "inherit the topic's window", so a user
+            // who has only chosen `digest` does not get their window frozen at
+            // whatever the Builder default happened to be that day.
+            {
+              name: 'digestWindowSeconds',
+              type: 'int',
+              isOptional: true,
             },
             {
               name: 'createdAt',
@@ -563,16 +559,15 @@ export function createNotificationsPartialDefinition(
             {
               fields: [
                 { fieldRef: 'userId' },
-                { fieldRef: 'scopeKind' },
-                { fieldRef: 'scopeKey' },
+                { fieldRef: 'topicKey' },
                 { fieldRef: 'channel' },
               ],
             },
           ],
-          // The resolver's read: every row for a fan-out's recipients whose
-          // scope is the type's category or the type itself.
+          // The resolver's read: every row for a fan-out's recipients scoped to
+          // the type's topic.
           indexes: [
-            { fields: [{ fieldRef: 'userId' }, { fieldRef: 'scopeKey' }] },
+            { fields: [{ fieldRef: 'userId' }, { fieldRef: 'topicKey' }] },
           ],
           relations: [
             {

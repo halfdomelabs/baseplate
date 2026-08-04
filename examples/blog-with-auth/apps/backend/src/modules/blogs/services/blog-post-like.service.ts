@@ -4,27 +4,59 @@ import { prisma } from '@src/services/prisma.js';
 
 import { POST_LIKED_TYPE } from '../notifications/blog-notification-types.js';
 
-/**
- * How many likers a notification names before collapsing the rest into a count.
- * Bounded so the stored params never grow with a viral post.
- */
-const ACTOR_SAMPLE_SIZE = 3;
-
-/** Identifies the like-notification for a post, per recipient. */
-function likeNotificationKey(postId: string): string {
-  return `blogPost:${postId}:likes`;
+/** The like state a `post.liked` notification renders from. */
+export interface BlogPostLikeSummary {
+  postId: string;
+  postTitle: string;
+  likerNames: string[];
+  count: number;
 }
 
 /**
- * Recompute the post's like state and tell the notification service about it.
+ * The post's current like state, as `POST_LIKED_TYPE.resolveParams` reads it.
  *
- * Both `likeBlogPost` and `unlikeBlogPost` end here, which is the contract a
- * keyed notification places on its caller: the likes table is the source of
- * truth, so every change recomputes the whole aggregate rather than nudging a
- * stored counter. At zero the notification is withdrawn.
+ * The likes table is the source of truth, so this recomputes the whole aggregate
+ * rather than nudging a stored counter. The author's own like is excluded — you
+ * are not notified about liking your own post.
+ */
+export async function summarizePostLikes(
+  postId: string,
+  sampleSize: number,
+): Promise<BlogPostLikeSummary> {
+  const post = await prisma.blogPost.findUnique({
+    where: { id: postId },
+    select: { id: true, title: true, publisherId: true },
+  });
+  if (!post) {
+    throw new Error(`Blog post ${postId} not found`);
+  }
+
+  const [likes, count] = await Promise.all([
+    prisma.blogPostLike.findMany({
+      where: { postId, userId: { not: post.publisherId } },
+      orderBy: { createdAt: 'desc' },
+      take: sampleSize,
+      select: { user: { select: { name: true } } },
+    }),
+    prisma.blogPostLike.count({
+      where: { postId, userId: { not: post.publisherId } },
+    }),
+  ]);
+
+  return {
+    postId: post.id,
+    postTitle: post.title,
+    likerNames: likes.map((like) => like.user.name ?? 'Someone'),
+    count,
+  };
+}
+
+/**
+ * Tell the notification service the post's like state changed.
  *
- * The author is not notified about their own like, so a post whose only liker
- * is its author has nothing to say.
+ * Both `likeBlogPost` and `unlikeBlogPost` end here. Neither computes params or
+ * a key: the type derives both, which is what guarantees the notify side and
+ * the retract side name the same row. At zero the notification is withdrawn.
  */
 async function syncLikeNotification(
   postId: string,
@@ -32,45 +64,25 @@ async function syncLikeNotification(
 ): Promise<void> {
   const post = await prisma.blogPost.findUnique({
     where: { id: postId },
-    select: { id: true, title: true, publisherId: true },
+    select: { publisherId: true },
   });
   if (!post) return;
 
-  const [likes, count] = await Promise.all([
-    prisma.blogPostLike.findMany({
-      where: { postId, userId: { not: post.publisherId } },
-      orderBy: { createdAt: 'desc' },
-      take: ACTOR_SAMPLE_SIZE,
-      select: { userId: true, user: { select: { name: true } } },
-    }),
-    prisma.blogPostLike.count({
-      where: { postId, userId: { not: post.publisherId } },
-    }),
-  ]);
-
-  const key = likeNotificationKey(postId);
+  const count = await prisma.blogPostLike.count({
+    where: { postId, userId: { not: post.publisherId } },
+  });
 
   if (count === 0) {
     await context.services.notification.retract(POST_LIKED_TYPE, {
       recipientId: post.publisherId,
-      key,
+      input: { postId },
     });
     return;
   }
 
   await context.services.notification.notify(POST_LIKED_TYPE, {
     recipientId: post.publisherId,
-    key,
-    // The most recent liker, for the row's live actor relation.
-    actorId: likes[0]?.userId,
-    entityType: 'blogPost',
-    entityId: post.id,
-    params: {
-      postId: post.id,
-      postTitle: post.title,
-      likerNames: likes.map((like) => like.user.name ?? 'Someone'),
-      count,
-    },
+    input: { postId },
   });
 }
 

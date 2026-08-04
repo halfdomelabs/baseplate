@@ -5,7 +5,7 @@ import { notificationContentType } from './notification-content.object-types.js'
 import { notificationObjectType } from './notification.object-type.js';
 
 /**
- * `locale` is an explicit ARG, not request context: Apollo keys its cache by
+ * `locale` is an explicit arg, not request context: Apollo keys its cache by
  * field args, so a language switch produces a separate cache entry instead of
  * silently serving the pre-switch language.
  *

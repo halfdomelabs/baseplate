@@ -62,7 +62,7 @@ export default createPluginModule({
               notificationModule: notificationModuleGenerator({
                 includeEmailChannel,
                 userModelName,
-                categories: notifications.categories,
+                topics: notifications.topics,
               }),
             },
           );

@@ -260,8 +260,6 @@ async function deleteExpiredNotifications(
     const rows = await prisma.notification.findMany({
       where: {
         expiresAt: { not: null, lt: expiredBefore },
-        // A row with a delivery still `pending` is not collectable — see the
-        // doc comment.
         deliveries: { none: { status: 'pending' } },
       },
       select: { id: true },
@@ -297,7 +295,6 @@ async function deleteCompletedRequests(
     const rows = await prisma.notificationRequest.findMany({
       where: {
         createdAt: { lt: createdBefore },
-        // Not `pending`: the sweeper still has work to re-run for it.
         fanoutStatus: 'done',
         ...(cursor ? { id: { gt: cursor } } : {}),
       },
@@ -375,10 +372,10 @@ export function createNotificationOutbox(deps: {
       select: {
         channel: true,
         notificationId: true,
-        // Keyed rows debounce; unkeyed ones go out immediately. Read from the
-        // row rather than passed in, so the sweeper's re-run makes the same
-        // choice as the original hand-off.
-        notification: { select: { key: true } },
+        // Collapsing rows debounce; non-collapsing ones go out immediately.
+        // Read from the row rather than passed in, so the sweeper's re-run
+        // makes the same choice as the original hand-off.
+        notification: { select: { groupKey: true } },
       },
       orderBy: { id: 'asc' },
     });
@@ -386,7 +383,7 @@ export function createNotificationOutbox(deps: {
     // The delay belongs to the job, so one job cannot hold both kinds.
     const [debounced, immediate] = partition(
       pending,
-      (delivery) => !isGeneratedKey(delivery.notification.key),
+      (delivery) => !isGeneratedKey(delivery.notification.groupKey),
     );
 
     let enqueued = 0;
@@ -601,7 +598,6 @@ export function createNotificationOutbox(deps: {
         await completeFanout(id);
         sweptCount += 1;
       } catch (error) {
-        // Stays `pending` for the next pass.
         logError(error, { source: 'notification-fanout-sweep', requestId: id });
       }
     }

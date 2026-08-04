@@ -62,8 +62,7 @@ async function reconcileSubscriptionRoles(
       continue;
     }
     const plan = SUBSCRIPTION_PLANS[subscription.planKey as PlanKey] as
-      | (typeof SUBSCRIPTION_PLANS)[PlanKey]
-      | undefined;
+      (typeof SUBSCRIPTION_PLANS)[PlanKey] | undefined;
     if (!plan) {
       logger.warn(
         `Unknown plan key "${subscription.planKey}" while reconciling roles for user ${userId}`,

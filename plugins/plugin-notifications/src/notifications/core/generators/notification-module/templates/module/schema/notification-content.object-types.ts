@@ -11,7 +11,7 @@ type TextSegment = Extract<NotificationSegment, { type: 'text' }>;
 type LinkSegment = Extract<NotificationSegment, { type: 'link' }>;
 
 /**
- * Typed content contract. Segments are a real GraphQL union — NOT a `JSON`
+ * Typed content contract. Segments are a real GraphQL union — not a `JSON`
  * scalar — so generated React types are exhaustive rather than `unknown`, and
  * malformed stored JSON can't reach rendering code.
  */

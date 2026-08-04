@@ -13,6 +13,11 @@ export const oxfmtIgnorePatterns = [
   '**/temp/**',
   '**/tmp/**',
   '**/generated/prisma/**',
+  // Generator templates and extractor.json are written by the template
+  // extractor, which formats with Prettier. Formatting them here too would make
+  // the two formatters fight over the same files on every extraction.
+  '**/generators/**/templates/**',
+  '**/generators/**/extractor.json',
   '**/.env*',
   '**/LICENSE',
   'pnpm-lock.yaml',

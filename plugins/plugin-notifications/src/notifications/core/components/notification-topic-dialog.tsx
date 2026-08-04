@@ -15,13 +15,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { NotificationCategoryInput } from '../schema/plugin-definition.js';
+import type { NotificationTopicInput } from '../schema/plugin-definition.js';
 
-import { createNotificationCategorySchema } from '../schema/plugin-definition.js';
-import { NotificationCategoryFormFields } from './notification-category-form-fields.js';
+import { createNotificationTopicSchema } from '../schema/plugin-definition.js';
+import { NotificationTopicFormFields } from './notification-topic-form-fields.js';
 
 /**
- * The routing targets a category can default to.
+ * The routing targets a topic can default to.
  *
  * `inApp` is always available — it is a flag on the row plus a publish, not an
  * installed channel. `email` is offered whether or not the email plugin is
@@ -34,27 +34,27 @@ const CHANNEL_OPTIONS = [
   { label: 'Email', value: 'email' },
 ];
 
-interface NotificationCategoryDialogProps {
+interface NotificationTopicDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  category?: NotificationCategoryInput;
+  topic?: NotificationTopicInput;
   isNew?: boolean;
-  onSave: (category: NotificationCategoryInput) => void;
+  onSave: (topic: NotificationTopicInput) => void;
 }
 
-export function NotificationCategoryDialog({
+export function NotificationTopicDialog({
   open,
   onOpenChange,
-  category,
+  topic,
   isNew = false,
   onSave,
-}: NotificationCategoryDialogProps): React.JSX.Element {
-  const notificationCategorySchema = useDefinitionSchema(
-    createNotificationCategorySchema,
+}: NotificationTopicDialogProps): React.JSX.Element {
+  const notificationTopicSchema = useDefinitionSchema(
+    createNotificationTopicSchema,
   );
-  const form = useForm<NotificationCategoryInput>({
-    resolver: zodResolver(notificationCategorySchema),
-    values: category,
+  const form = useForm<NotificationTopicInput>({
+    resolver: zodResolver(notificationTopicSchema),
+    values: topic,
   });
 
   const { control, handleSubmit } = form;
@@ -78,18 +78,17 @@ export function NotificationCategoryDialog({
           }}
         >
           <DialogHeader>
-            <DialogTitle>
-              {isNew ? 'Add Category' : 'Edit Category'}
-            </DialogTitle>
+            <DialogTitle>{isNew ? 'Add Topic' : 'Edit Topic'}</DialogTitle>
             <DialogDescription>
               {isNew
-                ? 'Enter the details for the new notification category.'
-                : 'Update the notification category details below.'}
+                ? 'Enter the details for the new notification topic.'
+                : 'Update the notification topic details below.'}
             </DialogDescription>
           </DialogHeader>
           <div className="notifications:py-4">
-            <NotificationCategoryFormFields
+            <NotificationTopicFormFields
               lens={lens}
+              control={control}
               channelOptions={CHANNEL_OPTIONS}
             />
           </div>
@@ -104,7 +103,7 @@ export function NotificationCategoryDialog({
               Cancel
             </Button>
             <Button form={formId} type="submit">
-              {isNew ? 'Add' : 'Update'} Category
+              {isNew ? 'Add' : 'Update'} Topic
             </Button>
           </DialogFooter>
         </form>

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { NotificationCategoryKey } from '$constantsNotificationCategories';
+import type { NotificationTopicKey } from '$constantsNotificationTopics';
 import type { NotificationRoutingTarget } from '$servicesNotificationChannel';
 import type {
   NotificationContent,
@@ -12,7 +12,7 @@ import type { z } from 'zod';
 /**
  * Who triggered a notification, as display identity.
  *
- * An INPUT to rendering: the renderer decides copy from "who did this" rather
+ * An input to rendering: the renderer decides copy from "who did this" rather
  * than inventing it, and holds no I/O of its own. The label is the caller's
  * `actorLabel` snapshot, or the system actor key when there is no user row.
  * Only the delivery path resolves live identity, which it passes in explicitly.
@@ -28,83 +28,107 @@ export interface NotificationEvent<
 > {
   params: P;
   actor?: NotificationActor;
-  entityType?: string;
-  entityId?: string;
 }
 
-/** Fields shared by both renderer shapes. */
-interface NotificationTypeBase<P extends NotificationParams> {
+/** A schema whose output is usable as notification params. */
+export type NotificationParamsSchema = z.ZodType<NotificationParams>;
+
+/**
+ * Fields shared by both type shapes. Parameterised by the params schema, which
+ * the params themselves are derived from with `z.output`.
+ */
+interface NotificationTypeBase<PSchema extends NotificationParamsSchema> {
   /** Stable key stored on the row, e.g. "post.commented". */
   key: string;
   /** Renderer version stored on the row. Bump on breaking copy/param changes. */
   version: number;
   /**
-   * Coarse bucket for filtering and preference grouping, e.g. "billing".
-   *
-   * Declared on the type, not stored per row: it is a static property of
-   * `post.commented`, so a per-row copy would drift. Read time derives it from
-   * the registry.
-   *
-   * Narrowed to the declared categories so removing one from the project
-   * definition breaks the build here rather than orphaning preference rows.
+   * The topic this type belongs to, if any.
    */
-  category: NotificationCategoryKey;
+  topic?: NotificationTopicKey;
   /** Validates stored params before render; failure falls back to the snapshot. */
-  paramsSchema: z.ZodType<P>;
-  /** Routing targets for this type. */
-  channels: readonly NotificationRoutingTarget[];
-}
-
-/** The default shape: one event in, one render out. */
-export interface SingleNotificationType<
-  P extends NotificationParams = NotificationParams,
-> extends NotificationTypeBase<P> {
-  aggregate?: undefined;
-  render(event: NotificationEvent<P>, ctx: RenderContext): NotificationContent;
+  paramsSchema: PSchema;
+  /**
+   * Allowed channels for this type.
+   */
+  channels?: readonly NotificationRoutingTarget[];
+  render(
+    event: NotificationEvent<z.output<PSchema>>,
+    ctx: RenderContext,
+  ): NotificationContent;
 }
 
 /**
- * A code-defined notification type, pinned to a `version`.
+ * A type whose caller passes finished `params`.
  *
- * Because the feed renders at READ time, rows are resolved by `(key, version)`
- * — not "whatever renderer is deployed now". Bump `version` for a structural
- * copy or param change and register the old definition alongside it: existing
- * rows keep rendering with the renderer that produced them, while translation
- * and wording fixes *within* a version still apply retroactively.
- *
- * `render` MUST be pure and synchronous (it runs per row per request).
- *
- * There is no aggregatable variant. Collapsing is a property of the CALL, not
- * the type: passing a `key` to `notify` opts that notification into
- * replace-in-place, the outbound debounce, and retractability. The same type
- * can therefore be used both ways — one row per like-thread, one row per
- * @mention — without declaring anything up front.
+ * `render` must be pure and synchronous (it runs per row per request).
  *
  * Write copy **state-phrased** ("Alice, Bob and 3 others liked your post")
- * rather than delta-phrased ("3 new likes"): a keyed row holds current state,
- * and `render` sees only that state, never what changed since last time.
+ * rather than delta-phrased ("3 new likes"): a collapsed row holds current
+ * state, and `render` sees only that state, never what changed since last time.
  */
-export interface NotificationTypeDefinition<
-  P extends NotificationParams = NotificationParams,
-> extends NotificationTypeBase<P> {
-  render(event: NotificationEvent<P>, ctx: RenderContext): NotificationContent;
+export interface PlainNotificationType<
+  PSchema extends NotificationParamsSchema = NotificationParamsSchema,
+> extends NotificationTypeBase<PSchema> {
+  readonly kind: 'plain';
+  /**
+   * Derives the collapse/retraction key from the caller's params.
+   *
+   * Absent, every call is its own row: non-collapsing and non-retractable, the
+   * fire-and-forget default.
+   */
+  groupKey?: (params: z.output<PSchema>) => string;
 }
 
 /**
- * Marks keys generated for callers who supplied none. The write path mints them
+ * A type that computes its own `params` from a smaller `input`.
+ *
+ * The difference from a plain type is who computes the params — not idempotency
+ * and not retractability, both of which either shape gets from `groupKey`. A batched
+ * type exists so the caller can say "this post was liked" and let the type read
+ * the current like count, rather than every call site re-deriving the aggregate.
+ */
+export interface BatchedNotificationType<
+  PSchema extends NotificationParamsSchema = NotificationParamsSchema,
+  ISchema extends z.ZodType = z.ZodType,
+> extends NotificationTypeBase<PSchema> {
+  readonly kind: 'batched';
+  /** Validates the caller's input before `resolveParams` sees it. */
+  inputSchema: ISchema;
+  /**
+   * Derives the collapse/retraction key from the caller's input.
+   */
+  groupKey: (input: z.output<ISchema>) => string;
+  /**
+   * Reads current state and produces the params `render` will see.
+   *
+   * Runs at write time and may query — unlike `render`, which must stay pure
+   * and synchronous because it runs per row per request.
+   */
+  resolveParams(input: z.output<ISchema>): Promise<z.output<PSchema>>;
+}
+
+/**
+ * Any type, as a heterogeneous collection holds it.
+ */
+export type AnyNotificationType =
+  PlainNotificationType | BatchedNotificationType;
+
+/**
+ * Marks keys generated for types that derive none. The write path mints them
  * and the outbox reads them back to decide whether to debounce, so both sides
  * import these rather than repeating the prefix.
  */
 const GENERATED_KEY_PREFIX = 'request:';
 
-/** The `key` stored for a notification whose caller supplied none. */
+/** The `groupKey` stored for a notification whose type derives none. */
 export function generatedKey(requestId: string): string {
   return `${GENERATED_KEY_PREFIX}${requestId}`;
 }
 
-/** Whether a row's `key` was minted for it rather than supplied by its caller. */
-export function isGeneratedKey(key: string): boolean {
-  return key.startsWith(GENERATED_KEY_PREFIX);
+/** Whether a row's `groupKey` was minted for it rather than derived by its type. */
+export function isGeneratedKey(groupKey: string): boolean {
+  return groupKey.startsWith(GENERATED_KEY_PREFIX);
 }
 
 /**
@@ -113,16 +137,33 @@ export function isGeneratedKey(key: string): boolean {
  * A plain call now that arity is fixed — kept as the single seam every render
  * goes through, and the place a future arity change would land.
  */
-export function renderSingle<P extends NotificationParams>(
-  type: NotificationTypeDefinition<P>,
-  event: NotificationEvent<P>,
+export function renderSingle(
+  type: AnyNotificationType,
+  event: NotificationEvent,
   ctx: RenderContext,
 ): NotificationContent {
   return type.render(event, ctx);
 }
 
-export function defineNotificationType<P extends NotificationParams>(
-  definition: NotificationTypeDefinition<P>,
-): NotificationTypeDefinition<P> {
-  return definition;
+/**
+ * Defines a type whose caller passes finished params.
+ */
+export function defineNotificationType<
+  PSchema extends NotificationParamsSchema,
+>(
+  definition: Omit<PlainNotificationType<PSchema>, 'kind'>,
+): PlainNotificationType<PSchema> {
+  return { ...definition, kind: 'plain' };
+}
+
+/**
+ * Defines a type that resolves its own params from a smaller input.
+ */
+export function defineBatchedNotificationType<
+  PSchema extends NotificationParamsSchema,
+  ISchema extends z.ZodType,
+>(
+  definition: Omit<BatchedNotificationType<PSchema, ISchema>, 'kind'>,
+): BatchedNotificationType<PSchema, ISchema> {
+  return { ...definition, kind: 'batched' };
 }
