@@ -239,8 +239,7 @@ export function bindQueueHandler<T, K extends keyof RuntimeServices = never>(
     repeatable: config.repeatable,
     options: config.options,
     onFinalAttemptFailure: config.onFinalAttemptFailure as
-      | QueueFinalAttemptFailureHandler<unknown>
-      | undefined,
+      QueueFinalAttemptFailureHandler<unknown> | undefined,
     async resolve(): Promise<void> {
       await ensureHandler();
     },

@@ -86,10 +86,7 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/badge.tsx",
-      "projectExports": {
-        "Badge": {},
-        "badgeVariants": {}
-      },
+      "projectExports": { "Badge": {}, "badgeVariants": {} },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/badge.tsx",
       "variables": {}
@@ -719,9 +716,7 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/select.tsx",
-      "projectExports": {
-        "Select": {}
-      },
+      "projectExports": { "Select": {} },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/select.tsx",
       "variables": {}

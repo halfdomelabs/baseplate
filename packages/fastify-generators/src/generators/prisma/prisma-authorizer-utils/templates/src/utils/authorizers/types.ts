@@ -115,9 +115,11 @@ export type LocallyComparable = string | number | bigint | boolean | null;
  * Prisma forms provably equivalent rather than a heuristic interpreter.
  */
 export type LocalMatch<TModelName extends ModelPropName> = Partial<{
-  [K in keyof GetResult<TModelName> as GetResult<TModelName>[K] extends LocallyComparable
-    ? K
-    : never]: GetResult<TModelName>[K] & LocallyComparable;
+  [
+    K in keyof GetResult<TModelName> as GetResult<TModelName>[K] extends LocallyComparable
+      ? K
+      : never
+  ]: GetResult<TModelName>[K] & LocallyComparable;
 }>;
 
 export interface MatchRole<TModelName extends ModelPropName> {
