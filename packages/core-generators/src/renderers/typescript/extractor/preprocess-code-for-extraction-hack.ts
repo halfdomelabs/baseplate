@@ -6,6 +6,7 @@
  * Pattern 1: identifier /* TPL_VAR:START *\/ ( => identifier(/* TPL_VAR:START *\/
  * Pattern 2: ) /* TPL_VAR:END *\/ => /* TPL_VAR:END *\/)
  * Pattern 3: ,[whitespace]/* TPL_VAR:END *\/ => /* TPL_VAR:END *\/,[whitespace]
+ * Pattern 4: closers Prettier pushed inside the span => moved after the END marker
  *
  * WARNING: This is a temporary workaround and might be fragile.
  * It assumes specific formatting outputs from Prettier.
@@ -52,6 +53,46 @@ export function preprocessCodeForExtractionHack(code: string): string {
     (match, whitespace, endMarkerComment) =>
       // Replace with: the END comment, comma
       `${endMarkerComment},${whitespace}`,
+  );
+
+  // --- Pattern 4: Move trailing closers out of the variable span ---
+  // When Prettier wraps a long templated expression in parentheses to break it
+  // across lines, the closing `)` (and any following `;` or `,`) end up between
+  // the START and END markers. Phase 2 deletes everything between the markers,
+  // so those closers would be dropped and the file would no longer parse.
+  // Example `Before`: return (\n /* TPL_X:START */ <Foo />\n ); /* TPL_X:END */
+  // Example `After`:  return (\n /* TPL_X:START */ <Foo /> /* TPL_X:END */\n );
+  //
+  // Only spans with surplus closers are rewritten: a balanced span (e.g.
+  // `/* TPL_X:START */ builder.toSchema(); /* TPL_X:END */`) owns its parens and
+  // must be left alone, and a span with surplus *openers* is Pattern 1's job.
+  const spanRegex =
+    /(\/\* (TPL_[A-Z0-9_]+):START \*\/)([\s\S]*?)(\/\* \2:END \*\/)/g;
+  transformedCode = transformedCode.replaceAll(
+    spanRegex,
+    (
+      match: string,
+      startMarker: string,
+      _name: string,
+      body: string,
+      endMarker: string,
+    ) => {
+      const trailingMatch = /\s*\)[\s;,]*$/.exec(body);
+      if (!trailingMatch) return match;
+
+      // Count parens across the whole body so nested calls inside the span are
+      // not mistaken for surplus closers.
+      let depth = 0;
+      for (const char of body) {
+        if (char === '(') depth++;
+        else if (char === ')') depth--;
+      }
+      if (depth >= 0) return match;
+
+      const keptBody = body.slice(0, trailingMatch.index);
+      const closers = trailingMatch[0].trimEnd();
+      return `${startMarker}${keptBody} ${endMarker}${closers}`;
+    },
   );
 
   return transformedCode;

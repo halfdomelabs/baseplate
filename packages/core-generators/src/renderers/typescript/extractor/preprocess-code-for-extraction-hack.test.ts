@@ -131,6 +131,37 @@ describe('preprocessCodeForExtractionHack', () => {
     expect(result).toBe(expected);
   });
 
+  // Test Pattern 4: closers Prettier pushed inside the span
+  describe('trailing closers pushed inside the variable span', () => {
+    // Prettier wraps a long templated JSX return in parentheses, leaving `);`
+    // between the markers. Dropping it produced `return (\n TPL_X\n}`.
+    it('moves a trailing `);` after the END marker', () => {
+      const input = `  return (
+    /* TPL_ROUTER_PROVIDER:START */ <RouterProvider
+      router={router}
+    />
+  ); /* TPL_ROUTER_PROVIDER:END */`;
+
+      expect(preprocessCodeForExtractionHack(input)).toBe(`  return (
+    /* TPL_ROUTER_PROVIDER:START */ <RouterProvider
+      router={router}
+    /> /* TPL_ROUTER_PROVIDER:END */
+  );`);
+    });
+
+    it('leaves a balanced span untouched', () => {
+      const input = `const schema = /* TPL_SCHEMA:START */ builder.toSchema(); /* TPL_SCHEMA:END */`;
+
+      expect(preprocessCodeForExtractionHack(input)).toBe(input);
+    });
+
+    it('leaves a balanced span with nested calls untouched', () => {
+      const input = `const x = /* TPL_V:START */ foo(bar(baz())) /* TPL_V:END */;`;
+
+      expect(preprocessCodeForExtractionHack(input)).toBe(input);
+    });
+  });
+
   // Test with no patterns to transform
   it('should return the same string when no patterns match', () => {
     const input = `

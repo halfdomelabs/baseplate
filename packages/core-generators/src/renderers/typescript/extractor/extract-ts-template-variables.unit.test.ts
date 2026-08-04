@@ -187,4 +187,27 @@ describe('extractTsTemplateVariables', () => {
       TPL_DESC: {},
     });
   });
+
+  it('should keep closers Prettier moved inside the variable span', () => {
+    const content = `export function AppRoutes(): React.ReactElement {
+  return (
+    /* TPL_ROUTER_PROVIDER:START */ <RouterProvider
+      router={router}
+      context={routerContext}
+    />
+  ); /* TPL_ROUTER_PROVIDER:END */
+}
+`;
+
+    const result = extractTsTemplateVariables(content);
+    expect(result.content).toMatchInlineSnapshot(`
+      "export function AppRoutes(): React.ReactElement {
+        return (
+          TPL_ROUTER_PROVIDER
+        );
+      }
+      "
+    `);
+    expect(result.variables).toEqual({ TPL_ROUTER_PROVIDER: {} });
+  });
 });
