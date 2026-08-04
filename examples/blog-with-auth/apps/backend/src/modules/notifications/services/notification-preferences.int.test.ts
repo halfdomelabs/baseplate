@@ -316,20 +316,22 @@ describe('notification preference writes', () => {
       digestWindowSeconds: 3600,
     });
     expect(
-      (await prisma.notificationPreference.findFirstOrThrow({
-        where: { userId },
-      }))
-        .digestWindowSeconds,
+      (
+        await prisma.notificationPreference.findFirstOrThrow({
+          where: { userId },
+        })
+      ).digestWindowSeconds,
     ).toBe(3600);
 
     // Switching away clears it, so going back to digest does not resurrect a
     // window the user never chose again.
     await service.setPreference(userId, { ...scope, mode: 'immediate' });
     expect(
-      (await prisma.notificationPreference.findFirstOrThrow({
-        where: { userId },
-      }))
-        .digestWindowSeconds,
+      (
+        await prisma.notificationPreference.findFirstOrThrow({
+          where: { userId },
+        })
+      ).digestWindowSeconds,
     ).toBeNull();
   });
 

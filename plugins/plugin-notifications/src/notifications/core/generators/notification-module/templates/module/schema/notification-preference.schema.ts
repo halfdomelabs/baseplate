@@ -1,31 +1,24 @@
 // @ts-nocheck
 
 import type { NotificationRoutingTarget } from '$servicesNotificationChannel';
+import type { NotificationChannelPreference } from '$servicesNotificationService';
 
+import { NOTIFICATION_MODES } from '$constantsNotificationTopics';
 import { ROUTING_TARGETS } from '$servicesNotificationChannel';
 import { builder } from '%pothosImports';
 
 /**
- * Which scope a preference row governs.
+ * How a channel delivers.
  *
- * An enum rather than a string, so an unknown scope is rejected at the schema
+ * An enum rather than a string, so an unknown mode is rejected at the schema
  * boundary. The Prisma column stays a plain string — that choice was about
  * keeping this infrastructure model out of the enum catalog, which a GraphQL
  * enum does not touch.
  */
-const scopeKindEnum = builder.enumType('NotificationPreferenceScope', {
-  values: {
-    CATEGORY: {
-      value: 'category',
-      description:
-        'Applies to every type in a category. What a settings page edits.',
-    },
-    TYPE: {
-      value: 'type',
-      description:
-        'Applies to one notification type. Can only suppress within an enabled category — never re-enable a disabled one.',
-    },
-  },
+const modeEnum = builder.enumType('NotificationMode', {
+  values: Object.fromEntries(
+    NOTIFICATION_MODES.map((mode) => [mode.toUpperCase(), { value: mode }]),
+  ),
 });
 
 /**
@@ -38,61 +31,55 @@ const channelEnum = builder.enumType('NotificationChannel', {
   ) as Record<NotificationRoutingTarget, { value: NotificationRoutingTarget }>,
 });
 
-/** One channel's resolved state within a category. */
+/** One channel's resolved state within a topic. */
 const channelPreferenceType = builder
-  .objectRef<{
-    channel: NotificationRoutingTarget;
-    enabled: boolean;
-    isDefault: boolean;
-  }>('NotificationChannelPreference')
+  .objectRef<NotificationChannelPreference>('NotificationChannelPreference')
   .implement({
     fields: (t) => ({
       channel: t.field({ type: channelEnum, resolve: (p) => p.channel }),
-      enabled: t.exposeBoolean('enabled'),
+      mode: t.field({ type: modeEnum, resolve: (p) => p.mode }),
+      digestWindowSeconds: t.int({
+        nullable: true,
+        description:
+          'The digest window in effect, inherited from the topic when the row does not name one. Null unless `mode` is DIGEST.',
+        resolve: (p) => p.digestWindowSeconds ?? null,
+      }),
       isDefault: t.exposeBoolean('isDefault', {
         description:
-          'True when no preference row exists and `enabled` came from the category default.',
+          'True when no preference row exists and the setting came from the topic default.',
       }),
     }),
   });
 
 /**
- * A category as a settings page renders it.
+ * A topic as a settings page renders it.
  *
- * `channels` is null for a mandatory category: delivery is not the user's
- * choice there, so there is nothing to toggle.
+ * Types belonging to no topic are deliberately absent: they consult no
+ * preference, so there is nothing here to toggle.
  */
-const categoryPreferenceType = builder
+const topicPreferenceType = builder
   .objectRef<{
     key: string;
     label: string;
-    mandatory: boolean;
-    channels?: {
-      channel: NotificationRoutingTarget;
-      enabled: boolean;
-      isDefault: boolean;
-    }[];
-  }>('NotificationCategoryPreference')
+    description?: string;
+    channels: NotificationChannelPreference[];
+  }>('NotificationTopicPreference')
   .implement({
     fields: (t) => ({
       key: t.exposeString('key'),
       label: t.exposeString('label'),
-      mandatory: t.exposeBoolean('mandatory', {
-        description:
-          'When true, preferences are never consulted and `channels` is null.',
-      }),
+      description: t.exposeString('description', { nullable: true }),
       channels: t.field({
         type: [channelPreferenceType],
-        nullable: true,
-        resolve: (parent) => parent.channels ?? null,
+        resolve: (parent) => parent.channels,
       }),
     }),
   });
 
-/** The current user's notification settings, one entry per declared category. */
+/** The current user's notification settings, one entry per declared topic. */
 builder.queryField('notificationPreferences', (t) =>
   t.field({
-    type: [categoryPreferenceType],
+    type: [topicPreferenceType],
     authorize: ['user'],
     resolve: (_root, _args, context) =>
       context.services.notification.getPreferences(
@@ -102,7 +89,7 @@ builder.queryField('notificationPreferences', (t) =>
 );
 
 /**
- * Override one channel for a category or a type.
+ * Override one channel for a topic.
  *
  * Always scoped to the session user — a caller cannot address someone else's
  * preferences.
@@ -111,17 +98,20 @@ builder.mutationField('setNotificationPreference', (t) =>
   t.fieldWithInputPayload({
     authorize: ['user'],
     input: {
-      scopeKind: t.input.field({ required: true, type: scopeKindEnum }),
-      scopeKey: t.input.string({ required: true }),
+      topicKey: t.input.string({ required: true }),
       channel: t.input.field({ required: true, type: channelEnum }),
-      enabled: t.input.boolean({ required: true }),
+      mode: t.input.field({ required: true, type: modeEnum }),
+      digestWindowSeconds: t.input.int({ required: false }),
     },
     payload: {
-      preferences: t.payload.field({ type: [categoryPreferenceType] }),
+      preferences: t.payload.field({ type: [topicPreferenceType] }),
     },
     resolve: async (_root, { input }, context) => {
       const userId = context.auth.userIdOrThrow();
-      await context.services.notification.setPreference(userId, input);
+      await context.services.notification.setPreference(userId, {
+        ...input,
+        digestWindowSeconds: input.digestWindowSeconds ?? undefined,
+      });
       // Returned so a settings page re-renders from resolved state rather than
       // recomputing the default-vs-override rule itself.
       return {
@@ -131,18 +121,17 @@ builder.mutationField('setNotificationPreference', (t) =>
   }),
 );
 
-/** Drop an override, restoring the category default. */
+/** Drop an override, restoring the topic default. */
 builder.mutationField('clearNotificationPreference', (t) =>
   t.fieldWithInputPayload({
     authorize: ['user'],
     input: {
-      scopeKind: t.input.field({ required: true, type: scopeKindEnum }),
-      scopeKey: t.input.string({ required: true }),
+      topicKey: t.input.string({ required: true }),
       channel: t.input.field({ required: true, type: channelEnum }),
     },
     payload: {
       cleared: t.payload.field({ type: 'Boolean' }),
-      preferences: t.payload.field({ type: [categoryPreferenceType] }),
+      preferences: t.payload.field({ type: [topicPreferenceType] }),
     },
     resolve: async (_root, { input }, context) => {
       const userId = context.auth.userIdOrThrow();

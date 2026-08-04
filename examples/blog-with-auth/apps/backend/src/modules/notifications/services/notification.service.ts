@@ -114,7 +114,10 @@ function paramsMatch(
   stored: Prisma.JsonValue,
   computed: NotificationParams,
 ): boolean {
-  return isEqual(stored, omitBy(computed, (value) => value === undefined));
+  return isEqual(
+    stored,
+    omitBy(computed, (value) => value === undefined),
+  );
 }
 
 /**
@@ -184,9 +187,8 @@ async function resolvePayload(
  * write a different one on the retraction path, and the withdrawal would
  * silently miss.
  */
-export type NotifyInput<
-  T extends AnyNotificationType,
-> = NotifyInputBase & NotifyPayload<T>;
+export type NotifyInput<T extends AnyNotificationType> = NotifyInputBase &
+  NotifyPayload<T>;
 
 /**
  * The params half of a notify call, by type shape.
@@ -195,9 +197,7 @@ export type NotifyInput<
  * computes params itself. Making this a union is what makes passing the wrong
  * one a compile error rather than a runtime surprise.
  */
-export type NotifyPayload<
-  T extends AnyNotificationType,
-> =
+export type NotifyPayload<T extends AnyNotificationType> =
   T extends BatchedNotificationType<NotificationParamsSchema, infer ISchema>
     ? { input: z.output<ISchema> }
     : T extends PlainNotificationType<infer PSchema>
@@ -209,8 +209,10 @@ export type NotifyPayload<
  *
  * Plain types only — see {@link NotificationService.notifyMany}.
  */
-export interface NotifyManyInput<P extends NotificationParams>
-  extends Omit<NotifyInputBase, 'recipientId'> {
+export interface NotifyManyInput<P extends NotificationParams> extends Omit<
+  NotifyInputBase,
+  'recipientId'
+> {
   recipientIds: string[];
   params: P;
 }
@@ -238,9 +240,9 @@ export interface NotifyManyResult extends NotifyResult {
  * Carries the same shape the `notify` call did, so the type derives the same
  * `groupKey` on both sides — which is the whole reason the key is not passed.
  */
-export type RetractInput<
-  T extends AnyNotificationType,
-> = { recipientId: string } & NotifyPayload<T>;
+export type RetractInput<T extends AnyNotificationType> = {
+  recipientId: string;
+} & NotifyPayload<T>;
 
 /** Outcome of a retraction. */
 export interface RetractResult {
@@ -282,11 +284,10 @@ export type SetPreferenceInput = PreferenceScope & {
   mode: NotificationMode;
   /** Only stored for `digest`; absent inherits the topic's window. */
   digestWindowSeconds?: number;
-}
+};
 
 /** One channel's resolved state for a topic. */
-export interface NotificationChannelPreference
-  extends NotificationChannelSetting {
+export interface NotificationChannelPreference extends NotificationChannelSetting {
   channel: NotificationRoutingTarget;
   /** True when no row exists and the setting came from the topic default. */
   isDefault: boolean;
@@ -544,7 +545,8 @@ async function getPreferences(
   const byTopic = new Map<string, Map<string, NotificationChannelSetting>>();
   for (const row of rows) {
     const byChannel =
-      byTopic.get(row.topicKey) ?? new Map<string, NotificationChannelSetting>();
+      byTopic.get(row.topicKey) ??
+      new Map<string, NotificationChannelSetting>();
     byChannel.set(row.channel, {
       mode: row.mode as NotificationMode,
       digestWindowSeconds: row.digestWindowSeconds ?? undefined,
@@ -644,7 +646,10 @@ export function createNotificationService(deps: {
     });
 
     // channel -> setting, per user. Absence means "use the topic default".
-    const overrides = new Map<string, Map<string, NotificationChannelSetting>>();
+    const overrides = new Map<
+      string,
+      Map<string, NotificationChannelSetting>
+    >();
     for (const row of preferences) {
       const byChannel =
         overrides.get(row.userId) ??
@@ -1029,10 +1034,7 @@ export function createNotificationService(deps: {
     input: NotifyInput<T>,
   ): Promise<NotifyResult> {
     const { recipientId, actorId, actorLabel } = input;
-    const { params, groupKey } = await resolvePayload(
-      type,
-      input,
-    );
+    const { params, groupKey } = await resolvePayload(type, input);
 
     // No derived key: every call is its own row, so the bulk path's
     // single-recipient case is exactly right. Only a plain type gets here — a

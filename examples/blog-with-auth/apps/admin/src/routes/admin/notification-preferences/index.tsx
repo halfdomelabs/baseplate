@@ -4,10 +4,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import type {
-  NotificationChannel,
-  NotificationMode,
-} from '@src/gql/graphql';
+import type { NotificationChannel, NotificationMode } from '@src/gql/graphql';
 
 import { Button } from '@src/components/ui/button';
 import {
@@ -165,11 +162,7 @@ function NotificationPreferencesPage(): ReactElement {
                         // value as possibly-undefined, and a no-op is the right
                         // response to a clear.
                         if (!mode) return;
-                        void handleModeChange(
-                          topic.key,
-                          channel.channel,
-                          mode,
-                        );
+                        void handleModeChange(topic.key, channel.channel, mode);
                       }}
                     >
                       <SelectTrigger id={controlId} className="w-40">

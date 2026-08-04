@@ -62,12 +62,11 @@ async function runAppRuntimeConfig(includeEmailChannel: boolean): Promise<{
   const bundle = notificationModuleGenerator({
     includeEmailChannel,
     userModelName: 'User',
-    categories: [
+    topics: [
       {
         key: 'general',
         label: 'General',
-        defaultChannels: ['inApp'],
-        mandatory: false,
+        defaults: { inApp: { mode: 'immediate' } },
       },
     ],
   });

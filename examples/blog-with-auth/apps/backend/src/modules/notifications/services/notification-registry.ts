@@ -111,8 +111,7 @@ export interface BatchedNotificationType<
  * Any type, as a heterogeneous collection holds it.
  */
 export type AnyNotificationType =
-  | PlainNotificationType
-  | BatchedNotificationType;
+  PlainNotificationType | BatchedNotificationType;
 
 /**
  * Marks keys generated for types that derive none. The write path mints them

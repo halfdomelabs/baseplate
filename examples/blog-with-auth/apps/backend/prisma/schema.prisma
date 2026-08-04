@@ -162,12 +162,12 @@ model NotificationDelivery {
 model NotificationPreference {
   id                  String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
   userId              String   @map("user_id") @db.Uuid
-  channel             String
-  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   topicKey            String   @map("topic_key")
+  channel             String
   mode                String
   digestWindowSeconds Int?     @map("digest_window_seconds")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   user                User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([userId, topicKey, channel])

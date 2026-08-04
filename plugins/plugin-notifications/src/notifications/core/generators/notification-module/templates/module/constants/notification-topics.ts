@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 import type {
   NotificationChannelKey,
   NotificationRoutingTarget,
-} from '../services/notification-channel.js';
+} from '$servicesNotificationChannel';
 
 /**
  * The topics notification types are grouped under, declared in the project
@@ -17,20 +19,8 @@ import type {
  * all. That is the v5 replacement for a `mandatory` flag: topic membership is
  * what makes a notification user-controllable.
  */
-export const NOTIFICATION_TOPICS = /* TPL_TOPICS:START */ [
-  {
-    key: 'general',
-    label: 'General',
-    defaults: {
-      email: {
-        mode: 'immediate',
-      },
-      inApp: {
-        mode: 'immediate',
-      },
-    },
-  },
-] as const /* TPL_TOPICS:END */ satisfies readonly NotificationTopic[];
+export const NOTIFICATION_TOPICS =
+  TPL_TOPICS satisfies readonly NotificationTopic[];
 
 /**
  * How a channel delivers for a topic.

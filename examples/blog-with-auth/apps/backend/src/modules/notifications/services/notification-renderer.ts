@@ -63,9 +63,7 @@ function registryKey(key: string, version: number): string {
 }
 
 /** Project a renderer's output into the served content (one render, all fields). */
-function toRenderedContent(
-  content: NotificationContent,
-): RenderedContent {
+function toRenderedContent(content: NotificationContent): RenderedContent {
   const segments = toSegments(content.body);
   const actionUrl =
     content.actionUrl && isSafeUrl(content.actionUrl)

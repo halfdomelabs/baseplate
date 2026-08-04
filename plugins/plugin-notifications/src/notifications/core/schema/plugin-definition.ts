@@ -28,23 +28,13 @@ export type NotificationMode = (typeof NOTIFICATION_MODES)[number];
 /**
  * A channel's default, in the same shape a preference row carries, so a
  * preference is a sparse override of exactly the thing above it.
- *
- * The bare-string form is sugar for `{ mode }` with no window; both normalize to
- * the object form on parse, so consumers never branch on which was written.
  */
 export const createNotificationChannelDefaultSchema = definitionSchema(() =>
-  z
-    .union([
-      z.enum(NOTIFICATION_MODES),
-      z.object({
-        mode: z.enum(NOTIFICATION_MODES),
-        /** Only meaningful for `digest`; ignored otherwise. */
-        windowSeconds: z.number().int().positive().optional(),
-      }),
-    ])
-    .transform((value) =>
-      typeof value === 'string' ? { mode: value } : value,
-    ),
+  z.object({
+    mode: z.enum(NOTIFICATION_MODES),
+    /** Only meaningful for `digest`; ignored otherwise. */
+    windowSeconds: z.number().int().positive().optional(),
+  }),
 );
 
 /**
