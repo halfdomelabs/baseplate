@@ -9,15 +9,21 @@ import { prisma } from '@src/services/prisma.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 
 import type {
+  NotificationChannelKey,
+  NotificationRoutingTarget,
+} from '../channels/types.js';
+import type {
   NotificationChannelSetting,
   NotificationMode,
   NotificationTopic,
   NotificationTopicKey,
 } from '../constants/notification-topics.js';
 import type {
-  NotificationChannelKey,
-  NotificationRoutingTarget,
-} from './notification-channel.js';
+  AnyNotificationType,
+  BatchedNotificationType,
+  NotificationParamsSchema,
+  PlainNotificationType,
+} from '../registry.js';
 import type {
   NotificationParams,
   RenderContext,
@@ -26,16 +32,11 @@ import type {
 import type { NotificationEvents } from './notification-events.js';
 import type { NotificationOutbox } from './notification-outbox.js';
 import type {
-  AnyNotificationType,
-  BatchedNotificationType,
-  NotificationParamsSchema,
-  PlainNotificationType,
-} from './notification-registry.js';
-import type {
   NotificationRenderer,
   RenderSource,
 } from './notification-renderer.js';
 
+import { ROUTING_TARGETS } from '../channels/types.js';
 import {
   getNotificationTopic,
   isNotificationTopicKey,
@@ -43,10 +44,9 @@ import {
   NOTIFICATION_TOPICS,
   resolveChannelSetting,
 } from '../constants/notification-topics.js';
+import { generatedKey } from '../registry.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
-import { ROUTING_TARGETS } from './notification-channel.js';
 import { toFrozenContent } from './notification-content.js';
-import { generatedKey } from './notification-registry.js';
 
 /**
  * Rows per insert. Bounds every statement in the fan-out, so a large audience
@@ -149,7 +149,9 @@ async function resolvePayload(
   if (type.kind === 'batched') {
     const parsedInput: unknown = type.inputSchema.parse(payload.input);
     return {
-      params: await type.resolveParams(parsedInput),
+      // No boundary: what is stored is current state. A delta belongs to a
+      // single outbound send, which the outbox resolves at delivery.
+      params: await type.resolveParams(parsedInput, { since: null }),
       groupKey: type.groupKey(parsedInput),
     };
   }
@@ -230,6 +232,15 @@ export interface RetractResult {
    * return value rather than a throw.
    */
   retracted: boolean;
+}
+
+/** Input to withdraw a notification from every recipient holding it. */
+export type RetractAllInput<T extends AnyNotificationType> = NotifyPayload<T>;
+
+/** Outcome of a sweep. */
+export interface RetractAllResult {
+  /** Rows withdrawn. Zero when the fact was already gone from every feed. */
+  retractedCount: number;
 }
 
 /** Options for the `notifyText` one-off sugar. */
@@ -359,6 +370,23 @@ export interface NotificationService {
     type: T,
     input: RetractInput<T>,
   ): Promise<RetractResult>;
+  /**
+   * Withdraw a notification from every recipient who holds it — the entity it
+   * described is gone, so nobody's feed should still show it. Per recipient it
+   * does what {@link NotificationService.retract} does.
+   *
+   * One indexed sweep: the group key is recipient-independent, so
+   * `(type, groupKey)` is a prefix of the row unique and matches the whole
+   * audience at once.
+   *
+   * Sized for bounded audiences; withdrawing thousands of rows wants a fan-out
+   * worker instead. Only withdraws the type it is given, so a fact recorded
+   * under a type nobody names survives its entity's deletion.
+   */
+  retractAll<T extends AnyNotificationType>(
+    type: T,
+    input: RetractAllInput<T>,
+  ): Promise<RetractAllResult>;
   /**
    * Send a plain-text notification without defining a type, via the built-in
    * `generic` type. For one-off notifications ("Your export is ready").
@@ -1067,6 +1095,65 @@ export function createNotificationService(deps: {
     return { retracted };
   }
 
+  async function retractAll<T extends AnyNotificationType>(
+    type: T,
+    input: RetractAllInput<T>,
+  ): Promise<RetractAllResult> {
+    // Key only: the fact being withdrawn is usually already gone, so resolving
+    // params would read state that no longer exists.
+    const groupKey = resolveGroupKey(type, input);
+
+    if (groupKey === undefined) {
+      throw new BadRequestError(
+        `Notification type "${type.key}" derives no group key, so it cannot be retracted.`,
+      );
+    }
+
+    // Read outside the write transactions: holding one open across the whole
+    // sweep would serialize it against every concurrent notify at these keys.
+    const rows = await prisma.notification.findMany({
+      where: { type: type.key, groupKey, dismissedAt: null },
+      select: { id: true, recipientId: true, seenAt: true },
+    });
+
+    if (rows.length === 0) return { retractedCount: 0 };
+
+    let retractedCount = 0;
+    const unseenRecipientIds: string[] = [];
+
+    // A chunk per transaction, so an interrupted sweep leaves some rows
+    // withdrawn rather than none and the caller can simply run it again.
+    for (const batch of chunk(rows, WRITE_CHUNK_SIZE)) {
+      const notificationIds = batch.map((row) => row.id);
+
+      const { count } = await prisma.$transaction(async (tx) => {
+        // Anything still queued must not go out; one already delivered is
+        // settled and stays that way.
+        await tx.notificationDelivery.updateMany({
+          where: { notificationId: { in: notificationIds }, status: 'pending' },
+          data: { status: 'skipped', lastError: 'retracted' },
+        });
+
+        // Re-checked rather than trusted from the read above: a concurrent
+        // retraction may have settled some of these and already published for
+        // them.
+        return tx.notification.updateMany({
+          where: { id: { in: notificationIds }, dismissedAt: null },
+          data: { dismissedAt: new Date() },
+        });
+      }, FANOUT_TRANSACTION_OPTIONS);
+
+      retractedCount += count;
+      unseenRecipientIds.push(
+        ...batch.filter((row) => row.seenAt === null).map((r) => r.recipientId),
+      );
+    }
+
+    await publishUnseenCounts(unseenRecipientIds);
+
+    return { retractedCount };
+  }
+
   function notifyText(
     recipientId: string,
     text: string,
@@ -1175,6 +1262,7 @@ export function createNotificationService(deps: {
     notify,
     notifyMany,
     retract,
+    retractAll,
     notifyText,
     renderContent: (row, ctx) => renderer.renderContent(row, ctx),
     getUnseenCount,

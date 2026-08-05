@@ -48,17 +48,19 @@ function createFakeQueue(): QueueService {
 const noopChannel: NotificationChannel = { deliver: () => Promise.resolve() };
 
 function createService(): ReturnType<typeof createNotificationService> {
+  const renderer = createNotificationRenderer({
+    notificationTypes: [GENERIC_NOTIFICATION_TYPE],
+  });
   return createNotificationService({
     events: {
       publishUnseenCount: vi.fn(),
       subscribeToUnseenCount: vi.fn(),
     },
-    renderer: createNotificationRenderer({
-      notificationTypes: [GENERIC_NOTIFICATION_TYPE],
-    }),
+    renderer,
     outbox: createNotificationOutbox({
       channels: { email: noopChannel },
       queue: createFakeQueue(),
+      renderer,
     }),
   });
 }

@@ -1,10 +1,10 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 
-import type { NotificationRoutingTarget } from '../services/notification-channel.js';
+import type { NotificationRoutingTarget } from '../channels/types.js';
 import type { NotificationChannelPreference } from '../services/notification.service.js';
 
+import { ROUTING_TARGETS } from '../channels/types.js';
 import { NOTIFICATION_MODES } from '../constants/notification-topics.js';
-import { ROUTING_TARGETS } from '../services/notification-channel.js';
 
 /**
  * How a channel delivers.

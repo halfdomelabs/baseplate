@@ -11,6 +11,57 @@ import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
+const channelsEmailChannel = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { emailModuleImports: emailModuleImportsProvider },
+  name: 'channels-email-channel',
+  projectExports: {
+    createEmailChannel: { isTypeOnly: false },
+    notificationEmail: { isTypeOnly: false },
+    NotificationEmailContent: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: {
+    channelsTypes: {},
+    servicesNotificationContent: {},
+    servicesNotificationRenderer: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/channels/email.channel.ts',
+    ),
+  },
+  variables: { TPL_NOTIFICATION_EMAIL: {} },
+});
+
+const channelsTypes = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'channels-types',
+  projectExports: {
+    ChannelDelivery: { isTypeOnly: true },
+    NotificationChannel: { isTypeOnly: true },
+    NotificationChannelKey: { isTypeOnly: true },
+    NotificationChannels: { isTypeOnly: true },
+    NotificationRenderers: { isTypeOnly: true },
+    NotificationRoutingTarget: { isTypeOnly: true },
+    ROUTING_TARGETS: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { servicesNotificationRenderer: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/channels/types.ts',
+    ),
+  },
+  variables: {
+    TPL_CHANNEL_ENTRIES: {},
+    TPL_RENDERER_ENTRIES: {},
+    TPL_ROUTING_TARGETS: {},
+  },
+});
+
 const constantsNotificationTopics = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -28,7 +79,7 @@ const constantsNotificationTopics = createTsTemplateFile({
     NotificationTopicKey: { isTypeOnly: true },
     resolveChannelSetting: { isTypeOnly: false },
   },
-  referencedGeneratorTemplates: { servicesNotificationChannel: {} },
+  referencedGeneratorTemplates: { channelsTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -38,12 +89,38 @@ const constantsNotificationTopics = createTsTemplateFile({
   variables: { TPL_TOPICS: {} },
 });
 
+const registry = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'registry',
+  projectExports: {
+    AnyNotificationType: { isTypeOnly: true },
+    BatchedNotificationType: { isTypeOnly: true },
+    defineBatchedNotificationType: { isTypeOnly: false },
+    defineNotificationType: { isTypeOnly: false },
+    generatedKey: { isTypeOnly: false },
+    isGeneratedKey: { isTypeOnly: false },
+    NotificationParamsSchema: { isTypeOnly: true },
+    PlainNotificationType: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: {
+    channelsTypes: {},
+    constantsNotificationTopics: {},
+    servicesNotificationContent: {},
+  },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/module/registry.ts'),
+  },
+  variables: {},
+});
+
 const servicesGenericType = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {},
   name: 'services-generic-type',
-  referencedGeneratorTemplates: { servicesNotificationRegistry: {} },
+  referencedGeneratorTemplates: { registry: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -51,21 +128,6 @@ const servicesGenericType = createTsTemplateFile({
     ),
   },
   variables: {},
-});
-
-const servicesNotificationChannel = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {},
-  name: 'services-notification-channel',
-  referencedGeneratorTemplates: { servicesNotificationRenderer: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/notification-channel.ts',
-    ),
-  },
-  variables: { TPL_CHANNEL_ENTRIES: {}, TPL_ROUTING_TARGETS: {} },
 });
 
 const servicesNotificationContent = createTsTemplateFile({
@@ -105,14 +167,15 @@ const servicesNotificationOutbox = createTsTemplateFile({
   group: 'main',
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
     queuesImports: queuesImportsProvider,
   },
   name: 'services-notification-outbox',
   referencedGeneratorTemplates: {
+    channelsTypes: {},
     queuesNotificationDelivery: {},
-    servicesNotificationChannel: {},
-    servicesNotificationRegistry: {},
+    registry: {},
     servicesNotificationRenderer: {},
   },
   source: {
@@ -122,25 +185,6 @@ const servicesNotificationOutbox = createTsTemplateFile({
     ),
   },
   variables: { TPL_USER_DELEGATE: {} },
-});
-
-const servicesNotificationRegistry = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {},
-  name: 'services-notification-registry',
-  referencedGeneratorTemplates: {
-    constantsNotificationTopics: {},
-    servicesNotificationChannel: {},
-    servicesNotificationContent: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/notification-registry.ts',
-    ),
-  },
-  variables: {},
 });
 
 const servicesNotificationRenderer = createTsTemplateFile({
@@ -158,9 +202,10 @@ const servicesNotificationRenderer = createTsTemplateFile({
     RenderSource: { isTypeOnly: true },
   },
   referencedGeneratorTemplates: {
+    channelsEmailChannel: {},
     constantsNotificationTopics: {},
+    registry: {},
     servicesNotificationContent: {},
-    servicesNotificationRegistry: {},
   },
   source: {
     path: path.join(
@@ -181,13 +226,13 @@ const servicesNotificationService = createTsTemplateFile({
   },
   name: 'services-notification-service',
   referencedGeneratorTemplates: {
+    channelsTypes: {},
     constantsNotificationTopics: {},
+    registry: {},
     servicesGenericType: {},
-    servicesNotificationChannel: {},
     servicesNotificationContent: {},
     servicesNotificationEvents: {},
     servicesNotificationOutbox: {},
-    servicesNotificationRegistry: {},
     servicesNotificationRenderer: {},
   },
   source: {
@@ -200,13 +245,13 @@ const servicesNotificationService = createTsTemplateFile({
 });
 
 export const mainGroup = {
+  channelsTypes,
   constantsNotificationTopics,
+  registry,
   servicesGenericType,
-  servicesNotificationChannel,
   servicesNotificationContent,
   servicesNotificationEvents,
   servicesNotificationOutbox,
-  servicesNotificationRegistry,
   servicesNotificationRenderer,
   servicesNotificationService,
 };
@@ -404,8 +449,8 @@ const schemaNotificationPreference = createTsTemplateFile({
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-notification-preference',
   referencedGeneratorTemplates: {
+    channelsTypes: {},
     constantsNotificationTopics: {},
-    servicesNotificationChannel: {},
     servicesNotificationService: {},
   },
   source: {
@@ -440,27 +485,9 @@ export const schemaGroup = {
   schemaNotificationSubscriptions,
 };
 
-const servicesEmailChannel = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: { emailModuleImports: emailModuleImportsProvider },
-  name: 'services-email-channel',
-  referencedGeneratorTemplates: {
-    servicesNotificationChannel: {},
-    servicesNotificationContent: {},
-    servicesNotificationRenderer: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/email-channel.ts',
-    ),
-  },
-  variables: { TPL_NOTIFICATION_EMAIL: {} },
-});
-
 export const NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES = {
+  channelsEmailChannel,
   mainGroup,
   queuesGroup,
   schemaGroup,
-  servicesEmailChannel,
 };

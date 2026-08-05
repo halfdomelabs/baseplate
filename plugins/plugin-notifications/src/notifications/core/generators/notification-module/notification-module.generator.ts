@@ -117,7 +117,7 @@ export const notificationModuleGenerator = createGenerator({
         const channelFactories: Record<string, TsCodeFragment> = {
           // Takes the renderer: the email channel renders at DELIVERY time, so
           // a copy fix reaches any email that has not gone out yet.
-          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ email, renderer: notificationRenderer })`,
+          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.channelsEmailChannel)}({ email, renderer: notificationRenderer })`,
         };
         const channelEntries = Object.fromEntries(
           installedChannelKeys(includeEmailChannel ?? false).map((key) => [
@@ -152,6 +152,7 @@ export const notificationModuleGenerator = createGenerator({
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationOutbox', paths.servicesNotificationOutbox)}({
               channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
               queue,
+              renderer: notificationRenderer,
             })`,
         });
         appRuntimeConfig.construction.set('notification', {
@@ -186,10 +187,7 @@ export const notificationModuleGenerator = createGenerator({
       run({ appModuleFieldTypes, paths }) {
         appModuleFieldTypes.setFieldType(
           'notificationTypes',
-          TsCodeUtils.typeImportFragment(
-            'AnyNotificationType',
-            paths.servicesNotificationRegistry,
-          ),
+          TsCodeUtils.typeImportFragment('AnyNotificationType', paths.registry),
         );
       },
     }),
@@ -302,6 +300,22 @@ export const notificationModuleGenerator = createGenerator({
           .map((key) => `'${key}'`)
           .join(', ')}] as const`;
 
+        // One `NotificationRenderers` method signature per installed channel,
+        // keyed the same way as `channelEntries` above so the two can't drift.
+        // Uninstalling a channel drops its signature, which is what makes a
+        // stray renderer for that channel a compile error (see `channels/types.ts`).
+        // Each carries its own imports — the static template can't reference
+        // `RenderContext` or a channel's content type once they collapse behind
+        // the opaque `TPL_RENDERER_ENTRIES` placeholder.
+        const channelRendererSignatures: Record<string, TsCodeFragment> = {
+          email: TsCodeUtils.template`email?(params: TParams, ctx: ${TsCodeUtils.typeImportFragment('RenderContext', paths.servicesNotificationContent)}): ${TsCodeUtils.typeImportFragment('NotificationEmailContent', paths.channelsEmailChannel)};`,
+        };
+        const rendererEntries = TsCodeUtils.mergeFragments(
+          Object.fromEntries(
+            channelKeys.map((key) => [key, channelRendererSignatures[key]]),
+          ),
+        );
+
         // `as const` so the key union stays literal — a widened `string[]` would
         // make `NotificationTopicKey` just `string` and defeat the narrowing.
         const topicsFragment = `[\n${topics
@@ -319,9 +333,10 @@ export const notificationModuleGenerator = createGenerator({
                   constantsNotificationTopics: {
                     TPL_TOPICS: tsCodeFragment(topicsFragment),
                   },
-                  servicesNotificationChannel: {
+                  channelsTypes: {
                     TPL_CHANNEL_ENTRIES: tsCodeFragment(channelEntries),
                     TPL_ROUTING_TARGETS: tsCodeFragment(routingTargets),
+                    TPL_RENDERER_ENTRIES: rendererEntries,
                   },
                   // Delivery reads recipient and actor details, so the user
                   // delegate belongs to the outbox, not the service.
@@ -342,7 +357,7 @@ export const notificationModuleGenerator = createGenerator({
                 );
               }
               await builder.apply(
-                renderers.servicesEmailChannel.render({
+                renderers.channelsEmailChannel.render({
                   variables: {
                     TPL_NOTIFICATION_EMAIL: TsCodeUtils.importFragment(
                       'NotificationEmail',

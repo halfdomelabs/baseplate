@@ -1,14 +1,19 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
+import type { Prisma } from '@src/generated/prisma/client.js';
 import type { QueueService } from '@src/types/queue.types.js';
 
 import { prisma } from '@src/services/prisma.js';
 
 import type { NotificationChannel } from '../channels/types.js';
+import type { AnyNotificationType } from '../registry.js';
 import type { NotificationOutbox } from './notification-outbox.js';
 
-import { defineNotificationType } from '../registry.js';
+import {
+  defineBatchedNotificationType,
+  defineNotificationType,
+} from '../registry.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
 import { frozenNotificationContentSchema } from './notification-content.js';
 import { createNotificationOutbox } from './notification-outbox.js';
@@ -85,19 +90,20 @@ const LIKE_THREAD_EMAIL_TYPE = defineNotificationType({
   render: (params) => ({ title: params.text }),
 });
 
+/** One delivery as the channel saw it. */
+interface RecordedDelivery {
+  recipientId: string;
+  notificationId: string;
+  email: string | null;
+  /** The params this send rendered from, which may differ from the row's. */
+  params: Prisma.JsonValue;
+}
+
 /** Records every delivery the channel receives, so tests can assert on shape. */
 function createRecordingChannel(): NotificationChannel & {
-  deliveries: {
-    recipientId: string;
-    notificationId: string;
-    email: string | null;
-  }[];
+  deliveries: RecordedDelivery[];
 } {
-  const deliveries: {
-    recipientId: string;
-    notificationId: string;
-    email: string | null;
-  }[] = [];
+  const deliveries: RecordedDelivery[] = [];
   return {
     deliveries,
     deliver: ({ recipientId, notification, recipient }) => {
@@ -105,6 +111,7 @@ function createRecordingChannel(): NotificationChannel & {
         recipientId,
         notificationId: notification.id,
         email: recipient.email,
+        params: notification.params,
       });
       return Promise.resolve();
     },
@@ -143,25 +150,31 @@ function createService(deps: {
   queue: QueueService;
   channel: NotificationChannel;
   publishUnseenCount?: (userId: string, count: number) => void;
+  /** Extra types this test needs registered, beyond the shared fixtures. */
+  notificationTypes?: AnyNotificationType[];
 }): ReturnType<typeof createNotificationService> & {
   outbox: NotificationOutbox;
 } {
+  // One renderer for both halves, as the composition root does.
+  const renderer = createNotificationRenderer({
+    notificationTypes: [
+      GENERIC_NOTIFICATION_TYPE,
+      LIKE_THREAD_TYPE,
+      LIKE_THREAD_EMAIL_TYPE,
+      ...(deps.notificationTypes ?? []),
+    ],
+  });
   const outbox = createNotificationOutbox({
     channels: { email: deps.channel },
     queue: deps.queue,
+    renderer,
   });
   const service = createNotificationService({
     events: {
       publishUnseenCount: deps.publishUnseenCount ?? vi.fn(),
       subscribeToUnseenCount: vi.fn(),
     },
-    renderer: createNotificationRenderer({
-      notificationTypes: [
-        GENERIC_NOTIFICATION_TYPE,
-        LIKE_THREAD_TYPE,
-        LIKE_THREAD_EMAIL_TYPE,
-      ],
-    }),
+    renderer,
     outbox,
   });
   return { ...service, outbox };
@@ -1237,5 +1250,335 @@ describe('notification outbox', () => {
       expect(deleted).toBe(4);
       expect(await prisma.notification.count({ where: { requestId } })).toBe(6);
     });
+  });
+});
+
+/**
+ * A batched type standing in for a real aggregate: `resolveParams` reports the
+ * running total, plus how much of it is new when handed a boundary.
+ *
+ * `events` is the fake domain table; `windows` records every `since` the type
+ * was asked about, so tests can assert the window and not just the result.
+ */
+function createDeltaType(events: { at: Date }[]): {
+  type: AnyNotificationType;
+  windows: (Date | null)[];
+} {
+  const windows: (Date | null)[] = [];
+  const type = defineBatchedNotificationType({
+    key: 'test.delta',
+    version: 1,
+    inputSchema: z.object({ threadId: z.string() }),
+    groupKey: ({ threadId }) => `thread:${threadId}`,
+    paramsSchema: z.object({
+      threadId: z.string(),
+      total: z.number(),
+      newCount: z.number().optional(),
+    }),
+    channels: ['inApp', 'email'],
+    resolveParams: ({ threadId }, { since }) => {
+      windows.push(since);
+      return Promise.resolve({
+        threadId,
+        total: events.length,
+        ...(since === null
+          ? {}
+          : { newCount: events.filter((e) => e.at > since).length }),
+      });
+    },
+    render: (params) => ({
+      title:
+        params.newCount === undefined
+          ? `${params.total} in total`
+          : `${params.newCount} new`,
+    }),
+  });
+  return { type, windows };
+}
+
+/** Settles one row's email delivery, so the next send has an anchor. */
+async function deliver(
+  service: ReturnType<typeof createService>,
+  notificationId: string,
+): Promise<void> {
+  await service.outbox.deliverChunk({
+    requestId: 'req',
+    channel: 'email',
+    notificationIds: [notificationId],
+  });
+}
+
+describe('delivery-time resolution (delta anchors)', () => {
+  beforeEach(resetTables);
+  afterAll(resetTables);
+
+  it('sends a delta while the row goes on holding state', async () => {
+    const recipientId = await createUser(0);
+    const events = [{ at: new Date('2026-01-01') }];
+    const { type } = createDeltaType(events);
+    const channel = createRecordingChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [type],
+    });
+
+    await service.notify(type, { recipientId, input: { threadId: 't1' } });
+    const row = await prisma.notification.findFirstOrThrow({
+      where: { recipientId },
+      select: { id: true, params: true, frozenContent: true },
+    });
+
+    // Nothing delivered before, so there is no boundary and the message states
+    // how things stand rather than what changed.
+    await deliver(service, row.id);
+    expect(channel.deliveries).toHaveLength(1);
+    expect(channel.deliveries[0]?.params).toMatchObject({ total: 1 });
+    expect(channel.deliveries[0]?.params).not.toHaveProperty('newCount');
+
+    // The delta proper: measured from the first delivery, only the new event
+    // counts.
+    events.push({ at: new Date() });
+    await service.notify(type, { recipientId, input: { threadId: 't1' } });
+    const rearmed = await prisma.notification.findFirstOrThrow({
+      where: { recipientId },
+      select: { id: true },
+    });
+    await deliver(service, rearmed.id);
+
+    expect(channel.deliveries).toHaveLength(2);
+    expect(channel.deliveries[1]?.params).toMatchObject({
+      total: 2,
+      newCount: 1,
+    });
+  });
+
+  it('never writes the delta back to the row', async () => {
+    const recipientId = await createUser(0);
+    const events = [{ at: new Date('2026-01-01') }, { at: new Date() }];
+    const { type } = createDeltaType(events);
+    const channel = createRecordingChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [type],
+    });
+
+    await service.notify(type, { recipientId, input: { threadId: 't1' } });
+    const first = await prisma.notification.findFirstOrThrow({
+      where: { recipientId },
+      select: { id: true },
+    });
+    // Delivered once, so the second send has an anchor.
+    await deliver(service, first.id);
+
+    events.push({ at: new Date() });
+    await service.notify(type, { recipientId, input: { threadId: 't1' } });
+    const before = await prisma.notification.findFirstOrThrow({
+      where: { recipientId },
+      select: { id: true, params: true, frozenContent: true },
+    });
+
+    await deliver(service, before.id);
+
+    const after = await prisma.notification.findUniqueOrThrow({
+      where: { id: before.id },
+      select: { params: true, frozenContent: true },
+    });
+
+    // The delta reached the channel; the row is untouched by it.
+    expect(channel.deliveries.at(-1)?.params).toMatchObject({ newCount: 1 });
+    expect(after.params).toEqual(before.params);
+    expect(after.frozenContent).toEqual(before.frozenContent);
+    expect(after.params).not.toHaveProperty('newCount');
+  });
+
+  it('widens the window when a delivery is skipped as stale', async () => {
+    const recipientId = await createUser(0);
+    const events = [{ at: new Date('2026-01-01') }];
+    const { type, windows } = createDeltaType(events);
+    const channel = createRecordingChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [type],
+    });
+
+    await service.notify(type, { recipientId, input: { threadId: 't1' } });
+    const first = await prisma.notification.findFirstOrThrow({
+      where: { recipientId },
+      select: { id: true },
+    });
+    await deliver(service, first.id);
+    const anchor = await prisma.notificationDelivery.findFirstOrThrow({
+      where: { notificationId: first.id, status: 'delivered' },
+      select: { deliveredAt: true },
+    });
+
+    // A second generation, armed and then abandoned unsent. A real state
+    // change, since an unchanged notify is a no-op and would arm nothing.
+    events.push({ at: new Date() });
+    await service.notify(type, { recipientId, input: { threadId: 't1' } });
+    const expired = await service.outbox.expireStaleDeliveries({
+      expireBefore: new Date(Date.now() + 1000),
+    });
+    expect(expired).toBeGreaterThan(0);
+
+    // A third generation, delivered. Its window must still start at the last
+    // real send.
+    events.push({ at: new Date() });
+    await service.notify(type, { recipientId, input: { threadId: 't1' } });
+    const third = await prisma.notification.findFirstOrThrow({
+      where: { recipientId },
+      select: { id: true },
+    });
+    await deliver(service, third.id);
+
+    expect(windows.at(-1)).toEqual(anchor.deliveredAt);
+  });
+
+  it('falls back to stored state when the delta cannot be computed', async () => {
+    const recipientId = await createUser(0);
+    const failing = defineBatchedNotificationType({
+      key: 'test.delta-failing',
+      version: 1,
+      inputSchema: z.object({ threadId: z.string() }),
+      groupKey: ({ threadId }) => `thread:${threadId}`,
+      paramsSchema: z.object({ threadId: z.string(), total: z.number() }),
+      channels: ['inApp', 'email'],
+      resolveParams: ({ threadId }, { since }) => {
+        // Succeeds on the write path, then fails permanently, the way a
+        // deleted entity does.
+        if (since !== null) throw new Error('thread is gone');
+        return Promise.resolve({ threadId, total: 7 });
+      },
+      render: (params) => ({ title: `${params.total} in total` }),
+    });
+    const channel = createRecordingChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [failing],
+    });
+
+    await service.notify(failing, { recipientId, input: { threadId: 't1' } });
+    const row = await prisma.notification.findFirstOrThrow({
+      where: { recipientId },
+      select: { id: true },
+    });
+
+    const result = await service.outbox.deliverChunk({
+      requestId: 'req',
+      channel: 'email',
+      notificationIds: [row.id],
+    });
+
+    // Delivered, not failed: the stored state is still worth sending.
+    expect(result).toMatchObject({ delivered: 1, errored: 0 });
+    expect(channel.deliveries[0]?.params).toMatchObject({ total: 7 });
+  });
+});
+
+describe('retractAll', () => {
+  beforeEach(resetTables);
+  afterAll(resetTables);
+
+  it('clears every recipient holding the key, in one sweep', async () => {
+    const recipientIds = await createUsers(5);
+    const published: { userId: string; count: number }[] = [];
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createRecordingChannel(),
+      publishUnseenCount: (userId, count) => published.push({ userId, count }),
+    });
+
+    await service.notifyMany(LIKE_THREAD_TYPE, {
+      recipientIds,
+      params: { postId: 'p1', text: 'liked' },
+    });
+    // A second key, to prove the sweep is scoped rather than a blanket clear.
+    await service.notifyMany(LIKE_THREAD_TYPE, {
+      recipientIds,
+      params: { postId: 'p2', text: 'liked' },
+    });
+    published.length = 0;
+
+    const { retractedCount } = await service.retractAll(LIKE_THREAD_TYPE, {
+      params: { postId: 'p1', text: 'liked' },
+    });
+
+    expect(retractedCount).toBe(5);
+    expect(
+      await prisma.notification.count({
+        where: { groupKey: 'post:p1:likes', dismissedAt: null },
+      }),
+    ).toBe(0);
+    // The untouched key still stands.
+    expect(
+      await prisma.notification.count({
+        where: { groupKey: 'post:p2:likes', dismissedAt: null },
+      }),
+    ).toBe(5);
+    // Every recipient's badge was corrected, since all five rows were unseen.
+    expect(new Set(published.map((p) => p.userId))).toEqual(
+      new Set(recipientIds),
+    );
+  });
+
+  it('settles pending deliveries so a debounced send never leaves', async () => {
+    const recipientIds = await createUsers(3);
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createRecordingChannel(),
+    });
+
+    await service.notifyMany(LIKE_THREAD_EMAIL_TYPE, {
+      recipientIds,
+      params: { postId: 'p1', text: 'liked' },
+    });
+    expect(
+      await prisma.notificationDelivery.count({ where: { status: 'pending' } }),
+    ).toBe(3);
+
+    await service.retractAll(LIKE_THREAD_EMAIL_TYPE, {
+      params: { postId: 'p1', text: 'liked' },
+    });
+
+    expect(
+      await prisma.notificationDelivery.count({ where: { status: 'pending' } }),
+    ).toBe(0);
+    expect(
+      await prisma.notificationDelivery.count({
+        where: { status: 'skipped', lastError: 'retracted' },
+      }),
+    ).toBe(3);
+  });
+
+  it('reports nothing withdrawn when the fact is already gone', async () => {
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createRecordingChannel(),
+    });
+
+    // Racing retention, or a caller retracting twice — both benign.
+    const { retractedCount } = await service.retractAll(LIKE_THREAD_TYPE, {
+      params: { postId: 'nobody', text: 'liked' },
+    });
+
+    expect(retractedCount).toBe(0);
+  });
+
+  it('refuses a type that derives no group key', async () => {
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createRecordingChannel(),
+    });
+
+    // Such a type writes a fresh row per call, so no single row is named.
+    await expect(
+      service.retractAll(GENERIC_NOTIFICATION_TYPE, {
+        params: { text: 'hello' },
+      }),
+    ).rejects.toThrow(/derives no group key/);
   });
 });

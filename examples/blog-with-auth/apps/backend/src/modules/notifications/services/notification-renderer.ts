@@ -108,6 +108,11 @@ export interface NotificationRenderer {
    */
   getTopic(type: string, templateVersion: number): NotificationTopicKey | null;
   /**
+   * The type a row is pinned to, or null when that renderer is gone. Read by
+   * the outbox, which needs the type itself to re-resolve params at delivery.
+   */
+  getType(type: string, templateVersion: number): AnyNotificationType | null;
+  /**
    * A row's custom email content, or null to use the default wrapper.
    *
    * Null covers every way an override can be unavailable — the type declares
@@ -202,6 +207,13 @@ export function createNotificationRenderer(deps: {
     return registry.get(registryKey(type, templateVersion))?.topic ?? null;
   }
 
+  function getType(
+    type: string,
+    templateVersion: number,
+  ): AnyNotificationType | null {
+    return registry.get(registryKey(type, templateVersion)) ?? null;
+  }
+
   function renderEmail(
     row: RenderSource,
     ctx?: RenderContext,
@@ -239,5 +251,5 @@ export function createNotificationRenderer(deps: {
     }
   }
 
-  return { renderContent, renderForWrite, getTopic, renderEmail };
+  return { renderContent, renderForWrite, getTopic, getType, renderEmail };
 }

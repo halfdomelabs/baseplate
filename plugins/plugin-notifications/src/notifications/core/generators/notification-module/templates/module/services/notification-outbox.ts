@@ -4,11 +4,16 @@ import type {
   NotificationChannelKey,
   NotificationChannels,
   NotificationRoutingTarget,
-} from '$servicesNotificationChannel';
+} from '$channelsTypes';
+import type {
+  NotificationRenderer,
+  RenderSource,
+} from '$servicesNotificationRenderer';
+import type { Prisma } from '%prismaGeneratedImports';
 import type { QueueService } from '%queuesImports';
 
 import { notificationDeliveryQueue } from '$queuesNotificationDelivery';
-import { isGeneratedKey } from '$servicesNotificationRegistry';
+import { isGeneratedKey } from '$registry';
 import { RENDER_SOURCE_SELECT } from '$servicesNotificationRenderer';
 import { logError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
@@ -190,6 +195,35 @@ async function updatePendingDeliveries(
   });
 }
 
+/**
+ * When each row was last delivered on this channel — the delta boundary.
+ * Absent from the map means never delivered.
+ *
+ * Only `delivered` rows count. An abandoned delivery is `skipped` and never
+ * sets `deliveredAt`, so an outage widens the next delta rather than losing it.
+ */
+async function resolveDeltaAnchors(
+  notificationIds: string[],
+  channel: string,
+): Promise<Map<string, Date>> {
+  const groups = await prisma.notificationDelivery.groupBy({
+    by: ['notificationId'],
+    where: {
+      notificationId: { in: notificationIds },
+      channel,
+      status: 'delivered',
+    },
+    _max: { deliveredAt: true },
+  });
+
+  const anchors = new Map<string, Date>();
+  for (const group of groups) {
+    const deliveredAt = group._max.deliveredAt;
+    if (deliveredAt) anchors.set(group.notificationId, deliveredAt);
+  }
+  return anchors;
+}
+
 /** Contact details for a chunk's recipients, keyed by id. */
 async function resolveRecipients(
   recipientIds: string[],
@@ -333,8 +367,45 @@ async function deleteCompletedRequests(
 export function createNotificationOutbox(deps: {
   channels: NotificationChannels;
   queue: QueueService;
+  renderer: NotificationRenderer;
 }): NotificationOutbox {
-  const { channels, queue } = deps;
+  const { channels, queue, renderer } = deps;
+
+  /**
+   * The row as this send should render it: a batched type re-resolves its
+   * params against `since`, so an outbound message can phrase a delta while the
+   * stored row goes on holding state.
+   *
+   * Substitutes params rather than rendered content, leaving one render path —
+   * the channel renders as it always does, and the frozen-snapshot fallback
+   * still applies. Nothing is written back.
+   *
+   * Falls back to the row untouched when the delta cannot be computed: the
+   * underlying fact is gone or the params no longer satisfy `inputSchema`.
+   * Neither improves on retry, and the stored state is still worth sending.
+   */
+  async function resolveForDelivery(
+    row: RenderSource,
+    since: Date | null,
+  ): Promise<RenderSource> {
+    const type = renderer.getType(row.type, row.templateVersion);
+    if (type?.kind !== 'batched') return row;
+
+    try {
+      // The row stores params, not the input that produced them; `inputSchema`
+      // strips the params back down to the input's own fields.
+      const input: unknown = type.inputSchema.parse(row.params ?? {});
+      const params = await type.resolveParams(input, { since });
+      return { ...row, params: params as Prisma.JsonValue };
+    } catch (error) {
+      logError(error, {
+        source: 'notification-delta',
+        notificationId: row.id,
+        type: `${row.type}@${row.templateVersion}`,
+      });
+      return row;
+    }
+  }
 
   /** Narrows untrusted job data (`DeliverChunkInput.channel`) to an installed key. */
   function isChannelKey(channel: string): channel is NotificationChannelKey {
@@ -445,6 +516,8 @@ export function createNotificationOutbox(deps: {
     const recipientIds = rows.map((row) => row.recipientId);
     const recipients = await resolveRecipients(recipientIds);
 
+    const anchors = await resolveDeltaAnchors(notificationIds, channel);
+
     // What stops a duplicate job re-sending: a row already settled is not
     // still to send. Read once here, so a row settled by a job running
     // concurrently with this one can still be sent twice — the accepted
@@ -515,9 +588,13 @@ export function createNotificationOutbox(deps: {
       }
 
       try {
+        const notification = await resolveForDelivery(
+          row,
+          anchors.get(notificationId) ?? null,
+        );
         await channelImpl.deliver({
           recipientId: row.recipientId,
-          notification: row,
+          notification,
           recipient,
         });
         // Settled before the next row, so a later throw cannot re-send this

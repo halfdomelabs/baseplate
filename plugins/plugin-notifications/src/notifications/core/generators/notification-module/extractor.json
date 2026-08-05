@@ -1,6 +1,76 @@
 {
   "name": "notifications/core/notification-module",
   "templates": {
+    "channels-email-channel": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "emailModuleImportsProvider": {
+          "importName": "emailModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/channels/email.channel.ts",
+      "projectExports": {
+        "createEmailChannel": {
+          "isTypeOnly": false,
+          "name": "createEmailChannel"
+        },
+        "notificationEmail": {
+          "isTypeOnly": false,
+          "name": "notificationEmail"
+        },
+        "NotificationEmailContent": {
+          "isTypeOnly": true,
+          "name": "NotificationEmailContent"
+        }
+      },
+      "referencedGeneratorTemplates": [
+        "channels-types",
+        "services-notification-content",
+        "services-notification-renderer"
+      ],
+      "sourceFile": "module/channels/email.channel.ts",
+      "variables": { "TPL_NOTIFICATION_EMAIL": {} }
+    },
+    "channels-types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/channels/types.ts",
+      "projectExports": {
+        "ChannelDelivery": { "isTypeOnly": true, "name": "ChannelDelivery" },
+        "NotificationChannel": {
+          "isTypeOnly": true,
+          "name": "NotificationChannel"
+        },
+        "NotificationChannelKey": {
+          "isTypeOnly": true,
+          "name": "NotificationChannelKey"
+        },
+        "NotificationChannels": {
+          "isTypeOnly": true,
+          "name": "NotificationChannels"
+        },
+        "NotificationRenderers": {
+          "isTypeOnly": true,
+          "name": "NotificationRenderers"
+        },
+        "NotificationRoutingTarget": {
+          "isTypeOnly": true,
+          "name": "NotificationRoutingTarget"
+        },
+        "ROUTING_TARGETS": { "isTypeOnly": false, "name": "ROUTING_TARGETS" }
+      },
+      "referencedGeneratorTemplates": ["services-notification-renderer"],
+      "sourceFile": "module/channels/types.ts",
+      "variables": {
+        "TPL_CHANNEL_ENTRIES": {},
+        "TPL_RENDERER_ENTRIES": {},
+        "TPL_ROUTING_TARGETS": {}
+      }
+    },
     "constants-notification-topics": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -43,7 +113,7 @@
           "name": "resolveChannelSetting"
         }
       },
-      "referencedGeneratorTemplates": ["services-notification-channel"],
+      "referencedGeneratorTemplates": ["channels-types"],
       "sourceFile": "module/constants/notification-topics.ts",
       "variables": { "TPL_TOPICS": {} }
     },
@@ -176,6 +246,48 @@
       "sourceFile": "module/queues/notification-retention.worker.ts",
       "variables": {}
     },
+    "registry": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/registry.ts",
+      "projectExports": {
+        "AnyNotificationType": {
+          "isTypeOnly": true,
+          "name": "AnyNotificationType"
+        },
+        "BatchedNotificationType": {
+          "isTypeOnly": true,
+          "name": "BatchedNotificationType"
+        },
+        "defineBatchedNotificationType": {
+          "isTypeOnly": false,
+          "name": "defineBatchedNotificationType"
+        },
+        "defineNotificationType": {
+          "isTypeOnly": false,
+          "name": "defineNotificationType"
+        },
+        "generatedKey": { "isTypeOnly": false, "name": "generatedKey" },
+        "isGeneratedKey": { "isTypeOnly": false, "name": "isGeneratedKey" },
+        "NotificationParamsSchema": {
+          "isTypeOnly": true,
+          "name": "NotificationParamsSchema"
+        },
+        "PlainNotificationType": {
+          "isTypeOnly": true,
+          "name": "PlainNotificationType"
+        }
+      },
+      "referencedGeneratorTemplates": [
+        "channels-types",
+        "constants-notification-topics",
+        "services-notification-content"
+      ],
+      "sourceFile": "module/registry.ts",
+      "variables": {}
+    },
     "schema-notification-content-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -261,8 +373,8 @@
       },
       "pathRootRelativePath": "{module-root}/schema/notification-preference.schema.ts",
       "referencedGeneratorTemplates": [
+        "channels-types",
         "constants-notification-topics",
-        "services-notification-channel",
         "services-notification-service"
       ],
       "sourceFile": "module/schema/notification-preference.schema.ts",
@@ -282,43 +394,15 @@
       "sourceFile": "module/schema/notification.subscriptions.ts",
       "variables": {}
     },
-    "services-email-channel": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {
-        "emailModuleImportsProvider": {
-          "importName": "emailModuleImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/services/email-channel.ts",
-      "referencedGeneratorTemplates": [
-        "services-notification-channel",
-        "services-notification-content",
-        "services-notification-renderer"
-      ],
-      "sourceFile": "module/services/email-channel.ts",
-      "variables": { "TPL_NOTIFICATION_EMAIL": {} }
-    },
     "services-generic-type": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/generic-type.ts",
-      "referencedGeneratorTemplates": ["services-notification-registry"],
+      "referencedGeneratorTemplates": ["registry"],
       "sourceFile": "module/services/generic-type.ts",
       "variables": {}
-    },
-    "services-notification-channel": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
-      "referencedGeneratorTemplates": ["services-notification-renderer"],
-      "sourceFile": "module/services/notification-channel.ts",
-      "variables": { "TPL_CHANNEL_ENTRIES": {}, "TPL_ROUTING_TARGETS": {} }
     },
     "services-notification-content": {
       "type": "ts",
@@ -356,6 +440,10 @@
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
         },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
@@ -367,27 +455,13 @@
       },
       "pathRootRelativePath": "{module-root}/services/notification-outbox.ts",
       "referencedGeneratorTemplates": [
+        "channels-types",
         "queues-notification-delivery",
-        "services-notification-channel",
-        "services-notification-registry",
+        "registry",
         "services-notification-renderer"
       ],
       "sourceFile": "module/services/notification-outbox.ts",
       "variables": { "TPL_USER_DELEGATE": {} }
-    },
-    "services-notification-registry": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/services/notification-registry.ts",
-      "referencedGeneratorTemplates": [
-        "constants-notification-topics",
-        "services-notification-channel",
-        "services-notification-content"
-      ],
-      "sourceFile": "module/services/notification-registry.ts",
-      "variables": {}
     },
     "services-notification-renderer": {
       "type": "ts",
@@ -420,9 +494,10 @@
         "RenderSource": { "isTypeOnly": true, "name": "RenderSource" }
       },
       "referencedGeneratorTemplates": [
+        "channels-email-channel",
         "constants-notification-topics",
-        "services-notification-content",
-        "services-notification-registry"
+        "registry",
+        "services-notification-content"
       ],
       "sourceFile": "module/services/notification-renderer.ts",
       "variables": {}
@@ -447,13 +522,13 @@
       },
       "pathRootRelativePath": "{module-root}/services/notification.service.ts",
       "referencedGeneratorTemplates": [
+        "channels-types",
         "constants-notification-topics",
+        "registry",
         "services-generic-type",
-        "services-notification-channel",
         "services-notification-content",
         "services-notification-events",
         "services-notification-outbox",
-        "services-notification-registry",
         "services-notification-renderer"
       ],
       "sourceFile": "module/services/notification.service.ts",

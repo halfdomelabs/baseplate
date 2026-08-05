@@ -3,7 +3,7 @@
 import type {
   NotificationChannelKey,
   NotificationRoutingTarget,
-} from '$servicesNotificationChannel';
+} from '$channelsTypes';
 
 /**
  * The topics notification types are grouped under, declared in the project

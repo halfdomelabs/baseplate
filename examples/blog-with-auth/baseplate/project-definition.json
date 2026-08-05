@@ -1021,6 +1021,15 @@
           {
             "fields": [{ "fieldRef": "status" }, { "fieldRef": "createdAt" }],
             "id": "model-index:NUIkdGa2KCUF"
+          },
+          {
+            "fields": [
+              { "fieldRef": "notificationId" },
+              { "fieldRef": "channel" },
+              { "fieldRef": "status" },
+              { "fieldRef": "deliveredAt" }
+            ],
+            "id": "model-index:xqjXQogUpfSl"
           }
         ],
         "primaryKeyFieldRefs": ["id"],

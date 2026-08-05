@@ -1,1 +1,10 @@
-{ "files": { "added": [], "deleted": [], "modified": [] }, "version": "1" }
+{
+  "files": {
+    "added": [{ "path": "src/emails/notifications/post-commented.email.tsx" }],
+    "deleted": [],
+    "modified": [
+      { "diffFile": "src_emails_index.ts.diff", "path": "src/emails/index.ts" }
+    ]
+  },
+  "version": "1"
+}

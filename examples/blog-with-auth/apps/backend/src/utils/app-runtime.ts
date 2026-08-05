@@ -145,6 +145,7 @@ export function createAppRuntime(
         email: createEmailChannel({ email, renderer: notificationRenderer }),
       },
       queue,
+      renderer: notificationRenderer,
     }),
   );
 

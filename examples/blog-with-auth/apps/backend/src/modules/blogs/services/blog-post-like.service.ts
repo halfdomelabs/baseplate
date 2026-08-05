@@ -10,6 +10,11 @@ export interface BlogPostLikeSummary {
   postTitle: string;
   likerNames: string[];
   count: number;
+  /**
+   * Likes since the recipient was last told. Absent on the write path, where
+   * there is no boundary, which keeps it out of the stored params.
+   */
+  newCount?: number;
 }
 
 /**
@@ -18,10 +23,17 @@ export interface BlogPostLikeSummary {
  * The likes table is the source of truth, so this recomputes the whole aggregate
  * rather than nudging a stored counter. The author's own like is excluded — you
  * are not notified about liking your own post.
+ *
+ * Read-only and idempotent, because it also runs inside the delivery worker's
+ * retry path.
+ *
+ * With `since`, additionally counts what is new to the recipient. The sample
+ * and total still describe the whole post.
  */
 export async function summarizePostLikes(
   postId: string,
   sampleSize: number,
+  since?: Date | null,
 ): Promise<BlogPostLikeSummary> {
   const post = await prisma.blogPost.findUnique({
     where: { id: postId },
@@ -31,16 +43,22 @@ export async function summarizePostLikes(
     throw new Error(`Blog post ${postId} not found`);
   }
 
-  const [likes, count] = await Promise.all([
+  const scope = { postId, userId: { not: post.publisherId } };
+
+  const [likes, count, newCount] = await Promise.all([
     prisma.blogPostLike.findMany({
-      where: { postId, userId: { not: post.publisherId } },
+      where: scope,
       orderBy: { createdAt: 'desc' },
       take: sampleSize,
       select: { user: { select: { name: true } } },
     }),
-    prisma.blogPostLike.count({
-      where: { postId, userId: { not: post.publisherId } },
-    }),
+    prisma.blogPostLike.count({ where: scope }),
+    // Skipped without a boundary, so the write path costs what it did before.
+    since
+      ? prisma.blogPostLike.count({
+          where: { ...scope, createdAt: { gt: since } },
+        })
+      : undefined,
   ]);
 
   return {
@@ -48,6 +66,7 @@ export async function summarizePostLikes(
     postTitle: post.title,
     likerNames: likes.map((like) => like.user.name ?? 'Someone'),
     count,
+    ...(newCount === undefined ? {} : { newCount }),
   };
 }
 

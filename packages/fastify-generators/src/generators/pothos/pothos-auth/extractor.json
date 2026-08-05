@@ -31,7 +31,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/index.ts",
-      "referencedGeneratorTemplates": ["field-authorize-types"],
+      "referencedGeneratorTemplates": [
+        "field-authorize-global-types",
+        "field-authorize-types"
+      ],
       "sourceFile": "src/plugins/graphql/FieldAuthorizePlugin/index.ts",
       "variables": {}
     },

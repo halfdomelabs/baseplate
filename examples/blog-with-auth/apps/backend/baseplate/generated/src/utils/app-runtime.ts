@@ -7,7 +7,7 @@ import {
 } from '../modules/emails/services/email.service.js';
 import { postmarkEmailAdapter } from '../modules/emails/services/postmark.adapter.js';
 import { rootModule } from '../modules/index.js';
-import { createEmailChannel } from '../modules/notifications/services/email-channel.js';
+import { createEmailChannel } from '../modules/notifications/channels/email.channel.js';
 import { createNotificationEvents } from '../modules/notifications/services/notification-events.js';
 import { createNotificationOutbox } from '../modules/notifications/services/notification-outbox.js';
 import { createNotificationRenderer } from '../modules/notifications/services/notification-renderer.js';
@@ -145,6 +145,7 @@ export function createAppRuntime(
         email: createEmailChannel({ email, renderer: notificationRenderer }),
       },
       queue,
+      renderer: notificationRenderer,
     }),
   );
 

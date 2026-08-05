@@ -30,8 +30,8 @@
     "deleted": [],
     "modified": [
       {
-        "diffFile": "src_modules_blogs_index.ts.diff",
-        "path": "src/modules/blogs/index.ts"
+        "diffFile": "src_modules_blogs_services_blog-post.data-service.ts.diff",
+        "path": "src/modules/blogs/services/blog-post.data-service.ts"
       }
     ]
   },

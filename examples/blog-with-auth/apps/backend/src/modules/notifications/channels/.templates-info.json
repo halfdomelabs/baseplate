@@ -1,0 +1,12 @@
+{
+  "email.channel.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "channels-email-channel"
+  },
+  "types.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "channels-types"
+  }
+}

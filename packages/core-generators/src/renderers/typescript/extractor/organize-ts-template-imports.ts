@@ -15,6 +15,7 @@ import type {
 import { mergeTsImportDeclarations } from '../imports/merge-ts-import-declarations.js';
 import { sortImportDeclarations } from '../imports/sort-imports/sort-import-declarations.js';
 import {
+  getSideEffectImportsFromSourceFile,
   getTsMorphImportDeclarationsFromSourceFile,
   replaceImportDeclarationsInSourceFile,
 } from '../imports/ts-morph-operations.js';
@@ -91,6 +92,13 @@ const PACKAGE_REGEX =
   /^(?:@([a-z0-9-~][a-z0-9-._~]*)\/)?([a-z0-9-~][a-z0-9-._~]*)$/;
 
 /**
+ * Matches module specifiers that contain a template variable placeholder, e.g.
+ * `TPL_MODULE_PATH`, left behind by extractTsTemplateVariables. These cannot be
+ * resolved against the filesystem so they are skipped during validation.
+ */
+const TEMPLATE_VARIABLE_SPECIFIER_REGEX = /TPL_[A-Z0-9_]+/;
+
+/**
  * Converts an NPM package name to its corresponding @types package name.
  */
 function toTypesPackageName(pkgName: string): string | undefined {
@@ -102,6 +110,123 @@ function toTypesPackageName(pkgName: string): string | undefined {
     return `@types/${scope}__${name}`;
   }
   return `@types/${pkgName}`;
+}
+
+/**
+ * Resolves a module specifier to an absolute path, applying the validations shared
+ * by both the binding-import and side-effect-import paths.
+ *
+ * @returns The resolved absolute path, or undefined if the import should be left untouched
+ * (builtins and packages that only ship types).
+ */
+async function resolveTemplateImport(
+  moduleSpecifier: string,
+  filePath: string,
+  resolver: ResolverFactory,
+  outputDirectory: string,
+): Promise<string | undefined> {
+  if (isBuiltin(moduleSpecifier)) {
+    return undefined;
+  }
+
+  const resolutionResult = await resolver.async(
+    path.dirname(filePath),
+    moduleSpecifier,
+  );
+
+  if (!resolutionResult.path) {
+    // It's possible that it's a type only import, so we should check for the @types import
+    const typesPackageName = toTypesPackageName(moduleSpecifier);
+    if (typesPackageName) {
+      const typesResolutionResult = await resolver.async(
+        path.dirname(filePath),
+        typesPackageName,
+      );
+      if (typesResolutionResult.path) {
+        return undefined;
+      }
+    }
+
+    throw new Error(
+      `Could not resolve import ${moduleSpecifier} in ${filePath}: ${String(resolutionResult.error)}`,
+    );
+  }
+
+  const resolvedPath = resolutionResult.path;
+
+  if (
+    isWorkspacePackageImport(moduleSpecifier, resolvedPath, outputDirectory)
+  ) {
+    throw new Error(
+      `Workspace package import "${moduleSpecifier}" in ${filePath} must be configured as a project export or converted to a template variable. ` +
+        `Template imports should use TPL_* variables for dynamic package references. ` +
+        `Example: Wrap the usage with delimited variables like /* TPL_VAR:START */identifier/* TPL_VAR:END */ and pass TsCodeUtils.importFragment() in the generator.`,
+    );
+  }
+
+  return resolvedPath;
+}
+
+/**
+ * Validates side-effect imports (e.g. `import './foo.js';`) and rewrites those that point
+ * at another template in the same generator to its internal `$templateName` specifier.
+ *
+ * Side-effect imports are rewritten in place rather than through the sort-and-replace path
+ * because their evaluation order is semantically significant.
+ *
+ * Throws when an import resolves inside the output directory but is not a known template or
+ * project export, which means project-specific code would otherwise be baked into the template.
+ */
+async function organizeSideEffectImports(
+  sourceFile: SourceFile,
+  filePath: string,
+  {
+    projectExportMap,
+    internalOutputRelativePaths,
+    resolver,
+    outputDirectory,
+  }: TsTemplateImportLookupContext,
+  referencedGeneratorTemplates: Set<string>,
+): Promise<void> {
+  for (const declaration of getSideEffectImportsFromSourceFile(sourceFile)) {
+    const moduleSpecifier = declaration.getModuleSpecifier().getLiteralValue();
+
+    // Specifiers that were variablized cannot be resolved on disk
+    if (TEMPLATE_VARIABLE_SPECIFIER_REGEX.test(moduleSpecifier)) {
+      continue;
+    }
+
+    const resolvedPath = await resolveTemplateImport(
+      moduleSpecifier,
+      filePath,
+      resolver,
+      outputDirectory,
+    );
+
+    // Builtins and type-only packages are left untouched
+    if (!resolvedPath) continue;
+
+    // Don't modify external imports outside the project root
+    if (!resolvedPath.startsWith(outputDirectory)) continue;
+
+    const relativeOutputPath = path.relative(outputDirectory, resolvedPath);
+    const internalTemplateName =
+      internalOutputRelativePaths.get(relativeOutputPath);
+
+    if (internalTemplateName) {
+      referencedGeneratorTemplates.add(internalTemplateName);
+      declaration.setModuleSpecifier(`$${camelCase(internalTemplateName)}`);
+      continue;
+    }
+
+    if (!projectExportMap.has(relativeOutputPath)) {
+      throw new Error(
+        `Side-effect import ${moduleSpecifier} in ${filePath} resolves to ${relativeOutputPath} which is not a template in this generator or a project export. ` +
+          `This is usually project-specific code that would be baked into a shared template. ` +
+          `Move the import inside the enclosing TPL_* region so it is generated, or register the file with the generator.`,
+      );
+    }
+  }
 }
 
 /**
@@ -209,44 +334,31 @@ export async function organizeTsTemplateImports(
   const usedProjectExports: TsProjectExport[] = [];
   const referencedGeneratorTemplates = new Set<string>();
 
+  // Side effect imports are validated in place since their evaluation order matters
+  await organizeSideEffectImports(
+    sourceFile,
+    filePath,
+    {
+      projectExportMap,
+      internalOutputRelativePaths,
+      resolver,
+      outputDirectory,
+    },
+    referencedGeneratorTemplates,
+  );
+
   const updatedImportDeclarations = await Promise.all(
     tsImportDeclarations.map(async (importDeclaration) => {
       const { moduleSpecifier } = importDeclaration;
-      if (isBuiltin(moduleSpecifier)) {
-        return [importDeclaration];
-      }
-      const resolutionResult = await resolver.async(
-        path.dirname(filePath),
+      const resolvedPath = await resolveTemplateImport(
         moduleSpecifier,
+        filePath,
+        resolver,
+        outputDirectory,
       );
-      if (!resolutionResult.path) {
-        // It's possible that it's a type only import, so we should check for the @types import
-        const typesPackageName = toTypesPackageName(moduleSpecifier);
-        if (typesPackageName) {
-          const typesResolutionResult = await resolver.async(
-            path.dirname(filePath),
-            typesPackageName,
-          );
-          if (typesResolutionResult.path) {
-            return [importDeclaration];
-          }
-        }
-
-        throw new Error(
-          `Could not resolve import ${moduleSpecifier} in ${filePath}: ${String(resolutionResult.error)}`,
-        );
-      }
-      const resolvedPath = resolutionResult.path;
-
-      // Validate workspace package imports
-      if (
-        isWorkspacePackageImport(moduleSpecifier, resolvedPath, outputDirectory)
-      ) {
-        throw new Error(
-          `Workspace package import "${moduleSpecifier}" in ${filePath} must be configured as a project export or converted to a template variable. ` +
-            `Template imports should use TPL_* variables for dynamic package references. ` +
-            `Example: Wrap the usage with delimited variables like /* TPL_VAR:START */identifier/* TPL_VAR:END */ and pass TsCodeUtils.importFragment() in the generator.`,
-        );
+      // Builtins and type-only packages are left untouched
+      if (!resolvedPath) {
+        return [importDeclaration];
       }
 
       // Don't modify external imports outside the project root
