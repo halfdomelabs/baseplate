@@ -15,6 +15,15 @@
         "playwright.config.ts"
       ]
     },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--allowed-origins",
+        "http://localhost:*;https://localhost:*;http://127.0.0.1:*;https://127.0.0.1:*"
+      ]
+    },
     "baseplate-dev-server": {
       "command": "mise",
       "args": ["exec", "--", "pnpm", "--silent", "start", "mcp"]
