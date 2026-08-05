@@ -49,7 +49,7 @@ export const FASTIFY_PACKAGES = {
   // Compilation
   'tsc-alias': '1.8.10',
   tsx: '4.23.1',
-  '@types/node': `^24.0.0`,
+  '@types/node': `^24.13.0`,
 
   // Redis
   // Held at 5.x: @graphql-yoga/redis-event-target peers ioredis ^5.0.6 and has
