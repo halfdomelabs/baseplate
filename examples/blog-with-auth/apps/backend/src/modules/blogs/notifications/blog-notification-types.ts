@@ -1,11 +1,13 @@
+import { PostCommentedEmail } from '@blog-with-auth/transactional';
 import { z } from 'zod';
 
 import type { NotificationSegment } from '@src/modules/notifications/services/notification-content.js';
 
+import { notificationEmail } from '@src/modules/notifications/channels/email.channel.js';
 import {
   defineBatchedNotificationType,
   defineNotificationType,
-} from '@src/modules/notifications/services/notification-registry.js';
+} from '@src/modules/notifications/registry.js';
 
 import { summarizePostLikes } from '../services/blog-post-like.service.js';
 
@@ -19,7 +21,13 @@ import { summarizePostLikes } from '../services/blog-post-like.service.js';
  * the vocabulary.
  */
 
-/** A comment landed on one of your posts. In-app by default; email is opt-in. */
+/**
+ * A comment landed on one of your posts. In-app by default; email is opt-in.
+ *
+ * Declares an `email` renderer, so mail gets a bespoke template while the feed
+ * still renders the segments `render` returns — one channel-neutral definition,
+ * adapted per channel rather than duplicated.
+ */
 export const POST_COMMENTED_TYPE = defineNotificationType({
   key: 'post.commented',
   version: 1,
@@ -38,6 +46,14 @@ export const POST_COMMENTED_TYPE = defineNotificationType({
     ],
     actionUrl: `/admin/blogs/posts/${params.postId}`,
   }),
+  renderers: {
+    email: (params) =>
+      notificationEmail(PostCommentedEmail, {
+        commenterName: params.commenterName,
+        postTitle: params.postTitle,
+        actionUrl: `/admin/blogs/posts/${params.postId}`,
+      }),
+  },
 });
 
 /**

@@ -1,13 +1,14 @@
 // @ts-nocheck
 
+import type { NotificationEmailContent } from '$channelsEmailChannel';
 import type { NotificationTopicKey } from '$constantsNotificationTopics';
+import type { AnyNotificationType } from '$registry';
 import type {
   NotificationContent,
   NotificationParams,
   RenderContext,
   RenderedContent,
 } from '$servicesNotificationContent';
-import type { AnyNotificationType } from '$servicesNotificationRegistry';
 import type { Prisma } from '%prismaGeneratedImports';
 
 import {
@@ -111,6 +112,19 @@ export interface NotificationRenderer {
    * the outbox, which needs the type itself to re-resolve params at delivery.
    */
   getType(type: string, templateVersion: number): AnyNotificationType | null;
+  /**
+   * A row's custom email content, or null to use the default wrapper.
+   *
+   * Null covers every way an override can be unavailable — the type declares
+   * none, its renderer is retired, its params no longer validate, or the
+   * override threw — because all of them mean the same thing to the channel:
+   * send the generic email built from `render`. A broken custom template must
+   * never mean no email at all.
+   */
+  renderEmail(
+    row: RenderSource,
+    ctx?: RenderContext,
+  ): NotificationEmailContent | null;
 }
 
 /**
@@ -200,5 +214,42 @@ export function createNotificationRenderer(deps: {
     return registry.get(registryKey(type, templateVersion)) ?? null;
   }
 
-  return { renderContent, renderForWrite, getTopic, getType };
+  function renderEmail(
+    row: RenderSource,
+    ctx?: RenderContext,
+  ): NotificationEmailContent | null {
+    const type = registry.get(registryKey(row.type, row.templateVersion));
+    const renderers = type?.renderers;
+    // No renderer, or none declared for this channel: the default wrapper is
+    // not a failure, so nothing is logged. `renderContent` reports a retired
+    // renderer already, and the channel calls it either way.
+    if (!type || !renderers?.email) return null;
+
+    const params = type.paramsSchema.safeParse(row.params ?? {});
+    if (!params.success) {
+      logError(params.error, {
+        source: 'notification-render-email',
+        reason: 'params-drift',
+        notificationId: row.id,
+        type: `${row.type}@${row.templateVersion}`,
+      });
+      return null;
+    }
+
+    try {
+      // Called through its object rather than as a bare reference, so a
+      // renderer written as a method still sees its own `this`.
+      return renderers.email(params.data, ctx ?? { locale: DEFAULT_LOCALE });
+    } catch (error) {
+      logError(error, {
+        source: 'notification-render-email',
+        reason: 'render-threw',
+        notificationId: row.id,
+        type: `${row.type}@${row.templateVersion}`,
+      });
+      return null;
+    }
+  }
+
+  return { renderContent, renderForWrite, getTopic, getType, renderEmail };
 }

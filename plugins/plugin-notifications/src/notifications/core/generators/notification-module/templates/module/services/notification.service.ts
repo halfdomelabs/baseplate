@@ -1,15 +1,21 @@
 // @ts-nocheck
 
 import type {
+  NotificationChannelKey,
+  NotificationRoutingTarget,
+} from '$channelsTypes';
+import type {
   NotificationChannelSetting,
   NotificationMode,
   NotificationTopic,
   NotificationTopicKey,
 } from '$constantsNotificationTopics';
 import type {
-  NotificationChannelKey,
-  NotificationRoutingTarget,
-} from '$servicesNotificationChannel';
+  AnyNotificationType,
+  BatchedNotificationType,
+  NotificationParamsSchema,
+  PlainNotificationType,
+} from '$registry';
 import type {
   NotificationParams,
   RenderContext,
@@ -18,17 +24,12 @@ import type {
 import type { NotificationEvents } from '$servicesNotificationEvents';
 import type { NotificationOutbox } from '$servicesNotificationOutbox';
 import type {
-  AnyNotificationType,
-  BatchedNotificationType,
-  NotificationParamsSchema,
-  PlainNotificationType,
-} from '$servicesNotificationRegistry';
-import type {
   NotificationRenderer,
   RenderSource,
 } from '$servicesNotificationRenderer';
 import type { z } from 'zod';
 
+import { ROUTING_TARGETS } from '$channelsTypes';
 import {
   getNotificationTopic,
   isNotificationTopicKey,
@@ -36,10 +37,9 @@ import {
   NOTIFICATION_TOPICS,
   resolveChannelSetting,
 } from '$constantsNotificationTopics';
+import { generatedKey } from '$registry';
 import { GENERIC_NOTIFICATION_TYPE } from '$servicesGenericType';
-import { ROUTING_TARGETS } from '$servicesNotificationChannel';
 import { toFrozenContent } from '$servicesNotificationContent';
-import { generatedKey } from '$servicesNotificationRegistry';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
 import { Prisma } from '%prismaGeneratedImports';
 import { prisma } from '%prismaImports';

@@ -1,18 +1,8 @@
 {
-  "email-channel.ts": {
-    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
-    "instanceData": {},
-    "template": "services-email-channel"
-  },
   "generic-type.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},
     "template": "services-generic-type"
-  },
-  "notification-channel.ts": {
-    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
-    "instanceData": {},
-    "template": "services-notification-channel"
   },
   "notification-content.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
@@ -28,11 +18,6 @@
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},
     "template": "services-notification-outbox"
-  },
-  "notification-registry.ts": {
-    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
-    "instanceData": {},
-    "template": "services-notification-registry"
   },
   "notification-renderer.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",

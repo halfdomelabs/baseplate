@@ -1,7 +1,7 @@
 import type {
   NotificationChannelKey,
   NotificationRoutingTarget,
-} from '../services/notification-channel.js';
+} from '../channels/types.js';
 
 /**
  * The topics notification types are grouped under, declared in the project

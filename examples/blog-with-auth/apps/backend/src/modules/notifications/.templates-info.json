@@ -3,5 +3,10 @@
     "generator": "@baseplate-dev/fastify-generators#core/app-module",
     "instanceData": {},
     "template": "index"
+  },
+  "registry.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "registry"
   }
 }

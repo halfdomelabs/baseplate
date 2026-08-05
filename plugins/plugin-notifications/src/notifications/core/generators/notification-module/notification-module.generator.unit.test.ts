@@ -37,7 +37,7 @@ const PATHS_STUB = {
     '@/src/modules/notifications/services/notification-events.ts',
   servicesNotificationRenderer:
     '@/src/modules/notifications/services/notification-renderer.ts',
-  servicesEmailChannel: '@/src/modules/notifications/services/email-channel.ts',
+  channelsEmailChannel: '@/src/modules/notifications/channels/email.channel.ts',
 } as unknown as Parameters<
   ReturnType<
     typeof notificationModuleGenerator

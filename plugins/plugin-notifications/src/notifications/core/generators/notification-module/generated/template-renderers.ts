@@ -21,6 +21,16 @@ import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_PATHS } from './template-paths.j
 import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES } from './typed-templates.js';
 
 export interface NotificationsCoreNotificationModuleRenderers {
+  channelsEmailChannel: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.channelsEmailChannel
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   mainGroup: {
     render: (
       options: Omit<
@@ -48,16 +58,6 @@ export interface NotificationsCoreNotificationModuleRenderers {
           typeof NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.schemaGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
-  servicesEmailChannel: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.servicesEmailChannel
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -100,6 +100,19 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
     return {
       providers: {
         notificationsCoreNotificationModuleRenderers: {
+          channelsEmailChannel: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.channelsEmailChannel,
+                destination: paths.channelsEmailChannel,
+                importMapProviders: {
+                  emailModuleImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
           mainGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
@@ -142,19 +155,6 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                   pothosImports,
                   prismaGeneratedImports,
                   prismaImports,
-                },
-                generatorPaths: paths,
-                ...options,
-              }),
-          },
-          servicesEmailChannel: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template:
-                  NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.servicesEmailChannel,
-                destination: paths.servicesEmailChannel,
-                importMapProviders: {
-                  emailModuleImports,
                 },
                 generatorPaths: paths,
                 ...options,

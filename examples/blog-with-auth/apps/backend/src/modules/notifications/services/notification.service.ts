@@ -9,15 +9,21 @@ import { prisma } from '@src/services/prisma.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 
 import type {
+  NotificationChannelKey,
+  NotificationRoutingTarget,
+} from '../channels/types.js';
+import type {
   NotificationChannelSetting,
   NotificationMode,
   NotificationTopic,
   NotificationTopicKey,
 } from '../constants/notification-topics.js';
 import type {
-  NotificationChannelKey,
-  NotificationRoutingTarget,
-} from './notification-channel.js';
+  AnyNotificationType,
+  BatchedNotificationType,
+  NotificationParamsSchema,
+  PlainNotificationType,
+} from '../registry.js';
 import type {
   NotificationParams,
   RenderContext,
@@ -26,16 +32,11 @@ import type {
 import type { NotificationEvents } from './notification-events.js';
 import type { NotificationOutbox } from './notification-outbox.js';
 import type {
-  AnyNotificationType,
-  BatchedNotificationType,
-  NotificationParamsSchema,
-  PlainNotificationType,
-} from './notification-registry.js';
-import type {
   NotificationRenderer,
   RenderSource,
 } from './notification-renderer.js';
 
+import { ROUTING_TARGETS } from '../channels/types.js';
 import {
   getNotificationTopic,
   isNotificationTopicKey,
@@ -43,10 +44,9 @@ import {
   NOTIFICATION_TOPICS,
   resolveChannelSetting,
 } from '../constants/notification-topics.js';
+import { generatedKey } from '../registry.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
-import { ROUTING_TARGETS } from './notification-channel.js';
 import { toFrozenContent } from './notification-content.js';
-import { generatedKey } from './notification-registry.js';
 
 /**
  * Rows per insert. Bounds every statement in the fan-out, so a large audience

@@ -4,7 +4,7 @@ import type {
   NotificationChannelKey,
   NotificationChannels,
   NotificationRoutingTarget,
-} from '$servicesNotificationChannel';
+} from '$channelsTypes';
 import type {
   NotificationRenderer,
   RenderSource,
@@ -13,7 +13,7 @@ import type { Prisma } from '%prismaGeneratedImports';
 import type { QueueService } from '%queuesImports';
 
 import { notificationDeliveryQueue } from '$queuesNotificationDelivery';
-import { isGeneratedKey } from '$servicesNotificationRegistry';
+import { isGeneratedKey } from '$registry';
 import { RENDER_SOURCE_SELECT } from '$servicesNotificationRenderer';
 import { logError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';

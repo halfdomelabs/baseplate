@@ -2,12 +2,10 @@ Index: src/modules/blogs/index.ts
 ===================================================================
 --- src/modules/blogs/index.ts
 +++ src/modules/blogs/index.ts
-@@ -1,7 +1,8 @@
+@@ -1,5 +1,6 @@
  import { defineAppModule } from '@src/utils/app-modules.js';
- 
- /* TPL_IMPORTS:START */
+
 +import './schema/blog-post-like.mutations.js';
+ /* TPL_IMPORTS:START */
  import './schema/blog-post.mutations.js';
  import './schema/blog-post.object-type.js';
- import './schema/blog-post.queries.js';
- import './schema/blog.mutations.js';

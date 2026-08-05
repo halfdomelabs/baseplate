@@ -1,10 +1,10 @@
 // @ts-nocheck
 
-import type { NotificationRoutingTarget } from '$servicesNotificationChannel';
+import type { NotificationRoutingTarget } from '$channelsTypes';
 import type { NotificationChannelPreference } from '$servicesNotificationService';
 
+import { ROUTING_TARGETS } from '$channelsTypes';
 import { NOTIFICATION_MODES } from '$constantsNotificationTopics';
-import { ROUTING_TARGETS } from '$servicesNotificationChannel';
 import { builder } from '%pothosImports';
 
 /**

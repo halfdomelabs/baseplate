@@ -1,7 +1,10 @@
 // @ts-nocheck
 
+import type {
+  NotificationRenderers,
+  NotificationRoutingTarget,
+} from '$channelsTypes';
 import type { NotificationTopicKey } from '$constantsNotificationTopics';
-import type { NotificationRoutingTarget } from '$servicesNotificationChannel';
 import type {
   NotificationContent,
   NotificationParams,
@@ -51,6 +54,14 @@ interface NotificationTypeBase<PSchema extends NotificationParamsSchema> {
    * source on every channel.
    */
   render(params: z.output<PSchema>, ctx: RenderContext): NotificationContent;
+  /**
+   * Per-channel overrides of what `render` produced.
+   *
+   * Capability, not policy: declaring one does not narrow `channels`, and
+   * omitting one does not widen it. A channel with no override — or whose
+   * override fails — falls back to the default wrapper built from `render`.
+   */
+  renderers?: NotificationRenderers<z.output<PSchema>>;
 }
 
 /**

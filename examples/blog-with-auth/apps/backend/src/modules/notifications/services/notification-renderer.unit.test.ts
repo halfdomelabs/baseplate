@@ -3,12 +3,13 @@ import { z } from 'zod';
 
 import type { Prisma } from '@src/generated/prisma/client.js';
 
+import type { AnyNotificationType } from '../registry.js';
 import type { NotificationSegment } from './notification-content.js';
-import type { AnyNotificationType } from './notification-registry.js';
 import type { RenderSource } from './notification-renderer.js';
 
+import { notificationEmail } from '../channels/email.channel.js';
+import { defineNotificationType } from '../registry.js';
 import { segmentsToText } from './notification-content.js';
-import { defineNotificationType } from './notification-registry.js';
 import { createNotificationRenderer } from './notification-renderer.js';
 
 vi.mock('@src/services/error-logger.js', () => ({ logError: vi.fn() }));
@@ -317,5 +318,133 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
         }),
       ]),
     ).not.toThrow();
+  });
+});
+
+describe('renderEmail (per-channel override)', () => {
+  /** A component stands in for a real template; only identity is asserted. */
+  const CommentEmail = Object.assign(() => null, {
+    subject: 'Component subject',
+    displayName: 'CommentEmail',
+  }) as unknown as Parameters<typeof notificationEmail>[0];
+
+  /** A type declaring an email override built from its own params. */
+  const withOverride = defineNotificationType({
+    key: 'test.override',
+    version: 1,
+    topic: 'general',
+    paramsSchema: z.object({ name: z.string() }),
+    channels: ['inApp', 'email'],
+    render: (params) => ({ title: `${params.name} commented` }),
+    renderers: {
+      email: (params) => notificationEmail(CommentEmail, { name: params.name }),
+    },
+  });
+
+  it('returns the custom content when the type declares an email renderer', () => {
+    const renderer = rendererWith([withOverride]);
+
+    const content = renderer.renderEmail(
+      makeRow('test.override', 1, { name: 'Alice' }),
+    );
+
+    expect(content).toEqual({
+      component: CommentEmail,
+      data: { name: 'Alice' },
+      subject: undefined,
+    });
+  });
+
+  it('returns null when the type declares NO email renderer', () => {
+    // The default wrapper is not a failure mode: a type without an override is
+    // the normal case, so this returns null without logging.
+    const renderer = rendererWith([
+      defineNotificationType({
+        key: 'test.bare',
+        version: 1,
+        topic: 'general',
+        paramsSchema: z.object({ name: z.string() }),
+        channels: ['inApp', 'email'],
+        render: (params) => ({ title: `${params.name} commented` }),
+      }),
+    ]);
+
+    expect(
+      renderer.renderEmail(makeRow('test.bare', 1, { name: 'Alice' })),
+    ).toBeNull();
+  });
+
+  it('returns null when the pinned renderer is GONE', () => {
+    expect(
+      rendererWith([]).renderEmail(makeRow('test.retired', 9, { name: 'A' })),
+    ).toBeNull();
+  });
+
+  it('returns null when stored params no longer satisfy the schema', () => {
+    const renderer = rendererWith([withOverride]);
+
+    expect(
+      renderer.renderEmail(makeRow('test.override', 1, { wrongField: 1 })),
+    ).toBeNull();
+  });
+
+  it('returns null — never throws — when the override itself throws', () => {
+    // A broken bespoke template must degrade to the generic email, not drop it.
+    const renderer = rendererWith([
+      defineNotificationType({
+        key: 'test.throws',
+        version: 1,
+        topic: 'general',
+        paramsSchema: z.object({ name: z.string() }),
+        channels: ['inApp', 'email'],
+        render: (params) => ({ title: params.name }),
+        renderers: {
+          email: () => {
+            throw new Error('template blew up');
+          },
+        },
+      }),
+    ]);
+
+    expect(
+      renderer.renderEmail(makeRow('test.throws', 1, { name: 'Alice' })),
+    ).toBeNull();
+  });
+
+  it('passes a subject override through when the renderer sets one', () => {
+    const renderer = rendererWith([
+      defineNotificationType({
+        key: 'test.subject',
+        version: 1,
+        topic: 'general',
+        paramsSchema: z.object({ name: z.string() }),
+        channels: ['inApp', 'email'],
+        render: (params) => ({ title: params.name }),
+        renderers: {
+          email: (params) =>
+            notificationEmail(
+              CommentEmail,
+              { name: params.name },
+              { subject: `Re: ${params.name}` },
+            ),
+        },
+      }),
+    ]);
+
+    const content = renderer.renderEmail(
+      makeRow('test.subject', 1, { name: 'Alice' }),
+    );
+
+    expect(content?.subject).toBe('Re: Alice');
+  });
+
+  it('does not affect the feed: the same type still renders channel-neutral segments', () => {
+    // The point of the whole feature — an override adapts one channel and
+    // leaves `render` as the single source for everything else.
+    const renderContent = renderWith([withOverride]);
+
+    expect(
+      renderContent(makeRow('test.override', 1, { name: 'Alice' })).title,
+    ).toEqual([{ kind: 'text', text: 'Alice commented' }]);
   });
 });
