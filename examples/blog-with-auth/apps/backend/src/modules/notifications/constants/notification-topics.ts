@@ -50,6 +50,7 @@ export const NOTIFICATION_TOPICS = /* TPL_TOPICS:START */ [
     defaults: {
       email: {
         mode: 'digest',
+        digestWindowSeconds: 3600,
       },
       inApp: {
         mode: 'immediate',

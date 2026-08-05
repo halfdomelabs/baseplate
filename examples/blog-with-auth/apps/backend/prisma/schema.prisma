@@ -137,24 +137,24 @@ model NotificationDelivery {
   id             String       @id @default(dbgenerated("uuidv7()")) @db.Uuid
   requestId      String       @map("request_id") @db.Uuid
   channel        String
-  mode           String       @default("immediate")
   status         String       @default("pending")
   attempts       Int          @default(0)
   lastError      String?      @map("last_error")
   createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   notificationId String       @map("notification_id") @db.Uuid
-  recipientId    String       @map("recipient_id") @db.Uuid
   deliveredAt    DateTime?    @map("delivered_at") @db.Timestamptz(3)
-  digestDueAt    DateTime?    @map("digest_due_at") @db.Timestamptz(3)
   feedSortKey    String       @map("feed_sort_key") @db.Uuid
+  recipientId    String       @map("recipient_id") @db.Uuid
+  mode           String       @default("immediate")
+  digestDueAt    DateTime?    @map("digest_due_at") @db.Timestamptz(3)
   notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([notificationId, channel, feedSortKey])
+  @@index([recipientId, channel, status, mode])
+  @@index([status, mode, digestDueAt])
   @@index([notificationId, channel, status, deliveredAt])
   @@index([status, createdAt])
-  @@index([status, mode, digestDueAt])
-  @@index([recipientId, channel, status, mode])
   @@map("notification_delivery")
 }
 

@@ -25,7 +25,7 @@ import { NOTIFICATION_MODELS } from '#src/notifications/constants/model-names.js
 
 import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({
+export const descriptorSchema = z.object({
   /** Generate the email delivery channel (only when the email plugin is enabled). */
   includeEmailChannel: z.boolean().optional(),
   /** The app's user model; delivery reads recipient addresses from it. */
@@ -41,7 +41,11 @@ const descriptorSchema = z.object({
           z.string(),
           z.object({
             mode: z.string(),
-            windowSeconds: z.number().optional(),
+            // Emitted verbatim into the generated `NOTIFICATION_TOPICS`, so the
+            // name must match `NotificationChannelSetting` — an unrecognised
+            // key type-checks against the `Partial<Record<...>>` and silently
+            // resolves to `undefined` at runtime.
+            digestWindowSeconds: z.number().optional(),
           }),
         ),
       }),
@@ -230,15 +234,23 @@ export const notificationModuleGenerator = createGenerator({
         }
 
         // Bind every worker so the app's queue runtime starts them: delivery
-        // sends, the sweep re-runs interrupted fan-outs then audits for
-        // deliveries whose jobs were lost, and retention collects rows past
-        // their horizon.
+        // sends, the digest scan collapses closed windows, the sweep re-runs
+        // interrupted fan-outs then audits for deliveries whose jobs were lost,
+        // and retention collects rows past their horizon.
         appModule.moduleFields.set(
           'queues',
           'notificationDeliveryWorker',
           TsCodeUtils.importFragment(
             'notificationDeliveryWorker',
             paths.queuesNotificationDeliveryWorker,
+          ),
+        );
+        appModule.moduleFields.set(
+          'queues',
+          'notificationDigestWorker',
+          TsCodeUtils.importFragment(
+            'notificationDigestWorker',
+            paths.queuesNotificationDigestWorker,
           ),
         );
         appModule.moduleFields.set(
@@ -361,6 +373,10 @@ export const notificationModuleGenerator = createGenerator({
                   variables: {
                     TPL_NOTIFICATION_EMAIL: TsCodeUtils.importFragment(
                       'NotificationEmail',
+                      transactionalLibConfig.getTransactionalLibPackageName(),
+                    ),
+                    TPL_NOTIFICATION_DIGEST_EMAIL: TsCodeUtils.importFragment(
+                      'NotificationDigestEmail',
                       transactionalLibConfig.getTransactionalLibPackageName(),
                     ),
                   },

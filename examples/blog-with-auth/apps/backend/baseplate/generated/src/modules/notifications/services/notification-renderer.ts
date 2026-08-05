@@ -2,7 +2,6 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 
 import { logError } from '@src/services/error-logger.js';
 
-import type { NotificationEmailContent } from '../channels/email.channel.js';
 import type { NotificationTopicKey } from '../constants/notification-topics.js';
 import type { AnyNotificationType } from '../registry.js';
 import type {
@@ -53,9 +52,22 @@ function frozenContent(row: RenderSource): RenderedContent {
   return {
     title: [{ kind: 'text', text: title }],
     body: body === undefined ? null : [{ kind: 'text', text: body }],
-    actionUrl: actionUrl ?? null,
+    actionUrl: actionUrl && isSafeUrl(actionUrl) ? actionUrl : null,
   };
 }
+
+/**
+ * What a row's topic lookup found.
+ *
+ * `unknown` is not `topicless`: a type in no topic consults no preference by
+ * design, while a retired renderer means the topic cannot be determined at all.
+ * A caller enforcing a preference has to tell those apart to avoid delivering
+ * something the recipient silenced.
+ */
+export type TopicResolution =
+  | { kind: 'topic'; key: NotificationTopicKey }
+  | { kind: 'topicless' }
+  | { kind: 'unknown' };
 
 /** Registry key: a row's renderer is pinned by both its type and its version. */
 function registryKey(key: string, version: number): string {
@@ -103,28 +115,31 @@ export interface NotificationRenderer {
   ): RenderedContent;
   /**
    * A row's topic, resolved from the registry rather than the row — the topic
-   * is a property of the type, so it is never stored per row. Null when the
-   * pinned renderer is gone, and also when the type belongs to no topic.
+   * is a property of the type, so it is never stored per row.
+   *
+   * Three outcomes, deliberately distinct: a type in a topic, a type in none,
+   * and a row whose pinned renderer is gone. Collapsing the last two would make
+   * a retired renderer look unsuppressible, so a preference check could not tell
+   * "consults no preference by design" from "cannot tell what it consults".
    */
-  getTopic(type: string, templateVersion: number): NotificationTopicKey | null;
+  getTopic(type: string, templateVersion: number): TopicResolution;
   /**
    * The type a row is pinned to, or null when that renderer is gone. Read by
    * the outbox, which needs the type itself to re-resolve params at delivery.
    */
   getType(type: string, templateVersion: number): AnyNotificationType | null;
   /**
-   * A row's custom email content, or null to use the default wrapper.
+   * Parse a row's stored params against its pinned type, or null when the type
+   * is retired or the params no longer satisfy it.
    *
-   * Null covers every way an override can be unavailable — the type declares
-   * none, its renderer is retired, its params no longer validate, or the
-   * override threw — because all of them mean the same thing to the channel:
-   * send the generic email built from `render`. A broken custom template must
-   * never mean no email at all.
+   * What a channel needs to run that type's own renderer: the registry lookup
+   * and the parse, without an opinion about which channel is asking. The
+   * channel-specific half — invoking its renderer and deciding what a failure
+   * means — belongs to the channel.
    */
-  renderEmail(
+  resolveParams(
     row: RenderSource,
-    ctx?: RenderContext,
-  ): NotificationEmailContent | null;
+  ): { type: AnyNotificationType; params: NotificationParams } | null;
 }
 
 /**
@@ -200,11 +215,12 @@ export function createNotificationRenderer(deps: {
     }
   }
 
-  function getTopic(
-    type: string,
-    templateVersion: number,
-  ): NotificationTopicKey | null {
-    return registry.get(registryKey(type, templateVersion))?.topic ?? null;
+  function getTopic(type: string, templateVersion: number): TopicResolution {
+    const registered = registry.get(registryKey(type, templateVersion));
+    if (!registered) return { kind: 'unknown' };
+    return registered.topic === undefined
+      ? { kind: 'topicless' }
+      : { kind: 'topic', key: registered.topic };
   }
 
   function getType(
@@ -214,21 +230,18 @@ export function createNotificationRenderer(deps: {
     return registry.get(registryKey(type, templateVersion)) ?? null;
   }
 
-  function renderEmail(
+  function resolveParams(
     row: RenderSource,
-    ctx?: RenderContext,
-  ): NotificationEmailContent | null {
+  ): { type: AnyNotificationType; params: NotificationParams } | null {
     const type = registry.get(registryKey(row.type, row.templateVersion));
-    const renderers = type?.renderers;
-    // No renderer, or none declared for this channel: the default wrapper is
-    // not a failure, so nothing is logged. `renderContent` reports a retired
-    // renderer already, and the channel calls it either way.
-    if (!type || !renderers?.email) return null;
+    // A retired renderer is already reported by `renderContent`, which every
+    // caller of this also calls, so it is not logged twice here.
+    if (!type) return null;
 
-    const params = type.paramsSchema.safeParse(row.params ?? {});
-    if (!params.success) {
-      logError(params.error, {
-        source: 'notification-render-email',
+    const parsed = type.paramsSchema.safeParse(row.params ?? {});
+    if (!parsed.success) {
+      logError(parsed.error, {
+        source: 'notification-render',
         reason: 'params-drift',
         notificationId: row.id,
         type: `${row.type}@${row.templateVersion}`,
@@ -236,20 +249,8 @@ export function createNotificationRenderer(deps: {
       return null;
     }
 
-    try {
-      // Called through its object rather than as a bare reference, so a
-      // renderer written as a method still sees its own `this`.
-      return renderers.email(params.data, ctx ?? { locale: DEFAULT_LOCALE });
-    } catch (error) {
-      logError(error, {
-        source: 'notification-render-email',
-        reason: 'render-threw',
-        notificationId: row.id,
-        type: `${row.type}@${row.templateVersion}`,
-      });
-      return null;
-    }
+    return { type, params: parsed.data };
   }
 
-  return { renderContent, renderForWrite, getTopic, getType, renderEmail };
+  return { renderContent, renderForWrite, getTopic, getType, resolveParams };
 }

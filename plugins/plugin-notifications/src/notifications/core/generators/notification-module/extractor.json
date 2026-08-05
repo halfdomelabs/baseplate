@@ -8,6 +8,10 @@
         "emailModuleImportsProvider": {
           "importName": "emailModuleImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/channels/email.channel.ts",
@@ -31,7 +35,10 @@
         "services-notification-renderer"
       ],
       "sourceFile": "module/channels/email.channel.ts",
-      "variables": { "TPL_NOTIFICATION_EMAIL": {} }
+      "variables": {
+        "TPL_NOTIFICATION_DIGEST_EMAIL": {},
+        "TPL_NOTIFICATION_EMAIL": {}
+      }
     },
     "channels-types": {
       "type": "ts",
@@ -159,6 +166,51 @@
       },
       "referencedGeneratorTemplates": ["queues-notification-delivery"],
       "sourceFile": "module/queues/notification-delivery.worker.ts",
+      "variables": {}
+    },
+    "queues-notification-digest": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-digest.queue.ts",
+      "projectExports": {
+        "notificationDigestQueue": {
+          "isTypeOnly": false,
+          "name": "notificationDigestQueue"
+        }
+      },
+      "sourceFile": "module/queues/notification-digest.queue.ts",
+      "variables": {}
+    },
+    "queues-notification-digest-worker": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-digest.worker.ts",
+      "projectExports": {
+        "notificationDigestWorker": {
+          "isTypeOnly": false,
+          "name": "notificationDigestWorker"
+        }
+      },
+      "referencedGeneratorTemplates": ["queues-notification-digest"],
+      "sourceFile": "module/queues/notification-digest.worker.ts",
       "variables": {}
     },
     "queues-notification-outbox-sweep": {
@@ -456,6 +508,7 @@
       "pathRootRelativePath": "{module-root}/services/notification-outbox.ts",
       "referencedGeneratorTemplates": [
         "channels-types",
+        "constants-notification-topics",
         "queues-notification-delivery",
         "registry",
         "services-notification-renderer"
@@ -494,7 +547,6 @@
         "RenderSource": { "isTypeOnly": true, "name": "RenderSource" }
       },
       "referencedGeneratorTemplates": [
-        "channels-email-channel",
         "constants-notification-topics",
         "registry",
         "services-notification-content"

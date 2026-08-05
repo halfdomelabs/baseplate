@@ -1015,6 +1015,27 @@
             "name": "feedSortKey",
             "options": { "defaultGeneration": "none" },
             "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:DKD6G01q16Nn",
+            "isOptional": false,
+            "name": "recipientId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:itXl6URdusls",
+            "isOptional": false,
+            "name": "mode",
+            "options": { "default": "immediate" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:WLAlwR_urPuH",
+            "isOptional": true,
+            "name": "digestDueAt",
+            "options": {},
+            "type": "dateTime"
           }
         ],
         "indexes": [
@@ -1030,6 +1051,23 @@
               { "fieldRef": "deliveredAt" }
             ],
             "id": "model-index:xqjXQogUpfSl"
+          },
+          {
+            "fields": [
+              { "fieldRef": "status" },
+              { "fieldRef": "mode" },
+              { "fieldRef": "digestDueAt" }
+            ],
+            "id": "model-index:xtc3_wBcDDvJ"
+          },
+          {
+            "fields": [
+              { "fieldRef": "recipientId" },
+              { "fieldRef": "channel" },
+              { "fieldRef": "status" },
+              { "fieldRef": "mode" }
+            ],
+            "id": "model-index:B6y8GcwsvCS_"
           }
         ],
         "primaryKeyFieldRefs": ["id"],
@@ -1682,7 +1720,7 @@
           },
           {
             "defaults": {
-              "email": { "mode": "digest" },
+              "email": { "digestWindowSeconds": 3600, "mode": "digest" },
               "inApp": { "mode": "immediate" }
             },
             "description": "Someone likes one of your posts.",

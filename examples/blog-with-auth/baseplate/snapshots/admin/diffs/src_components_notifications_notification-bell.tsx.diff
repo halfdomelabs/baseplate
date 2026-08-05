@@ -1,0 +1,35 @@
+Index: src/components/notifications/notification-bell.tsx
+===================================================================
+--- src/components/notifications/notification-bell.tsx
++++ src/components/notifications/notification-bell.tsx
+@@ -26,8 +26,10 @@
+ 
+ interface Props {
+   /** Optional link to a full notifications page, rendered as a footer link when set. */
+   viewAllHref?: string;
++  /** Optional link to a preferences page, rendered as a header icon when set. */
++  preferencesHref?: string;
+   /** Description shown under the empty-state title. */
+   emptyDescription?: string;
+ }
+ 
+@@ -42,8 +44,9 @@
+  * (the subscription requires `['user']`).
+  */
+ export function NotificationBell({
+   viewAllHref,
++  preferencesHref,
+   emptyDescription,
+ }: Props = {}): ReactElement | null {
+   const { isAuthenticated } = useSession();
+   const client = useApolloClient();
+@@ -112,8 +115,9 @@
+           items={items}
+           unreadCount={unreadCount}
+           loading={loading}
+           viewAllHref={viewAllHref}
++          preferencesHref={preferencesHref}
+           emptyDescription={emptyDescription}
+           onNavigate={() => {
+             setOpen(false);
+           }}

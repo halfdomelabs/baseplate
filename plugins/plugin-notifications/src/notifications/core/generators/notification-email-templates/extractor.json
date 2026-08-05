@@ -1,6 +1,20 @@
 {
   "name": "notifications/core/notification-email-templates",
   "templates": {
+    "notification-digest-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/emails/notifications/notification-digest.email.tsx",
+      "referencedGeneratorTemplates": ["notification-segment-view"],
+      "sourceFile": "src/emails/notifications/notification-digest.email.tsx",
+      "variables": {}
+    },
     "notification-email": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -11,7 +25,29 @@
         }
       },
       "pathRootRelativePath": "{src-root}/emails/notifications/notification.email.tsx",
+      "referencedGeneratorTemplates": ["notification-segment-view"],
       "sourceFile": "src/emails/notifications/notification.email.tsx",
+      "variables": {}
+    },
+    "notification-segment-view": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/emails/notifications/segment-view.tsx",
+      "projectExports": {
+        "NotificationEmailSegment": {
+          "isTypeOnly": true,
+          "name": "NotificationEmailSegment"
+        },
+        "SegmentsView": { "isTypeOnly": false, "name": "SegmentsView" },
+        "SegmentView": { "isTypeOnly": false, "name": "SegmentView" }
+      },
+      "sourceFile": "src/emails/notifications/segment-view.tsx",
       "variables": {}
     }
   }

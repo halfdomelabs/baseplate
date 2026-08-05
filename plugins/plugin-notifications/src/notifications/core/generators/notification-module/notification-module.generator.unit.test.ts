@@ -4,6 +4,7 @@ import { createTaskTestRunner } from '@baseplate-dev/sync';
 import { describe, expect, it } from 'vitest';
 
 import {
+  descriptorSchema,
   installedChannelKeys,
   notificationModuleGenerator,
 } from './notification-module.generator.js';
@@ -95,6 +96,71 @@ async function runAppRuntimeConfig(includeEmailChannel: boolean): Promise<{
     renderer: read('notificationRenderer'),
   };
 }
+
+describe('topic descriptor', () => {
+  // The topics array is emitted into the generated `NOTIFICATION_TOPICS` with
+  // `JSON.stringify`, so its keys must match the runtime
+  // `NotificationChannelSetting` exactly. They cannot drift loudly: `defaults`
+  // is a `Partial<Record<...>>`, so an unrecognised key still type-checks and
+  // simply resolves to `undefined` — which is how a topic-level digest window
+  // silently did nothing before this was named `digestWindowSeconds`.
+  it('accepts a digest window under the name the runtime reads', () => {
+    expect(() =>
+      notificationModuleGenerator({
+        userModelName: 'User',
+        topics: [
+          {
+            key: 'likes',
+            label: 'Likes',
+            defaults: {
+              email: { mode: 'digest', digestWindowSeconds: 3600 },
+            },
+          },
+        ],
+      }),
+    ).not.toThrow();
+  });
+
+  it('drops the pre-rename `windowSeconds` spelling rather than emitting it', () => {
+    // Zod strips unknown keys rather than throwing, so a stale `windowSeconds`
+    // does not fail loudly — it simply never reaches the generated const. That
+    // is the behaviour worth pinning: the old name must not survive into
+    // `NOTIFICATION_TOPICS`, where it would look configured but resolve to
+    // `undefined` at runtime.
+    const descriptor = descriptorSchema.parse({
+      userModelName: 'User',
+      topics: [
+        {
+          key: 'likes',
+          label: 'Likes',
+          defaults: { email: { mode: 'digest', windowSeconds: 3600 } },
+        },
+      ],
+    });
+
+    const emitted = JSON.stringify(descriptor.topics);
+    expect(emitted).not.toContain('windowSeconds');
+  });
+
+  it('carries a digest window through to the emitted topics', () => {
+    const descriptor = descriptorSchema.parse({
+      userModelName: 'User',
+      topics: [
+        {
+          key: 'likes',
+          label: 'Likes',
+          defaults: { email: { mode: 'digest', digestWindowSeconds: 3600 } },
+        },
+      ],
+    });
+
+    // The generator emits topics with `JSON.stringify`, so this is what the
+    // generated `NOTIFICATION_TOPICS` literal will contain.
+    expect(JSON.stringify(descriptor.topics)).toContain(
+      '"digestWindowSeconds":3600',
+    );
+  });
+});
 
 describe('installedChannelKeys', () => {
   // Both the runtime registry and the generated NotificationChannels interface

@@ -2,43 +2,14 @@ Index: src/components/layouts/admin-layout.tsx
 ===================================================================
 --- src/components/layouts/admin-layout.tsx
 +++ src/components/layouts/admin-layout.tsx
-@@ -1,17 +1,16 @@
--import type React from "react";
--import type { ReactElement } from "react";
-+import type React from 'react';
-+import type { ReactElement } from 'react';
- 
--import { Outlet } from "@tanstack/react-router";
-+import { Outlet } from '@tanstack/react-router';
- 
--import { NotificationBell } from "../notifications/notification-bell";
--import { AsyncBoundary } from "../ui/async-boundary";
--import { Separator } from "../ui/separator";
--import { SidebarInset, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
--import { AppBreadcrumbs } from "./app-breadcrumbs";
--import { AppSidebar } from "./app-sidebar";
-+import { NotificationBell } from '../notifications/notification-bell';
-+import { AsyncBoundary } from '../ui/async-boundary';
-+import { Separator } from '../ui/separator';
-+import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar';
-+import { AppBreadcrumbs } from './app-breadcrumbs';
-+import { AppSidebar } from './app-sidebar';
- 
--
- interface Props {
-   className?: string;
- }
- 
-@@ -37,10 +36,10 @@
+@@ -36,9 +36,9 @@
              />
              <AppBreadcrumbs />
              <div className="ml-auto flex items-center gap-1">
                {/* TPL_HEADER_ACTIONS:START */}
--<NotificationBell />
--{/* TPL_HEADER_ACTIONS:END */}
+-              <NotificationBell />
 +              <NotificationBell preferencesHref="/admin/notification-preferences" />
-+              {/* TPL_HEADER_ACTIONS:END */}
+               {/* TPL_HEADER_ACTIONS:END */}
              </div>
            </div>
          </header>
-         <div className="flex flex-1 flex-col">

@@ -12,6 +12,9 @@
       { "path": "src/modules/blogs/services/blog-post-like.int.test.ts" },
       { "path": "src/modules/blogs/services/blog-post-like.service.ts" },
       {
+        "path": "src/modules/notifications/channels/email.channel.unit.test.ts"
+      },
+      {
         "path": "src/modules/notifications/schema/notification-feed.e2e.test.ts"
       },
       {

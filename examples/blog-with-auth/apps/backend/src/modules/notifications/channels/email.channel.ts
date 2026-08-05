@@ -168,7 +168,10 @@ export function createEmailChannel(deps: {
 
       await email.send(
         /* TPL_NOTIFICATION_DIGEST_EMAIL:START */ NotificationDigestEmail /* TPL_NOTIFICATION_DIGEST_EMAIL:END */,
-        { to: recipient.email, data: { items } },
+        {
+          to: recipient.email,
+          data: { items },
+        },
       );
     },
   };

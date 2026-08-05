@@ -32,8 +32,14 @@ export type NotificationMode = (typeof NOTIFICATION_MODES)[number];
 export const createNotificationChannelDefaultSchema = definitionSchema(() =>
   z.object({
     mode: z.enum(NOTIFICATION_MODES),
-    /** Only meaningful for `digest`; ignored otherwise. */
-    windowSeconds: z.number().int().positive().optional(),
+    /**
+     * Only meaningful for `digest`; ignored otherwise.
+     *
+     * Named to match the generated `NotificationChannelSetting` and the
+     * `NotificationPreference` column, since this value is emitted verbatim
+     * into `NOTIFICATION_TOPICS` — a mismatch resolves to `undefined` silently.
+     */
+    digestWindowSeconds: z.number().int().positive().optional(),
   }),
 );
 
