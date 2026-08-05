@@ -8,6 +8,11 @@ if (existsSync('.env')) {
   loadEnvFile();
 }
 
+// Only load .env.local file if it exists
+if (existsSync('.env.local')) {
+  loadEnvFile('.env.local');
+}
+
 export default {
   schema: './prisma/schema.prisma',
   migrations: {
