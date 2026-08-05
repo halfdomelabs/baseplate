@@ -9,6 +9,7 @@ import {
 import { prisma } from '@src/services/prisma.js';
 
 import { withScriptContext } from '../utils/service-context.js';
+import { seedDemoPost } from './seed-demo-post.js';
 
 /**
  * Dev helper: seed a burst of notifications for one recipient and print the
@@ -45,67 +46,6 @@ const CHANNEL: NotificationChannelKey = 'email';
  * `account.securityAlert` belongs to none and is deliberately absent.
  */
 const SEEDED_TOPIC_KEYS = ['postComments', 'postLikes'] as const;
-
-/**
- * A post the recipient published, with likes from other users.
- *
- * `POST_LIKED_TYPE` is a batched type: it reads the like table rather than
- * taking a count, so it needs real rows to summarize. Everything here is
- * upserted, so re-running the script reuses the same post.
- */
-async function seedLikedPost(recipientId: string): Promise<string> {
-  const blog = await prisma.blog.findFirst({
-    where: { userId: recipientId },
-    select: { id: true },
-  });
-  const blogId =
-    blog?.id ??
-    (
-      await prisma.blog.create({
-        data: { name: 'Digest demo blog', userId: recipientId },
-        select: { id: true },
-      })
-    ).id;
-
-  const existing = await prisma.blogPost.findFirst({
-    where: { blogId, publisherId: recipientId, title: 'Hello world' },
-    select: { id: true },
-  });
-  const postId =
-    existing?.id ??
-    (
-      await prisma.blogPost.create({
-        data: {
-          blogId,
-          publisherId: recipientId,
-          title: 'Hello world',
-          content: 'Seeded by send-test-digest.',
-        },
-        select: { id: true },
-      })
-    ).id;
-
-  // Likers other than the author: a post's own publisher is excluded from the
-  // summary, so liking it as the recipient would leave the count at zero.
-  for (const name of ['Ada Lovelace', 'Grace Hopper']) {
-    const liker = await prisma.user.upsert({
-      where: { email: `${name.split(' ')[0]?.toLowerCase()}@example.com` },
-      update: {},
-      create: {
-        email: `${name.split(' ')[0]?.toLowerCase()}@example.com`,
-        name,
-      },
-      select: { id: true },
-    });
-    await prisma.blogPostLike.upsert({
-      where: { postId_userId: { postId, userId: liker.id } },
-      update: {},
-      create: { postId, userId: liker.id },
-    });
-  }
-
-  return postId;
-}
 
 /**
  * Report the recipient's stored preferences for the seeded topics, so the run's
@@ -212,7 +152,7 @@ async function main(): Promise<void> {
   console.info(`Recipient: ${emailArg}`);
   await reportPreferences(recipient.id);
 
-  const postId = await seedLikedPost(recipient.id);
+  const postId = await seedDemoPost(recipient.id);
 
   await withScriptContext(async (context) => {
     const { notification } = context.services;

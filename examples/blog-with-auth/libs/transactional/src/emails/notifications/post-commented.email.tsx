@@ -11,6 +11,8 @@ import { defineEmail } from '../../types/email-component.types.js';
 interface PostCommentedProps {
   commenterName: string;
   postTitle: string;
+  /** The comment itself, quoted beneath the summary line. */
+  excerpt?: string;
   actionUrl: string;
 }
 
@@ -28,6 +30,7 @@ export default defineEmail<PostCommentedProps>(PostCommentedEmail, {
   previewProps: {
     commenterName: 'Dana Mehta',
     postTitle: 'Hello World',
+    excerpt: 'Looks great — shipping this today.',
     actionUrl: 'https://example.com/posts/1',
   },
 });
@@ -35,6 +38,7 @@ export default defineEmail<PostCommentedProps>(PostCommentedEmail, {
 function PostCommentedEmail({
   commenterName,
   postTitle,
+  excerpt,
   actionUrl,
 }: PostCommentedProps): React.ReactElement {
   return (
@@ -51,6 +55,23 @@ function PostCommentedEmail({
         </strong>
         .
       </Text>
+
+      {excerpt ? (
+        <Section
+          spacing="none"
+          style={{
+            marginTop: '16px',
+            padding: '12px 16px',
+            backgroundColor: theme.colors.muted,
+            borderLeft: `3px solid ${theme.colors.border}`,
+            borderRadius: theme.borderRadius,
+          }}
+        >
+          <Text style={{ margin: 0, color: theme.colors.mutedForeground }}>
+            {excerpt}
+          </Text>
+        </Section>
+      ) : null}
 
       <Section align="left" spacing="md">
         <Button href={actionUrl}>Read the comment</Button>
