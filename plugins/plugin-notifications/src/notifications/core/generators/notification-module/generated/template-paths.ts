@@ -7,6 +7,8 @@ export interface NotificationsCoreNotificationModulePaths {
   constantsNotificationTopics: string;
   queuesNotificationDelivery: string;
   queuesNotificationDeliveryWorker: string;
+  queuesNotificationDigest: string;
+  queuesNotificationDigestWorker: string;
   queuesNotificationOutboxSweep: string;
   queuesNotificationOutboxSweepWorker: string;
   queuesNotificationRetention: string;
@@ -48,6 +50,8 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
           constantsNotificationTopics: `${moduleRoot}/constants/notification-topics.ts`,
           queuesNotificationDelivery: `${moduleRoot}/queues/notification-delivery.queue.ts`,
           queuesNotificationDeliveryWorker: `${moduleRoot}/queues/notification-delivery.worker.ts`,
+          queuesNotificationDigest: `${moduleRoot}/queues/notification-digest.queue.ts`,
+          queuesNotificationDigestWorker: `${moduleRoot}/queues/notification-digest.worker.ts`,
           queuesNotificationOutboxSweep: `${moduleRoot}/queues/notification-outbox-sweep.queue.ts`,
           queuesNotificationOutboxSweepWorker: `${moduleRoot}/queues/notification-outbox-sweep.worker.ts`,
           queuesNotificationRetention: `${moduleRoot}/queues/notification-retention.queue.ts`,

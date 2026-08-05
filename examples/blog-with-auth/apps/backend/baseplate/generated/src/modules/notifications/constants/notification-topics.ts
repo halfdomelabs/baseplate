@@ -30,6 +30,33 @@ export const NOTIFICATION_TOPICS = /* TPL_TOPICS:START */ [
       },
     },
   },
+  {
+    key: 'postComments',
+    label: 'Comments',
+    description: 'Someone comments on one of your posts.',
+    defaults: {
+      email: {
+        mode: 'immediate',
+      },
+      inApp: {
+        mode: 'immediate',
+      },
+    },
+  },
+  {
+    key: 'postLikes',
+    label: 'Likes',
+    description: 'Someone likes one of your posts.',
+    defaults: {
+      email: {
+        mode: 'digest',
+        digestWindowSeconds: 3600,
+      },
+      inApp: {
+        mode: 'immediate',
+      },
+    },
+  },
 ] as const /* TPL_TOPICS:END */ satisfies readonly NotificationTopic[];
 
 /**

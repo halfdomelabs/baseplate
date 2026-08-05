@@ -207,6 +207,12 @@ async function resetTables(): Promise<void> {
   await prisma.user.deleteMany();
 }
 
+/** The same, plus preference rows — the digest tests are the only ones to write them. */
+async function resetDigestTables(): Promise<void> {
+  await prisma.notificationPreference.deleteMany();
+  await resetTables();
+}
+
 describe('notification outbox', () => {
   beforeEach(resetTables);
   afterAll(resetTables);
@@ -1580,5 +1586,608 @@ describe('retractAll', () => {
         params: { text: 'hello' },
       }),
     ).rejects.toThrow(/derives no group key/);
+  });
+});
+
+/**
+ * Digest routing and sending.
+ *
+ * The invariant under test throughout: a digest row never reaches the delivery
+ * queue, and the scan collapses a whole window — across requests — into one
+ * message per (recipient, channel).
+ */
+/**
+ * Belongs to `general`, so the digest tests can move its email preference.
+ * Its own key, since `createService` always registers `generic@1`.
+ */
+const DIGESTABLE_TYPE = defineNotificationType({
+  ...GENERIC_NOTIFICATION_TYPE,
+  key: 'test.digestable',
+  channels: ['inApp', 'email'],
+});
+
+/**
+ * Topic-backed *and* collapsing, which no other fixture is: the digest tests
+ * need a preference to move and a group key so repeated notifies replace one
+ * row, leaving several pending generations behind it.
+ */
+const DIGESTABLE_COLLAPSING_TYPE = defineNotificationType({
+  key: 'test.digestableCollapsing',
+  version: 1,
+  topic: 'general',
+  paramsSchema: likeThreadParamsSchema,
+  groupKey: ({ postId }) => `post:${postId}:likes`,
+  channels: ['inApp', 'email'],
+  render: (params) => ({ title: params.text }),
+});
+
+/** One digest send as the channel saw it. */
+interface RecordedDigest {
+  recipientId: string;
+  email: string | null;
+  notificationIds: string[];
+}
+
+/** Records digest sends alongside single ones, so a test can tell them apart. */
+function createDigestChannel(
+  options: { failing?: boolean } = {},
+): NotificationChannel & {
+  digests: RecordedDigest[];
+  singles: string[];
+} {
+  const digests: RecordedDigest[] = [];
+  const singles: string[] = [];
+  return {
+    digests,
+    singles,
+    deliver: ({ notification }) => {
+      singles.push(notification.id);
+      return Promise.resolve();
+    },
+    deliverDigest: ({ recipientId, notifications, recipient }) => {
+      if (options.failing) {
+        return Promise.reject(new Error('digest send failed'));
+      }
+      digests.push({
+        recipientId,
+        email: recipient.email,
+        notificationIds: notifications.map((n) => n.id),
+      });
+      return Promise.resolve();
+    },
+  };
+}
+
+/**
+ * A channel with no `deliverDigest`, to exercise the per-row fallback.
+ *
+ * `failAfter` makes every send from that index on reject, so a test can leave
+ * the loop half-sent.
+ */
+function createUnbatchedChannel(
+  options: { failAfter?: number } = {},
+): NotificationChannel & {
+  singles: string[];
+} {
+  const singles: string[] = [];
+  return {
+    singles,
+    deliver: ({ notification }) => {
+      if (
+        options.failAfter !== undefined &&
+        singles.length >= options.failAfter
+      ) {
+        return Promise.reject(new Error('send failed'));
+      }
+      singles.push(notification.id);
+      return Promise.resolve();
+    },
+  };
+}
+
+/** Puts this user's `general` email channel into digest mode. */
+async function setEmailDigest(
+  userId: string,
+  digestWindowSeconds?: number,
+): Promise<void> {
+  await prisma.notificationPreference.create({
+    data: {
+      userId,
+      topicKey: 'general',
+      channel: 'email',
+      mode: 'digest',
+      digestWindowSeconds,
+    },
+  });
+}
+
+/** Every delivery row for a recipient, for asserting on what was settled. */
+async function readDeliveries(
+  recipientId: string,
+): Promise<{ status: string; mode: string; lastError: string | null }[]> {
+  return prisma.notificationDelivery.findMany({
+    where: { recipientId },
+    select: { status: true, mode: true, lastError: true },
+    orderBy: { id: 'asc' },
+  });
+}
+
+describe('digests', () => {
+  beforeEach(resetDigestTables);
+  afterAll(resetDigestTables);
+
+  it('marks a digest-routed delivery and keeps it off the queue', async () => {
+    const userId = await createUser(1);
+    await setEmailDigest(userId);
+    const queue = createFakeQueue();
+    const service = createService({
+      queue,
+      channel: createDigestChannel(),
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'first' },
+    });
+
+    const deliveries = await readDeliveries(userId);
+    expect(deliveries).toEqual([
+      { status: 'pending', mode: 'digest', lastError: null },
+    ]);
+
+    // The whole point: enqueuing it would send one email per notification.
+    expect(queue.enqueued).toHaveLength(0);
+  });
+
+  it('still routes an immediate recipient through the queue', async () => {
+    const userId = await createUser(2);
+    const queue = createFakeQueue();
+    const service = createService({
+      queue,
+      channel: createDigestChannel(),
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    // No preference row, so the topic default (`immediate`) applies.
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'first' },
+    });
+
+    expect(await readDeliveries(userId)).toEqual([
+      { status: 'pending', mode: 'immediate', lastError: null },
+    ]);
+    expect(queue.enqueued).toHaveLength(1);
+  });
+
+  it('collapses a burst across requests into one message', async () => {
+    const userId = await createUser(3);
+    // Already due, so the first pass picks it up.
+    await setEmailDigest(userId, 0);
+    const channel = createDigestChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    for (const text of ['one', 'two', 'three']) {
+      await service.notify(DIGESTABLE_TYPE, {
+        recipientId: userId,
+        params: { text },
+      });
+    }
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    expect(result.sentCount).toBe(1);
+    expect(result.deliveredCount).toBe(3);
+    expect(channel.digests).toHaveLength(1);
+    expect(channel.digests[0]?.notificationIds).toHaveLength(3);
+    expect(channel.digests[0]?.email).toBe('outbox-3@example.com');
+    // Settled together, so a second pass has nothing to send.
+    expect(await readDeliveries(userId)).toEqual(
+      Array.from({ length: 3 }, () => ({
+        status: 'delivered',
+        mode: 'digest',
+        lastError: null,
+      })),
+    );
+  });
+
+  it('sends nothing on a second pass', async () => {
+    const userId = await createUser(4);
+    await setEmailDigest(userId, 0);
+    const channel = createDigestChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'one' },
+    });
+
+    const due = { dueBefore: new Date(), maxPairs: 10 };
+    await service.outbox.sendDueDigests(due);
+    const second = await service.outbox.sendDueDigests(due);
+
+    expect(second.sentCount).toBe(0);
+    expect(channel.digests).toHaveLength(1);
+  });
+
+  it('leaves a window that has not closed alone', async () => {
+    const userId = await createUser(5);
+    // An hour out, so nothing is due yet.
+    await setEmailDigest(userId, 3600);
+    const channel = createDigestChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'one' },
+    });
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    expect(result.sentCount).toBe(0);
+    expect(channel.digests).toHaveLength(0);
+    expect(await readDeliveries(userId)).toEqual([
+      { status: 'pending', mode: 'digest', lastError: null },
+    ]);
+  });
+
+  it('drains rows that are not yet due once the oldest one is', async () => {
+    const userId = await createUser(6);
+    await setEmailDigest(userId, 3600);
+    const channel = createDigestChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    // Two rows an hour out, then one backdated so the pair comes due.
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'later one' },
+    });
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'later two' },
+    });
+    const { id: oldestId } = await prisma.notificationDelivery.findFirstOrThrow(
+      {
+        where: { recipientId: userId },
+        select: { id: true },
+        orderBy: { id: 'asc' },
+      },
+    );
+    await prisma.notificationDelivery.update({
+      where: { id: oldestId },
+      data: { digestDueAt: new Date(Date.now() - 1000) },
+    });
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    // All three go, not just the due one: the window has closed for this
+    // recipient, so the newer rows ride along rather than waiting.
+    expect(result.deliveredCount).toBe(2);
+    expect(channel.digests[0]?.notificationIds).toHaveLength(2);
+  });
+
+  it('skips rows the recipient unsubscribed from mid-window', async () => {
+    const userId = await createUser(7);
+    await setEmailDigest(userId, 0);
+    const channel = createDigestChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'one' },
+    });
+
+    // The unsubscribe lands after the row was routed but before it is sent —
+    // the window is exactly the time a digest gives someone to change this.
+    await prisma.notificationPreference.updateMany({
+      where: { userId, topicKey: 'general', channel: 'email' },
+      data: { mode: 'off' },
+    });
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    expect(result.sentCount).toBe(0);
+    expect(channel.digests).toHaveLength(0);
+    expect(await readDeliveries(userId)).toEqual([
+      { status: 'skipped', mode: 'digest', lastError: 'unsubscribed' },
+    ]);
+  });
+
+  it('leaves rows pending when the send throws', async () => {
+    const userId = await createUser(8);
+    await setEmailDigest(userId, 0);
+    const channel = createDigestChannel({ failing: true });
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'one' },
+    });
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    expect(result.erroredCount).toBe(1);
+    // Still pending, so the next pass retries them with whatever arrived since.
+    expect(await readDeliveries(userId)).toEqual([
+      { status: 'pending', mode: 'digest', lastError: null },
+    ]);
+  });
+
+  it('keeps one failing recipient from stranding another', async () => {
+    const [failingUser, healthyUser] = [
+      await createUser(9),
+      await createUser(10),
+    ];
+    await setEmailDigest(failingUser, 0);
+    await setEmailDigest(healthyUser, 0);
+
+    // Fails only the first recipient it is asked to send to.
+    const digests: RecordedDigest[] = [];
+    const channel: NotificationChannel = {
+      deliver: () => Promise.resolve(),
+      deliverDigest: ({ recipientId, notifications, recipient }) => {
+        if (recipientId === failingUser) {
+          return Promise.reject(new Error('digest send failed'));
+        }
+        digests.push({
+          recipientId,
+          email: recipient.email,
+          notificationIds: notifications.map((n) => n.id),
+        });
+        return Promise.resolve();
+      },
+    };
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    for (const recipientId of [failingUser, healthyUser]) {
+      await service.notify(DIGESTABLE_TYPE, {
+        recipientId,
+        params: { text: 'one' },
+      });
+    }
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    expect(result.erroredCount).toBe(1);
+    expect(result.sentCount).toBe(1);
+    expect(digests.map((d) => d.recipientId)).toEqual([healthyUser]);
+  });
+
+  it('falls back to one send per row when the channel cannot batch', async () => {
+    const userId = await createUser(11);
+    await setEmailDigest(userId, 0);
+    const channel = createUnbatchedChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    for (const text of ['one', 'two']) {
+      await service.notify(DIGESTABLE_TYPE, {
+        recipientId: userId,
+        params: { text },
+      });
+    }
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    // The window still collapsed — this is one send per row, not one per
+    // event — but there is no single message to fold them into.
+    expect(result.deliveredCount).toBe(2);
+    expect(channel.singles).toHaveLength(2);
+  });
+
+  it('carries a collapsing row once however often it was replaced', async () => {
+    const userId = await createUser(12);
+    await setEmailDigest(userId, 0);
+    const channel = createDigestChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_COLLAPSING_TYPE],
+    });
+
+    // One row, replaced twice: three pending generations behind a single
+    // notification, all describing the state the third notify left.
+    for (const text of ['1 like', '2 likes', '3 likes']) {
+      await service.notify(DIGESTABLE_COLLAPSING_TYPE, {
+        recipientId: userId,
+        params: { postId: 'post-1', text },
+      });
+    }
+
+    const pendingBefore = await readDeliveries(userId);
+    expect(pendingBefore).toHaveLength(3);
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    // The email lists the notification once, not once per generation.
+    expect(channel.digests).toHaveLength(1);
+    expect(channel.digests[0]?.notificationIds).toHaveLength(1);
+    expect(result.deliveredCount).toBe(1);
+
+    // Every generation is settled, so none is left to send again next pass.
+    const settled = await readDeliveries(userId);
+    expect(settled).toHaveLength(3);
+    expect(settled.every((d) => d.status === 'delivered')).toBe(true);
+  });
+
+  it('keeps a sent row settled when a later fallback send fails', async () => {
+    const userId = await createUser(13);
+    await setEmailDigest(userId, 0);
+    // The second send rejects, leaving the first already away.
+    const channel = createUnbatchedChannel({ failAfter: 1 });
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    for (const text of ['one', 'two']) {
+      await service.notify(DIGESTABLE_TYPE, {
+        recipientId: userId,
+        params: { text },
+      });
+    }
+
+    const result = await service.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    expect(result.erroredCount).toBe(1);
+    expect(channel.singles).toHaveLength(1);
+
+    // The row that went out is settled; only the one that failed stays pending.
+    // Leaving both pending would re-send the first on the next pass.
+    const settled = await readDeliveries(userId);
+    expect(settled.filter((d) => d.status === 'delivered')).toHaveLength(1);
+    expect(settled.filter((d) => d.status === 'pending')).toHaveLength(1);
+  });
+
+  it('leaves a digest row alone until its own window is overdue', async () => {
+    const userId = await createUser(15);
+    // An hour-long window: far newer than its due time, but older than the
+    // horizon would consider an immediate row.
+    await setEmailDigest(userId, 60 * 60);
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createDigestChannel(),
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'one' },
+    });
+
+    // A horizon that has passed by `createdAt` but not by `digestDueAt`. Judged
+    // on `createdAt`, this row would be expired before it ever sent.
+    const expiredCount = await service.outbox.expireStaleDeliveries({
+      expireBefore: new Date(Date.now() + 60 * 1000),
+    });
+
+    expect(expiredCount).toBe(0);
+    expect(await readDeliveries(userId)).toEqual([
+      { status: 'pending', mode: 'digest', lastError: null },
+    ]);
+  });
+
+  it('expires a digest row once it is overdue', async () => {
+    const userId = await createUser(16);
+    await setEmailDigest(userId, 0);
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createDigestChannel(),
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'one' },
+    });
+
+    const expiredCount = await service.outbox.expireStaleDeliveries({
+      expireBefore: new Date(Date.now() + 60 * 1000),
+    });
+
+    expect(expiredCount).toBe(1);
+    expect(await readDeliveries(userId)).toEqual([
+      { status: 'skipped', mode: 'digest', lastError: 'stale' },
+    ]);
+  });
+
+  it('holds back a row whose renderer was retired mid-window', async () => {
+    const userId = await createUser(14);
+    await setEmailDigest(userId, 0);
+    const channel = createDigestChannel();
+    const service = createService({
+      queue: createFakeQueue(),
+      channel,
+      notificationTypes: [DIGESTABLE_TYPE],
+    });
+
+    await service.notify(DIGESTABLE_TYPE, {
+      recipientId: userId,
+      params: { text: 'one' },
+    });
+
+    // A second runtime whose registry no longer holds the type, as a deploy
+    // that retired it would leave things.
+    const retired = createService({
+      queue: createFakeQueue(),
+      channel,
+    });
+
+    const result = await retired.outbox.sendDueDigests({
+      dueBefore: new Date(),
+      maxPairs: 10,
+    });
+
+    // Its topic cannot be resolved, so an opt-out made during the window could
+    // not be honoured — the row is held back rather than sent regardless.
+    expect(channel.digests).toHaveLength(0);
+    expect(result.deliveredCount).toBe(0);
+    expect(await readDeliveries(userId)).toEqual([
+      {
+        status: 'skipped',
+        mode: 'digest',
+        lastError: 'renderer unavailable',
+      },
+    ]);
   });
 });

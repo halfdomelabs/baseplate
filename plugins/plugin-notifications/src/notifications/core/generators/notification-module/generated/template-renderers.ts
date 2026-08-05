@@ -108,6 +108,7 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                 destination: paths.channelsEmailChannel,
                 importMapProviders: {
                   emailModuleImports,
+                  errorHandlerServiceImports,
                 },
                 generatorPaths: paths,
                 ...options,

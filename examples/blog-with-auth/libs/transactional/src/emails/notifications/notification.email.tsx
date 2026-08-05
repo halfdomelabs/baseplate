@@ -1,22 +1,14 @@
 import * as React from 'react';
 
+import type { NotificationEmailSegment } from './segment-view.js';
+
 import { Button } from '../../components/button.js';
 import { EmailLayout } from '../../components/layout.js';
-import { Link } from '../../components/link.js';
 import { Section } from '../../components/section.js';
 import { Text } from '../../components/text.js';
 import { theme } from '../../constants/theme.js';
 import { defineEmail } from '../../types/email-component.types.js';
-
-/**
- * A rendered content segment, mirroring the notification module's segment IR.
- * Kept structural so the email renders the same text/link formatting the in-app
- * feed shows.
- */
-type NotificationEmailSegment =
-  | { kind: 'text'; text: string }
-  | { kind: 'emphasis'; text: string }
-  | { kind: 'link'; text: string; url: string };
+import { SegmentsView } from './segment-view.js';
 
 interface NotificationProps {
   /** The subject line, flattened to plain text by the caller. */
@@ -27,29 +19,6 @@ interface NotificationProps {
   body?: NotificationEmailSegment[];
   /** Where the notification points, if any. Rendered as a button. */
   actionUrl?: string;
-}
-
-/** Render one content segment (plain text, emphasized text, or a link). */
-function SegmentView({
-  segment,
-}: {
-  segment: NotificationEmailSegment;
-}): React.ReactElement {
-  switch (segment.kind) {
-    case 'link': {
-      return <Link href={segment.url}>{segment.text}</Link>;
-    }
-    case 'emphasis': {
-      return (
-        <strong style={{ fontWeight: theme.typography.weights.semibold }}>
-          {segment.text}
-        </strong>
-      );
-    }
-    case 'text': {
-      return <>{segment.text}</>;
-    }
-  }
 }
 
 /**
@@ -100,9 +69,7 @@ function NotificationEmail({
         }}
       >
         <Text style={{ margin: 0 }}>
-          {title.map((segment, index) => (
-            <SegmentView key={index} segment={segment} />
-          ))}
+          <SegmentsView segments={title} />
         </Text>
         {body && body.length > 0 ? (
           <Text
@@ -111,9 +78,7 @@ function NotificationEmail({
               color: theme.colors.mutedForeground,
             }}
           >
-            {body.map((segment, index) => (
-              <SegmentView key={index} segment={segment} />
-            ))}
+            <SegmentsView segments={body} />
           </Text>
         ) : null}
       </Section>

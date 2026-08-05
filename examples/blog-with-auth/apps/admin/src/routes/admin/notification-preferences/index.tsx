@@ -48,15 +48,49 @@ const MODE_LABELS: Record<NotificationMode, string> = {
   DIGEST: 'Digest',
 };
 
+/** The feed has no window to batch over, so it cannot be digested. */
+const IN_APP_CHANNEL: NotificationChannel = 'inApp';
+
 /**
- * The modes this page offers.
- *
- * DIGEST is deliberately absent even though the schema accepts it for outbound
- * channels: nothing batches deliveries yet, so a digest preference would be
- * stored and then delivered immediately. Offering it would be a control that
- * lies. Add it here when digest delivery lands.
+ * The modes a channel offers. DIGEST is outbound-only — the backend clamps an
+ * in-app row asking for it back to immediate, so offering it here would be a
+ * control that lies.
  */
-const AVAILABLE_MODES: NotificationMode[] = ['OFF', 'IMMEDIATE'];
+function availableModes(channel: NotificationChannel): NotificationMode[] {
+  return channel === IN_APP_CHANNEL
+    ? ['OFF', 'IMMEDIATE']
+    : ['OFF', 'IMMEDIATE', 'DIGEST'];
+}
+
+/**
+ * Windows offered for a digest, in seconds.
+ *
+ * Bounded by what the backend accepts: a window it would reject, or one long
+ * enough to be expired before it sends, must not be selectable.
+ */
+const DIGEST_WINDOW_OPTIONS = [
+  { seconds: 900, label: 'Every 15 minutes' },
+  { seconds: 3600, label: 'Hourly' },
+  { seconds: 14_400, label: 'Every 4 hours' },
+  { seconds: 86_400, label: 'Daily' },
+] as const;
+
+/** Matches the backend's window when a preference row names none. */
+const DEFAULT_DIGEST_WINDOW_SECONDS = 900;
+
+/**
+ * Display copy for a stored window.
+ *
+ * A topic default may name a window this page does not offer, so an unmatched
+ * value renders as itself rather than falling back to a wrong label.
+ */
+function digestWindowLabel(seconds: number | null | undefined): string {
+  const resolved = seconds ?? DEFAULT_DIGEST_WINDOW_SECONDS;
+  const option = DIGEST_WINDOW_OPTIONS.find(
+    (candidate) => candidate.seconds === resolved,
+  );
+  return option?.label ?? `Every ${resolved}s`;
+}
 
 function NotificationPreferencesPage(): ReactElement {
   const { data, error } = useQuery(notificationPreferencesQuery);
@@ -79,14 +113,24 @@ function NotificationPreferencesPage(): ReactElement {
     return <ErrorableLoader error={error} />;
   }
 
-  async function handleModeChange(
+  async function handlePreferenceChange(
     topicKey: string,
     channel: NotificationChannel,
     mode: NotificationMode,
+    digestWindowSeconds?: number,
   ): Promise<void> {
     try {
       await setPreference({
-        variables: { input: { topicKey, channel, mode } },
+        variables: {
+          input: {
+            topicKey,
+            channel,
+            mode,
+            // Only meaningful for a digest; the backend stores null otherwise,
+            // so sending one for another mode would be discarded anyway.
+            ...(mode === 'DIGEST' ? { digestWindowSeconds } : {}),
+          },
+        },
       });
     } catch (err: unknown) {
       toast.error(
@@ -155,6 +199,43 @@ function NotificationPreferencesPage(): ReactElement {
                         Reset
                       </Button>
                     )}
+                    {channel.mode === 'DIGEST' && (
+                      <Select
+                        value={String(
+                          channel.digestWindowSeconds ??
+                            DEFAULT_DIGEST_WINDOW_SECONDS,
+                        )}
+                        onValueChange={(window) => {
+                          if (!window) return;
+                          void handlePreferenceChange(
+                            topic.key,
+                            channel.channel,
+                            'DIGEST',
+                            Number(window),
+                          );
+                        }}
+                      >
+                        <SelectTrigger
+                          aria-label={`${CHANNEL_LABELS[channel.channel]} digest frequency`}
+                          className="w-40"
+                        >
+                          {/* Base UI renders the raw value unless given a label. */}
+                          <SelectValue>
+                            {digestWindowLabel(channel.digestWindowSeconds)}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DIGEST_WINDOW_OPTIONS.map((option) => (
+                            <SelectItem
+                              key={option.seconds}
+                              value={String(option.seconds)}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                     <Select
                       value={channel.mode}
                       onValueChange={(mode) => {
@@ -162,14 +243,22 @@ function NotificationPreferencesPage(): ReactElement {
                         // value as possibly-undefined, and a no-op is the right
                         // response to a clear.
                         if (!mode) return;
-                        void handleModeChange(topic.key, channel.channel, mode);
+                        void handlePreferenceChange(
+                          topic.key,
+                          channel.channel,
+                          mode,
+                          // Carried over, so switching to digest keeps the
+                          // window already shown rather than silently resetting.
+                          channel.digestWindowSeconds ??
+                            DEFAULT_DIGEST_WINDOW_SECONDS,
+                        );
                       }}
                     >
                       <SelectTrigger id={controlId} className="w-40">
-                        <SelectValue />
+                        <SelectValue>{MODE_LABELS[channel.mode]}</SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        {AVAILABLE_MODES.map((mode) => (
+                        {availableModes(channel.channel).map((mode) => (
                           <SelectItem key={mode} value={mode}>
                             {MODE_LABELS[mode]}
                           </SelectItem>

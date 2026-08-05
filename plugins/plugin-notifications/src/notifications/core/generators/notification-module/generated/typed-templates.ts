@@ -13,7 +13,10 @@ import path from 'node:path';
 
 const channelsEmailChannel = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { emailModuleImports: emailModuleImportsProvider },
+  importMapProviders: {
+    emailModuleImports: emailModuleImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+  },
   name: 'channels-email-channel',
   projectExports: {
     createEmailChannel: { isTypeOnly: false },
@@ -31,7 +34,7 @@ const channelsEmailChannel = createTsTemplateFile({
       '../templates/module/channels/email.channel.ts',
     ),
   },
-  variables: { TPL_NOTIFICATION_EMAIL: {} },
+  variables: { TPL_NOTIFICATION_DIGEST_EMAIL: {}, TPL_NOTIFICATION_EMAIL: {} },
 });
 
 const channelsTypes = createTsTemplateFile({
@@ -174,6 +177,7 @@ const servicesNotificationOutbox = createTsTemplateFile({
   name: 'services-notification-outbox',
   referencedGeneratorTemplates: {
     channelsTypes: {},
+    constantsNotificationTopics: {},
     queuesNotificationDelivery: {},
     registry: {},
     servicesNotificationRenderer: {},
@@ -202,7 +206,6 @@ const servicesNotificationRenderer = createTsTemplateFile({
     RenderSource: { isTypeOnly: true },
   },
   referencedGeneratorTemplates: {
-    channelsEmailChannel: {},
     constantsNotificationTopics: {},
     registry: {},
     servicesNotificationContent: {},
@@ -294,6 +297,40 @@ const queuesNotificationDeliveryWorker = createTsTemplateFile({
   variables: {},
 });
 
+const queuesNotificationDigest = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'queues',
+  importMapProviders: { queuesImports: queuesImportsProvider },
+  name: 'queues-notification-digest',
+  projectExports: { notificationDigestQueue: { isTypeOnly: false } },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/notification-digest.queue.ts',
+    ),
+  },
+  variables: {},
+});
+
+const queuesNotificationDigestWorker = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'queues',
+  importMapProviders: {
+    queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
+  name: 'queues-notification-digest-worker',
+  projectExports: { notificationDigestWorker: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { queuesNotificationDigest: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/notification-digest.worker.ts',
+    ),
+  },
+  variables: {},
+});
+
 const queuesNotificationOutboxSweep = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'queues',
@@ -369,6 +406,8 @@ const queuesNotificationRetentionWorker = createTsTemplateFile({
 export const queuesGroup = {
   queuesNotificationDelivery,
   queuesNotificationDeliveryWorker,
+  queuesNotificationDigest,
+  queuesNotificationDigestWorker,
   queuesNotificationOutboxSweep,
   queuesNotificationOutboxSweepWorker,
   queuesNotificationRetention,

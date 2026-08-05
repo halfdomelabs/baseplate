@@ -32,9 +32,31 @@ export interface ChannelDelivery {
   recipient: { email: string | null };
 }
 
+/**
+ * A window's worth of one recipient's notifications, collapsed into one message.
+ *
+ * Ordered oldest first, and always non-empty — a pair with nothing pending never
+ * reaches a channel.
+ */
+export interface ChannelDigestDelivery {
+  recipientId: string;
+  notifications: RenderSource[];
+  /** Contact details, resolved by the service. */
+  recipient: { email: string | null };
+}
+
 /** A delivery channel (in-app, email, slack...). */
 export interface NotificationChannel {
   deliver(delivery: ChannelDelivery): Promise<void>;
+  /**
+   * Send a window's notifications as one message.
+   *
+   * Optional: a channel that cannot batch simply omits it, and the outbox falls
+   * back to one {@link NotificationChannel.deliver} per row — the digest still
+   * collapses the *window*, just not the messages. Declaring it is what turns a
+   * digest into a single send.
+   */
+  deliverDigest?(delivery: ChannelDigestDelivery): Promise<void>;
 }
 
 /** The installed delivery channels, assembled in the composition root. */

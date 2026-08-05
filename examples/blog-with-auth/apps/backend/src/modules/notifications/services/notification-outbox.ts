@@ -12,10 +12,18 @@ import type {
   NotificationRoutingTarget,
 } from '../channels/types.js';
 import type {
+  NotificationChannelSetting,
+  NotificationMode,
+} from '../constants/notification-topics.js';
+import type {
   NotificationRenderer,
   RenderSource,
 } from './notification-renderer.js';
 
+import {
+  getNotificationTopic,
+  resolveChannelSetting,
+} from '../constants/notification-topics.js';
 import { notificationDeliveryQueue } from '../queues/notification-delivery.queue.js';
 import { isGeneratedKey } from '../registry.js';
 import { RENDER_SOURCE_SELECT } from './notification-renderer.js';
@@ -32,6 +40,12 @@ const DELIVERY_CHUNK_SIZE = 100;
  * notification is a single fact and goes out immediately.
  */
 const KEYED_DELIVERY_DELAY_SECONDS = 5 * 60;
+
+/**
+ * Rows one digest message may carry. A recipient past this gets the oldest
+ * rows now and the rest on the next pass, rather than one unbounded email.
+ */
+const DIGEST_MAX_ROWS_PER_PAIR = 200;
 
 /** One chunk of one channel's fan-out, as handed to the delivery worker. */
 export interface DeliverChunkInput {
@@ -88,6 +102,29 @@ export interface ExpireStaleDeliveriesInput {
   expireBefore: Date;
 }
 
+/** Bounds one digest pass. */
+export interface SendDueDigestsInput {
+  /** Pairs with a digest row due before this are sent. Normally now. */
+  dueBefore: Date;
+  /**
+   * (recipient, channel) pairs sent per pass. A larger backlog drains over
+   * several runs rather than holding one worker for an unbounded stretch.
+   */
+  maxPairs: number;
+}
+
+/** What one digest pass did. */
+export interface SendDueDigestsResult {
+  /** Pairs that sent a message. */
+  sentCount: number;
+  /** Rows settled `delivered` across those pairs. */
+  deliveredCount: number;
+  /** Rows settled `skipped` because the channel was silenced mid-window. */
+  skippedCount: number;
+  /** Pairs whose send threw. Their rows stay pending for the next pass. */
+  erroredCount: number;
+}
+
 /** Bounds one retention pass. */
 export interface DeleteExpiredNotificationsInput {
   /** Rows whose `expiresAt` is before this are eligible for deletion. */
@@ -128,6 +165,19 @@ export interface NotificationOutbox {
   completeFanout(requestId: string): Promise<number>;
   /** Deliver one chunk of one channel's fan-out. Called by the delivery worker. */
   deliverChunk(input: DeliverChunkInput): Promise<DeliverChunkResult>;
+  /**
+   * Send every digest whose window has closed, one message per
+   * (recipient, channel). Called by the digest worker on a schedule.
+   *
+   * A pair is due when its *oldest* pending row is due; the send then drains
+   * every pending digest row for that pair, so newer rows ride along rather
+   * than waiting for a window of their own. That is what keeps a busy recipient
+   * on one email per window instead of one per window per notification.
+   *
+   * Preferences are re-read here, not trusted from routing time: an unsubscribe
+   * between the write and the send takes effect, settling those rows `skipped`.
+   */
+  sendDueDigests(input: SendDueDigestsInput): Promise<SendDueDigestsResult>;
   /**
    * Settle a chunk's still-`pending` rows as `failed`, once the delivery queue
    * has spent its retries on them. Called by the delivery queue's
@@ -266,7 +316,17 @@ async function expireStaleDeliveries(
   input: ExpireStaleDeliveriesInput,
 ): Promise<number> {
   const { count } = await prisma.notificationDelivery.updateMany({
-    where: { status: 'pending', createdAt: { lt: input.expireBefore } },
+    where: {
+      status: 'pending',
+      OR: [
+        // An immediate row is late from the moment it was written.
+        { mode: { not: 'digest' }, createdAt: { lt: input.expireBefore } },
+        // A digest row is pending by design until its window closes, so it is
+        // judged from when it came due. Measuring from `createdAt` would expire
+        // any window longer than the horizon before it ever sent.
+        { mode: 'digest', digestDueAt: { lt: input.expireBefore } },
+      ],
+    },
     data: { status: 'skipped', lastError: 'stale' },
   });
   return count;
@@ -430,7 +490,11 @@ export function createNotificationOutbox(deps: {
    */
   async function completeFanout(requestId: string): Promise<number> {
     const pending = await prisma.notificationDelivery.findMany({
-      where: { requestId, status: 'pending' },
+      // Digest rows are deliberately excluded: they carry a `digestDueAt` and
+      // are claimed by the digest scan, which collapses a whole window across
+      // requests. Enqueuing them here would send one message per notification,
+      // which is the thing a digest exists to prevent.
+      where: { requestId, status: 'pending', mode: { not: 'digest' } },
       select: {
         channel: true,
         notificationId: true,
@@ -666,10 +730,267 @@ export function createNotificationOutbox(deps: {
     return sweptCount;
   }
 
+  /**
+   * Whether this recipient still wants this channel for this row's topic.
+   *
+   * Re-read at send time rather than trusted from the row: a preference change
+   * between the write and the window closing is exactly what a digest gives
+   * someone time to make.
+   *
+   * A topic-less type consults no preference and is sent — matching
+   * `resolveRouting`, where it is unsuppressible by construction. A row whose
+   * renderer has been retired is held back instead: its topic cannot be
+   * resolved, so there is no way to honour an opt-out made during the window,
+   * and delivering something a recipient silenced is the worse failure.
+   */
+  function isStillWanted(
+    row: RenderSource,
+    channel: NotificationChannelKey,
+    overrides: Map<string, NotificationChannelSetting>,
+  ): boolean {
+    const topic = renderer.getTopic(row.type, row.templateVersion);
+    if (topic.kind === 'unknown') return false;
+    if (topic.kind === 'topicless') return true;
+    const setting = resolveChannelSetting(
+      getNotificationTopic(topic.key),
+      channel,
+      overrides.get(topic.key),
+    );
+    // `immediate` still sends: the row was routed to the digest and nothing
+    // re-enqueues it into the immediate lane, so excluding it would strand it
+    // until the stale sweeper expired it unsent.
+    return setting.mode !== 'off';
+  }
+
+  /**
+   * Send one pair's digest; see {@link NotificationOutbox.sendDueDigests}.
+   * Returns what it settled, or null when there was nothing left to send.
+   */
+  async function sendDigestForPair(
+    recipientId: string,
+    channel: NotificationChannelKey,
+  ): Promise<{ delivered: number; skipped: number } | null> {
+    const channelImpl = channels[channel];
+
+    // Every pending row for the pair, not only the due ones: the window has
+    // closed for this recipient, so newer rows ride along rather than waiting
+    // for a window of their own.
+    //
+    // Read without locking, so a row settled by a concurrent pass can still be
+    // sent twice — the same accepted duplicate-send edge `deliverChunk` takes.
+    const deliveries = await prisma.notificationDelivery.findMany({
+      where: { recipientId, channel, status: 'pending', mode: 'digest' },
+      select: { id: true, notificationId: true },
+      orderBy: { id: 'asc' },
+      take: DIGEST_MAX_ROWS_PER_PAIR,
+    });
+    if (deliveries.length === 0) return null;
+
+    const [recipients, rows, overrideRows] = await Promise.all([
+      resolveRecipients([recipientId]),
+      prisma.notification.findMany({
+        where: { id: { in: deliveries.map((d) => d.notificationId) } },
+        select: { ...RENDER_SOURCE_SELECT, recipientId: true },
+      }),
+      prisma.notificationPreference.findMany({
+        where: { userId: recipientId, channel },
+        select: { topicKey: true, mode: true, digestWindowSeconds: true },
+      }),
+    ]);
+
+    const recipient = recipients.get(recipientId);
+    const byId = new Map(rows.map((row) => [row.id, row]));
+    const overrides = new Map<string, NotificationChannelSetting>(
+      overrideRows.map((row) => [
+        row.topicKey,
+        {
+          mode: row.mode as NotificationMode,
+          digestWindowSeconds: row.digestWindowSeconds ?? undefined,
+        },
+      ]),
+    );
+
+    // The recipient vanished between the write and the window closing; nothing
+    // will ever deliver these.
+    if (!recipient) {
+      await updatePendingDeliveries(
+        deliveries.map((d) => d.id),
+        { status: 'skipped', lastError: 'recipient no longer exists' },
+      );
+      return { delivered: 0, skipped: deliveries.length };
+    }
+
+    // Grouped by notification, not by delivery row: a keyed row is replaced in
+    // place, so a notification updated three times during the window has three
+    // pending generations. They all describe the same current state, so the
+    // digest carries it once and settles every generation behind it.
+    const sendable: { deliveryIds: string[]; row: RenderSource }[] = [];
+    const unsendable: { deliveryId: string; reason: string }[] = [];
+    for (const [notificationId, group] of Object.entries(
+      groupBy(deliveries, (delivery) => delivery.notificationId),
+    )) {
+      const deliveryIds = group.map((delivery) => delivery.id);
+      const row = byId.get(notificationId);
+      if (!row) {
+        // Every generation, not just one: a leftover would stay pending forever.
+        unsendable.push(
+          ...deliveryIds.map((deliveryId) => ({
+            deliveryId,
+            reason: 'row no longer exists',
+          })),
+        );
+      } else if (isStillWanted(row, channel, overrides)) {
+        sendable.push({ deliveryIds, row });
+      } else {
+        const reason =
+          renderer.getTopic(row.type, row.templateVersion).kind === 'unknown'
+            ? 'renderer unavailable'
+            : 'unsubscribed';
+        unsendable.push(
+          ...deliveryIds.map((deliveryId) => ({ deliveryId, reason })),
+        );
+      }
+    }
+
+    // Settled before the send, so a throw below cannot resurrect them: these
+    // are not failures to retry, they are rows that must never go out.
+    for (const [reason, group] of Object.entries(
+      groupBy(unsendable, (entry) => entry.reason),
+    )) {
+      await updatePendingDeliveries(
+        group.map((entry) => entry.deliveryId),
+        { status: 'skipped', lastError: reason },
+      );
+    }
+
+    if (sendable.length === 0) {
+      return { delivered: 0, skipped: unsendable.length };
+    }
+
+    const anchors = await resolveDeltaAnchors(
+      sendable.map((entry) => entry.row.id),
+      channel,
+    );
+    const resolved = await Promise.all(
+      sendable.map(async (entry) => ({
+        deliveryIds: entry.deliveryIds,
+        notification: await resolveForDelivery(
+          entry.row,
+          anchors.get(entry.row.id) ?? null,
+        ),
+      })),
+    );
+
+    if (channelImpl.deliverDigest) {
+      await channelImpl.deliverDigest({
+        recipientId,
+        notifications: resolved.map((entry) => entry.notification),
+        recipient,
+      });
+
+      // After the send, so a throw leaves every row pending for the next pass.
+      // A duplicate message is possible if the channel accepted before
+      // throwing, which is the at-least-once guarantee the immediate path also
+      // gives.
+      await updatePendingDeliveries(
+        sendable.flatMap((entry) => entry.deliveryIds),
+        { status: 'delivered', deliveredAt: new Date() },
+      );
+
+      return {
+        delivered: sendable.length,
+        skipped: unsendable.length,
+      };
+    }
+
+    // The channel cannot batch. The window still collapsed — this is one send
+    // per row rather than one per event — but there is no single message to
+    // fold them into.
+    //
+    // Settled as each one lands, like `deliverChunk`: a later send throwing
+    // must not leave an already-sent row pending for the next pass to send
+    // again.
+    let delivered = 0;
+    for (const { deliveryIds, notification } of resolved) {
+      await channelImpl.deliver({ recipientId, notification, recipient });
+      await updatePendingDeliveries(deliveryIds, {
+        status: 'delivered',
+        deliveredAt: new Date(),
+      });
+      delivered += 1;
+    }
+
+    return { delivered, skipped: unsendable.length };
+  }
+
+  async function sendDueDigests(
+    input: SendDueDigestsInput,
+  ): Promise<SendDueDigestsResult> {
+    const duePairs = await prisma.notificationDelivery.findMany({
+      where: {
+        status: 'pending',
+        mode: 'digest',
+        digestDueAt: { lte: input.dueBefore },
+      },
+      select: { recipientId: true, channel: true },
+      distinct: ['recipientId', 'channel'],
+      // Oldest first, so a backlog drains in the order it accumulated rather
+      // than starving whoever has been waiting longest.
+      orderBy: { digestDueAt: 'asc' },
+      take: input.maxPairs,
+    });
+
+    const result: SendDueDigestsResult = {
+      sentCount: 0,
+      deliveredCount: 0,
+      skippedCount: 0,
+      erroredCount: 0,
+    };
+
+    for (const pair of duePairs) {
+      const { recipientId, channel } = pair;
+      // A channel uninstalled since the row was written. Terminal — retrying
+      // cannot install one — and worth seeing, so it settles `failed`.
+      if (!isChannelKey(channel)) {
+        const { count } = await prisma.notificationDelivery.updateMany({
+          where: { recipientId, channel, status: 'pending', mode: 'digest' },
+          data: {
+            status: 'failed',
+            lastError: `No installed channel "${channel}"`,
+          },
+        });
+        result.skippedCount += count;
+        continue;
+      }
+
+      try {
+        const sent = await sendDigestForPair(recipientId, channel);
+        if (sent) {
+          if (sent.delivered > 0) result.sentCount += 1;
+          result.deliveredCount += sent.delivered;
+          result.skippedCount += sent.skipped;
+        }
+      } catch (error) {
+        // Per pair, so one bad address cannot strand everyone else's digest.
+        // The rows stay pending and the next pass retries them, together with
+        // whatever arrived meanwhile.
+        logError(error, {
+          source: 'notification-digest',
+          recipientId,
+          channel,
+        });
+        result.erroredCount += 1;
+      }
+    }
+
+    return result;
+  }
+
   return {
     installedChannels,
     completeFanout,
     deliverChunk,
+    sendDueDigests,
     failExhaustedDeliveries,
     sweepStaleRequests,
     expireStaleDeliveries,

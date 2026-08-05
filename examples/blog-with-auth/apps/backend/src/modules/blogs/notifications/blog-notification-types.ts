@@ -31,11 +31,16 @@ import { summarizePostLikes } from '../services/blog-post-like.service.js';
 export const POST_COMMENTED_TYPE = defineNotificationType({
   key: 'post.commented',
   version: 1,
-  topic: 'general',
+  topic: 'postComments',
   paramsSchema: z.object({
     postId: z.string(),
     postTitle: z.string(),
     commenterName: z.string(),
+    /**
+     * The comment itself, shown beneath the title. Optional so a caller with
+     * only the fact of the comment still type-checks.
+     */
+    excerpt: z.string().optional(),
   }),
   channels: ['inApp', 'email'],
   render: (params) => ({
@@ -44,6 +49,7 @@ export const POST_COMMENTED_TYPE = defineNotificationType({
       { kind: 'text', text: ' commented on ' },
       { kind: 'emphasis', text: params.postTitle },
     ],
+    body: params.excerpt,
     actionUrl: `/admin/blogs/posts/${params.postId}`,
   }),
   renderers: {
@@ -51,6 +57,7 @@ export const POST_COMMENTED_TYPE = defineNotificationType({
       notificationEmail(PostCommentedEmail, {
         commenterName: params.commenterName,
         postTitle: params.postTitle,
+        excerpt: params.excerpt,
         actionUrl: `/admin/blogs/posts/${params.postId}`,
       }),
   },
@@ -81,7 +88,7 @@ const ACTOR_SAMPLE_SIZE = 3;
 export const POST_LIKED_TYPE = defineBatchedNotificationType({
   key: 'post.liked',
   version: 1,
-  topic: 'general',
+  topic: 'postLikes',
   inputSchema: z.object({ postId: z.string() }),
   groupKey: ({ postId }) => `blogPost:${postId}:likes`,
   paramsSchema: z.object({

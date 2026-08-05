@@ -34,10 +34,18 @@ export const notificationEmailTemplatesGenerator = createGenerator({
           exportName: 'NotificationEmail',
           exportPath: paths.notificationEmail,
         });
+        emailTemplates.registerExport({
+          exportName: 'NotificationDigestEmail',
+          exportPath: paths.notificationDigestEmail,
+        });
 
         return {
           build: async (builder) => {
+            // The shared segment renderer both templates import; not registered
+            // as an email export because it is a component, not a template.
+            await builder.apply(renderers.notificationSegmentView.render({}));
             await builder.apply(renderers.notificationEmail.render({}));
+            await builder.apply(renderers.notificationDigestEmail.render({}));
           },
         };
       },

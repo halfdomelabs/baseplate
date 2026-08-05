@@ -145,6 +145,8 @@
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:constants-notification-topics": "src/modules/notifications/constants/notification-topics.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:queues-notification-delivery": "src/modules/notifications/queues/notification-delivery.queue.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:queues-notification-delivery-worker": "src/modules/notifications/queues/notification-delivery.worker.ts",
+  "@baseplate-dev/plugin-notifications#notifications/core/notification-module:queues-notification-digest": "src/modules/notifications/queues/notification-digest.queue.ts",
+  "@baseplate-dev/plugin-notifications#notifications/core/notification-module:queues-notification-digest-worker": "src/modules/notifications/queues/notification-digest.worker.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:queues-notification-outbox-sweep": "src/modules/notifications/queues/notification-outbox-sweep.queue.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:queues-notification-outbox-sweep-worker": "src/modules/notifications/queues/notification-outbox-sweep.worker.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:queues-notification-retention": "src/modules/notifications/queues/notification-retention.queue.ts",

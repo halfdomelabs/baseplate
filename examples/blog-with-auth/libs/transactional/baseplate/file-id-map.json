@@ -25,5 +25,7 @@
   "@baseplate-dev/plugin-email#email/transactional-lib:index": "src/index.ts",
   "@baseplate-dev/plugin-email#email/transactional-lib:services-render-email": "src/services/render-email.service.tsx",
   "@baseplate-dev/plugin-email#email/transactional-lib:types-email-component": "src/types/email-component.types.ts",
-  "@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates:notification-email": "src/emails/notifications/notification.email.tsx"
+  "@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates:notification-digest-email": "src/emails/notifications/notification-digest.email.tsx",
+  "@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates:notification-email": "src/emails/notifications/notification.email.tsx",
+  "@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates:notification-segment-view": "src/emails/notifications/segment-view.tsx"
 }

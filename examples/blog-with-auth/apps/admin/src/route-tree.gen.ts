@@ -9,24 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthRouteRouteImport } from './routes/auth_/route'
-import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as AuthRouteRouteImport } from './routes/auth_/route'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AuthVerifyEmailRouteImport } from './routes/auth_/verify-email'
-import { Route as AuthResetPasswordRouteImport } from './routes/auth_/reset-password'
-import { Route as AuthRegisterRouteImport } from './routes/auth_/register'
-import { Route as AuthLoginRouteImport } from './routes/auth_/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth_/forgot-password'
-import { Route as AdminNotificationPreferencesIndexRouteImport } from './routes/admin/notification-preferences/index'
+import { Route as AuthLoginRouteImport } from './routes/auth_/login'
+import { Route as AuthRegisterRouteImport } from './routes/auth_/register'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth_/reset-password'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth_/verify-email'
 import { Route as AdminAccountsUsersRouteRouteImport } from './routes/admin/accounts/users/route'
+import { Route as AdminNotificationPreferencesIndexRouteImport } from './routes/admin/notification-preferences/index'
 import { Route as AdminAccountsUsersIndexRouteImport } from './routes/admin/accounts/users/index'
-import { Route as AdminAccountsUsersNewRouteImport } from './routes/admin/accounts/users/new'
 import { Route as AdminAccountsUsersIdRouteImport } from './routes/admin/accounts/users/$id'
+import { Route as AdminAccountsUsersNewRouteImport } from './routes/admin/accounts/users/new'
 
-const AuthRouteRoute = AuthRouteRouteImport.update({
-  id: '/auth_',
-  path: '/auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
@@ -34,9 +34,9 @@ const AdminRouteRoute = AdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/auth_',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -44,19 +44,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
-  id: '/verify-email',
-  path: '/verify-email',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -64,10 +54,25 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AdminAccountsUsersRouteRoute = AdminAccountsUsersRouteRouteImport.update({
+  id: '/accounts/users',
+  path: '/accounts/users',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminNotificationPreferencesIndexRoute =
   AdminNotificationPreferencesIndexRouteImport.update({
@@ -75,24 +80,19 @@ const AdminNotificationPreferencesIndexRoute =
     path: '/notification-preferences/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-const AdminAccountsUsersRouteRoute = AdminAccountsUsersRouteRouteImport.update({
-  id: '/accounts/users',
-  path: '/accounts/users',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminAccountsUsersIndexRoute = AdminAccountsUsersIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminAccountsUsersRouteRoute,
 } as any)
-const AdminAccountsUsersNewRoute = AdminAccountsUsersNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AdminAccountsUsersRouteRoute,
-} as any)
 const AdminAccountsUsersIdRoute = AdminAccountsUsersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
+  getParentRoute: () => AdminAccountsUsersRouteRoute,
+} as any)
+const AdminAccountsUsersNewRoute = AdminAccountsUsersNewRouteImport.update({
+  id: '/new',
+  path: '/new',
   getParentRoute: () => AdminAccountsUsersRouteRoute,
 } as any)
 
@@ -200,11 +200,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/auth_': {
-      id: '/auth_'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -214,11 +214,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth_': {
+      id: '/auth_'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -228,25 +228,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/auth_/verify-email': {
-      id: '/auth_/verify-email'
-      path: '/verify-email'
-      fullPath: '/auth/verify-email'
-      preLoaderRoute: typeof AuthVerifyEmailRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth_/reset-password': {
-      id: '/auth_/reset-password'
-      path: '/reset-password'
-      fullPath: '/auth/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth_/register': {
-      id: '/auth_/register'
-      path: '/register'
-      fullPath: '/auth/register'
-      preLoaderRoute: typeof AuthRegisterRouteImport
+    '/auth_/forgot-password': {
+      id: '/auth_/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRouteRoute
     }
     '/auth_/login': {
@@ -256,25 +242,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/auth_/forgot-password': {
-      id: '/auth_/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/auth/forgot-password'
-      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+    '/auth_/register': {
+      id: '/auth_/register'
+      path: '/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/admin/notification-preferences/': {
-      id: '/admin/notification-preferences/'
-      path: '/notification-preferences'
-      fullPath: '/admin/notification-preferences/'
-      preLoaderRoute: typeof AdminNotificationPreferencesIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
+    '/auth_/reset-password': {
+      id: '/auth_/reset-password'
+      path: '/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth_/verify-email': {
+      id: '/auth_/verify-email'
+      path: '/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/admin/accounts/users': {
       id: '/admin/accounts/users'
       path: '/accounts/users'
       fullPath: '/admin/accounts/users'
       preLoaderRoute: typeof AdminAccountsUsersRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/notification-preferences/': {
+      id: '/admin/notification-preferences/'
+      path: '/notification-preferences'
+      fullPath: '/admin/notification-preferences/'
+      preLoaderRoute: typeof AdminNotificationPreferencesIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/accounts/users/': {
@@ -284,18 +284,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAccountsUsersIndexRouteImport
       parentRoute: typeof AdminAccountsUsersRouteRoute
     }
-    '/admin/accounts/users/new': {
-      id: '/admin/accounts/users/new'
-      path: '/new'
-      fullPath: '/admin/accounts/users/new'
-      preLoaderRoute: typeof AdminAccountsUsersNewRouteImport
-      parentRoute: typeof AdminAccountsUsersRouteRoute
-    }
     '/admin/accounts/users/$id': {
       id: '/admin/accounts/users/$id'
       path: '/$id'
       fullPath: '/admin/accounts/users/$id'
       preLoaderRoute: typeof AdminAccountsUsersIdRouteImport
+      parentRoute: typeof AdminAccountsUsersRouteRoute
+    }
+    '/admin/accounts/users/new': {
+      id: '/admin/accounts/users/new'
+      path: '/new'
+      fullPath: '/admin/accounts/users/new'
+      preLoaderRoute: typeof AdminAccountsUsersNewRouteImport
       parentRoute: typeof AdminAccountsUsersRouteRoute
     }
   }

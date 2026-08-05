@@ -174,6 +174,25 @@ describe('renderContent (versioned render-at-read)', () => {
     ).toBeNull();
   });
 
+  it('drops an unsafe actionUrl stored in the frozen snapshot', () => {
+    // The snapshot is stored JSON, so it can hold a URL written before the
+    // scheme guard existed. The fallback path must check it too, or a retired
+    // renderer becomes a way to serve `javascript:` to the client.
+    const renderContent = renderWith([]);
+
+    const content = renderContent({
+      id: 'n1',
+      type: 'test.gone',
+      templateVersion: 1,
+      params: {},
+      frozenContent: { title: 'FROZEN v1', actionUrl: 'javascript:alert(1)' },
+    });
+
+    expect(content.actionUrl).toBeNull();
+    // The recovery copy still survives: a bad URL costs the link, not the row.
+    expect(content.title).toEqual(FROZEN_RENDERED);
+  });
+
   it('rejects an unsafe href in a LIVE renderer segment (falls back to frozen)', () => {
     // A renderer emitting a `javascript:` link must not reach the client: the
     // segment schema rejects it, render throws, and we fall back to frozen.
@@ -321,7 +340,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
   });
 });
 
-describe('renderEmail (per-channel override)', () => {
+describe('resolveParams (the channel-neutral half of a channel render)', () => {
   /** A component stands in for a real template; only identity is asserted. */
   const CommentEmail = Object.assign(() => null, {
     subject: 'Component subject',
@@ -341,42 +360,20 @@ describe('renderEmail (per-channel override)', () => {
     },
   });
 
-  it('returns the custom content when the type declares an email renderer', () => {
+  it('hands back the pinned type and its parsed params', () => {
     const renderer = rendererWith([withOverride]);
 
-    const content = renderer.renderEmail(
+    const resolved = renderer.resolveParams(
       makeRow('test.override', 1, { name: 'Alice' }),
     );
 
-    expect(content).toEqual({
-      component: CommentEmail,
-      data: { name: 'Alice' },
-      subject: undefined,
-    });
-  });
-
-  it('returns null when the type declares NO email renderer', () => {
-    // The default wrapper is not a failure mode: a type without an override is
-    // the normal case, so this returns null without logging.
-    const renderer = rendererWith([
-      defineNotificationType({
-        key: 'test.bare',
-        version: 1,
-        topic: 'general',
-        paramsSchema: z.object({ name: z.string() }),
-        channels: ['inApp', 'email'],
-        render: (params) => ({ title: `${params.name} commented` }),
-      }),
-    ]);
-
-    expect(
-      renderer.renderEmail(makeRow('test.bare', 1, { name: 'Alice' })),
-    ).toBeNull();
+    expect(resolved?.type.key).toBe('test.override');
+    expect(resolved?.params).toEqual({ name: 'Alice' });
   });
 
   it('returns null when the pinned renderer is GONE', () => {
     expect(
-      rendererWith([]).renderEmail(makeRow('test.retired', 9, { name: 'A' })),
+      rendererWith([]).resolveParams(makeRow('test.retired', 9, { name: 'A' })),
     ).toBeNull();
   });
 
@@ -384,58 +381,8 @@ describe('renderEmail (per-channel override)', () => {
     const renderer = rendererWith([withOverride]);
 
     expect(
-      renderer.renderEmail(makeRow('test.override', 1, { wrongField: 1 })),
+      renderer.resolveParams(makeRow('test.override', 1, { wrongField: 1 })),
     ).toBeNull();
-  });
-
-  it('returns null — never throws — when the override itself throws', () => {
-    // A broken bespoke template must degrade to the generic email, not drop it.
-    const renderer = rendererWith([
-      defineNotificationType({
-        key: 'test.throws',
-        version: 1,
-        topic: 'general',
-        paramsSchema: z.object({ name: z.string() }),
-        channels: ['inApp', 'email'],
-        render: (params) => ({ title: params.name }),
-        renderers: {
-          email: () => {
-            throw new Error('template blew up');
-          },
-        },
-      }),
-    ]);
-
-    expect(
-      renderer.renderEmail(makeRow('test.throws', 1, { name: 'Alice' })),
-    ).toBeNull();
-  });
-
-  it('passes a subject override through when the renderer sets one', () => {
-    const renderer = rendererWith([
-      defineNotificationType({
-        key: 'test.subject',
-        version: 1,
-        topic: 'general',
-        paramsSchema: z.object({ name: z.string() }),
-        channels: ['inApp', 'email'],
-        render: (params) => ({ title: params.name }),
-        renderers: {
-          email: (params) =>
-            notificationEmail(
-              CommentEmail,
-              { name: params.name },
-              { subject: `Re: ${params.name}` },
-            ),
-        },
-      }),
-    ]);
-
-    const content = renderer.renderEmail(
-      makeRow('test.subject', 1, { name: 'Alice' }),
-    );
-
-    expect(content?.subject).toBe('Re: Alice');
   });
 
   it('does not affect the feed: the same type still renders channel-neutral segments', () => {

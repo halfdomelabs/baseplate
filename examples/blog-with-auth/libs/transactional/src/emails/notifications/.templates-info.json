@@ -1,7 +1,17 @@
 {
+  "notification-digest.email.tsx": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates",
+    "instanceData": {},
+    "template": "notification-digest-email"
+  },
   "notification.email.tsx": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates",
     "instanceData": {},
     "template": "notification-email"
+  },
+  "segment-view.tsx": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates",
+    "instanceData": {},
+    "template": "notification-segment-view"
   }
 }

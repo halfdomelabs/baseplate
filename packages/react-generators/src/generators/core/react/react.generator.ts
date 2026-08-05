@@ -116,7 +116,7 @@ export const reactGenerator = createGenerator({
           ),
           watch: tsCodeFragment(
             JSON.stringify({
-              ignored: ['**/baseplate/**'],
+              ignored: ['baseplate/**'],
             }),
           ),
         });

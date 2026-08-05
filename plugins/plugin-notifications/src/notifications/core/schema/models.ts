@@ -337,9 +337,40 @@ export function createNotificationsPartialDefinition(
               name: 'requestId',
               type: 'uuid',
             },
+            // Denormalized from the notification, like `requestId` above, so
+            // the digest scan can group and settle by (recipient, channel)
+            // without joining. Safe because the column is immutable on
+            // `Notification`, and left FK-less because user -> notification ->
+            // delivery already cascades.
+            {
+              name: 'recipientId',
+              type: 'uuid',
+            },
             {
               name: 'channel',
               type: 'string',
+            },
+            // immediate | digest — the routing decision, recorded so the outbox
+            // can tell the two lanes apart. Defaulted rather than optional so
+            // rows written before digests existed keep their behaviour instead
+            // of becoming an untyped third state.
+            {
+              name: 'mode',
+              type: 'string',
+              options: { default: 'immediate' },
+            },
+            // When this row becomes eligible for a digest send; null for an
+            // immediate one. Written on insert and never updated, which is what
+            // makes "the first row opens the window" true without any
+            // reconciliation.
+            //
+            // A floor, not a promise: the scan runs on a schedule, and once a
+            // pair's oldest row is due the send drains every pending digest row
+            // for that pair — so newer rows go out before their own due time.
+            {
+              name: 'digestDueAt',
+              type: 'dateTime',
+              isOptional: true,
             },
             // Which generation of the notification this delivery serves —
             // a copy of the row's `feedSortKey` at the time it was armed.
@@ -420,6 +451,27 @@ export function createNotificationsPartialDefinition(
                 { fieldRef: 'channel' },
                 { fieldRef: 'status' },
                 { fieldRef: 'deliveredAt' },
+              ],
+            },
+            // The digest scan: pending digest rows whose window has closed.
+            // Equality on status/mode leads, with `digestDueAt` as the ordered
+            // range tail.
+            {
+              fields: [
+                { fieldRef: 'status' },
+                { fieldRef: 'mode' },
+                { fieldRef: 'digestDueAt' },
+              ],
+            },
+            // The per-pair claim, once the scan names a due pair: every pending
+            // digest row for one (recipient, channel). All four are equality
+            // predicates, so this is a prefix seek.
+            {
+              fields: [
+                { fieldRef: 'recipientId' },
+                { fieldRef: 'channel' },
+                { fieldRef: 'status' },
+                { fieldRef: 'mode' },
               ],
             },
           ],

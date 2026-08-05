@@ -2,7 +2,9 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface NotificationsCoreNotificationEmailTemplatesPaths {
+  notificationDigestEmail: string;
   notificationEmail: string;
+  notificationSegmentView: string;
 }
 
 const notificationsCoreNotificationEmailTemplatesPaths =
@@ -23,7 +25,9 @@ const notificationsCoreNotificationEmailTemplatesPathsTask =
       return {
         providers: {
           notificationsCoreNotificationEmailTemplatesPaths: {
+            notificationDigestEmail: `${srcRoot}/emails/notifications/notification-digest.email.tsx`,
             notificationEmail: `${srcRoot}/emails/notifications/notification.email.tsx`,
+            notificationSegmentView: `${srcRoot}/emails/notifications/segment-view.tsx`,
           },
         },
       };

@@ -9,6 +9,16 @@
     "instanceData": {},
     "template": "queues-notification-delivery-worker"
   },
+  "notification-digest.queue.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "queues-notification-digest"
+  },
+  "notification-digest.worker.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "queues-notification-digest-worker"
+  },
   "notification-outbox-sweep.queue.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},

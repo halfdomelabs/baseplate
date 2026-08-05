@@ -9,11 +9,31 @@ import { NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_PATHS } from './templat
 import { NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_TEMPLATES } from './typed-templates.js';
 
 export interface NotificationsCoreNotificationEmailTemplatesRenderers {
+  notificationDigestEmail: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_TEMPLATES.notificationDigestEmail
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   notificationEmail: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_TEMPLATES.notificationEmail
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  notificationSegmentView: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_TEMPLATES.notificationSegmentView
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -41,12 +61,38 @@ const notificationsCoreNotificationEmailTemplatesRenderersTask =
       return {
         providers: {
           notificationsCoreNotificationEmailTemplatesRenderers: {
+            notificationDigestEmail: {
+              render: (options) =>
+                typescriptFile.renderTemplateFile({
+                  template:
+                    NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_TEMPLATES.notificationDigestEmail,
+                  destination: paths.notificationDigestEmail,
+                  importMapProviders: {
+                    transactionalLibImports,
+                  },
+                  generatorPaths: paths,
+                  ...options,
+                }),
+            },
             notificationEmail: {
               render: (options) =>
                 typescriptFile.renderTemplateFile({
                   template:
                     NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_TEMPLATES.notificationEmail,
                   destination: paths.notificationEmail,
+                  importMapProviders: {
+                    transactionalLibImports,
+                  },
+                  generatorPaths: paths,
+                  ...options,
+                }),
+            },
+            notificationSegmentView: {
+              render: (options) =>
+                typescriptFile.renderTemplateFile({
+                  template:
+                    NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_TEMPLATES.notificationSegmentView,
+                  destination: paths.notificationSegmentView,
                   importMapProviders: {
                     transactionalLibImports,
                   },
