@@ -1,5 +1,5 @@
 ---
-"@baseplate-dev/plugin-notifications": patch
+'@baseplate-dev/plugin-notifications': patch
 ---
 
-Rendered notification content is now a required `title` plus an optional `body`, segments are `{ kind, text }` with `emphasis` replacing the `bold` flag, and the stored fallback collapses into a single nullable `frozenContent` column holding plain strings. Notifications no longer have an actor: whoever triggered one travels in `params`, and `render` receives those params directly instead of an event wrapper.
+Notification types are now declared with `defineNotificationType` or `defineBatchedNotificationType`, with topic-based per-channel preferences (off, immediate or digest), keyed collapse-and-retract so repeat activity updates one feed row in place, and per-channel email renderers. Generated apps gain a `notificationPreferences` query plus mutations to set and clear a preference, and a migration adds an index to the notification delivery table. **Breaking:** types now declare topics instead of a `category`, and renderers no longer receive an actor — whoever triggered a notification travels in `params`.
