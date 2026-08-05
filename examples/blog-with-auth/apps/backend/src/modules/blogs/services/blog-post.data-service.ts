@@ -12,6 +12,7 @@ import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js'
 import { throwIfPrismaNotFound } from '@src/utils/http-errors.js';
 
 import { blogPostPolicy } from '../authorizers/blog-post.policy.js';
+import { POST_LIKED_TYPE } from '../notifications/blog-notification-types.js';
 
 const blogPostFieldSchemas = z.object({
   blogId: z.uuid(),
@@ -95,6 +96,13 @@ export async function deleteBlogPost<TQuery extends DataQuery<'blogPost'>>({
       ...query,
     })
     .catch(throwIfPrismaNotFound('BlogPost not found'));
+
+  // Likes cascade with the post; the notifications they raised do not, so
+  // without this every recipient keeps a feed entry pointing at a deleted post.
+  // Run after the delete, so a failed delete withdraws nothing.
+  await context.services.notification.retractAll(POST_LIKED_TYPE, {
+    input: { postId: where.id },
+  });
 
   return result as GetResult<'blogPost', TQuery>;
 }

@@ -152,6 +152,7 @@ export const notificationModuleGenerator = createGenerator({
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationOutbox', paths.servicesNotificationOutbox)}({
               channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
               queue,
+              renderer: notificationRenderer,
             })`,
         });
         appRuntimeConfig.construction.set('notification', {

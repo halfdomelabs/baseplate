@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { NotificationSegment } from '@src/modules/notifications/services/notification-content.js';
+
 import {
   defineBatchedNotificationType,
   defineNotificationType,
@@ -50,10 +52,12 @@ const ACTOR_SAMPLE_SIZE = 3;
  *
  * BATCHED because the caller should not have to know how a like notification is
  * aggregated: it says "this post was liked" and `resolveParams` reads the post's
- * whole current like state. That state is what `render` sees, so the copy states
- * how things stand now ("Alice and 2 others liked X") rather than describing an
- * event — phrasing it as a delta ("2 new likes") would need a window boundary
- * the renderer never sees.
+ * whole current like state.
+ *
+ * `resolveParams` runs twice per row with different windows: at write time with
+ * no boundary, storing the state the feed renders, and again per outbound send
+ * with `since` set to that channel's last delivery, so the email leads with
+ * what is new. One row, two phrasings, nothing written back.
  *
  * The group key comes from `postId` alone, so the like path and the unlike path
  * cannot disagree about which row to replace or withdraw.
@@ -70,24 +74,50 @@ export const POST_LIKED_TYPE = defineBatchedNotificationType({
     /** The most recent likers, capped — `count` carries the real total. */
     likerNames: z.array(z.string()),
     count: z.number(),
+    /**
+     * Likes since this channel last delivered. Set only on the delivery path,
+     * so the stored params never carry it and a notify comparing against them
+     * sees no spurious churn.
+     */
+    newCount: z.number().optional(),
   }),
-  resolveParams: ({ postId }) => summarizePostLikes(postId, ACTOR_SAMPLE_SIZE),
-  channels: ['inApp'],
+  resolveParams: ({ postId }, { since }) =>
+    summarizePostLikes(postId, ACTOR_SAMPLE_SIZE, since),
+  channels: ['inApp', 'email'],
   render: (params) => {
-    const { likerNames, count, postTitle, postId } = params;
+    const { likerNames, count, postTitle, postId, newCount } = params;
     const [first = 'Someone'] = likerNames;
     const others = count - 1;
+    // Delta when this send knows what the recipient was last told, state
+    // otherwise — the feed always takes the second branch.
+    const title: NotificationSegment[] =
+      newCount === undefined
+        ? [
+            { kind: 'emphasis', text: first },
+            {
+              kind: 'text',
+              text:
+                others > 0
+                  ? ` and ${others} other${others > 1 ? 's' : ''}`
+                  : '',
+            },
+            { kind: 'text', text: ' liked ' },
+            { kind: 'emphasis', text: postTitle },
+          ]
+        : [
+            {
+              kind: 'text',
+              text: `${newCount} new like${newCount === 1 ? '' : 's'} on `,
+            },
+            { kind: 'emphasis', text: postTitle },
+          ];
     return {
-      title: [
-        { kind: 'emphasis', text: first },
-        {
-          kind: 'text',
-          text:
-            others > 0 ? ` and ${others} other${others > 1 ? 's' : ''}` : '',
-        },
-        { kind: 'text', text: ' liked ' },
-        { kind: 'emphasis', text: postTitle },
-      ],
+      title,
+      // Only alongside a delta; on its own the total repeats the title.
+      body:
+        newCount === undefined
+          ? undefined
+          : `${count} like${count === 1 ? '' : 's'} in total`,
       actionUrl: `/admin/blogs/posts/${postId}`,
     };
   },

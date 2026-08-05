@@ -12,6 +12,7 @@ import { prisma } from '@src/services/prisma.js';
 
 import { POST_LIKED_TYPE } from '../notifications/blog-notification-types.js';
 import { likeBlogPost, unlikeBlogPost } from './blog-post-like.service.js';
+import { deleteBlogPost } from './blog-post.data-service.js';
 
 /** Read the stored snapshot's title, which the DB hands back as raw JSON. */
 function frozenText(frozenContent: unknown): string {
@@ -45,10 +46,10 @@ function createContext(
     notificationTypes: [GENERIC_NOTIFICATION_TYPE, POST_LIKED_TYPE],
   });
   const outbox = createNotificationOutbox({
-    // POST_LIKED_TYPE is in-app only, so nothing reaches this — it exists to
-    // satisfy the channel map's shape.
+    // Deliveries are armed but never run: the queue is a fake.
     channels: { email: { deliver: vi.fn() } },
     queue: createFakeQueue(),
+    renderer,
   });
   const notification = createNotificationService({
     events: {
@@ -61,7 +62,9 @@ function createContext(
     outbox,
   });
   return {
-    auth: { userIdOrThrow: () => userId },
+    // `hasSomeRole` is consulted only by the delete policy; the like paths
+    // authorize on the user id alone.
+    auth: { userIdOrThrow: () => userId, hasSomeRole: () => true },
     services: { notification },
   } as unknown as ServiceContext;
 }
@@ -280,5 +283,33 @@ describe('blog post likes', () => {
     await likeBlogPost(postId, createContext(author.id));
 
     expect(await prisma.notification.count()).toBe(0);
+  });
+
+  it('withdraws the notification when the post itself is deleted', async () => {
+    const author = await createUser();
+    const alice = await createUser();
+    const postId = await createPost(author.id);
+    const otherPostId = await createPost(author.id);
+
+    await likeBlogPost(postId, createContext(alice.id));
+    await likeBlogPost(otherPostId, createContext(alice.id));
+
+    await deleteBlogPost({
+      where: { id: postId },
+      context: createContext(author.id),
+    });
+
+    // Likes cascade with the post; the notification row does not.
+    expect(
+      await prisma.notification.count({
+        where: { groupKey: `blogPost:${postId}:likes`, dismissedAt: null },
+      }),
+    ).toBe(0);
+    // Scoped to the deleted post: the surviving one is untouched.
+    expect(
+      await prisma.notification.count({
+        where: { groupKey: `blogPost:${otherPostId}:likes`, dismissedAt: null },
+      }),
+    ).toBe(1);
   });
 });

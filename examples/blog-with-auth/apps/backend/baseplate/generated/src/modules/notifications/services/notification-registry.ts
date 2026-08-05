@@ -11,6 +11,18 @@ import type {
 /** A schema whose output is usable as notification params. */
 export type NotificationParamsSchema = z.ZodType<NotificationParams>;
 
+/** What `resolveParams` is told about the window it is resolving for. */
+export interface ResolveParamsContext {
+  /**
+   * The delta boundary: only activity after this is new to the recipient. Null
+   * on the write path, where the row holds state rather than a delta.
+   *
+   * Per channel, so a digest measures from the last email rather than from
+   * whatever the feed did meanwhile.
+   */
+  since: Date | null;
+}
+
 /**
  * Fields shared by both type shapes. Parameterised by the params schema, which
  * the params themselves are derived from with `z.output`.
@@ -82,12 +94,22 @@ export interface BatchedNotificationType<
    */
   groupKey: (input: z.output<ISchema>) => string;
   /**
-   * Reads current state and produces the params `render` will see.
+   * Reads current state and produces the params `render` will see. May query —
+   * unlike `render`, which must stay pure and synchronous.
    *
-   * Runs at write time and may query — unlike `render`, which must stay pure
-   * and synchronous because it runs per row per request.
+   * Runs at write time with `since: null`, storing current state, and again per
+   * outbound send with `since` set to that channel's last delivery, whose
+   * result is used for that send alone and never written back.
+   *
+   * Must be read-only and idempotent: the delivery call sits in the worker's
+   * retry path. The stored params must also satisfy `inputSchema`, since
+   * delivery has only the row to recover the input from — otherwise the delta
+   * is skipped and the stored state is sent instead.
    */
-  resolveParams(input: z.output<ISchema>): Promise<z.output<PSchema>>;
+  resolveParams(
+    input: z.output<ISchema>,
+    ctx: ResolveParamsContext,
+  ): Promise<z.output<PSchema>>;
 }
 
 /**
