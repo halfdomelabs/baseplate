@@ -4,8 +4,8 @@ import type { SchemaTypes } from '@pothos/core';
 
 import SchemaBuilder, { BasePlugin } from '@pothos/core';
 
-import './global-types.js';
-import './schema-builder.js';
+import '$fieldWithInputGlobalTypes';
+import '$fieldWithInputSchemaBuilder';
 
 export type * from './types.js';
 

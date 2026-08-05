@@ -45,6 +45,10 @@ const fieldWithInputPlugin = createTsTemplateFile({
   group: 'field-with-input-payload',
   importMapProviders: {},
   name: 'field-with-input-plugin',
+  referencedGeneratorTemplates: {
+    fieldWithInputGlobalTypes: {},
+    fieldWithInputSchemaBuilder: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,

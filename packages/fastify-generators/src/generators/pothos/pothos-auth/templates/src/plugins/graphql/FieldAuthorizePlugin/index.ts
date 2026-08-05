@@ -8,7 +8,7 @@ import type { GraphQLFieldResolver } from 'graphql';
 import { checkInstanceAuthorization } from '%authorizerUtilsImports';
 import SchemaBuilder, { BasePlugin } from '@pothos/core';
 
-import './global-types.js';
+import '$fieldAuthorizeGlobalTypes';
 
 export const pothosAuthorizeByRolesPlugin = 'authorizeByRoles';
 

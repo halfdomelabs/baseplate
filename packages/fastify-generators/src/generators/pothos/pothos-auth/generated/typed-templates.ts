@@ -30,7 +30,10 @@ const fieldAuthorizePlugin = createTsTemplateFile({
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'field-authorize-plugin',
-  referencedGeneratorTemplates: { fieldAuthorizeTypes: {} },
+  referencedGeneratorTemplates: {
+    fieldAuthorizeGlobalTypes: {},
+    fieldAuthorizeTypes: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
