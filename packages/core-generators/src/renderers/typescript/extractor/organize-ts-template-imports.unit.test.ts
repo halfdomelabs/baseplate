@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TsProjectExport } from './build-ts-project-export-map.js';
 
+import { extractTsTemplateVariables } from './extract-ts-template-variables.js';
 import { organizeTsTemplateImports } from './organize-ts-template-imports.js';
 
 function createMockResolver(): ResolverFactory {
@@ -210,6 +211,176 @@ Module.A;
     await expect(
       organizeTsTemplateImports(filePath, contents, context),
     ).rejects.toThrow('cannot be a namespace import');
+  });
+
+  describe('side effect imports', () => {
+    it('should throw for a project-internal side effect import that is not a known template', async () => {
+      const mockResolver = createMockResolver();
+      const filePath = '/project-root/index.ts';
+      const contents = `import { defineAppModule } from 'external-package';
+
+import './schema/blog-post-like.mutations.js';
+TPL_IMPORTS;
+
+export const module = defineAppModule();
+`;
+
+      const context = {
+        projectExportMap: new Map(),
+        outputDirectory: '/project-root',
+        internalOutputRelativePaths: new Map(),
+        resolver: mockResolver,
+      };
+
+      await expect(
+        organizeTsTemplateImports(filePath, contents, context),
+      ).rejects.toThrow(
+        /Side-effect import .*blog-post-like.* \/project-root\/index\.ts/,
+      );
+    });
+
+    it('should rewrite a side effect import pointing at another template in the generator', async () => {
+      const mockResolver = createMockResolver();
+      const filePath = '/project-root/index.ts';
+      const contents = `import './global-types.js';
+
+export const plugin = 'plugin';
+`;
+
+      const context = {
+        projectExportMap: new Map(),
+        outputDirectory: '/project-root',
+        internalOutputRelativePaths: new Map([
+          ['global-types.js', 'field-authorize-global-types'],
+        ]),
+        resolver: mockResolver,
+      };
+
+      const result = await organizeTsTemplateImports(
+        filePath,
+        contents,
+        context,
+      );
+
+      expect(result.contents).toContain('$fieldAuthorizeGlobalTypes');
+      expect(result.contents).not.toContain('global-types.js');
+      expect(
+        result.referencedGeneratorTemplates.has('field-authorize-global-types'),
+      ).toBe(true);
+    });
+
+    it('should leave external and builtin side effect imports untouched', async () => {
+      const mockResolver = createMockResolver();
+      const filePath = '/project-root/setup.ts';
+      const contents = `import '@testing-library/jest-dom/vitest';
+import 'node:process';
+
+export const setup = true;
+`;
+
+      const context = {
+        projectExportMap: new Map(),
+        outputDirectory: '/project-root',
+        internalOutputRelativePaths: new Map(),
+        resolver: mockResolver,
+      };
+
+      const result = await organizeTsTemplateImports(
+        filePath,
+        contents,
+        context,
+      );
+
+      expect(result.contents).toContain(`'@testing-library/jest-dom/vitest'`);
+      expect(result.contents).toContain(`'node:process'`);
+      expect(result.referencedGeneratorTemplates.size).toBe(0);
+    });
+
+    it('should skip side effect imports whose specifier is a template variable', async () => {
+      const mockResolver = createMockResolver();
+      const filePath = '/project-root/index.ts';
+      const contents = `import 'TPL_MODULE_PATH';
+
+export const module = true;
+`;
+
+      const context = {
+        projectExportMap: new Map(),
+        outputDirectory: '/project-root',
+        internalOutputRelativePaths: new Map(),
+        resolver: mockResolver,
+      };
+
+      const result = await organizeTsTemplateImports(
+        filePath,
+        contents,
+        context,
+      );
+
+      expect(result.contents).toContain(`'TPL_MODULE_PATH'`);
+    });
+
+    it('should preserve side effect imports relative to each other', async () => {
+      const mockResolver = createMockResolver();
+      const filePath = '/project-root/index.ts';
+      const contents = `import 'dotenv/config';
+import 'reflect-metadata';
+
+export function run() {
+  return true;
+}
+`;
+
+      const context = {
+        projectExportMap: new Map(),
+        outputDirectory: '/project-root',
+        internalOutputRelativePaths: new Map(),
+        resolver: mockResolver,
+      };
+
+      const result = await organizeTsTemplateImports(
+        filePath,
+        contents,
+        context,
+      );
+
+      expect(result.contents.indexOf(`'dotenv/config'`)).toBeLessThan(
+        result.contents.indexOf(`'reflect-metadata'`),
+      );
+    });
+
+    it('should ignore side effect imports inside a TPL region since it is collapsed first', async () => {
+      const mockResolver = createMockResolver();
+      const filePath = '/project-root/index.ts';
+      // extractTsTemplateVariables collapses the marker region before this runs,
+      // which is what makes generated imports invisible to import validation.
+      const { content: collapsed } = extractTsTemplateVariables(
+        `import { defineAppModule } from 'external-package';
+
+/* TPL_IMPORTS:START */
+import './schema/blog-post.mutations.js';
+/* TPL_IMPORTS:END */
+
+export const module = defineAppModule();
+`,
+      );
+
+      const context = {
+        projectExportMap: new Map(),
+        outputDirectory: '/project-root',
+        internalOutputRelativePaths: new Map(),
+        resolver: mockResolver,
+      };
+
+      const result = await organizeTsTemplateImports(
+        filePath,
+        collapsed,
+        context,
+      );
+
+      expect(result.contents).toContain('TPL_IMPORTS');
+      expect(result.contents).not.toContain('blog-post.mutations');
+    });
   });
 
   it('should throw error for missing project exports', async () => {

@@ -131,14 +131,29 @@ function mergeImportsAndHoistedFragments(
     },
   );
 
-  // Resolve any side effect imports if necessary
-  if (resolveModule) {
-    const sideEffectImports = getSideEffectImportsFromSourceFile(file);
-    for (const importDeclaration of sideEffectImports) {
-      const moduleSpecifier = importDeclaration
-        .getModuleSpecifier()
-        .getLiteralValue();
-      const resolvedModuleSpecifier = resolveModule(moduleSpecifier);
+  // Resolve any side effect imports, which are rewritten in place since their
+  // evaluation order is significant
+  const sideEffectImports = getSideEffectImportsFromSourceFile(file);
+  for (const importDeclaration of sideEffectImports) {
+    const moduleSpecifier = importDeclaration
+      .getModuleSpecifier()
+      .getLiteralValue();
+
+    // References to other templates in the generator, e.g. `$globalTypes`
+    let resolvedModuleSpecifier = moduleSpecifier;
+    if (moduleSpecifier.startsWith('$')) {
+      const generatorPath = generatorPaths[moduleSpecifier.slice(1)];
+      if (!generatorPath) {
+        throw new Error(`Generator path not found for ${moduleSpecifier}`);
+      }
+      resolvedModuleSpecifier = generatorPath;
+    }
+
+    if (resolveModule) {
+      resolvedModuleSpecifier = resolveModule(resolvedModuleSpecifier);
+    }
+
+    if (resolvedModuleSpecifier !== moduleSpecifier) {
       importDeclaration.setModuleSpecifier(resolvedModuleSpecifier);
     }
   }
