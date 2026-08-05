@@ -16,11 +16,11 @@ import { withScriptContext } from '../utils/service-context.js';
  * the same env as the dev server so it publishes to the same Redis the server
  * subscribes to:
  *
- *   pnpm script:run src/scripts/send-test-notification.ts [type] [email]
+ *   pnpm script:run src/scripts/send-test-notification.ts <type> <email>
  *
- * `type` is one of the keys below (default `text`); with no email it targets the
- * first user. The bell moves ONLY via the pubsub -> SSE path (a separate
- * process), so a moving badge proves the real-time channel end to end.
+ * `type` is one of the keys below, `email` names the recipient. The bell moves
+ * ONLY via the pubsub -> SSE path (a separate process), so a moving badge
+ * proves the real-time channel end to end.
  *
  * To see preferences working, turn a topic off at
  * /admin/notification-preferences and re-run: `comment` and `like` stop
@@ -54,7 +54,7 @@ const SCENARIOS: Record<
       }),
   },
   comment: {
-    description: 'post.commented — topic "general", in-app + email',
+    description: 'post.commented — topic "postComments", in-app + email',
     send: (notification, recipientId) =>
       notification.notify(POST_COMMENTED_TYPE, {
         recipientId,
@@ -67,7 +67,7 @@ const SCENARIOS: Record<
   },
   like: {
     description:
-      'post.liked — topic "general", in-app only. Batched: params come from the like table, so this needs a real post id',
+      'post.liked — topic "postLikes" (email defaults to a digest). Batched: params come from the like table, so this needs a real post id',
     send: (notification, recipientId) =>
       notification.notify(POST_LIKED_TYPE, {
         recipientId,
@@ -89,11 +89,14 @@ function usage(): string {
   const rows = Object.entries(SCENARIOS)
     .map(([key, { description }]) => `  ${key.padEnd(9)} ${description}`)
     .join('\n');
-  return `Usage: pnpm script:run src/scripts/send-test-notification.ts [type] [email]\n\nTypes:\n${rows}`;
+  return `Usage: pnpm script:run src/scripts/send-test-notification.ts <type> <email>\n\nTypes:\n${rows}`;
 }
 
 async function main(): Promise<void> {
-  const [scenarioArg = 'text', emailArg] = process.argv.slice(2);
+  const [scenarioArg, emailArg] = process.argv.slice(2);
+  if (!scenarioArg) {
+    throw new Error(`A notification type is required.\n\n${usage()}`);
+  }
   const scenario = SCENARIOS[scenarioArg];
   if (!scenario) {
     throw new Error(
@@ -101,16 +104,19 @@ async function main(): Promise<void> {
     );
   }
 
-  const recipient = emailArg
-    ? await prisma.user.findUnique({ where: { email: emailArg } })
-    : await prisma.user.findFirst({ orderBy: { createdAt: 'asc' } });
+  // Named rather than defaulted to the first user: this notifies a real
+  // account you are signed in as, so guessing the recipient would send someone
+  // else's test mail.
+  if (!emailArg) {
+    throw new Error(`A recipient email is required.\n\n${usage()}`);
+  }
+
+  const recipient = await prisma.user.findUnique({
+    where: { email: emailArg },
+  });
 
   if (!recipient) {
-    throw new Error(
-      emailArg
-        ? `No user found with email "${emailArg}"`
-        : 'No users exist to notify',
-    );
+    throw new Error(`No user found with email "${emailArg}"`);
   }
 
   // The default runtime is enough to WRITE: `renderForWrite` takes the type as

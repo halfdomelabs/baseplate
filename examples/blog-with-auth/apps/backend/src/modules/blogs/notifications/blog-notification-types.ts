@@ -31,7 +31,7 @@ import { summarizePostLikes } from '../services/blog-post-like.service.js';
 export const POST_COMMENTED_TYPE = defineNotificationType({
   key: 'post.commented',
   version: 1,
-  topic: 'general',
+  topic: 'postComments',
   paramsSchema: z.object({
     postId: z.string(),
     postTitle: z.string(),
@@ -81,7 +81,7 @@ const ACTOR_SAMPLE_SIZE = 3;
 export const POST_LIKED_TYPE = defineBatchedNotificationType({
   key: 'post.liked',
   version: 1,
-  topic: 'general',
+  topic: 'postLikes',
   inputSchema: z.object({ postId: z.string() }),
   groupKey: ({ postId }) => `blogPost:${postId}:likes`,
   paramsSchema: z.object({

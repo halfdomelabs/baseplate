@@ -37,7 +37,7 @@ export function AdminLayout({ className }: Props): ReactElement {
             <AppBreadcrumbs />
             <div className="ml-auto flex items-center gap-1">
               {/* TPL_HEADER_ACTIONS:START */}
-              <NotificationBell />
+              <NotificationBell preferencesHref="/admin/notification-preferences" />
               {/* TPL_HEADER_ACTIONS:END */}
             </div>
           </div>

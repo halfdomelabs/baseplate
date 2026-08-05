@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
 import { useNavigate } from '@tanstack/react-router';
-import { MdDoneAll, MdNotifications, MdNotificationsOff } from 'react-icons/md';
+import { MdDoneAll, MdNotificationsOff, MdSettings } from 'react-icons/md';
 
 import { cn } from '@src/utils/cn';
 
@@ -37,14 +37,6 @@ function resolveInAppPath(url: string): string | null {
   } catch {
     return null;
   }
-}
-
-function NotificationAvatar(): ReactElement {
-  return (
-    <div className="flex size-8 flex-none items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-      <MdNotifications className="size-4" />
-    </div>
-  );
 }
 
 /** Render one content segment (a real GraphQL union — text, emphasis or link). */
@@ -88,6 +80,8 @@ interface Props {
   loading: boolean;
   /** Optional link to a full notifications page, rendered as a footer link when set. */
   viewAllHref?: string;
+  /** Optional link to a preferences page, rendered as a header icon when set. */
+  preferencesHref?: string;
   /** Description shown under the empty-state title. */
   emptyDescription?: string;
   /** Called when a click navigates away (row or footer link); lets the host close the panel. */
@@ -113,6 +107,7 @@ export function NotificationPanel({
   unreadCount,
   loading,
   viewAllHref,
+  preferencesHref,
   emptyDescription = 'You have no new notifications.',
   onNavigate,
 }: Props): ReactElement {
@@ -137,17 +132,33 @@ export function NotificationPanel({
             {unreadCount} unread
           </Badge>
         )}
-        <div className="flex-1" />
+        <div className="min-w-2 flex-1" />
+        {/* Icon-only, and `flex-none` on both: a text label here overflows the
+            popover once the unread badge grows. */}
         <Button
           variant="ghost"
-          size="xs"
+          size="icon-sm"
           disabled={!hasUnread}
           onClick={() => void markAllRead()}
-          className="gap-1 text-xs"
+          aria-label="Mark all as read"
+          title="Mark all as read"
+          className="flex-none text-muted-foreground"
         >
-          <MdDoneAll className="size-3.5" />
-          Mark all as read
+          <MdDoneAll className="size-4" />
         </Button>
+        {preferencesHref && (
+          <a
+            href={preferencesHref}
+            aria-label="Notification settings"
+            title="Notification settings"
+            /* The 28px hit target overhangs the 16px padding so its glyph
+               centres on the unread dot below, 19px from this edge. */
+            className="-mr-2.75 flex size-7 flex-none items-center justify-center rounded-[min(var(--radius-md),12px)] text-muted-foreground hover:bg-accent hover:text-foreground hover:no-underline"
+            onClick={() => onNavigate?.()}
+          >
+            <MdSettings className="size-4" />
+          </a>
+        )}
       </div>
 
       {loading && items.length === 0 ? (
@@ -190,13 +201,14 @@ export function NotificationPanel({
                     }
                   }}
                 >
-                  <NotificationAvatar />
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
-                    <span className="text-sm">
+                    <span className="line-clamp-2 text-sm">
                       <SegmentLine segments={content.title} />
                     </span>
                     {content.body && content.body.length > 0 && (
-                      <span className="text-sm text-muted-foreground">
+                      // Clamped: a body is arbitrary length, and one long
+                      // notification must not push the rest out of the popover.
+                      <span className="line-clamp-2 text-sm text-muted-foreground">
                         <SegmentLine segments={content.body} />
                       </span>
                     )}
@@ -205,7 +217,9 @@ export function NotificationPanel({
                     </span>
                   </div>
                   {isUnread && (
-                    <span className="mt-1.5 size-1.5 flex-none rounded-full bg-primary" />
+                    // Nudged to sit on the title's first line, which the
+                    // clamped text may wrap beneath.
+                    <span className="mt-1.75 size-1.5 flex-none rounded-full bg-primary" />
                   )}
                 </button>
               </li>

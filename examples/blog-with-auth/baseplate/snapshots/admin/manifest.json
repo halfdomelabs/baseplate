@@ -6,7 +6,13 @@
       { "path": "src/services/apollo/apollo.unit.test.ts" }
     ],
     "deleted": [],
-    "modified": [{ "diffFile": "package.json.diff", "path": "package.json" }]
+    "modified": [
+      { "diffFile": "package.json.diff", "path": "package.json" },
+      {
+        "diffFile": "src_components_layouts_admin-layout.tsx.diff",
+        "path": "src/components/layouts/admin-layout.tsx"
+      }
+    ]
   },
   "version": "1"
 }

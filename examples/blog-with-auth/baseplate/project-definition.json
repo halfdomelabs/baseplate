@@ -1669,6 +1669,26 @@
             "id": "notification-topic:G5QaL9PYnnRL",
             "key": "general",
             "label": "General"
+          },
+          {
+            "defaults": {
+              "email": { "mode": "immediate" },
+              "inApp": { "mode": "immediate" }
+            },
+            "description": "Someone comments on one of your posts.",
+            "id": "notification-topic:gzbuivuFHoi_",
+            "key": "postComments",
+            "label": "Comments"
+          },
+          {
+            "defaults": {
+              "email": { "mode": "digest" },
+              "inApp": { "mode": "immediate" }
+            },
+            "description": "Someone likes one of your posts.",
+            "id": "notification-topic:FOkNE4V3QUZw",
+            "key": "postLikes",
+            "label": "Likes"
           }
         ]
       },

@@ -27,6 +27,8 @@ import { NotificationPanel } from './notification-panel';
 interface Props {
   /** Optional link to a full notifications page, rendered as a footer link when set. */
   viewAllHref?: string;
+  /** Optional link to a preferences page, rendered as a header icon when set. */
+  preferencesHref?: string;
   /** Description shown under the empty-state title. */
   emptyDescription?: string;
 }
@@ -43,6 +45,7 @@ interface Props {
  */
 export function NotificationBell({
   viewAllHref,
+  preferencesHref,
   emptyDescription,
 }: Props = {}): ReactElement | null {
   const { isAuthenticated } = useSession();
@@ -113,6 +116,7 @@ export function NotificationBell({
           unreadCount={unreadCount}
           loading={loading}
           viewAllHref={viewAllHref}
+          preferencesHref={preferencesHref}
           emptyDescription={emptyDescription}
           onNavigate={() => {
             setOpen(false);
