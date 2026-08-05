@@ -2,7 +2,6 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 
 import { logError } from '@src/services/error-logger.js';
 
-import type { NotificationEmailContent } from '../channels/email.channel.js';
 import type { NotificationTopicKey } from '../constants/notification-topics.js';
 import type { AnyNotificationType } from '../registry.js';
 import type {
@@ -113,18 +112,17 @@ export interface NotificationRenderer {
    */
   getType(type: string, templateVersion: number): AnyNotificationType | null;
   /**
-   * A row's custom email content, or null to use the default wrapper.
+   * Parse a row's stored params against its pinned type, or null when the type
+   * is retired or the params no longer satisfy it.
    *
-   * Null covers every way an override can be unavailable — the type declares
-   * none, its renderer is retired, its params no longer validate, or the
-   * override threw — because all of them mean the same thing to the channel:
-   * send the generic email built from `render`. A broken custom template must
-   * never mean no email at all.
+   * What a channel needs to run that type's own renderer: the registry lookup
+   * and the parse, without an opinion about which channel is asking. The
+   * channel-specific half — invoking its renderer and deciding what a failure
+   * means — belongs to the channel.
    */
-  renderEmail(
+  resolveParams(
     row: RenderSource,
-    ctx?: RenderContext,
-  ): NotificationEmailContent | null;
+  ): { type: AnyNotificationType; params: NotificationParams } | null;
 }
 
 /**
@@ -214,21 +212,18 @@ export function createNotificationRenderer(deps: {
     return registry.get(registryKey(type, templateVersion)) ?? null;
   }
 
-  function renderEmail(
+  function resolveParams(
     row: RenderSource,
-    ctx?: RenderContext,
-  ): NotificationEmailContent | null {
+  ): { type: AnyNotificationType; params: NotificationParams } | null {
     const type = registry.get(registryKey(row.type, row.templateVersion));
-    const renderers = type?.renderers;
-    // No renderer, or none declared for this channel: the default wrapper is
-    // not a failure, so nothing is logged. `renderContent` reports a retired
-    // renderer already, and the channel calls it either way.
-    if (!type || !renderers?.email) return null;
+    // A retired renderer is already reported by `renderContent`, which every
+    // caller of this also calls, so it is not logged twice here.
+    if (!type) return null;
 
-    const params = type.paramsSchema.safeParse(row.params ?? {});
-    if (!params.success) {
-      logError(params.error, {
-        source: 'notification-render-email',
+    const parsed = type.paramsSchema.safeParse(row.params ?? {});
+    if (!parsed.success) {
+      logError(parsed.error, {
+        source: 'notification-render',
         reason: 'params-drift',
         notificationId: row.id,
         type: `${row.type}@${row.templateVersion}`,
@@ -236,20 +231,8 @@ export function createNotificationRenderer(deps: {
       return null;
     }
 
-    try {
-      // Called through its object rather than as a bare reference, so a
-      // renderer written as a method still sees its own `this`.
-      return renderers.email(params.data, ctx ?? { locale: DEFAULT_LOCALE });
-    } catch (error) {
-      logError(error, {
-        source: 'notification-render-email',
-        reason: 'render-threw',
-        notificationId: row.id,
-        type: `${row.type}@${row.templateVersion}`,
-      });
-      return null;
-    }
+    return { type, params: parsed.data };
   }
 
-  return { renderContent, renderForWrite, getTopic, getType, renderEmail };
+  return { renderContent, renderForWrite, getTopic, getType, resolveParams };
 }

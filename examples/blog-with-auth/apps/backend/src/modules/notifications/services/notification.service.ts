@@ -71,6 +71,30 @@ const RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
  */
 const FANOUT_TRANSACTION_OPTIONS = { timeout: 30_000 };
 
+/**
+ * Digest window used when neither the preference row nor the topic names one.
+ * Deliberately short: a project that wants hourly says so on the topic.
+ */
+const DEFAULT_DIGEST_WINDOW_SECONDS = 15 * 60;
+
+/**
+ * When a delivery row becomes eligible for a digest send, or null for an
+ * immediate one.
+ *
+ * Written on insert and never updated, which is what makes "the first row opens
+ * the window" true without any reconciliation: later rows in the same window
+ * carry their own later due time, which is simply never consulted, because the
+ * scan drains every pending row for the pair once the oldest comes due.
+ */
+function resolveDigestDueAt(entry: {
+  mode: NotificationMode;
+  digestWindowSeconds?: number;
+}): Date | null {
+  if (entry.mode !== 'digest') return null;
+  const seconds = entry.digestWindowSeconds ?? DEFAULT_DIGEST_WINDOW_SECONDS;
+  return new Date(Date.now() + seconds * 1000);
+}
+
 /** Unseen counts for a chunk. A recipient with none is absent from the map. */
 async function countUnseenFor(
   recipientIds: string[],
@@ -289,7 +313,12 @@ export interface NotificationChannelPreference extends NotificationChannelSettin
  */
 export interface RecipientRouting {
   inApp: boolean;
-  outbound: { channel: NotificationChannelKey; mode: NotificationMode }[];
+  outbound: {
+    channel: NotificationChannelKey;
+    mode: NotificationMode;
+    /** The resolved window, carried only for `digest`. */
+    digestWindowSeconds?: number;
+  }[];
 }
 
 /** A topic as a settings page renders it. */
@@ -681,10 +710,14 @@ export function createNotificationService(deps: {
           inApp:
             ceiling.inApp && settingFor(recipientId, 'inApp').mode !== 'off',
           outbound: ceiling.outbound
-            .map((channel) => ({
-              channel,
-              mode: settingFor(recipientId, channel).mode,
-            }))
+            .map((channel) => {
+              const setting = settingFor(recipientId, channel);
+              return {
+                channel,
+                mode: setting.mode,
+                digestWindowSeconds: setting.digestWindowSeconds,
+              };
+            })
             .filter((entry) => entry.mode !== 'off'),
         },
       ]),
@@ -815,10 +848,15 @@ export function createNotificationService(deps: {
         // channel someone has silenced produces no delivery for them.
         const deliveryData = rows.flatMap((row) =>
           (routingByRecipient.get(row.recipientId)?.outbound ?? []).map(
-            ({ channel }) => ({
+            (entry) => ({
               notificationId: row.id,
               requestId: request.id,
-              channel,
+              // Denormalized from the notification so the digest scan can group
+              // and settle by (recipient, channel) without a join.
+              recipientId: row.recipientId,
+              channel: entry.channel,
+              mode: entry.mode,
+              digestDueAt: resolveDigestDueAt(entry),
               // The generation this delivery serves. Constant for a
               // non-collapsing row, but carried so both write paths populate
               // the column the same way.
@@ -964,10 +1002,13 @@ export function createNotificationService(deps: {
         // lands on the same generation must not arm a second send.
         if (routing.outbound.length > 0) {
           await tx.notificationDelivery.createMany({
-            data: routing.outbound.map(({ channel }) => ({
+            data: routing.outbound.map((entry) => ({
               notificationId: row.id,
               requestId: request.id,
-              channel,
+              recipientId,
+              channel: entry.channel,
+              mode: entry.mode,
+              digestDueAt: resolveDigestDueAt(entry),
               feedSortKey: row.feedSortKey,
             })),
             skipDuplicates: true,
