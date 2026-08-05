@@ -1,5 +1,26 @@
 # @baseplate-dev/plugin-notifications
 
+## 0.6.17
+
+### Patch Changes
+
+- [#1003](https://github.com/halfdomelabs/baseplate/pull/1003) [`bd82e72`](https://github.com/halfdomelabs/baseplate/commit/bd82e727543a5ed1582ff0c15a8a39914865d3ca) Thanks [@kingston](https://github.com/kingston)! - Queue definitions can now declare an `onFinalAttemptFailure` hook beside their retry config, which runs when a handler throws on the last attempt and lets the job complete instead of failing; jobs also expose `maxAttempts` alongside `attemptNumber`.
+
+- [#1006](https://github.com/halfdomelabs/baseplate/pull/1006) [`5f81746`](https://github.com/halfdomelabs/baseplate/commit/5f8174614d58b456d0db5bd8ab67ae8a49c21a5a) Thanks [@kingston](https://github.com/kingston)! - Notification types are now declared with `defineNotificationType` or `defineBatchedNotificationType`, with topic-based per-channel preferences (off, immediate or digest), keyed collapse-and-retract so repeat activity updates one feed row in place, and per-channel email renderers. Generated apps gain a `notificationPreferences` query plus mutations to set and clear a preference, and a migration adds an index to the notification delivery table. **Breaking:** types now declare topics instead of a `category`, and renderers no longer receive an actor — whoever triggered a notification travels in `params`.
+
+- [#992](https://github.com/halfdomelabs/baseplate/pull/992) [`dd758d3`](https://github.com/halfdomelabs/baseplate/commit/dd758d3a3639e476056a0829d28a58ef8a8f1ff4) Thanks [@kingston](https://github.com/kingston)! - The notification feed can now load further pages without discarding the ones already loaded, and the notification panel shows the unread count for the whole feed rather than just the rows on screen.
+
+- Updated dependencies [[`b202a97`](https://github.com/halfdomelabs/baseplate/commit/b202a9772434de41a2abcc73c4c96e6f1ddab7c0), [`bd82e72`](https://github.com/halfdomelabs/baseplate/commit/bd82e727543a5ed1582ff0c15a8a39914865d3ca), [`ae275d0`](https://github.com/halfdomelabs/baseplate/commit/ae275d0d5d58c0b3d0cee41786938b8069d5e4bc), [`f5c5282`](https://github.com/halfdomelabs/baseplate/commit/f5c528261e829967951d19c6b2f9fa59ae686c21), [`f5c5282`](https://github.com/halfdomelabs/baseplate/commit/f5c528261e829967951d19c6b2f9fa59ae686c21), [`dd758d3`](https://github.com/halfdomelabs/baseplate/commit/dd758d3a3639e476056a0829d28a58ef8a8f1ff4), [`b202a97`](https://github.com/halfdomelabs/baseplate/commit/b202a9772434de41a2abcc73c4c96e6f1ddab7c0)]:
+  - @baseplate-dev/core-generators@0.6.17
+  - @baseplate-dev/react-generators@0.6.17
+  - @baseplate-dev/fastify-generators@0.6.17
+  - @baseplate-dev/plugin-queue@0.6.17
+  - @baseplate-dev/project-builder-lib@0.6.17
+  - @baseplate-dev/plugin-email@0.6.17
+  - @baseplate-dev/sync@0.6.17
+  - @baseplate-dev/ui-components@0.6.17
+  - @baseplate-dev/utils@0.6.17
+
 ## 0.6.16
 
 ### Patch Changes

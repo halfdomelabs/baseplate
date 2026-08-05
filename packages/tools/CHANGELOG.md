@@ -1,5 +1,11 @@
 # @baseplate-dev/tools
 
+## 0.6.17
+
+### Patch Changes
+
+- [#1002](https://github.com/halfdomelabs/baseplate/pull/1002) [`ad8a83c`](https://github.com/halfdomelabs/baseplate/commit/ad8a83c1de26e2113fa5d47dfca3f665a767f18b) Thanks [@kingston](https://github.com/kingston)! - Replaced the `./prettier-node` and `./prettier-react` config exports with `./oxfmt-config-base` and `./oxfmt-config-react`, and the shared ESLint config now recognises `oxfmt.config.ts` as a root-level config file.
+
 ## 0.6.16
 
 ## 0.6.15
