@@ -78,6 +78,16 @@ const FANOUT_TRANSACTION_OPTIONS = { timeout: 30_000 };
 const DEFAULT_DIGEST_WINDOW_SECONDS = 15 * 60;
 
 /**
+ * Longest digest window a row may ask for.
+ *
+ * Bounded because a pending digest row is expired once it is overdue by the
+ * delivery horizon, so a window past that point would never send. Clamped
+ * rather than rejected at use, since a topic default reaches this without
+ * passing through {@link setPreference}'s validation.
+ */
+const MAX_DIGEST_WINDOW_SECONDS = 24 * 60 * 60;
+
+/**
  * When a delivery row becomes eligible for a digest send, or null for an
  * immediate one.
  *
@@ -91,7 +101,11 @@ function resolveDigestDueAt(entry: {
   digestWindowSeconds?: number;
 }): Date | null {
   if (entry.mode !== 'digest') return null;
-  const seconds = entry.digestWindowSeconds ?? DEFAULT_DIGEST_WINDOW_SECONDS;
+  const requested = entry.digestWindowSeconds ?? DEFAULT_DIGEST_WINDOW_SECONDS;
+  // Clamped, not trusted: a negative window would backdate the row past the
+  // expiry horizon, and one above the ceiling would be expired before it sent.
+  // Zero is left alone — it means "due at the next pass", not "no window".
+  const seconds = Math.min(Math.max(requested, 0), MAX_DIGEST_WINDOW_SECONDS);
   return new Date(Date.now() + seconds * 1000);
 }
 
@@ -522,6 +536,18 @@ async function setPreference(
   // The feed has no window to batch over, so `digest` is outbound-only.
   if (mode === 'digest' && !isOutboundTarget(channel)) {
     throw new BadRequestError(`Channel ${channel} cannot be digested`);
+  }
+  // Rejected here rather than clamped, so a caller asking for something the
+  // outbox cannot honour is told, not silently given a different window.
+  if (
+    digestWindowSeconds !== undefined &&
+    (!Number.isInteger(digestWindowSeconds) ||
+      digestWindowSeconds < 0 ||
+      digestWindowSeconds > MAX_DIGEST_WINDOW_SECONDS)
+  ) {
+    throw new BadRequestError(
+      `digestWindowSeconds must be between 0 and ${MAX_DIGEST_WINDOW_SECONDS}`,
+    );
   }
   // Only meaningful for `digest`; storing it otherwise would resurrect a stale
   // window if the user later switched back.

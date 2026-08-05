@@ -19,7 +19,6 @@ interface NotificationDigestItem {
 interface NotificationDigestProps {
   /** The window's notifications, oldest first. Never empty. */
   items: NotificationDigestItem[];
-  settingsUrl?: string;
 }
 
 /**
@@ -75,13 +74,11 @@ export default defineEmail<NotificationDigestProps>(NotificationDigestEmail, {
         actionUrl: 'https://example.com/users/alex',
       },
     ],
-    settingsUrl: 'https://example.com/settings/notifications',
   },
 });
 
 function NotificationDigestEmail({
   items,
-  settingsUrl,
 }: NotificationDigestProps): React.ReactElement {
   return (
     <EmailLayout previewText={digestSubject(items)}>
@@ -124,17 +121,6 @@ function NotificationDigestEmail({
           ) : null}
         </Section>
       ))}
-
-      {settingsUrl ? (
-        <Section align="left" spacing="md">
-          <Text
-            variant="small"
-            style={{ margin: 0, color: theme.colors.mutedForeground }}
-          >
-            <Link href={settingsUrl}>Manage your notification settings</Link>
-          </Text>
-        </Section>
-      ) : null}
     </EmailLayout>
   );
 }

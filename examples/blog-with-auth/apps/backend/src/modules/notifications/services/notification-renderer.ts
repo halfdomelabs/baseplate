@@ -52,9 +52,22 @@ function frozenContent(row: RenderSource): RenderedContent {
   return {
     title: [{ kind: 'text', text: title }],
     body: body === undefined ? null : [{ kind: 'text', text: body }],
-    actionUrl: actionUrl ?? null,
+    actionUrl: actionUrl && isSafeUrl(actionUrl) ? actionUrl : null,
   };
 }
+
+/**
+ * What a row's topic lookup found.
+ *
+ * `unknown` is not `topicless`: a type in no topic consults no preference by
+ * design, while a retired renderer means the topic cannot be determined at all.
+ * A caller enforcing a preference has to tell those apart to avoid delivering
+ * something the recipient silenced.
+ */
+export type TopicResolution =
+  | { kind: 'topic'; key: NotificationTopicKey }
+  | { kind: 'topicless' }
+  | { kind: 'unknown' };
 
 /** Registry key: a row's renderer is pinned by both its type and its version. */
 function registryKey(key: string, version: number): string {
@@ -102,10 +115,14 @@ export interface NotificationRenderer {
   ): RenderedContent;
   /**
    * A row's topic, resolved from the registry rather than the row — the topic
-   * is a property of the type, so it is never stored per row. Null when the
-   * pinned renderer is gone, and also when the type belongs to no topic.
+   * is a property of the type, so it is never stored per row.
+   *
+   * Three outcomes, deliberately distinct: a type in a topic, a type in none,
+   * and a row whose pinned renderer is gone. Collapsing the last two would make
+   * a retired renderer look unsuppressible, so a preference check could not tell
+   * "consults no preference by design" from "cannot tell what it consults".
    */
-  getTopic(type: string, templateVersion: number): NotificationTopicKey | null;
+  getTopic(type: string, templateVersion: number): TopicResolution;
   /**
    * The type a row is pinned to, or null when that renderer is gone. Read by
    * the outbox, which needs the type itself to re-resolve params at delivery.
@@ -198,11 +215,12 @@ export function createNotificationRenderer(deps: {
     }
   }
 
-  function getTopic(
-    type: string,
-    templateVersion: number,
-  ): NotificationTopicKey | null {
-    return registry.get(registryKey(type, templateVersion))?.topic ?? null;
+  function getTopic(type: string, templateVersion: number): TopicResolution {
+    const registered = registry.get(registryKey(type, templateVersion));
+    if (!registered) return { kind: 'unknown' };
+    return registered.topic === undefined
+      ? { kind: 'topicless' }
+      : { kind: 'topic', key: registered.topic };
   }
 
   function getType(

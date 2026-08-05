@@ -40,12 +40,6 @@ export interface NotificationEmailContent {
 }
 
 /**
- * Pairs an email component with its props, checked here and erased for storage.
- *
- * `P` is inferred from the component, so a missing or misspelled prop is a
- * compile error at the call site even though the stored shape is untyped.
- */
-/**
  * One entry in the digest email, taken from the template's own props so the
  * two cannot drift as its layout evolves.
  */
@@ -53,6 +47,12 @@ type DigestItem = NonNullable<
   typeof NotificationDigestEmail.PreviewProps
 >['items'][number];
 
+/**
+ * Pairs an email component with its props, checked here and erased for storage.
+ *
+ * `P` is inferred from the component, so a missing or misspelled prop is a
+ * compile error at the call site even though the stored shape is untyped.
+ */
 export function notificationEmail<P extends object>(
   component: EmailComponent<P>,
   data: P,
@@ -61,11 +61,6 @@ export function notificationEmail<P extends object>(
   return { component, data, subject: options?.subject };
 }
 
-/**
- * The email channel: renders at delivery time — not from a frozen snapshot —
- * so a copy fix reaches mail that has not gone out yet, and sends one message
- * per recipient. A recipient with no email is skipped.
- */
 /** Default render locale until i18n lands, matching the generic renderer. */
 const DEFAULT_LOCALE = 'en';
 
@@ -108,6 +103,11 @@ function renderCustomEmail(
   }
 }
 
+/**
+ * The email channel: renders at delivery time — not from a frozen snapshot —
+ * so a copy fix reaches mail that has not gone out yet, and sends one message
+ * per recipient. A recipient with no email is skipped.
+ */
 export function createEmailChannel(deps: {
   email: EmailService;
   renderer: NotificationRenderer;
@@ -125,9 +125,10 @@ export function createEmailChannel(deps: {
         await email.send(custom.component, {
           to: recipient.email,
           data: custom.data,
-          // Absent, the component's own `subject` applies: `send` spreads these
-          // options over the rendered subject, so this wins only when set.
-          subject: custom.subject,
+          // The key is omitted rather than passed as undefined: `send` spreads
+          // these options over the rendered subject, and a present-but-undefined
+          // `subject` would overwrite the component's own with nothing.
+          ...(custom.subject === undefined ? {} : { subject: custom.subject }),
         });
         return;
       }

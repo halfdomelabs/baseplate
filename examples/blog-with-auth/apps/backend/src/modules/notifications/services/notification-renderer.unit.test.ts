@@ -174,6 +174,25 @@ describe('renderContent (versioned render-at-read)', () => {
     ).toBeNull();
   });
 
+  it('drops an unsafe actionUrl stored in the frozen snapshot', () => {
+    // The snapshot is stored JSON, so it can hold a URL written before the
+    // scheme guard existed. The fallback path must check it too, or a retired
+    // renderer becomes a way to serve `javascript:` to the client.
+    const renderContent = renderWith([]);
+
+    const content = renderContent({
+      id: 'n1',
+      type: 'test.gone',
+      templateVersion: 1,
+      params: {},
+      frozenContent: { title: 'FROZEN v1', actionUrl: 'javascript:alert(1)' },
+    });
+
+    expect(content.actionUrl).toBeNull();
+    // The recovery copy still survives: a bad URL costs the link, not the row.
+    expect(content.title).toEqual(FROZEN_RENDERED);
+  });
+
   it('rejects an unsafe href in a LIVE renderer segment (falls back to frozen)', () => {
     // A renderer emitting a `javascript:` link must not reach the client: the
     // segment schema rejects it, render throws, and we fall back to frozen.

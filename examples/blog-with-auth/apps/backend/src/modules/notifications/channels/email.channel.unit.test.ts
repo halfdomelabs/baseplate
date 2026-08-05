@@ -57,6 +57,12 @@ interface RecordedEmail {
   data: unknown;
   /** Only set when a renderer overrode the component's own subject. */
   subject: string | undefined;
+  /**
+   * Whether the key was present at all. The real `send` spreads these options
+   * over the rendered subject, so a present-but-undefined `subject` silently
+   * clears the component's own — a distinction the value alone cannot show.
+   */
+  hasSubjectKey: boolean;
 }
 
 /** An email service that records what was sent rather than sending it. */
@@ -66,7 +72,12 @@ function createRecordingEmail(): EmailService & { sent: RecordedEmail[] } {
     sent,
     send: vi.fn(
       (component: unknown, options: { data?: unknown; subject?: string }) => {
-        sent.push({ component, data: options.data, subject: options.subject });
+        sent.push({
+          component,
+          data: options.data,
+          subject: options.subject,
+          hasSubjectKey: 'subject' in options,
+        });
         return Promise.resolve('message-id');
       },
     ),
@@ -170,6 +181,9 @@ describe('email channel per-type overrides', () => {
 
     expect(email.sent[0]?.component).toBe(CommentEmail);
     expect(email.sent[0]?.data).toEqual({ name: 'Alice' });
+    // The key must be absent, not undefined: `send` spreads these options over
+    // the rendered subject, so passing it would leave this email with none.
+    expect(email.sent[0]?.hasSubjectKey).toBe(false);
   });
 
   it('falls back to the generic wrapper when the type declares none', async () => {

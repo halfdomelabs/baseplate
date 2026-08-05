@@ -8,7 +8,6 @@ allowBuilds:
   esbuild: false
   msw: false
   prisma: true
-  sharp: set this to true or false
   unrs-resolver: false
 strictDepBuilds: false
 blockExoticSubdeps: true
