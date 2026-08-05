@@ -1,5 +1,18 @@
 # @baseplate-dev/react-generators
 
+## 0.6.17
+
+### Patch Changes
+
+- [#999](https://github.com/halfdomelabs/baseplate/pull/999) [`b202a97`](https://github.com/halfdomelabs/baseplate/commit/b202a9772434de41a2abcc73c4c96e6f1ddab7c0) Thanks [@kingston](https://github.com/kingston)! - Generated projects now pin newer versions of their dependencies, including React 19.2, Vite 8.2, Fastify 5.11, Tailwind 4.3.3, TanStack Router 1.168, Turborepo 2.10 and Prettier 3.9.6. Run an install after your next sync to pick them up; no code changes are needed.
+
+- [#992](https://github.com/halfdomelabs/baseplate/pull/992) [`dd758d3`](https://github.com/halfdomelabs/baseplate/commit/dd758d3a3639e476056a0829d28a58ef8a8f1ff4) Thanks [@kingston](https://github.com/kingston)! - The notification feed can now load further pages without discarding the ones already loaded, and the notification panel shows the unread count for the whole feed rather than just the rows on screen.
+
+- Updated dependencies [[`b202a97`](https://github.com/halfdomelabs/baseplate/commit/b202a9772434de41a2abcc73c4c96e6f1ddab7c0), [`ae275d0`](https://github.com/halfdomelabs/baseplate/commit/ae275d0d5d58c0b3d0cee41786938b8069d5e4bc), [`f5c5282`](https://github.com/halfdomelabs/baseplate/commit/f5c528261e829967951d19c6b2f9fa59ae686c21)]:
+  - @baseplate-dev/core-generators@0.6.17
+  - @baseplate-dev/sync@0.6.17
+  - @baseplate-dev/utils@0.6.17
+
 ## 0.6.16
 
 ### Patch Changes

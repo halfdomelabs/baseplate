@@ -1,5 +1,16 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.6.17
+
+### Patch Changes
+
+- [#999](https://github.com/halfdomelabs/baseplate/pull/999) [`b202a97`](https://github.com/halfdomelabs/baseplate/commit/b202a9772434de41a2abcc73c4c96e6f1ddab7c0) Thanks [@kingston](https://github.com/kingston)! - Fixed a build failure where the package could compile before the UI component library it depends on had been built.
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.17
+  - @baseplate-dev/ui-components@0.6.17
+  - @baseplate-dev/utils@0.6.17
+
 ## 0.6.16
 
 ### Patch Changes
