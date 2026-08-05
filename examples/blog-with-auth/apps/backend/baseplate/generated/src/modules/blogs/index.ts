@@ -1,6 +1,5 @@
 import { defineAppModule } from '@src/utils/app-modules.js';
 
-import './schema/blog-post-like.mutations.js';
 /* TPL_IMPORTS:START */
 import './schema/blog-post.mutations.js';
 import './schema/blog-post.object-type.js';
