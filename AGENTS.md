@@ -90,6 +90,8 @@ Baseplate consists of two main tiers:
 
   Too long: the same thing plus the module that was split out, the file the query moved to, the index that changed, and the type signature that was tightened. Those belong in the PR description.
 
+  Before adding one, check whether a pending changeset in .changeset/ already covers the feature you are modifying. If it does, rewrite that changeset to describe the end state and do not add a second one — iterating on an unreleased feature should produce one release note, not one per pass. When your change supersedes behavior from a pending changeset, describe only what users will get, dropping the intermediate step entirely; when it supersedes behavior that has already been released, describe the new shape and the migration away from the old one, since users are on it.
+
 - IMPORTANT: If you have to go through more than two cycles of edits to fix linting, type, or test errors, please stop and ask for help. Often fixing errors will cause worse changes so it's better to ask for help than to continue. Feel free to ask for help at any time for any issues.
 - IMPORTANT: If you notice you are looping, encountering contradictory instructions, or something seems off, stop and flag it to the user immediately. See .agents/code-style.md for the full list of glitch indicators.
 
