@@ -4,7 +4,7 @@ export const REACT_PACKAGES = {
   'react-dom': '19.2.8',
   '@tanstack/react-router': '1.168.23',
   '@tanstack/router-plugin': '1.168.23',
-  '@types/node': `^22.0.0`,
+  '@types/node': `^24.13.0`,
   '@types/react': '19.2.18',
   '@types/react-dom': '19.2.4',
   '@vitejs/plugin-react': '6.0.5',
