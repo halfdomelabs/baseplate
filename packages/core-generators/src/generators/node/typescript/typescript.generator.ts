@@ -136,6 +136,7 @@ export const typescriptFileProvider =
 
 export const DEFAULT_TYPESCRIPT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
   outDir: 'dist',
+  rootDir: 'src',
   declaration: true,
   declarationMap: true,
   target: 'es2022',
