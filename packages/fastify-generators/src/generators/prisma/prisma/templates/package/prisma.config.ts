@@ -5,14 +5,12 @@ import type { PrismaConfig } from 'prisma';
 import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
 
-// Only load .env file if it exists
-if (existsSync('.env')) {
-  loadEnvFile();
-}
-
-// Only load .env.local file if it exists
 if (existsSync('.env.local')) {
   loadEnvFile('.env.local');
+}
+
+if (existsSync('.env')) {
+  loadEnvFile();
 }
 
 export default {
