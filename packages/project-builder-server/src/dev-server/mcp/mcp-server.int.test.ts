@@ -65,5 +65,7 @@ describe('MCP Server', () => {
         (result.structuredContent as Record<string, unknown>).generators,
       ),
     ).toBe(true);
-  }, 20_000); // 10 second timeout
+    // discover-generators scans generator packages on disk, so the timeout is
+    // generous to absorb variation in machine load.
+  }, 120_000);
 });

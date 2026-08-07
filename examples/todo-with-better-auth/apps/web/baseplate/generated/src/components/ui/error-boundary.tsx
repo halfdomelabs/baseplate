@@ -28,7 +28,6 @@ function ErrorBoundaryFallback({
 }): ReactElement {
   const {
     resetErrorBoundary,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     error,
   }: {
     resetErrorBoundary: () => void;
