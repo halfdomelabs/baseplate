@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 import { createServiceAction } from '#src/actions/types.js';
 import { compilePackages } from '#src/compiler/index.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
@@ -8,25 +6,7 @@ import { syncFile } from '#src/sync/sync-file.js';
 import { createTemplateMetadataOptions } from '#src/sync/template-metadata-utils.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
-
-const syncFileInputSchema = z.object({
-  project: z.string().describe('The name or ID of the project.'),
-  app: z.string().describe('The app name within the project.'),
-  files: z
-    .array(z.string())
-    .describe(
-      'Array of glob patterns to match files to sync (e.g., "src/routes/**/*.ts").',
-    ),
-});
-
-const syncFileOutputSchema = z.object({
-  success: z.boolean().describe('Whether the operation was successful.'),
-  message: z.string().describe('Result message.'),
-  filesApplied: z
-    .array(z.string())
-    .describe('List of files that were successfully applied.'),
-  errors: z.array(z.string()).describe('List of errors encountered.'),
-});
+import { syncFileMetadata } from './sync-file.action-metadata.js';
 
 /**
  * Service action to sync specific files from generator output.
@@ -38,12 +18,7 @@ const syncFileOutputSchema = z.object({
  * - Allows incremental fixing of generators one file at a time
  */
 export const syncFileAction = createServiceAction({
-  name: 'sync-file',
-  title: 'Sync Specific Files',
-  description:
-    'Apply specific generated files to the working codebase without performing a full sync',
-  inputSchema: syncFileInputSchema,
-  outputSchema: syncFileOutputSchema,
+  ...syncFileMetadata,
   handler: async (input, context) => {
     const { project: projectId, app: appName, files: fileGlobs } = input;
     const { projects, logger, plugins, cliVersion } = context;

@@ -1,9 +1,9 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod';
 
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
+import { isInitializeRequest } from '@modelcontextprotocol/server';
 import fastifyPlugin from 'fastify-plugin';
 import { randomUUID } from 'node:crypto';
 
@@ -17,21 +17,23 @@ const mcpPluginCallback: FastifyPluginCallbackZod<McpPluginOptions> = function (
   done,
 ) {
   // Map to store transports by session ID
-  const transports: Record<string, StreamableHTTPServerTransport | undefined> =
-    {};
+  const transports: Record<
+    string,
+    NodeStreamableHTTPServerTransport | undefined
+  > = {};
 
   // Handle POST requests for client-to-server communication
   fastify.post('/dev/mcp', async (req: FastifyRequest, reply: FastifyReply) => {
     // Check for existing session ID
     const sessionId = req.headers['mcp-session-id'] as string | undefined;
-    let transport: StreamableHTTPServerTransport;
+    let transport: NodeStreamableHTTPServerTransport;
 
     if (sessionId && transports[sessionId]) {
       // Reuse existing transport
       transport = transports[sessionId];
     } else if (!sessionId && isInitializeRequest(req.body)) {
       // New initialization request
-      transport = new StreamableHTTPServerTransport({
+      transport = new NodeStreamableHTTPServerTransport({
         sessionIdGenerator: () => randomUUID(),
         onsessioninitialized: (newSessionId) => {
           // Store the transport by session ID

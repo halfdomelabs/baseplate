@@ -35,7 +35,9 @@
     ".": "./dist/index.js",
     "./template-extractor": "./dist/template-extractor/index.js",
     "./plugins": "./dist/plugins/index.js",
+    "./plugins/discovery": "./dist/plugins/plugin-discovery.js",
     "./actions": "./dist/actions/index.js",
+    "./actions/definitions": "./dist/actions/definitions.js",
     "./dev-server": "./dist/dev-server/index.js",
     "./user-config": "./dist/user-config/index.js"
   },
@@ -61,7 +63,8 @@
     "@fastify/helmet": "^13.0.2",
     "@fastify/static": "^10.1.2",
     "@fastify/websocket": "^11.3.0",
-    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "@trpc/server": "^11.18.0",
     "chalk": "^6.0.0",
     "change-case": "^5.4.4",
@@ -89,6 +92,7 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
+    "@modelcontextprotocol/client": "^2.0.0",
     "@types/micromatch": "^4.0.10",
     "@types/node": "catalog:",
     "eslint": "catalog:",

@@ -1,9 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  initProjectAction,
-  invokeServiceActionAsCli,
-} from '@baseplate-dev/project-builder-server/actions';
+import { invokeServiceActionAsCli } from '@baseplate-dev/project-builder-server/actions';
 import path from 'node:path';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
@@ -44,6 +41,10 @@ export function addInitCommand(program: Command): void {
 
       const projectDir = await resolveProjectDir(name, type);
       const context = await createServiceActionContext();
+      // Imported dynamically so the action handlers (and their generator
+      // dependencies) stay off the startup path of every CLI command.
+      const { initProjectAction } =
+        await import('@baseplate-dev/project-builder-server/actions/definitions');
       await invokeServiceActionAsCli(
         initProjectAction,
         { projectDirectory: projectDir, projectName: name, type },

@@ -7,7 +7,7 @@ import type {
   ServiceActionContext,
 } from '@baseplate-dev/project-builder-server/actions';
 
-import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
+import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins/discovery';
 import { getUserConfig } from '@baseplate-dev/project-builder-server/user-config';
 import { getPackageVersion } from '@baseplate-dev/utils/node';
 

@@ -1,13 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  createGeneratorAction,
-  deleteTemplateByNameAction,
-  extractTemplatesAction,
-  generateTemplatesAction,
-  invokeServiceActionAsCli,
-  listTemplatesAction,
-} from '@baseplate-dev/project-builder-server/actions';
+import { invokeServiceActionAsCli } from '@baseplate-dev/project-builder-server/actions';
 import { expandPathWithTilde } from '@baseplate-dev/utils/node';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
@@ -134,6 +127,11 @@ async function handleListTemplates(generatorDirectory: string): Promise<void> {
   const resolvedDirectory = expandPathWithTilde(generatorDirectory);
   const context = await createServiceActionContext();
 
+  // Imported dynamically so the action handlers (and their generator
+  // dependencies) stay off the startup path of every CLI command.
+  const { listTemplatesAction } =
+    await import('@baseplate-dev/project-builder-server/actions/definitions');
+
   await invokeServiceActionAsCli(
     listTemplatesAction,
     { generatorDirectory: resolvedDirectory },
@@ -151,6 +149,9 @@ async function handleDeleteTemplate(
     : undefined;
 
   const context = await createServiceActionContext();
+
+  const { deleteTemplateByNameAction } =
+    await import('@baseplate-dev/project-builder-server/actions/definitions');
 
   await invokeServiceActionAsCli(
     deleteTemplateByNameAction,
@@ -170,6 +171,9 @@ async function handleExtractTemplates(
 ): Promise<void> {
   const context = await createServiceActionContext();
 
+  const { extractTemplatesAction } =
+    await import('@baseplate-dev/project-builder-server/actions/definitions');
+
   await invokeServiceActionAsCli(
     extractTemplatesAction,
     {
@@ -188,6 +192,9 @@ async function handleGenerateTemplates(
 ): Promise<void> {
   const context = await createServiceActionContext();
 
+  const { generateTemplatesAction } =
+    await import('@baseplate-dev/project-builder-server/actions/definitions');
+
   await invokeServiceActionAsCli(
     generateTemplatesAction,
     {
@@ -205,6 +212,9 @@ async function handleCreateGenerator(
 ): Promise<void> {
   const resolvedDirectory = expandPathWithTilde(directory);
   const context = await createServiceActionContext();
+
+  const { createGeneratorAction } =
+    await import('@baseplate-dev/project-builder-server/actions/definitions');
 
   await invokeServiceActionAsCli(
     createGeneratorAction,

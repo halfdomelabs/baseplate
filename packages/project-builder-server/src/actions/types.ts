@@ -47,9 +47,21 @@ export interface ServiceActionContext {
 }
 
 /**
- * A service action is a function that can be called by a client via CLI, MCP, or TRPC.
+ * Which clients an action is exposed to.
+ *
+ * `user` actions are available to end users via the `baseplate` CLI and its MCP
+ * server; `dev` actions are additionally restricted to the `baseplate-dev` CLI.
  */
-export interface ServiceAction<
+export type ServiceActionScope = 'user' | 'dev';
+
+/**
+ * The client-facing description of a service action, excluding its handler.
+ *
+ * @remarks Kept in a module separate from the handler so that listing actions
+ * (MCP tool registration, TRPC router construction, CLI help) does not load the
+ * handler's dependencies, which pull in ts-morph and the generator packages.
+ */
+export interface ServiceActionMetadata<
   TInputType extends z.ZodType = z.ZodType,
   TOutputType extends z.ZodType = z.ZodType,
 > {
@@ -63,6 +75,39 @@ export interface ServiceAction<
   inputSchema: TInputType;
   /** The output schema of the service action. */
   outputSchema: TOutputType;
+  /** Which clients the action is exposed to. */
+  scope: ServiceActionScope;
+}
+
+// oxlint-disable-next-line typescript/no-explicit-any -- any is used to allow any input and output shape
+export type AnyServiceActionMetadata = ServiceActionMetadata<any, any>;
+
+/**
+ * Create the metadata for a service action.
+ *
+ * @remarks `TName` is inferred as a string literal so the action manifest can
+ * derive a union of valid action names from it.
+ *
+ * @param metadata - The service action metadata to create.
+ * @returns The created service action metadata.
+ */
+export function createServiceActionMetadata<
+  TName extends string,
+  TInputType extends z.ZodType,
+  TOutputType extends z.ZodType,
+>(
+  metadata: ServiceActionMetadata<TInputType, TOutputType> & { name: TName },
+): ServiceActionMetadata<TInputType, TOutputType> & { name: TName } {
+  return metadata;
+}
+
+/**
+ * A service action is a function that can be called by a client via CLI, MCP, or TRPC.
+ */
+export interface ServiceAction<
+  TInputType extends z.ZodType = z.ZodType,
+  TOutputType extends z.ZodType = z.ZodType,
+> extends ServiceActionMetadata<TInputType, TOutputType> {
   /** The handler of the service action. */
   handler: (
     input: z.output<TInputType>,

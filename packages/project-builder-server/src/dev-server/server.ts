@@ -11,7 +11,7 @@ import {
 
 import type { ServiceActionContext } from '#src/actions/types.js';
 
-import { ALL_SERVICE_ACTIONS } from '#src/actions/registry.js';
+import { ALL_SERVICE_ACTION_METADATA } from '#src/actions/action-metadata-manifest.js';
 
 import type { DevServerRouter } from './api/router.js';
 import type { DevServerConfig } from './get-or-create-config.js';
@@ -60,7 +60,7 @@ async function createServer(
 
   // Register MCP server
   const mcpServer = createMcpServer({
-    actions: ALL_SERVICE_ACTIONS,
+    actions: ALL_SERVICE_ACTION_METADATA,
     context,
     forwardAllLogsToConsole: true,
   });

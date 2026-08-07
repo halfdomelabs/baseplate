@@ -1,42 +1,24 @@
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 import { resolveBaseplateDir } from '#src/diff/snapshot/snapshot-utils.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
+import { commitDraftMetadata } from './commit-draft.action-metadata.js';
 import {
   deleteDraftSession,
   loadDefinitionHash,
   loadDraftSession,
 } from './draft-session.js';
 import {
-  definitionIssueSchema,
   fixAndValidateDraftDefinition,
   mapIssueToOutput,
 } from './validate-draft.js';
 
-const commitDraftInputSchema = z.object({
-  project: z.string().describe('The name or ID of the project.'),
-});
-
-const commitDraftOutputSchema = z.object({
-  message: z.string().describe('A summary of the commit result.'),
-  issues: z
-    .array(definitionIssueSchema)
-    .optional()
-    .describe('Definition issues that blocked the commit.'),
-});
-
 export const commitDraftAction = createServiceAction({
-  name: 'commit-draft',
-  title: 'Commit Draft',
-  description:
-    'Commit the staged draft changes to the project-definition.json file.',
-  inputSchema: commitDraftInputSchema,
-  outputSchema: commitDraftOutputSchema,
+  ...commitDraftMetadata,
   handler: async (input, context) => {
     const project = getProjectByNameOrId(context.projects, input.project);
 

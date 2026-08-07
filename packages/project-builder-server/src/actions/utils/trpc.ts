@@ -2,13 +2,13 @@ import type { TRPCMutationProcedure, TRPCQueryProcedure } from '@trpc/server';
 import type { ProcedureBuilder } from '@trpc/server/unstable-core-do-not-import';
 import type z from 'zod';
 
-import type { ServiceAction, ServiceActionContext } from '../types.js';
+import type { ServiceActionContext, ServiceActionMetadata } from '../types.js';
 
 import { runActionInWorker } from './run-in-worker.js';
 
 export interface TrpcFromActionBuilder {
   mutation: <TInputType extends z.ZodType, TOutputType extends z.ZodType>(
-    action: ServiceAction<TInputType, TOutputType>,
+    action: ServiceActionMetadata<TInputType, TOutputType>,
   ) => TRPCMutationProcedure<{
     meta: unknown;
     input: z.input<TInputType>;
@@ -16,7 +16,7 @@ export interface TrpcFromActionBuilder {
   }>;
 
   query: <TInputType extends z.ZodType, TOutputType extends z.ZodType>(
-    action: ServiceAction<TInputType, TOutputType>,
+    action: ServiceActionMetadata<TInputType, TOutputType>,
   ) => TRPCQueryProcedure<{
     meta: unknown;
     input: z.input<TInputType>;
@@ -30,7 +30,7 @@ export function makeTrpcFromActionBuilder<Ctx extends ServiceActionContext>(
 ): TrpcFromActionBuilder {
   return {
     mutation: <TInputType extends z.ZodType, TOutputType extends z.ZodType>(
-      action: ServiceAction<TInputType, TOutputType>,
+      action: ServiceActionMetadata<TInputType, TOutputType>,
     ) =>
       baseProcedure
         .input(action.inputSchema)
@@ -49,7 +49,7 @@ export function makeTrpcFromActionBuilder<Ctx extends ServiceActionContext>(
         output: z.output<TOutputType>;
       }>,
     query: <TInputType extends z.ZodType, TOutputType extends z.ZodType>(
-      action: ServiceAction<TInputType, TOutputType>,
+      action: ServiceActionMetadata<TInputType, TOutputType>,
     ) =>
       baseProcedure
         .input(action.inputSchema)

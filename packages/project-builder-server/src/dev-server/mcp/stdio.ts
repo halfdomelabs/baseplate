@@ -1,19 +1,19 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 
 import type {
-  AnyServiceAction,
+  AnyServiceActionMetadata,
   ServiceActionContext,
 } from '#src/actions/types.js';
 
-import { ALL_SERVICE_ACTIONS } from '#src/actions/registry.js';
+import { ALL_SERVICE_ACTION_METADATA } from '#src/actions/action-metadata-manifest.js';
 
 import { createMcpServer } from './server.js';
 
 export async function startMcpStdioServer(
   context: ServiceActionContext,
-  actions: AnyServiceAction[] = ALL_SERVICE_ACTIONS,
+  actions: AnyServiceActionMetadata[] = ALL_SERVICE_ACTION_METADATA,
 ): Promise<McpServer> {
   const server = createMcpServer({
     actions,

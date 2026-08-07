@@ -1,9 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  invokeServiceActionAsCli,
-  syncAllProjectsAction,
-} from '@baseplate-dev/project-builder-server/actions';
+import { invokeServiceActionAsCli } from '@baseplate-dev/project-builder-server/actions';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 import { getExampleProjects } from '#src/utils/list-projects.js';
@@ -44,6 +41,11 @@ export function addSyncExamplesCommand(program: Command): void {
           ...baseContext,
           projects: exampleProjects,
         };
+
+        // Imported dynamically so the action handlers (and their generator
+        // dependencies) stay off the startup path of every CLI command.
+        const { syncAllProjectsAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
 
         await invokeServiceActionAsCli(
           syncAllProjectsAction,

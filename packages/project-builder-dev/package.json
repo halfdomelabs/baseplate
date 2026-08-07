@@ -47,6 +47,10 @@
     "./e2e-runner": {
       "development": "./src/e2e-runner/index.ts",
       "default": "./dist/e2e-runner/index.js"
+    },
+    "./runner": {
+      "development": "./src/runner/generate.ts",
+      "default": "./dist/runner/generate.js"
     }
   },
   "publishConfig": {

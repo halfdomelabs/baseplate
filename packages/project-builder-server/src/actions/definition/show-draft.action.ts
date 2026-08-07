@@ -3,58 +3,21 @@ import type { DefinitionDiffEntry } from '@baseplate-dev/project-builder-lib';
 import { diffSerializedDefinitions } from '@baseplate-dev/project-builder-lib';
 import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import jsonPatch from 'fast-json-patch';
-import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 import { loadDraftSession } from './draft-session.js';
 import { loadEntityServiceContext } from './load-entity-service-context.js';
-
-const showDraftInputSchema = z.object({
-  project: z.string().describe('The name or ID of the project.'),
-});
+import { showDraftMetadata } from './show-draft.action-metadata.js';
 
 const MAX_DETAILS_LENGTH = 2000;
-
-const draftChangeSchema = z.object({
-  label: z
-    .string()
-    .describe('Human-readable label (e.g., "Feature: payments").'),
-  type: z.enum(['added', 'updated', 'removed']).describe('The type of change.'),
-  details: z
-    .string()
-    .nullable()
-    .describe(
-      'For added: the entity JSON. For updated: a JSON Patch (RFC 6902) array. Null for removed.',
-    ),
-});
-
-const showDraftOutputSchema = z.object({
-  hasDraft: z.boolean().describe('Whether a draft session exists.'),
-  sessionId: z
-    .string()
-    .nullable()
-    .describe('The session ID of the draft, or null if no draft.'),
-  definitionHash: z
-    .string()
-    .nullable()
-    .describe(
-      'The hash of the project definition when the draft was created, or null if no draft.',
-    ),
-  changes: z
-    .array(draftChangeSchema)
-    .nullable()
-    .describe('Entity-level changes in the draft, or null if no draft.'),
-});
-
 function truncateDetails(text: string): string {
   if (text.length <= MAX_DETAILS_LENGTH) {
     return text;
   }
   return `${text.slice(0, MAX_DETAILS_LENGTH)}\n... (truncated)`;
 }
-
 function formatChangeDetails(entry: DefinitionDiffEntry): string | null {
   switch (entry.type) {
     case 'added': {
@@ -76,12 +39,7 @@ function formatChangeDetails(entry: DefinitionDiffEntry): string | null {
 }
 
 export const showDraftAction = createServiceAction({
-  name: 'show-draft',
-  title: 'Show Draft',
-  description:
-    'Show the current draft session status and staged changes for a project.',
-  inputSchema: showDraftInputSchema,
-  outputSchema: showDraftOutputSchema,
+  ...showDraftMetadata,
   handler: async (input, context) => {
     const project = getProjectByNameOrId(context.projects, input.project);
 

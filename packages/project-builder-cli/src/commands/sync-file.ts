@@ -1,9 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  invokeServiceActionAsCli,
-  syncFileAction,
-} from '@baseplate-dev/project-builder-server/actions';
+import { invokeServiceActionAsCli } from '@baseplate-dev/project-builder-server/actions';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
@@ -22,6 +19,11 @@ export function addSyncFileCommand(program: Command): void {
     .action(async (project: string, app: string, files: string[]) => {
       try {
         const context = await createServiceActionContext();
+
+        // Imported dynamically so the action handlers (and their generator
+        // dependencies) stay off the startup path of every CLI command.
+        const { syncFileAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
 
         await invokeServiceActionAsCli(
           syncFileAction,

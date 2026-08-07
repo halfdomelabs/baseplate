@@ -5,6 +5,10 @@ import { parentPort, workerData } from 'node:worker_threads';
 
 import type { ServiceAction, ServiceActionContext } from '../types.js';
 
+import { ACTION_LOADERS } from '../action-loaders.js';
+
+type ActionLoader = () => Promise<ServiceAction>;
+
 export interface WorkerData {
   actionName: string;
   input: unknown;
@@ -49,18 +53,17 @@ function sendMessage(message: WorkerMessage): void {
 }
 
 try {
-  const actionRegistry = await import('../registry.js');
+  const loadAction = (ACTION_LOADERS as Record<string, ActionLoader>)[
+    actionName
+  ];
 
-  const action: ServiceAction | undefined =
-    actionRegistry.ALL_SERVICE_ACTIONS.find(
-      (action) => action.name === actionName,
-    );
-
-  if (!action) {
+  if (!loadAction) {
     throw new Error(
       `Action ${actionName} not found. Make sure it is registered in the action registry.`,
     );
   }
+
+  const action: ServiceAction = await loadAction();
 
   const proxyLogger = createEventedLogger();
 

@@ -5,43 +5,20 @@ import {
   serializeSchema,
 } from '@baseplate-dev/project-builder-lib';
 import { produce } from 'immer';
-import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
+import { applyFixMetadata } from './apply-fix.action-metadata.js';
 import { getOrCreateDraftSession } from './draft-session.js';
 import {
-  definitionIssueSchema,
   generateFixId,
   mapIssueToOutput,
   validateAndSaveDraft,
   writeIssuesCliOutput,
 } from './validate-draft.js';
 
-const applyFixInputSchema = z.object({
-  project: z.string().describe('The name or ID of the project.'),
-  fixId: z
-    .string()
-    .describe(
-      'The deterministic fix ID returned by stage actions (e.g., "fix-a1b2c3d4").',
-    ),
-});
-
-const applyFixOutputSchema = z.object({
-  message: z.string().describe('A summary of the applied fix.'),
-  issues: z
-    .array(definitionIssueSchema)
-    .optional()
-    .describe('Remaining definition issues after applying the fix.'),
-});
-
 export const applyFixAction = createServiceAction({
-  name: 'apply-fix',
-  title: 'Apply Fix',
-  description:
-    'Apply an auto-fix for a definition issue in the current draft session.',
-  inputSchema: applyFixInputSchema,
-  outputSchema: applyFixOutputSchema,
+  ...applyFixMetadata,
   handler: async (input, context) => {
     const { session, parserContext, projectDirectory } =
       await getOrCreateDraftSession(input.project, context);

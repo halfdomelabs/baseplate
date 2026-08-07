@@ -1,15 +1,11 @@
 import { createEventedLogger } from '@baseplate-dev/sync';
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
-import {
-  McpServer,
-  ResourceTemplate,
-} from '@modelcontextprotocol/sdk/server/mcp.js';
-import { SetLevelRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/server';
 
 import type {
-  AnyServiceAction,
-  ServiceAction,
+  AnyServiceActionMetadata,
   ServiceActionContext,
+  ServiceActionMetadata,
 } from '#src/actions/types.js';
 
 import { runActionInWorker } from '#src/actions/utils/run-in-worker.js';
@@ -30,7 +26,7 @@ type LogLevel = (typeof LOG_LEVEL_LIST)[number];
 
 interface CreateMcpServerOptions {
   context: ServiceActionContext;
-  actions: AnyServiceAction[];
+  actions: AnyServiceActionMetadata[];
   /**
    * Whether to forward all logs to the console. (errors are always forwarded)
    *
@@ -95,7 +91,7 @@ export function createMcpServer({
 
   let logLevel: LogLevel = 'info';
 
-  server.server.setRequestHandler(SetLevelRequestSchema, (request) => {
+  server.server.setRequestHandler('logging/setLevel', (request) => {
     logLevel = request.params.level;
     return {};
   });
@@ -113,6 +109,7 @@ export function createMcpServer({
     }
 
     server.server
+      // oxlint-disable-next-line typescript/no-deprecated -- deprecated by MCP 2026-07-28 (SEP-2577) but functional for at least twelve months; clients still rely on it for progress output
       .sendLoggingMessage({
         // match MCP specification for warn => warning
         level: mcpLevel,
@@ -136,7 +133,7 @@ export function createMcpServer({
   let isActionRunning = false;
 
   for (const action of actions) {
-    const typedAction = action as ServiceAction;
+    const typedAction = action as ServiceActionMetadata;
     server.registerTool(
       action.name,
       {

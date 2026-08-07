@@ -1,54 +1,16 @@
-import { z } from 'zod';
-
 import type { PackageSyncResult } from '#src/sync/sync-metadata.js';
 
 import { createServiceAction } from '#src/actions/types.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
-import { packageSyncResultSchema } from '#src/sync/sync-metadata.js';
 
-const syncAllProjectsInputSchema = z.object({
-  overwrite: z
-    .boolean()
-    .optional()
-    .describe('Whether to force overwrite existing files and apply snapshot.'),
-  skipCommands: z
-    .boolean()
-    .optional()
-    .describe('Whether to skip running commands.'),
-});
-
-const syncAllProjectsOutputSchema = z.object({
-  overallStatus: z
-    .enum(['success', 'partial', 'error'])
-    .describe('The overall status of the sync operation across all projects.'),
-  message: z.string().describe('Human-readable result summary.'),
-  results: z
-    .array(
-      z.object({
-        projectName: z.string().describe('The name of the project.'),
-        status: z
-          .enum(['success', 'error', 'cancelled'])
-          .describe('The status of the sync operation for this project.'),
-        message: z.string().describe('Human-readable result message.'),
-        packageSyncResults: z
-          .record(z.string(), packageSyncResultSchema.optional())
-          .optional()
-          .describe('The results of the sync for each package.'),
-      }),
-    )
-    .describe('Results for each individual project.'),
-});
+import { syncAllProjectsMetadata } from './sync-all-projects.action-metadata.js';
 
 /**
  * Service action to sync all projects.
  */
 export const syncAllProjectsAction = createServiceAction({
-  name: 'sync-all-projects',
-  title: 'Sync All Projects',
-  description: 'Sync all non-test projects using the baseplate sync engine',
-  inputSchema: syncAllProjectsInputSchema,
-  outputSchema: syncAllProjectsOutputSchema,
+  ...syncAllProjectsMetadata,
   handler: async (input, context) => {
     const { overwrite, skipCommands } = input;
     const { projects, logger, plugins, userConfig, cliVersion } = context;

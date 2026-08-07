@@ -1,12 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  invokeServiceActionAsCli,
-  snapshotAddAction,
-  snapshotRemoveAction,
-  snapshotSaveAction,
-  snapshotShowAction,
-} from '@baseplate-dev/project-builder-server/actions';
+import { invokeServiceActionAsCli } from '@baseplate-dev/project-builder-server/actions';
 import { confirm } from '@inquirer/prompts';
 
 import { logger } from '#src/services/logger.js';
@@ -40,6 +34,11 @@ export function addSnapshotCommand(program: Command): void {
         try {
           const context = await createServiceActionContext();
 
+          // Imported dynamically so the action handlers (and their generator
+          // dependencies) stay off the startup path of every CLI command.
+          const { snapshotAddAction } =
+            await import('@baseplate-dev/project-builder-server/actions/definitions');
+
           await invokeServiceActionAsCli(
             snapshotAddAction,
             {
@@ -64,6 +63,9 @@ export function addSnapshotCommand(program: Command): void {
     .action(async (project: string, app: string, files: string[]) => {
       try {
         const context = await createServiceActionContext();
+
+        const { snapshotRemoveAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
 
         await invokeServiceActionAsCli(
           snapshotRemoveAction,
@@ -115,6 +117,9 @@ export function addSnapshotCommand(program: Command): void {
 
         const context = await createServiceActionContext();
 
+        const { snapshotSaveAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
+
         await invokeServiceActionAsCli(
           snapshotSaveAction,
           {
@@ -133,6 +138,9 @@ export function addSnapshotCommand(program: Command): void {
     .description('Show current snapshot contents')
     .action(async (project: string, app: string) => {
       const context = await createServiceActionContext();
+
+      const { snapshotShowAction } =
+        await import('@baseplate-dev/project-builder-server/actions/definitions');
 
       await invokeServiceActionAsCli(
         snapshotShowAction,

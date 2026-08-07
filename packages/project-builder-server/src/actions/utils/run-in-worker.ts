@@ -3,7 +3,7 @@ import type z from 'zod';
 import path from 'node:path';
 import { Worker } from 'node:worker_threads';
 
-import type { ServiceAction, ServiceActionContext } from '../types.js';
+import type { ServiceActionContext, ServiceActionMetadata } from '../types.js';
 import type { WorkerData, WorkerMessage } from './worker-script.js';
 
 const WORKER_SCRIPT_PATH = path.join(
@@ -17,7 +17,8 @@ const WORKER_SCRIPT_PATH = path.join(
  * Executes an action in a new worker thread.
  * Each execution gets a fresh worker thread that loads the latest version of the action file.
  *
- * @param serviceAction - The service action to execute.
+ * @param serviceAction - Metadata for the action to execute. The handler is
+ * loaded inside the worker, so callers need only the metadata.
  * @param input - Input data for the action
  * @param context - Service action context (must be serializable)
  * @returns Promise that resolves with the action result
@@ -26,7 +27,7 @@ export async function runActionInWorker<
   TInputType extends z.ZodType,
   TOutputType extends z.ZodType,
 >(
-  serviceAction: ServiceAction<TInputType, TOutputType>,
+  serviceAction: ServiceActionMetadata<TInputType, TOutputType>,
   input: z.output<TInputType>,
   context: ServiceActionContext,
 ): Promise<z.input<TOutputType>> {
