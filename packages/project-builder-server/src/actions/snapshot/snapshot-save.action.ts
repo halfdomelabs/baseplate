@@ -1,46 +1,14 @@
-import { z } from 'zod';
-
 import { createServiceAction } from '#src/actions/types.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
-
-const snapshotSaveInputSchema = z.object({
-  project: z.string().describe('The name or ID of the project.'),
-  app: z
-    .string()
-    .optional()
-    .describe(
-      'The app name within the project. If omitted, saves snapshots for all apps.',
-    ),
-  force: z
-    .boolean()
-    .optional()
-    .describe('Skip confirmation prompt and force save snapshot.'),
-});
-
-const snapshotSaveOutputSchema = z.object({
-  success: z
-    .boolean()
-    .describe('Whether the snapshot save operation was successful.'),
-  message: z.string().describe('Result message.'),
-  snapshotPath: z.string().optional().describe('Path to the saved snapshot.'),
-  savedApps: z
-    .array(z.string())
-    .optional()
-    .describe('List of app names that had snapshots saved.'),
-});
+import { snapshotSaveMetadata } from './snapshot-save.action-metadata.js';
 
 /**
  * Service action to save a complete snapshot for a project.
  */
 export const snapshotSaveAction = createServiceAction({
-  name: 'snapshot-save',
-  title: 'Save Project Snapshot',
-  description:
-    'Save snapshot of current differences (overwrites existing snapshot)',
-  inputSchema: snapshotSaveInputSchema,
-  outputSchema: snapshotSaveOutputSchema,
+  ...snapshotSaveMetadata,
   handler: async (input, context) => {
     const { project: projectId, app, force = false } = input;
     const { projects, logger, plugins, userConfig, cliVersion } = context;

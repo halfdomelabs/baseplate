@@ -5,6 +5,10 @@ import { parentPort, workerData } from 'node:worker_threads';
 
 import type { ServiceAction, ServiceActionContext } from '../types.js';
 
+import { ACTION_LOADERS } from '../action-loaders.js';
+
+type ActionLoader = () => Promise<ServiceAction>;
+
 export interface WorkerData {
   actionName: string;
   input: unknown;
@@ -49,16 +53,24 @@ function sendMessage(message: WorkerMessage): void {
 }
 
 try {
-  const actionRegistry = await import('../registry.js');
+  const loadAction = (ACTION_LOADERS as Record<string, ActionLoader>)[
+    actionName
+  ];
 
-  const action: ServiceAction | undefined =
-    actionRegistry.ALL_SERVICE_ACTIONS.find(
-      (action) => action.name === actionName,
-    );
-
-  if (!action) {
+  if (!loadAction) {
     throw new Error(
-      `Action ${actionName} not found. Make sure it is registered in the action registry.`,
+      `Action ${actionName} not found. Make sure it is registered in ACTION_LOADERS.`,
+    );
+  }
+
+  const action: ServiceAction = await loadAction();
+
+  // The loader map's keys are type-checked against the manifest, but nothing
+  // types a loader's key against the action it returns, so a mismapped entry
+  // would run the wrong handler and validate against the wrong output schema.
+  if (action.name !== actionName) {
+    throw new Error(
+      `ACTION_LOADERS maps ${actionName} to the ${action.name} action.`,
     );
   }
 

@@ -1,44 +1,13 @@
-import { z } from 'zod';
-
 import { createServiceAction } from '#src/actions/types.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
-
-const extractTemplatesInputSchema = z.object({
-  project: z
-    .string()
-    .describe('The name or ID of the project to extract templates from.'),
-  app: z.string().describe('The app name to extract templates from.'),
-  autoGenerateExtractor: z
-    .boolean()
-    .optional()
-    .default(true)
-    .describe('Auto-generate extractor.json files.'),
-  skipClean: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe(
-      'Skip cleaning the output directories (templates and generated).',
-    ),
-});
-
-const extractTemplatesOutputSchema = z.object({
-  success: z
-    .boolean()
-    .describe('Whether the template extraction was successful.'),
-  message: z.string().describe('Success message.'),
-});
+import { extractTemplatesMetadata } from './extract-templates.action-metadata.js';
 
 /**
  * Service action to extract templates from a project.
  */
 export const extractTemplatesAction = createServiceAction({
-  name: 'extract-templates',
-  title: 'Extract Templates',
-  description: 'Extract templates from the specified project and app',
-  inputSchema: extractTemplatesInputSchema,
-  outputSchema: extractTemplatesOutputSchema,
+  ...extractTemplatesMetadata,
   handler: async (input, context) => {
     const { project: projectId, app, autoGenerateExtractor, skipClean } = input;
     const { projects, logger, plugins } = context;

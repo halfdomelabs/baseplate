@@ -1,18 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  commitDraftAction,
-  discardDraftAction,
-  getEntityAction,
-  getEntitySchemaAction,
-  invokeServiceActionAsCli,
-  listEntitiesAction,
-  listEntityTypesAction,
-  showDraftAction,
-  stageCreateEntityAction,
-  stageDeleteEntityAction,
-  stageUpdateEntityAction,
-} from '@baseplate-dev/project-builder-server/actions';
+import { invokeServiceActionAsCli } from '@baseplate-dev/project-builder-server/actions';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 import { resolveProject } from '#src/utils/list-projects.js';
@@ -35,6 +23,9 @@ export function addDefinitionCommand(program: Command): void {
     .action(async (project: string | undefined) => {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
+
+      const { listEntityTypesAction } =
+        await import('@baseplate-dev/project-builder-server/actions/definitions');
 
       await invokeServiceActionAsCli(
         listEntityTypesAction,
@@ -59,6 +50,9 @@ export function addDefinitionCommand(program: Command): void {
         const resolvedProject = await resolveProject(project);
         const context = await createServiceActionContext(resolvedProject);
 
+        const { listEntitiesAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
+
         await invokeServiceActionAsCli(
           listEntitiesAction,
           {
@@ -78,6 +72,9 @@ export function addDefinitionCommand(program: Command): void {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
 
+      const { getEntityAction } =
+        await import('@baseplate-dev/project-builder-server/actions/definitions');
+
       await invokeServiceActionAsCli(
         getEntityAction,
         { project: resolvedProject.name, entityId },
@@ -91,6 +88,9 @@ export function addDefinitionCommand(program: Command): void {
     .action(async (entityType: string, project: string | undefined) => {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
+
+      const { getEntitySchemaAction } =
+        await import('@baseplate-dev/project-builder-server/actions/definitions');
 
       await invokeServiceActionAsCli(
         getEntitySchemaAction,
@@ -126,6 +126,9 @@ export function addDefinitionCommand(program: Command): void {
           );
         }
 
+        const { stageCreateEntityAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
+
         await invokeServiceActionAsCli(
           stageCreateEntityAction,
           {
@@ -160,6 +163,9 @@ export function addDefinitionCommand(program: Command): void {
           );
         }
 
+        const { stageUpdateEntityAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
+
         await invokeServiceActionAsCli(
           stageUpdateEntityAction,
           {
@@ -185,6 +191,9 @@ export function addDefinitionCommand(program: Command): void {
         const resolvedProject = await resolveProject(project);
         const context = await createServiceActionContext(resolvedProject);
 
+        const { stageDeleteEntityAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
+
         await invokeServiceActionAsCli(
           stageDeleteEntityAction,
           {
@@ -206,6 +215,9 @@ export function addDefinitionCommand(program: Command): void {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
 
+      const { commitDraftAction } =
+        await import('@baseplate-dev/project-builder-server/actions/definitions');
+
       await invokeServiceActionAsCli(
         commitDraftAction,
         { project: resolvedProject.name },
@@ -220,6 +232,9 @@ export function addDefinitionCommand(program: Command): void {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
 
+      const { discardDraftAction } =
+        await import('@baseplate-dev/project-builder-server/actions/definitions');
+
       await invokeServiceActionAsCli(
         discardDraftAction,
         { project: resolvedProject.name },
@@ -233,6 +248,9 @@ export function addDefinitionCommand(program: Command): void {
     .action(async (project: string | undefined) => {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
+
+      const { showDraftAction } =
+        await import('@baseplate-dev/project-builder-server/actions/definitions');
 
       await invokeServiceActionAsCli(
         showDraftAction,

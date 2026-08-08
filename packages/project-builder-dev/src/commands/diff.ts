@@ -1,9 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  diffProjectAction,
-  invokeServiceActionAsCli,
-} from '@baseplate-dev/project-builder-server/actions';
+import { invokeServiceActionAsCli } from '@baseplate-dev/project-builder-server/actions';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 import { resolveProject } from '#src/utils/list-projects.js';
@@ -38,6 +35,8 @@ export function addDiffCommand(program: Command): void {
         const resolvedProject = await resolveProject(project);
         const context = await createServiceActionContext(resolvedProject);
 
+        const { diffProjectAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
         const result = await invokeServiceActionAsCli(
           diffProjectAction,
           {

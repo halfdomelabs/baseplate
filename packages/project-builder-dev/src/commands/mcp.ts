@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import { ALL_SERVICE_ACTIONS } from '@baseplate-dev/project-builder-server/actions';
+import { ALL_SERVICE_ACTION_METADATA } from '@baseplate-dev/project-builder-server/actions';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
@@ -14,6 +14,6 @@ export function addMcpCommand(program: Command): void {
       const { startMcpStdioServer } =
         await import('@baseplate-dev/project-builder-server/dev-server');
 
-      await startMcpStdioServer(context, ALL_SERVICE_ACTIONS);
+      await startMcpStdioServer(context, ALL_SERVICE_ACTION_METADATA);
     });
 }

@@ -1,56 +1,18 @@
 import { dirExists } from '@baseplate-dev/utils/node';
-import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
-import { packageSyncResultSchema } from '#src/sync/sync-metadata.js';
 
 import { writeGenerationManifest } from '../utils/generation-manifest.js';
 import { getProjectByNameOrId } from '../utils/projects.js';
-
-const syncProjectInputSchema = z.object({
-  project: z.string().describe('The name or ID of the project to sync.'),
-  overwrite: z
-    .boolean()
-    .optional()
-    .describe('Whether to force overwrite existing files and apply snapshot.'),
-  skipCommands: z
-    .boolean()
-    .optional()
-    .describe('Whether to skip running commands.'),
-  baseplateDirectory: z
-    .string()
-    .optional()
-    .describe(
-      'Custom baseplate directory for snapshot resolution. Defaults to <projectDirectory>/baseplate.',
-    ),
-  packages: z
-    .array(z.string())
-    .optional()
-    .describe('Only sync specific packages by name.'),
-});
-
-const syncProjectOutputSchema = z.object({
-  status: z
-    .enum(['success', 'error', 'cancelled'])
-    .describe('The status of the sync operation.'),
-  packageSyncResults: z
-    .record(z.string(), packageSyncResultSchema.optional())
-    .optional()
-    .describe('The results of the sync for each package.'),
-  message: z.string().describe('Human-readable result message.'),
-});
+import { syncProjectMetadata } from './sync-project.action-metadata.js';
 
 /**
  * Service action to sync a project.
  */
 export const syncProjectAction = createServiceAction({
-  name: 'sync-project',
-  title: 'Sync Project',
-  description: 'Sync the specified project using the baseplate sync engine',
-  inputSchema: syncProjectInputSchema,
-  outputSchema: syncProjectOutputSchema,
+  ...syncProjectMetadata,
   handler: async (input, context) => {
     const {
       project: projectId,

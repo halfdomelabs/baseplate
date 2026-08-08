@@ -1,9 +1,6 @@
 import type { Command } from 'commander';
 
-import {
-  invokeServiceActionAsCli,
-  syncProjectAction,
-} from '@baseplate-dev/project-builder-server/actions';
+import { invokeServiceActionAsCli } from '@baseplate-dev/project-builder-server/actions';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
@@ -45,6 +42,9 @@ export function addSyncCommand(program: Command): void {
         if (!projectWithDefault) {
           throw new Error('No project specified');
         }
+
+        const { syncProjectAction } =
+          await import('@baseplate-dev/project-builder-server/actions/definitions');
 
         await invokeServiceActionAsCli(
           syncProjectAction,

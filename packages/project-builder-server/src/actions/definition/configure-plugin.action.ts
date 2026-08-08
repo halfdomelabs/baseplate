@@ -13,39 +13,17 @@ import {
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 import { produce } from 'immer';
-import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
+import { configurePluginMetadata } from './configure-plugin.action-metadata.js';
 import { getOrCreateDraftSession } from './draft-session.js';
 import { findPluginByKey } from './find-plugin-by-key.js';
 import {
-  definitionIssueSchema,
   mapIssueToOutput,
   validateAndSaveDraft,
   writeIssuesCliOutput,
 } from './validate-draft.js';
-
-const configurePluginInputSchema = z.object({
-  project: z.string().describe('The name or ID of the project.'),
-  pluginKey: z.string().describe('The plugin key to enable or configure.'),
-  config: z
-    .record(z.string(), z.unknown())
-    .optional()
-    .describe(
-      'Optional plugin configuration object. Use get-plugin-info to see the expected schema. ' +
-        'Reference fields accept entity names (not IDs). IDs for nested entities are auto-generated. ' +
-        'Defaults to empty config.',
-    ),
-});
-
-const configurePluginOutputSchema = z.object({
-  message: z.string().describe('A summary of the staged change.'),
-  issues: z
-    .array(definitionIssueSchema)
-    .optional()
-    .describe('Definition issues found after staging.'),
-});
 
 /**
  * Auto-generates IDs for nested entities in a plugin config using the
@@ -74,15 +52,7 @@ function assignConfigEntityIds(
 }
 
 export const configurePluginAction = createServiceAction({
-  name: 'configure-plugin',
-  title: 'Configure Plugin',
-  description:
-    'Enable a plugin or update its configuration in the draft session. ' +
-    'Use get-plugin-info first to see the config schema and current config. ' +
-    'Reference fields accept entity names (not IDs). IDs for nested entities are auto-generated. ' +
-    'Changes are not persisted until commit-draft is called.',
-  inputSchema: configurePluginInputSchema,
-  outputSchema: configurePluginOutputSchema,
+  ...configurePluginMetadata,
   handler: async (input, context) => {
     const { session, parserContext, projectDirectory } =
       await getOrCreateDraftSession(input.project, context);

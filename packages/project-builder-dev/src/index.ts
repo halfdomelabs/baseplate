@@ -40,5 +40,3 @@ export async function runDevCli(): Promise<void> {
 
   await program.parseAsync(process.argv);
 }
-
-export { generateProject } from './runner/generate.js';

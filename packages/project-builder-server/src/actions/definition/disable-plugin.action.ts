@@ -10,38 +10,19 @@ import {
   serializeSchema,
 } from '@baseplate-dev/project-builder-lib';
 import { produce } from 'immer';
-import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
+import { disablePluginMetadata } from './disable-plugin.action-metadata.js';
 import { getOrCreateDraftSession } from './draft-session.js';
 import {
-  definitionIssueSchema,
   mapIssueToOutput,
   validateAndSaveDraft,
   writeIssuesCliOutput,
 } from './validate-draft.js';
 
-const disablePluginInputSchema = z.object({
-  project: z.string().describe('The name or ID of the project.'),
-  pluginKey: z.string().describe('The plugin key to disable.'),
-});
-
-const disablePluginOutputSchema = z.object({
-  message: z.string().describe('A summary of the staged change.'),
-  issues: z
-    .array(definitionIssueSchema)
-    .optional()
-    .describe('Definition issues found after staging.'),
-});
-
 export const disablePluginAction = createServiceAction({
-  name: 'disable-plugin',
-  title: 'Disable Plugin',
-  description:
-    'Disable a plugin in the draft session. Also disables any plugins managed by this plugin. Changes are not persisted until commit-draft is called.',
-  inputSchema: disablePluginInputSchema,
-  outputSchema: disablePluginOutputSchema,
+  ...disablePluginMetadata,
   handler: async (input, context) => {
     const { session, parserContext, projectDirectory } =
       await getOrCreateDraftSession(input.project, context);

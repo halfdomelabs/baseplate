@@ -5,45 +5,16 @@ import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { dirExists } from '@baseplate-dev/utils/node';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { z } from 'zod';
 
-import { createServiceAction } from '../types.js';
+import { createServiceAction } from '#src/actions/types.js';
 
-const projectTypeSchema = z
-  .enum(['example', 'test'])
-  .describe('The type of project to initialize.');
-
-const initProjectInputSchema = z.object({
-  projectDirectory: z
-    .string()
-    .describe(
-      'Absolute path to the project directory (e.g. examples/<name>/ or tests/<name>/).',
-    ),
-  projectName: z
-    .string()
-    .describe('The name of the project (used as the project name).'),
-  type: projectTypeSchema,
-});
-
-const initProjectOutputSchema = z.object({
-  success: z.boolean().describe('Whether the initialization was successful.'),
-  message: z.string().describe('Result message.'),
-  definitionPath: z
-    .string()
-    .optional()
-    .describe('Path to the created project definition.'),
-});
+import { initProjectMetadata } from './test-project-init.action-metadata.js';
 
 /**
  * Service action to initialize a new example or test project with a default project definition.
  */
 export const initProjectAction = createServiceAction({
-  name: 'init-project',
-  title: 'Initialize Project',
-  description:
-    'Create a new example or test project with an initial project definition',
-  inputSchema: initProjectInputSchema,
-  outputSchema: initProjectOutputSchema,
+  ...initProjectMetadata,
   handler: async (input, context) => {
     const { projectDirectory, projectName, type } = input;
     const { logger } = context;
