@@ -59,11 +59,20 @@ try {
 
   if (!loadAction) {
     throw new Error(
-      `Action ${actionName} not found. Make sure it is registered in the action registry.`,
+      `Action ${actionName} not found. Make sure it is registered in ACTION_LOADERS.`,
     );
   }
 
   const action: ServiceAction = await loadAction();
+
+  // The loader map's keys are type-checked against the manifest, but nothing
+  // types a loader's key against the action it returns, so a mismapped entry
+  // would run the wrong handler and validate against the wrong output schema.
+  if (action.name !== actionName) {
+    throw new Error(
+      `ACTION_LOADERS maps ${actionName} to the ${action.name} action.`,
+    );
+  }
 
   const proxyLogger = createEventedLogger();
 

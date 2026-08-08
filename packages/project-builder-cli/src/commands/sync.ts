@@ -29,8 +29,6 @@ export function addSyncCommand(program: Command): void {
           throw new Error('No project specified');
         }
 
-        // Imported dynamically so the action handlers (and their generator
-        // dependencies) stay off the startup path of every CLI command.
         const { syncProjectAction } =
           await import('@baseplate-dev/project-builder-server/actions/definitions');
 

@@ -35,8 +35,6 @@ export function addDiffCommand(program: Command): void {
         const resolvedProject = await resolveProject(project);
         const context = await createServiceActionContext(resolvedProject);
 
-        // Imported dynamically so the action handlers (and their generator
-        // dependencies) stay off the startup path of every CLI command.
         const { diffProjectAction } =
           await import('@baseplate-dev/project-builder-server/actions/definitions');
         const result = await invokeServiceActionAsCli(

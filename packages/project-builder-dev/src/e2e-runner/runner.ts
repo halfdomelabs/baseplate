@@ -35,8 +35,6 @@ async function runTest(
   // Generate test project using the sync service action
   console.info(`Generating project for ${test.projectDirectory}...`);
 
-  // Imported dynamically so the action handlers (and their generator
-  // dependencies) stay off the startup path of every CLI command.
   const { syncProjectAction } =
     await import('@baseplate-dev/project-builder-server/actions/definitions');
   const result = await invokeServiceActionAsCli(

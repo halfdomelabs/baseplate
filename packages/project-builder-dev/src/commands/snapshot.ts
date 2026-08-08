@@ -34,8 +34,6 @@ export function addSnapshotCommand(program: Command): void {
         try {
           const context = await createServiceActionContext();
 
-          // Imported dynamically so the action handlers (and their generator
-          // dependencies) stay off the startup path of every CLI command.
           const { snapshotAddAction } =
             await import('@baseplate-dev/project-builder-server/actions/definitions');
 

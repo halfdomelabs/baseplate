@@ -127,8 +127,6 @@ async function handleListTemplates(generatorDirectory: string): Promise<void> {
   const resolvedDirectory = expandPathWithTilde(generatorDirectory);
   const context = await createServiceActionContext();
 
-  // Imported dynamically so the action handlers (and their generator
-  // dependencies) stay off the startup path of every CLI command.
   const { listTemplatesAction } =
     await import('@baseplate-dev/project-builder-server/actions/definitions');
 

@@ -42,8 +42,6 @@ export function addSyncExamplesCommand(program: Command): void {
           projects: exampleProjects,
         };
 
-        // Imported dynamically so the action handlers (and their generator
-        // dependencies) stay off the startup path of every CLI command.
         const { syncAllProjectsAction } =
           await import('@baseplate-dev/project-builder-server/actions/definitions');
 
