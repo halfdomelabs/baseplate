@@ -1,5 +1,18 @@
 # @baseplate-dev/react-generators
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1016](https://github.com/halfdomelabs/baseplate/pull/1016) [`ff22f21`](https://github.com/halfdomelabs/baseplate/commit/ff22f21b3d92705b904fdacb90819bb3bdd6c303) Thanks [@kingston](https://github.com/kingston)! - The generated error boundary no longer emits an unused eslint-disable warning.
+
+- [#1013](https://github.com/halfdomelabs/baseplate/pull/1013) [`93aee4f`](https://github.com/halfdomelabs/baseplate/commit/93aee4f95c4cef9e16e08e1934ccae2d5d3f3ce6) Thanks [@kingston](https://github.com/kingston)! - Generated packages now use `@types/node` 24.13, so web and React library packages match the Node version the generated project already targets.
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.6.18
+  - @baseplate-dev/sync@0.6.18
+  - @baseplate-dev/utils@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes
