@@ -1,5 +1,19 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1017](https://github.com/halfdomelabs/baseplate/pull/1017) [`eb219ec`](https://github.com/halfdomelabs/baseplate/commit/eb219ec27b78e7b7447ba60bc07900557a783297) Thanks [@kingston](https://github.com/kingston)! - The MCP server and CLI now load action handlers only when an action runs, cutting startup memory substantially, and the MCP server has moved to v2 of the Model Context Protocol SDK.
+
+- Updated dependencies [[`e766854`](https://github.com/halfdomelabs/baseplate/commit/e766854f565d24003c7d4adc8011445953713917), [`ff22f21`](https://github.com/halfdomelabs/baseplate/commit/ff22f21b3d92705b904fdacb90819bb3bdd6c303), [`93aee4f`](https://github.com/halfdomelabs/baseplate/commit/93aee4f95c4cef9e16e08e1934ccae2d5d3f3ce6)]:
+  - @baseplate-dev/fastify-generators@0.6.18
+  - @baseplate-dev/react-generators@0.6.18
+  - @baseplate-dev/core-generators@0.6.18
+  - @baseplate-dev/project-builder-lib@0.6.18
+  - @baseplate-dev/sync@0.6.18
+  - @baseplate-dev/utils@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

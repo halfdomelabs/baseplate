@@ -1,5 +1,18 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1017](https://github.com/halfdomelabs/baseplate/pull/1017) [`eb219ec`](https://github.com/halfdomelabs/baseplate/commit/eb219ec27b78e7b7447ba60bc07900557a783297) Thanks [@kingston](https://github.com/kingston)! - The MCP server and CLI now load action handlers only when an action runs, cutting startup memory substantially, and the MCP server has moved to v2 of the Model Context Protocol SDK.
+
+- Updated dependencies [[`eb219ec`](https://github.com/halfdomelabs/baseplate/commit/eb219ec27b78e7b7447ba60bc07900557a783297)]:
+  - @baseplate-dev/project-builder-server@0.6.18
+  - @baseplate-dev/project-builder-common@0.6.18
+  - @baseplate-dev/project-builder-web@0.6.18
+  - @baseplate-dev/project-builder-lib@0.6.18
+  - @baseplate-dev/utils@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

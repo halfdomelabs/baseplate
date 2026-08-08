@@ -1,5 +1,18 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1015](https://github.com/halfdomelabs/baseplate/pull/1015) [`e766854`](https://github.com/halfdomelabs/baseplate/commit/e766854f565d24003c7d4adc8011445953713917) Thanks [@kingston](https://github.com/kingston)! - Prisma CLI commands now let `.env.local` override values from `.env` instead of ignoring them.
+
+- [#1013](https://github.com/halfdomelabs/baseplate/pull/1013) [`93aee4f`](https://github.com/halfdomelabs/baseplate/commit/93aee4f95c4cef9e16e08e1934ccae2d5d3f3ce6) Thanks [@kingston](https://github.com/kingston)! - Generated packages now use `@types/node` 24.13, so web and React library packages match the Node version the generated project already targets.
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.6.18
+  - @baseplate-dev/sync@0.6.18
+  - @baseplate-dev/utils@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes
