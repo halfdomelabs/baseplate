@@ -6,8 +6,11 @@ blockExoticSubdeps: true
 
 catalog:
   '@eslint/js': ^9.39.5
-  '@module-federation/enhanced': ^2.7.0
-  '@module-federation/vite': 1.17.0
+  # Keep in lockstep with @module-federation/vite, which pins its own
+  # @module-federation/runtime to an exact version. A mismatch loads two
+  # federation runtimes and breaks singleton sharing.
+  '@module-federation/enhanced': 2.8.2
+  '@module-federation/vite': 1.20.5
   '@tailwindcss/vite': 4.3.3
   '@types/node': ^24.13.0
   '@types/react': ^19.2.18
