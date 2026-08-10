@@ -79,13 +79,17 @@ export function writePothosObjectFieldFromDtoScalarField(
  */
 export function writePothosExposeFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
-  options: PothosWriterOptions & { authorize?: TsCodeFragment },
+  options: PothosWriterOptions & {
+    authorize?: TsCodeFragment;
+    description?: string;
+  },
 ): TsCodeFragment {
   const { methodName, type } = getPothosMethodAndTypeForScalar(field, options);
   const fieldOptions = writePothosFieldOptions({
     nullable: field.isOptional,
     type,
     authorize: options.authorize,
+    description: options.description,
   });
 
   const exposeMethodName = (() => {

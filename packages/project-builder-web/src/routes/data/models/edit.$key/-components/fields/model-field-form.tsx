@@ -24,6 +24,7 @@ import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
 import { ModelFieldBadges } from './badges/model-field-badges.js';
+import { ModelFieldDescriptionDialog } from './description/model-field-description-dialog.js';
 import { ModelIndexDialog } from './indexes/model-index-dialog.js';
 import { ModelFieldDefaultValueInput } from './model-field-default-value-input.js';
 import { ModelFieldTypeInput } from './model-field-type-input.js';
@@ -127,6 +128,8 @@ function ModelFieldForm({
 
   const [isRelationDialogOpen, setIsRelationDialogOpen] = useState(false);
   const [relationId, setRelationId] = useState<string | undefined>();
+
+  const [isDescriptionDialogOpen, setIsDescriptionDialogOpen] = useState(false);
 
   return (
     <div className={clsx('items-center', className)}>
@@ -271,6 +274,13 @@ function ModelFieldForm({
                       Edit Index {ownIndexes.length > 1 && idxNum + 1}
                     </DropdownMenuItem>
                   ))}
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsDescriptionDialogOpen(true);
+                  }}
+                >
+                  {watchedField.description ? 'Edit' : 'Add'} Description
+                </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -297,6 +307,12 @@ function ModelFieldForm({
             onOpenChange={setIsRelationDialogOpen}
             relationId={relationId}
             defaultFieldName={watchedField.name}
+          />
+          <ModelFieldDescriptionDialog
+            control={control}
+            idx={idx}
+            open={isDescriptionDialogOpen}
+            onOpenChange={setIsDescriptionDialogOpen}
           />
           <Button
             variant="ghost"

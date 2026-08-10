@@ -62,6 +62,7 @@ export function ModelAddFieldButton({
           {
             name: 'id',
             type: 'uuid',
+            description: '',
             options: {
               defaultGeneration: 'uuidv7',
             },
@@ -79,6 +80,7 @@ export function ModelAddFieldButton({
           {
             name: 'createdAt',
             type: 'dateTime',
+            description: '',
             options: {
               defaultToNow: true,
             },
@@ -86,6 +88,7 @@ export function ModelAddFieldButton({
           {
             name: 'updatedAt',
             type: 'dateTime',
+            description: '',
             options: {
               updatedAt: true,
               defaultToNow: true,
@@ -121,6 +124,7 @@ export function ModelAddFieldButton({
             name: '',
             type: 'string',
             isOptional: true,
+            description: '',
             options: {
               default: '',
             },

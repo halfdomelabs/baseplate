@@ -38,6 +38,7 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
       id: z.string(),
       name: VALIDATORS.CAMEL_CASE_STRING,
       isOptional: z.boolean().default(false),
+      description: z.string().default(''),
     };
 
     const defaultOptionsSchema = z
