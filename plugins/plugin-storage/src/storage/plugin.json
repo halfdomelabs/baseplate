@@ -7,6 +7,7 @@
   "moduleDirectories": ["core", "transformers", "admin-crud"],
   "pluginDependencies": [
     { "plugin": "@baseplate-dev/plugin-auth:auth" },
-    { "plugin": "@baseplate-dev/plugin-queue:queue" }
+    { "plugin": "@baseplate-dev/plugin-queue:queue" },
+    { "plugin": "@baseplate-dev/plugin-ai:dev-agents", "optional": true }
   ]
 }

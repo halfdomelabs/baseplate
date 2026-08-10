@@ -1,4 +1,20 @@
 {
+  "AGENTS.md": {
+    "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
+    "instanceData": {
+      "variables": {
+        "TPL_AGENT_DOCS_LIST": "- See `.agents/baseplate.md` for how to use the Baseplate MCP server, modify data models, and manage plugins\n- See `.agents/authorization.md` for the authorization model and the expression DSL used by model roles\n- See `.agents/storage-file-categories.md` for how to configure and use file storage categories (allowed types, size limits, upload roles)",
+        "TPL_APPS_LIST": "- **admin** — `web` app in `apps/admin/`\n- **backend** — `backend` app in `apps/backend/`\n- **web** — `web` app in `apps/web/`",
+        "TPL_PROJECT_NAME": "todo-with-better-auth"
+      }
+    },
+    "template": "agents-md"
+  },
+  "CLAUDE.md": {
+    "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
+    "instanceData": { "variables": {} },
+    "template": "claude-md"
+  },
   "README.md": {
     "generator": "@baseplate-dev/core-generators#node/root-readme",
     "instanceData": { "variables": { "TPL_PROJECT": "todo-with-better-auth" } },

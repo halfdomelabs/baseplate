@@ -9,5 +9,10 @@
   "@baseplate-dev/core-generators#node/prettier:prettier-config": ".prettierrc",
   "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
   "@baseplate-dev/core-generators#node/root-readme:readme": "README.md",
-  "@baseplate-dev/core-generators#node/turbo:turbo-config": "turbo.json"
+  "@baseplate-dev/core-generators#node/turbo:turbo-config": "turbo.json",
+  "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:agents-md": "AGENTS.md",
+  "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:authorization-md": ".agents/authorization.md",
+  "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:baseplate-md": ".agents/baseplate.md",
+  "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:claude-md": "CLAUDE.md",
+  "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:plugin-doc-storage-file-categories": ".agents/storage-file-categories.md"
 }
