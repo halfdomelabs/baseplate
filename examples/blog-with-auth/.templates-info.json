@@ -3,6 +3,7 @@
     "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
     "instanceData": {
       "variables": {
+        "TPL_AGENT_DOCS_LIST": "- See `.agents/baseplate.md` for how to use the Baseplate MCP server, modify data models, and manage plugins\n- See `.agents/authorization.md` for the authorization model and the expression DSL used by model roles\n- See `.agents/notification-topics.md` for how to configure notification topics and define notification types",
         "TPL_APPS_LIST": "- **admin** — `web` app in `apps/admin/`\n- **backend** — `backend` app in `apps/backend/`",
         "TPL_PROJECT_NAME": "blog-with-auth"
       }

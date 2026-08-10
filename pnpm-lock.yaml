@@ -1439,7 +1439,7 @@ importers:
         version: 9.0.0
       eslint:
         specifier: 'catalog:'
-        version: 9.39.5(jiti@2.7.0)(supports-color@10.2.2)
+        version: 9.39.5(jiti@2.7.0)(supports-color@5.5.0)
       nodemon:
         specifier: 'catalog:'
         version: 3.1.14
@@ -1670,6 +1670,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
+      '@baseplate-dev/plugin-ai':
+        specifier: workspace:*
+        version: link:../plugin-ai
       '@baseplate-dev/plugin-email':
         specifier: workspace:*
         version: link:../plugin-email
@@ -1858,6 +1861,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
+      '@baseplate-dev/plugin-ai':
+        specifier: workspace:*
+        version: link:../plugin-ai
       '@baseplate-dev/project-builder-lib':
         specifier: workspace:*
         version: link:../../packages/project-builder-lib
@@ -2200,7 +2206,7 @@ importers:
         version: 9.0.0
       eslint:
         specifier: 'catalog:'
-        version: 9.39.5(jiti@2.7.0)(supports-color@5.5.0)
+        version: 9.39.5(jiti@2.7.0)(supports-color@10.2.2)
       nodemon:
         specifier: 'catalog:'
         version: 3.1.14
@@ -9582,7 +9588,7 @@ snapshots:
 
   '@eslint-community/eslint-utils@4.10.1(eslint@9.39.5)':
     dependencies:
-      eslint: 9.39.5(jiti@2.7.0)(supports-color@5.5.0)
+      eslint: 9.39.5(jiti@2.7.0)(supports-color@10.2.2)
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}

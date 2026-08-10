@@ -60,3 +60,4 @@ This project uses Baseplate for code generation. The project definition is store
 - See `.agents/baseplate.md` for how to use the Baseplate MCP server, modify data models, and manage plugins
 - See `.agents/authorization.md` for the authorization model and the expression DSL used by model roles
 - See `.agents/storage-file-categories.md` for how to configure and use file storage categories (allowed types, size limits, upload roles)
+- See `.agents/stripe-billing-plans.md` for how to configure Stripe billing plans and the roles they grant subscribers
