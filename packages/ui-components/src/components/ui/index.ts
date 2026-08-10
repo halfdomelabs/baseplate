@@ -28,6 +28,7 @@ export * from './form-action-bar/form-action-bar.js';
 export * from './form-item/form-item.js';
 export * from './input-field/input-field.js';
 export * from './input-group/input-group.js';
+export * from './input-otp/input-otp.js';
 export * from './input/input.js';
 export * from './item/item.js';
 export * from './json-diff-viewer/json-diff-viewer.js';

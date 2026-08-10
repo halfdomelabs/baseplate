@@ -527,6 +527,34 @@ const inputGroup = createTsTemplateFile({
   variables: {},
 });
 
+const inputOtp = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'input-otp',
+  projectExports: {
+    InputOtp: {},
+    InputOtpField: {},
+    InputOtpFieldController: {},
+    InputOtpGroup: {},
+    InputOtpSeparator: {},
+    InputOtpSlot: {},
+  },
+  referencedGeneratorTemplates: {
+    cn: {},
+    field: {},
+    hooksUseControllerMerged: {},
+    typesForm: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/input-otp.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const item = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -1082,6 +1110,7 @@ export const componentsGroup = {
   input,
   inputField,
   inputGroup,
+  inputOtp,
   item,
   label,
   loader,

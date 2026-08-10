@@ -166,6 +166,13 @@ function LoginPage(): React.JSX.Element {
           </div>
           <div className="mt-4 flex flex-col gap-4 text-center text-sm">
             <Link
+              to="/auth/login-otp"
+              search={{ return_to }}
+              className="text-muted-foreground underline-offset-4 hover:underline"
+            >
+              Sign in with a code instead
+            </Link>
+            <Link
               to="/auth/forgot-password"
               className="text-muted-foreground underline-offset-4 hover:underline"
             >
