@@ -8,6 +8,10 @@ const agentsMd = createTextTemplateFile({
     path: path.join(import.meta.dirname, '../templates/package/AGENTS.md'),
   },
   variables: {
+    TPL_AGENT_DOCS_LIST: {
+      description:
+        'Markdown list of links to .agents/*.md reference docs, including the built-in baseplate.md/authorization.md plus any plugin-contributed docs',
+    },
     TPL_APPS_LIST: {
       description: 'Markdown list of applications with types and directories',
     },

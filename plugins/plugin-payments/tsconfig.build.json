@@ -32,6 +32,9 @@
     },
     {
       "path": "../../packages/utils/tsconfig.build.json"
+    },
+    {
+      "path": "../plugin-ai/tsconfig.build.json"
     }
   ]
 }

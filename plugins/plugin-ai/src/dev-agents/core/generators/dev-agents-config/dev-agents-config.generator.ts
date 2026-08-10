@@ -16,6 +16,13 @@ const descriptorSchema = z.object({
       directory: z.string(),
     }),
   ),
+  pluginDocs: z.array(
+    z.object({
+      id: z.string(),
+      description: z.string(),
+      content: z.string(),
+    }),
+  ),
 });
 
 type Descriptor = z.infer<typeof descriptorSchema>;
@@ -88,6 +95,22 @@ const MCP_SETUP_COMMANDS: Record<DevAgentValue, string> = {
   ].join('\n'),
 };
 
+const BASE_AGENT_DOCS_LINKS = [
+  '- See `.agents/baseplate.md` for how to use the Baseplate MCP server, modify data models, and manage plugins',
+  '- See `.agents/authorization.md` for the authorization model and the expression DSL used by model roles',
+];
+
+// Always includes the base links so the value is never empty — an empty
+// template variable value breaks the extractor's ability to locate it.
+export function buildAgentDocsList(docs: Descriptor['pluginDocs']): string {
+  return [
+    ...BASE_AGENT_DOCS_LINKS,
+    ...docs.map(
+      (doc) => `- See \`.agents/${doc.id}.md\` for ${doc.description}`,
+    ),
+  ].join('\n');
+}
+
 export function buildMcpSetupInstructions(
   enabledAgents: DevAgentValue[],
 ): string {
@@ -122,6 +145,9 @@ export const devAgentsConfigGenerator = createGenerator({
                 variables: {
                   TPL_PROJECT_NAME: descriptor.projectName,
                   TPL_APPS_LIST: buildAppsList(descriptor.apps),
+                  TPL_AGENT_DOCS_LIST: buildAgentDocsList(
+                    descriptor.pluginDocs,
+                  ),
                 },
               }),
             );
@@ -143,6 +169,15 @@ export const devAgentsConfigGenerator = createGenerator({
             // Conditionally generate Claude-specific files
             if (descriptor.enabledAgents.includes('claude-code')) {
               await builder.apply(renderers.claudeMd.render({}));
+            }
+
+            // Generate plugin-contributed reference docs
+            for (const doc of descriptor.pluginDocs) {
+              builder.writeFile({
+                id: `plugin-doc-${doc.id}`,
+                destination: `.agents/${doc.id}.md`,
+                contents: doc.content,
+              });
             }
           },
         };

@@ -1,0 +1,16 @@
+{
+  "authorization.md": {
+    "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
+    "instanceData": { "variables": {} },
+    "template": "authorization-md"
+  },
+  "baseplate.md": {
+    "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
+    "instanceData": {
+      "variables": {
+        "TPL_MCP_SETUP_INSTRUCTIONS": "**Claude Code:**\n```bash\nclaude mcp add baseplate -- pnpm baseplate mcp\n```"
+      }
+    },
+    "template": "baseplate-md"
+  }
+}

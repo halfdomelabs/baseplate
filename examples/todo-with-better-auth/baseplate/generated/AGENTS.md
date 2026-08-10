@@ -1,14 +1,16 @@
 # AGENTS.md
 
-This file provides guidance to AI agents working with the **{{TPL_PROJECT_NAME}}** project.
+This file provides guidance to AI agents working with the **todo-with-better-auth** project.
 
 ## Project Overview
 
-{{TPL_PROJECT_NAME}} is a full-stack TypeScript monorepo built with [Baseplate](https://www.baseplate.dev).
+todo-with-better-auth is a full-stack TypeScript monorepo built with [Baseplate](https://www.baseplate.dev).
 
 ### Applications
 
-{{TPL_APPS_LIST}}
+- **admin** — `web` app in `apps/admin/`
+- **backend** — `backend` app in `apps/backend/`
+- **web** — `web` app in `apps/web/`
 
 ## Build & Test Commands
 
@@ -55,4 +57,7 @@ This is a pnpm monorepo managed with Turborepo. Key directories:
 
 This project uses Baseplate for code generation. The project definition is stored in `baseplate/project-definition.json`.
 
-{{TPL_AGENT_DOCS_LIST}}
+- See `.agents/baseplate.md` for how to use the Baseplate MCP server, modify data models, and manage plugins
+- See `.agents/authorization.md` for the authorization model and the expression DSL used by model roles
+- See `.agents/storage-file-categories.md` for how to configure and use file storage categories (allowed types, size limits, upload roles)
+- See `.agents/stripe-billing-plans.md` for how to configure Stripe billing plans and the roles they grant subscribers

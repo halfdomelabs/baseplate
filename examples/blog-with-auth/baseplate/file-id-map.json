@@ -13,5 +13,6 @@
   "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:agents-md": "AGENTS.md",
   "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:authorization-md": ".agents/authorization.md",
   "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:baseplate-md": ".agents/baseplate.md",
-  "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:claude-md": "CLAUDE.md"
+  "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:claude-md": "CLAUDE.md",
+  "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config:plugin-doc-notification-topics": ".agents/notification-topics.md"
 }

@@ -7,6 +7,7 @@ import {
 
 import type { DevAgentsPluginDefinition } from './schema/plugin-definition.js';
 
+import { agentDocsSpec } from './agent-docs-spec.js';
 import { devAgentsConfigGenerator } from './generators/dev-agents-config/index.js';
 
 export default createPluginModule({
@@ -17,7 +18,7 @@ export default createPluginModule({
   initialize: ({ rootCompiler }, { pluginKey }) => {
     rootCompiler.compilers.push({
       pluginKey,
-      compile: ({ projectDefinition }) => {
+      compile: ({ projectDefinition, definitionContainer }) => {
         const config = PluginUtils.configByKeyOrThrow(
           projectDefinition,
           pluginKey,
@@ -25,6 +26,10 @@ export default createPluginModule({
 
         const generalSettings = projectDefinition.settings.general;
         const monorepoSettings = projectDefinition.settings.monorepo;
+
+        const pluginDocs = definitionContainer.pluginStore
+          .use(agentDocsSpec)
+          .compileAll({ projectDefinition, definitionContainer });
 
         return {
           devAgentsConfig: devAgentsConfigGenerator({
@@ -35,6 +40,7 @@ export default createPluginModule({
               type: a.type,
               directory: getPackageDirectory(monorepoSettings, a.name, 'app'),
             })),
+            pluginDocs,
           }),
         };
       },

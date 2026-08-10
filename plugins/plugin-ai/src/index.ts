@@ -1,1 +1,1 @@
-export type * from './dev-agents/index.js';
+export * from './dev-agents/index.js';

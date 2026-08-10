@@ -5,5 +5,8 @@
   "description": "Payment processing and webhook handling with Stripe.",
   "version": "0.1.0",
   "moduleDirectories": ["core"],
-  "pluginDependencies": [{ "plugin": "@baseplate-dev/plugin-auth:auth" }]
+  "pluginDependencies": [
+    { "plugin": "@baseplate-dev/plugin-auth:auth" },
+    { "plugin": "@baseplate-dev/plugin-ai:dev-agents", "optional": true }
+  ]
 }

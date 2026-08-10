@@ -1670,6 +1670,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
+      '@baseplate-dev/plugin-ai':
+        specifier: workspace:*
+        version: link:../plugin-ai
       '@baseplate-dev/plugin-email':
         specifier: workspace:*
         version: link:../plugin-email
@@ -1858,6 +1861,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
+      '@baseplate-dev/plugin-ai':
+        specifier: workspace:*
+        version: link:../plugin-ai
       '@baseplate-dev/project-builder-lib':
         specifier: workspace:*
         version: link:../../packages/project-builder-lib
@@ -2122,6 +2128,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
+      '@baseplate-dev/plugin-ai':
+        specifier: workspace:*
+        version: link:../plugin-ai
       '@baseplate-dev/plugin-queue':
         specifier: workspace:*
         version: link:../plugin-queue
