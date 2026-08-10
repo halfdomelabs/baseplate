@@ -42,6 +42,7 @@ import { pothosSchemaBaseTypesProvider } from '../pothos/index.js';
 
 const exposedFieldSchema = z.object({
   name: z.string().min(1),
+  description: z.string().optional(),
   globalRoles: z.array(z.string().min(1)).default([]),
   instanceRoles: z.array(z.string().min(1)).default([]),
   paginated: z.boolean().default(false),
@@ -155,6 +156,13 @@ export const pothosPrismaObjectGenerator = createGenerator({
                 f.name,
                 { globalRoles: f.globalRoles, instanceRoles: f.instanceRoles },
               ]),
+          );
+
+          // Build lookup: fieldName → description
+          const fieldDescriptionMap = new Map(
+            exposedFields
+              .filter((f) => f.description)
+              .map((f) => [f.name, f.description]),
           );
 
           // Build lookup: fieldName → paginated flag
@@ -304,6 +312,7 @@ export const pothosPrismaObjectGenerator = createGenerator({
                       pothosSchemaBaseTypes,
                       typeReferences: [],
                       authorize,
+                      description: fieldDescriptionMap.get(field.name),
                     });
                   } else if (
                     authorize ||

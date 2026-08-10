@@ -5,6 +5,7 @@ import type { Control } from 'react-hook-form';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
 
+import { ModelFieldDescriptionBadge } from '../description/model-field-description-badge.js';
 import { ModelFieldIndexBadge } from '../indexes/model-index-badge.js';
 import { ModelPrimaryKeyBadge } from '../primary-key/model-primary-key-badge.js';
 import { ModelRelationsBadge } from '../relations/model-relation-badge.js';
@@ -56,6 +57,7 @@ export function ModelFieldBadges({
 
   const totalBadges =
     (isPrimary ? 1 : 0) +
+    (field.description ? 1 : 0) +
     uniqueConstraints.length +
     indexes.length +
     modelFieldRelations.length;
@@ -66,6 +68,14 @@ export function ModelFieldBadges({
       <ModelPrimaryKeyBadge
         key={'primary'}
         control={control}
+        autoCollapse={autoCollapse}
+      />
+    ),
+    field.description && (
+      <ModelFieldDescriptionBadge
+        key={'description'}
+        control={control}
+        idx={idx}
         autoCollapse={autoCollapse}
       />
     ),

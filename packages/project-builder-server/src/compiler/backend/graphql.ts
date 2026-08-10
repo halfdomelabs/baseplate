@@ -162,7 +162,12 @@ function buildObjectTypeFile(
     ref: string;
     globalRoles: string[];
     instanceRoles: string[];
-  }): { name: string; globalRoles: string[]; instanceRoles: string[] } => ({
+  }): {
+    name: string;
+    description?: string;
+    globalRoles: string[];
+    instanceRoles: string[];
+  } => ({
     name: appBuilder.nameFromId(entry.ref),
     globalRoles: isAuthEnabled
       ? entry.globalRoles.map((r) => appBuilder.nameFromId(r))
@@ -187,7 +192,16 @@ function buildObjectTypeFile(
       objectType: pothosPrismaObjectGenerator({
         modelName: model.name,
         exposedFields: [
-          ...fields.map(toExposedField),
+          ...fields.map((entry) => {
+            const { description } = ModelUtils.getScalarFieldById(
+              model,
+              entry.ref,
+            );
+            return {
+              ...toExposedField(entry),
+              description: description === '' ? undefined : description,
+            };
+          }),
           ...foreignRelations.map((entry) => {
             // Resolved for every list relation, not just orderable ones: a
             // target with a default sort orders the relation even when it
