@@ -1,4 +1,4 @@
-import { getPackageVersion } from '@baseplate-dev/utils/node';
+import { getPackageVersion, loadEnvFiles } from '@baseplate-dev/utils/node';
 import { program } from 'commander';
 
 import { addDefinitionCommand } from './commands/definition.js';
@@ -20,6 +20,9 @@ import { addTestCommand } from './commands/test.js';
  * commands for Baseplate plugin authors and internal development.
  */
 export async function runDevCli(): Promise<void> {
+  // Must run before commands are registered since option defaults read process.env
+  loadEnvFiles();
+
   const version = (await getPackageVersion(import.meta.dirname)) ?? '0.0.0';
 
   program.version(version, '-v, --version');

@@ -55,8 +55,11 @@ All paths are relative to the config file location. All fields are optional.
 | --------------------- | -------------------------------------------- |
 | `PROJECT_DIRECTORIES` | Comma-separated paths to search for projects |
 | `NO_BROWSER`          | Disable auto-opening browser in `serve`      |
-| `PORT`                | Port for the `serve` command                 |
+| `BASEPLATE_PORT`      | Absolute port for `serve`, overrides offset  |
 | `PORT_OFFSET`         | Offset added to the default port in `serve`  |
+
+These are read from `.env.local` and `.env` in the current directory, as well as the
+environment. Precedence is `--port` > `BASEPLATE_PORT` > `4400 + PORT_OFFSET`.
 
 ## Programmatic API
 

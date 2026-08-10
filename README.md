@@ -88,6 +88,19 @@ This is useful for:
 - Testing different features in parallel
 - Running multiple versions for comparison
 
+### Setting the `serve` port
+
+`baseplate serve` reads `.env.local` and `.env` from the directory it is run in, so the port
+can be set per project without exporting anything in your shell. Variables already set in the
+environment take precedence over the files.
+
+```env
+BASEPLATE_PORT=4410  # Absolute port, overrides PORT_OFFSET
+```
+
+Precedence is `--port` > `BASEPLATE_PORT` > `4400 + PORT_OFFSET`. Note that a plain `PORT`
+variable is deliberately ignored, so a generated app's `.env` cannot hijack the builder's port.
+
 ## Support
 
 If you encounter any issues or have questions, please:
