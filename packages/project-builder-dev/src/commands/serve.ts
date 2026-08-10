@@ -27,7 +27,7 @@ async function serveWebServer({
 }: ServeCommandOptions): Promise<{
   serviceManager: BuilderServiceManager;
 }> {
-  const { BuilderServiceManager, DEFAULT_SERVER_PORT, startWebServer } =
+  const { BuilderServiceManager, resolveServerPort, startWebServer } =
     await import('@baseplate-dev/project-builder-server');
 
   let projectBuilderWebDir: string | undefined;
@@ -56,12 +56,7 @@ async function serveWebServer({
     serviceActionContext: context,
   });
 
-  // Apply PORT_OFFSET if set
-  const parsedOffset = process.env.PORT_OFFSET
-    ? Number.parseInt(process.env.PORT_OFFSET, 10)
-    : 0;
-  const portOffset = Number.isNaN(parsedOffset) ? 0 : parsedOffset;
-  const effectivePort = port ?? DEFAULT_SERVER_PORT + portOffset;
+  const effectivePort = resolveServerPort({ port });
 
   await startWebServer({
     serviceManager,
@@ -89,11 +84,8 @@ export function addServeCommand(program: Command): void {
       !process.env.NO_BROWSER || process.env.NO_BROWSER === 'false',
     )
     .option('--no-browser', 'Do not open browser')
-    .option(
-      '--port <number>',
-      'Port to listen on',
-      (v: string) => Number.parseInt(v, 10),
-      process.env.PORT ? Number.parseInt(process.env.PORT, 10) : undefined,
+    .option('--port <number>', 'Port to listen on', (v: string) =>
+      Number.parseInt(v, 10),
     )
     .action(async ({ browser, port }: ServeCommandOptions) => {
       try {

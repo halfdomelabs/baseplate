@@ -1,4 +1,4 @@
-import { getPackageVersion } from '@baseplate-dev/utils/node';
+import { getPackageVersion, loadEnvFiles } from '@baseplate-dev/utils/node';
 import { program } from 'commander';
 
 import { addConfigCommand } from './commands/config.js';
@@ -14,6 +14,9 @@ import { addSyncCommand } from './commands/sync.js';
  * arguments and execute the appropriate command.
  */
 export async function runCli(): Promise<void> {
+  // Must run before commands are registered since option defaults read process.env
+  loadEnvFiles();
+
   const version = (await getPackageVersion(import.meta.dirname)) ?? '0.0.0';
 
   program.version(version, '-v, --version');
