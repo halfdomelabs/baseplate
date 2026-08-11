@@ -5,4 +5,4 @@
 '@baseplate-dev/react-generators': patch
 ---
 
-Local auth can now offer passwordless sign-in with a single-use code emailed to the user, enabled with the new "Email Sign-in Codes" setting. This adds an `attempts` column to the auth verification model, so existing local auth projects will need a database migration on their next sync.
+Local auth can now offer passwordless sign-in with a single-use code emailed to the user, enabled with the new "Email Sign-in Codes" setting. Existing local auth projects pick up a schema change and will need a database migration on their next sync.

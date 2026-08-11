@@ -143,6 +143,31 @@ describe('code-verification service', () => {
       expect(record.attempts).toBe(4);
     });
 
+    it('survives simultaneous guesses that all cross the attempt limit', async () => {
+      await create('123456');
+
+      const results = await Promise.all(
+        Array.from({ length: 4 }, () => validate('000000', { maxAttempts: 2 })),
+      );
+
+      // Several callers each conclude the budget is spent and try to discard
+      // the same record; losing that race must not raise.
+      expect(results).toEqual([null, null, null, null]);
+      expect(
+        await prisma.authVerification.count({ where: { type: TYPE } }),
+      ).toBe(0);
+    });
+
+    it('tolerates simultaneous validations of an expired code', async () => {
+      await create('123456', { expiresInSec: -1 });
+
+      const results = await Promise.all(
+        Array.from({ length: 4 }, () => validate('123456')),
+      );
+
+      expect(results).toEqual([null, null, null, null]);
+    });
+
     it('discards an expired code without matching it', async () => {
       await create('123456', { expiresInSec: -1 });
 
