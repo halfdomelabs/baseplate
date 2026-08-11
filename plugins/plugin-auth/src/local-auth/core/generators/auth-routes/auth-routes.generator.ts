@@ -10,6 +10,7 @@ import { AUTH_CORE_AUTH_ROUTES_GENERATED as GENERATED_TEMPLATES } from './genera
 
 const descriptorSchema = z.object({
   requireNameOnRegistration: z.boolean(),
+  emailOtp: z.boolean().default(false),
 });
 
 /**
@@ -19,7 +20,7 @@ export const authRoutesGenerator = createGenerator({
   name: 'auth/core/auth-routes',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ requireNameOnRegistration }) => ({
+  buildTasks: ({ requireNameOnRegistration, emailOtp }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
@@ -58,6 +59,17 @@ export const authRoutesGenerator = createGenerator({
             await builder.apply(
               renderers.mainGroup.render({
                 variables: {
+                  login: {
+                    TPL_OTP_LOGIN_LINK: emailOtp
+                      ? `<Link
+              to="/auth/login-otp"
+              search={{ return_to }}
+              className="text-muted-foreground underline-offset-4 hover:underline"
+            >
+              Sign in with a code instead
+            </Link>`
+                      : '',
+                  },
                   register: {
                     TPL_REGISTER_SCHEMA: registerSchema,
                     TPL_REGISTER_INPUT: registerInput,
@@ -76,6 +88,10 @@ export const authRoutesGenerator = createGenerator({
               }),
             );
             await builder.apply(renderers.verifyEmail.render({}));
+            if (emailOtp) {
+              await builder.apply(renderers.otpConstants.render({}));
+              await builder.apply(renderers.loginOtp.render({}));
+            }
           },
         };
       },

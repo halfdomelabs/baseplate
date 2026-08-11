@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "account-verification-email"
   },
+  "email-otp.email.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/auth-email-templates",
+    "instanceData": {},
+    "template": "email-otp-email"
+  },
   "password-changed.email.tsx": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/auth-email-templates",
     "instanceData": {},

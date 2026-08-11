@@ -24,6 +24,16 @@ import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
 import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES } from './typed-templates.js';
 
 export interface LocalAuthCoreAuthEmailPasswordRenderers {
+  constantsOtp: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.constantsOtp
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   moduleGroup: {
     render: (
       options: Omit<
@@ -34,11 +44,31 @@ export interface LocalAuthCoreAuthEmailPasswordRenderers {
       >,
     ) => BuilderAction;
   };
+  schemaEmailOtpMutations: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaEmailOtpMutations
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   schemaEmailVerificationMutations: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaEmailVerificationMutations
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  servicesEmailOtp: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesEmailOtp
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -97,6 +127,15 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
     return {
       providers: {
         localAuthCoreAuthEmailPasswordRenderers: {
+          constantsOtp: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.constantsOtp,
+                destination: paths.constantsOtp,
+                ...options,
+              }),
+          },
           moduleGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
@@ -119,6 +158,20 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 ...options,
               }),
           },
+          schemaEmailOtpMutations: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaEmailOtpMutations,
+                destination: paths.schemaEmailOtpMutations,
+                importMapProviders: {
+                  authModuleImports,
+                  pothosImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
           schemaEmailVerificationMutations: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -127,6 +180,25 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 destination: paths.schemaEmailVerificationMutations,
                 importMapProviders: {
                   pothosImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          servicesEmailOtp: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesEmailOtp,
+                destination: paths.servicesEmailOtp,
+                importMapProviders: {
+                  authModuleImports,
+                  configServiceImports,
+                  errorHandlerServiceImports,
+                  prismaImports,
+                  rateLimitImports,
+                  requestServiceContextImports,
+                  userSessionTypesImports,
                 },
                 generatorPaths: paths,
                 ...options,

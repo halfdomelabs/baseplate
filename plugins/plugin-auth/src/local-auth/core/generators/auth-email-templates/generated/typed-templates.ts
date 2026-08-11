@@ -17,6 +17,21 @@ const accountVerificationEmail = createTsTemplateFile({
   variables: {},
 });
 
+const emailOtpEmail = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    transactionalLibImports: transactionalLibImportsProvider,
+  },
+  name: 'email-otp-email',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/emails/auth/email-otp.email.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const passwordChangedEmail = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -49,6 +64,7 @@ const passwordResetEmail = createTsTemplateFile({
 
 export const LOCAL_AUTH_AUTH_EMAIL_TEMPLATES_TEMPLATES = {
   accountVerificationEmail,
+  emailOtpEmail,
   passwordChangedEmail,
   passwordResetEmail,
 };

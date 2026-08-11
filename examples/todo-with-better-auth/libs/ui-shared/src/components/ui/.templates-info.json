@@ -119,6 +119,11 @@
     "instanceData": {},
     "template": "input-group"
   },
+  "input-otp.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "input-otp"
+  },
   "input.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components-library",
     "instanceData": {},

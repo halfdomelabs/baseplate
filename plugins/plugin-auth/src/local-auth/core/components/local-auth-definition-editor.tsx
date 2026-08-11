@@ -64,6 +64,7 @@ export function LocalAuthDefinitionEditor({
     return {
       additionalUserAdminRoles: [],
       requireNameOnRegistration: false,
+      emailOtp: false,
     } satisfies LocalAuthPluginDefinitionInput;
   }, [pluginMetadata?.config]);
 
@@ -196,6 +197,25 @@ export function LocalAuthDefinitionEditor({
                     name="requireNameOnRegistration"
                     control={control}
                     description="When enabled, users must provide their name when registering."
+                  />
+                </SectionListSectionContent>
+              </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    Sign-in Methods
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    Choose how users can sign in, in addition to email and
+                    password.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent className="auth:space-y-6">
+                  <SwitchFieldController
+                    label="Email Sign-in Codes"
+                    name="emailOtp"
+                    control={control}
+                    description="When enabled, users can sign in with a single-use code emailed to them instead of a password. Signing in with a code creates an account if the address is new."
                   />
                 </SectionListSectionContent>
               </SectionListSection>

@@ -19,6 +19,16 @@ export interface LocalAuthAuthEmailTemplatesRenderers {
       >,
     ) => BuilderAction;
   };
+  emailOtpEmail: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_AUTH_EMAIL_TEMPLATES_TEMPLATES.emailOtpEmail
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   passwordChangedEmail: {
     render: (
       options: Omit<
@@ -66,6 +76,18 @@ const localAuthAuthEmailTemplatesRenderersTask = createGeneratorTask({
                 template:
                   LOCAL_AUTH_AUTH_EMAIL_TEMPLATES_TEMPLATES.accountVerificationEmail,
                 destination: paths.accountVerificationEmail,
+                importMapProviders: {
+                  transactionalLibImports,
+                },
+                ...options,
+              }),
+          },
+          emailOtpEmail: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_AUTH_EMAIL_TEMPLATES_TEMPLATES.emailOtpEmail,
+                destination: paths.emailOtpEmail,
                 importMapProviders: {
                   transactionalLibImports,
                 },

@@ -31,6 +31,7 @@ model AuthVerification {
   value      String
   userId     String?  @map("user_id") @db.Uuid
   metadata   Json?
+  attempts   Int      @default(0)
   expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)

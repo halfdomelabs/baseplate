@@ -255,6 +255,13 @@
             "type": "json"
           },
           {
+            "id": "model-scalar-field:vwwNR4j2QQad",
+            "isOptional": false,
+            "name": "attempts",
+            "options": { "default": "0" },
+            "type": "int"
+          },
+          {
             "id": "model-scalar-field:JBzoMuV1SZO8",
             "isOptional": false,
             "name": "expiresAt",
@@ -1688,6 +1695,7 @@
     {
       "config": {
         "additionalUserAdminRoles": ["admin"],
+        "emailOtp": true,
         "requireNameOnRegistration": true
       },
       "id": "plugin:baseplate-dev_plugin-auth_local-auth",

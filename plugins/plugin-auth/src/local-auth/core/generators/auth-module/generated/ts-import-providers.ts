@@ -16,10 +16,13 @@ export const authModuleImportsSchema = createTsImportMapSchema({
   cleanupAuthVerificationQueue: {},
   cleanupAuthVerificationWorker: {},
   cleanupExpiredAuthVerifications: {},
+  consumeCodeVerification: {},
   CookieUserSessionService: {},
   createAuthVerification: {},
+  createCodeVerification: {},
   userSessionPayload: {},
   validateAuthVerification: {},
+  validateCodeVerification: {},
 });
 
 export type AuthModuleImportsProvider = TsImportMapProviderFromSchema<
@@ -44,10 +47,13 @@ const localAuthCoreAuthModuleImportsTask = createGeneratorTask({
           cleanupAuthVerificationWorker:
             paths.queuesCleanupAuthVerificationWorker,
           cleanupExpiredAuthVerifications: paths.servicesAuthVerification,
+          consumeCodeVerification: paths.servicesCodeVerification,
           CookieUserSessionService: paths.userSessionService,
           createAuthVerification: paths.servicesAuthVerification,
+          createCodeVerification: paths.servicesCodeVerification,
           userSessionPayload: paths.schemaUserSessionPayloadObjectType,
           validateAuthVerification: paths.servicesAuthVerification,
+          validateCodeVerification: paths.servicesCodeVerification,
         }),
       },
     };

@@ -1,4 +1,9 @@
 {
+  "otp.constants.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "constants-otp"
+  },
   "password.constants.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
     "instanceData": {},

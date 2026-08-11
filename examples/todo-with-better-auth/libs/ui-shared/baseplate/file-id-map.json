@@ -36,6 +36,7 @@
   "@baseplate-dev/react-generators#core/react-components-library:input": "src/components/ui/input.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:input-field": "src/components/ui/input-field.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:input-group": "src/components/ui/input-group.tsx",
+  "@baseplate-dev/react-generators#core/react-components-library:input-otp": "src/components/ui/input-otp.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:item": "src/components/ui/item.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:label": "src/components/ui/label.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:loader": "src/components/ui/loader.tsx",

@@ -127,6 +127,14 @@ export {
   InputGroupText,
   InputGroupTextarea,
 } from './components/ui/input-group.js';
+export {
+  InputOtp,
+  InputOtpField,
+  InputOtpFieldController,
+  InputOtpGroup,
+  InputOtpSeparator,
+  InputOtpSlot,
+} from './components/ui/input-otp.js';
 export { Input } from './components/ui/input.js';
 export {
   Item,

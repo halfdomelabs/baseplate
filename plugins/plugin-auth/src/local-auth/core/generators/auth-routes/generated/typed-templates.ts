@@ -9,6 +9,26 @@ import path from 'node:path';
 
 import { reactSessionImportsProvider } from '#src/local-auth/core/generators/react-session/generated/ts-import-providers.js';
 
+const loginOtp = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+    reactSessionImports: reactSessionImportsProvider,
+  },
+  name: 'login-otp',
+  referencedGeneratorTemplates: { otpConstants: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/login-otp.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const constants = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -61,7 +81,7 @@ const login = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/auth_/login.tsx'),
   },
-  variables: {},
+  variables: { TPL_OTP_LOGIN_LINK: {} },
 });
 
 const register = createTsTemplateFile({
@@ -128,6 +148,19 @@ export const mainGroup = {
   route,
 };
 
+const otpConstants = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'otp-constants',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/-otp-constants.ts',
+    ),
+  },
+  variables: {},
+});
+
 const verifyEmail = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -146,4 +179,9 @@ const verifyEmail = createTsTemplateFile({
   variables: {},
 });
 
-export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { mainGroup, verifyEmail };
+export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = {
+  loginOtp,
+  mainGroup,
+  otpConstants,
+  verifyEmail,
+};

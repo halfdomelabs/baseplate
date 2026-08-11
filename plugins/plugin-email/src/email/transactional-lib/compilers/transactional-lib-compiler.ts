@@ -31,12 +31,20 @@ class TransactionalLibPackageCompiler extends LibraryCompiler<BaseLibraryDefinit
     const packageName = this.getPackageName();
     const packageDirectory = this.getPackageDirectory();
 
-    // Collect plugin-registered email template generators
+    // Collect plugin-registered email template generators. Function entries are
+    // resolved here so a plugin can shape (or skip) its templates based on its
+    // own config, which is not available when the entry is registered.
     const emailTemplateStore =
       this.definitionContainer.pluginStore.use(emailTemplateSpec);
-    const pluginChildren: Record<string, AnyGeneratorBundle> = {};
-    for (const [index, generator] of emailTemplateStore.generators.entries()) {
-      pluginChildren[`emailPlugin${index}`] = generator;
+    const pluginChildren: Record<string, AnyGeneratorBundle | undefined> = {};
+    for (const [index, entry] of emailTemplateStore.generators.entries()) {
+      pluginChildren[`emailPlugin${index}`] =
+        typeof entry === 'function'
+          ? entry({
+              projectDefinition,
+              definitionContainer: this.definitionContainer,
+            })
+          : entry;
     }
 
     const rootBundle = composeNodeGenerator({

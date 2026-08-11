@@ -19,6 +19,16 @@ import { AUTH_CORE_AUTH_ROUTES_PATHS } from './template-paths.js';
 import { AUTH_CORE_AUTH_ROUTES_TEMPLATES } from './typed-templates.js';
 
 export interface AuthCoreAuthRoutesRenderers {
+  loginOtp: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.loginOtp
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   mainGroup: {
     render: (
       options: Omit<
@@ -26,6 +36,16 @@ export interface AuthCoreAuthRoutesRenderers {
           typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.mainGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  otpConstants: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.otpConstants
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -71,6 +91,22 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
     return {
       providers: {
         authCoreAuthRoutesRenderers: {
+          loginOtp: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.loginOtp,
+                destination: paths.loginOtp,
+                importMapProviders: {
+                  apolloErrorImports,
+                  graphqlImports,
+                  reactComponentsImports,
+                  reactErrorImports,
+                  reactSessionImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
           mainGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
@@ -84,6 +120,14 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
                   reactSessionImports,
                 },
                 generatorPaths: paths,
+                ...options,
+              }),
+          },
+          otpConstants: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.otpConstants,
+                destination: paths.otpConstants,
                 ...options,
               }),
           },

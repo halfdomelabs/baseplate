@@ -193,6 +193,43 @@ const servicesAuthVerification = createTsTemplateFile({
   variables: {},
 });
 
+const servicesCodeVerification = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    configServiceImports: configServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'services-code-verification',
+  projectExports: {
+    consumeCodeVerification: { isTypeOnly: false },
+    createCodeVerification: { isTypeOnly: false },
+    validateCodeVerification: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { servicesAuthVerification: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/code-verification.service.ts',
+    ),
+  },
+  variables: {},
+});
+
+const servicesCodeVerificationTest = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { prismaImports: prismaImportsProvider },
+  name: 'services-code-verification-test',
+  referencedGeneratorTemplates: { servicesCodeVerification: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/code-verification.service.int.test.ts',
+    ),
+  },
+  variables: {},
+});
+
 const userSessionService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -271,6 +308,8 @@ export const LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES = {
   queuesCleanupAuthVerification,
   queuesCleanupAuthVerificationWorker,
   servicesAuthVerification,
+  servicesCodeVerification,
+  servicesCodeVerificationTest,
   userSessionService,
   utilsGroup,
 };

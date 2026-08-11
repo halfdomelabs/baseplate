@@ -26,7 +26,7 @@ function hashVerifier(verifier: string): string {
 /**
  * Constant-time comparison of two hex strings to prevent timing attacks.
  */
-function safeCompare(a: string, b: string): boolean {
+export function safeCompare(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   return crypto.timingSafeEqual(Buffer.from(a, 'hex'), Buffer.from(b, 'hex'));
 }
