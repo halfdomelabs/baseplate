@@ -22,6 +22,7 @@ const descriptorSchema = z.object({
   adminRoles: z.array(z.string()),
   devWebDomainPort: z.number(),
   requireNameOnRegistration: z.boolean(),
+  emailOtp: z.boolean().default(false),
 });
 
 /**
@@ -35,6 +36,7 @@ export const authEmailPasswordGenerator = createGenerator({
     adminRoles,
     devWebDomainPort,
     requireNameOnRegistration,
+    emailOtp,
   }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
@@ -58,6 +60,9 @@ export const authEmailPasswordGenerator = createGenerator({
           paths.schemaPasswordResetMutations,
           paths.schemaEmailVerificationMutations,
         );
+        if (emailOtp) {
+          appModule.moduleImports.push(paths.schemaEmailOtpMutations);
+        }
       },
     }),
     main: createGeneratorTask({
@@ -119,6 +124,27 @@ export const authEmailPasswordGenerator = createGenerator({
             await builder.apply(
               renderers.schemaEmailVerificationMutations.render({}),
             );
+            if (emailOtp) {
+              await builder.apply(renderers.constantsOtp.render({}));
+              await builder.apply(
+                renderers.servicesEmailOtp.render({
+                  variables: {
+                    TPL_EMAIL_OTP_EMAIL: TsCodeUtils.importFragment(
+                      'EmailOtpEmail',
+                      transactionalLibPackageName,
+                    ),
+                    // The user lookup lives inside the fragment so it is not
+                    // left unused when names are not required.
+                    TPL_NAME_REQUIRED_CHECK: requireNameOnRegistration
+                      ? tsCodeFragment(
+                          "const existingUser = await prisma.user.findUnique({\n    where: { email },\n    select: { id: true },\n  });\n\n  if (!existingUser && !name) {\n    throw new BadRequestError('Name is required', 'name-required');\n  }",
+                        )
+                      : '',
+                  },
+                }),
+              );
+              await builder.apply(renderers.schemaEmailOtpMutations.render({}));
+            }
           },
         };
       },

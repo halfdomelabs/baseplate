@@ -26,13 +26,14 @@ import { LOCAL_AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './
 const descriptorSchema = z.object({
   userAdminRoles: z.array(z.string()).default([]),
   devWebPorts: z.array(z.number()).default([]),
+  emailOtp: z.boolean().default(false),
 });
 
 export const authModuleGenerator = createGenerator({
   name: 'local-auth/core/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ userAdminRoles, devWebPorts }) => ({
+  buildTasks: ({ userAdminRoles, devWebPorts, emailOtp }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
@@ -108,6 +109,11 @@ export const authModuleGenerator = createGenerator({
               }),
             );
             await builder.apply(renderers.servicesAuthVerification.render({}));
+            if (emailOtp) {
+              await builder.apply(
+                renderers.servicesCodeVerification.render({}),
+              );
+            }
             await builder.apply(renderers.constantsGroup.render({}));
             await builder.apply(renderers.utilsGroup.render({}));
             await builder.apply(

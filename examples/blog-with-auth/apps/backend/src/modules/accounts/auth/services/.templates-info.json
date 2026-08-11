@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "services-auth-verification"
   },
+  "code-verification.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "services-code-verification"
+  },
   "user-roles.service.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
     "instanceData": {},

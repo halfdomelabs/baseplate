@@ -18,6 +18,7 @@ export const createLocalAuthPluginDefinitionSchema = definitionSchema((ctx) =>
       [],
     ),
     requireNameOnRegistration: z.boolean().default(false),
+    emailOtp: z.boolean().default(false),
   }),
 );
 

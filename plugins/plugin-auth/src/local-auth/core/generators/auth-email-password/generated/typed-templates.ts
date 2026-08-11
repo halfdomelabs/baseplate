@@ -14,6 +14,19 @@ import path from 'node:path';
 
 import { authModuleImportsProvider } from '#src/local-auth/core/generators/auth-module/generated/ts-import-providers.js';
 
+const constantsOtp = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'constants-otp',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/constants/otp.constants.ts',
+    ),
+  },
+  variables: {},
+});
+
 const constantsPassword = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'module',
@@ -137,6 +150,23 @@ export const moduleGroup = {
   servicesUserPassword,
 };
 
+const schemaEmailOtpMutations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    authModuleImports: authModuleImportsProvider,
+    pothosImports: pothosImportsProvider,
+  },
+  name: 'schema-email-otp-mutations',
+  referencedGeneratorTemplates: { servicesEmailOtp: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/email-otp.mutations.ts',
+    ),
+  },
+  variables: {},
+});
+
 const schemaEmailVerificationMutations = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: { pothosImports: pothosImportsProvider },
@@ -149,6 +179,28 @@ const schemaEmailVerificationMutations = createTsTemplateFile({
     ),
   },
   variables: {},
+});
+
+const servicesEmailOtp = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    authModuleImports: authModuleImportsProvider,
+    configServiceImports: configServiceImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaImports: prismaImportsProvider,
+    rateLimitImports: rateLimitImportsProvider,
+    requestServiceContextImports: requestServiceContextImportsProvider,
+    userSessionTypesImports: userSessionTypesImportsProvider,
+  },
+  name: 'services-email-otp',
+  referencedGeneratorTemplates: { constantsOtp: {}, constantsPassword: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/email-otp.service.ts',
+    ),
+  },
+  variables: { TPL_EMAIL_OTP_EMAIL: {}, TPL_NAME_REQUIRED_CHECK: {} },
 });
 
 const servicesEmailVerification = createTsTemplateFile({
@@ -173,7 +225,10 @@ const servicesEmailVerification = createTsTemplateFile({
 });
 
 export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = {
+  constantsOtp,
   moduleGroup,
+  schemaEmailOtpMutations,
   schemaEmailVerificationMutations,
+  servicesEmailOtp,
   servicesEmailVerification,
 };

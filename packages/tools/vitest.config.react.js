@@ -35,7 +35,10 @@ export function createReactVitestConfig(dirname) {
       exclude: [
         ...defaultExclude,
         '**/dist/**',
-        '**/generators/*/*/templates/**',
+        // Any depth: generator directories nest differently across packages,
+        // and template sources are never runnable — their imports are
+        // placeholders resolved at render time.
+        '**/generators/**/templates/**',
       ],
     },
   });

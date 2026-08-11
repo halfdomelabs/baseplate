@@ -1,6 +1,14 @@
 {
   "name": "local-auth/core/auth-email-password",
   "templates": {
+    "constants-otp": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/constants/otp.constants.ts",
+      "sourceFile": "module/constants/otp.constants.ts",
+      "variables": {}
+    },
     "constants-password": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -14,6 +22,24 @@
         "PASSWORD_RESET_TOKEN_EXPIRY_SEC": {}
       },
       "sourceFile": "module/constants/password.constants.ts",
+      "variables": {}
+    },
+    "schema-email-otp-mutations": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "authModuleImportsProvider": {
+          "importName": "authModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/email-otp.mutations.ts",
+      "referencedGeneratorTemplates": ["services-email-otp"],
+      "sourceFile": "module/schema/email-otp.mutations.ts",
       "variables": {}
     },
     "schema-email-verification-mutations": {
@@ -64,6 +90,44 @@
       "referencedGeneratorTemplates": ["services-user-password"],
       "sourceFile": "module/schema/user-password.mutations.ts",
       "variables": { "TPL_ADMIN_ROLES": {}, "TPL_USER_OBJECT_TYPE": {} }
+    },
+    "services-email-otp": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "authModuleImportsProvider": {
+          "importName": "authModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
+        },
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "rateLimitImportsProvider": {
+          "importName": "rateLimitImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-rate-limit:src/rate-limit/core/generators/rate-limit/generated/ts-import-providers.ts"
+        },
+        "requestServiceContextImportsProvider": {
+          "importName": "requestServiceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
+        },
+        "userSessionTypesImportsProvider": {
+          "importName": "userSessionTypesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/email-otp.service.ts",
+      "referencedGeneratorTemplates": ["constants-otp", "constants-password"],
+      "sourceFile": "module/services/email-otp.service.ts",
+      "variables": { "TPL_EMAIL_OTP_EMAIL": {}, "TPL_NAME_REQUIRED_CHECK": {} }
     },
     "services-email-verification": {
       "type": "ts",

@@ -14,6 +14,19 @@
       "sourceFile": "src/emails/auth/account-verification.email.tsx",
       "variables": {}
     },
+    "email-otp-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/emails/auth/email-otp.email.tsx",
+      "sourceFile": "src/emails/auth/email-otp.email.tsx",
+      "variables": {}
+    },
     "password-changed-email": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

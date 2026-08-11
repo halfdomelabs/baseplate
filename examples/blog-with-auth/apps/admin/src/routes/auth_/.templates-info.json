@@ -4,10 +4,20 @@
     "instanceData": {},
     "template": "constants"
   },
+  "-otp-constants.ts": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "otp-constants"
+  },
   "forgot-password.tsx": {
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
     "instanceData": {},
     "template": "forgot-password"
+  },
+  "login-otp.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "login-otp"
   },
   "login.tsx": {
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",

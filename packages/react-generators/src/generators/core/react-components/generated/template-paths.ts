@@ -32,6 +32,7 @@ export interface CoreReactComponentsPaths {
   input: string;
   inputField: string;
   inputGroup: string;
+  inputOtp: string;
   item: string;
   label: string;
   loader: string;
@@ -112,6 +113,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           input: `${componentsRoot}/ui/input.tsx`,
           inputField: `${componentsRoot}/ui/input-field.tsx`,
           inputGroup: `${componentsRoot}/ui/input-group.tsx`,
+          inputOtp: `${componentsRoot}/ui/input-otp.tsx`,
           item: `${componentsRoot}/ui/item.tsx`,
           label: `${componentsRoot}/ui/label.tsx`,
           loader: `${componentsRoot}/ui/loader.tsx`,

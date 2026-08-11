@@ -1,4 +1,9 @@
 {
+  "email-otp.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "services-email-otp"
+  },
   "email-verification.service.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
     "instanceData": {},

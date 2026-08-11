@@ -34,8 +34,15 @@ export default createPluginModule({
     emailTemplate: emailTemplateSpec,
   },
   initialize: ({ appCompiler, emailTemplate }, { pluginKey }) => {
-    // Register auth email templates with the transactional lib
-    emailTemplate.generators.push(authEmailTemplatesGenerator({}));
+    // Register auth email templates with the transactional lib. Resolved lazily
+    // so the sign-in code email is only emitted when that flow is enabled.
+    emailTemplate.generators.push(({ projectDefinition }) => {
+      const { emailOtp } = PluginUtils.configByKeyOrThrow(
+        projectDefinition,
+        pluginKey,
+      ) as LocalAuthPluginDefinition;
+      return authEmailTemplatesGenerator({ emailOtp });
+    });
 
     // register backend compiler
     appCompiler.compilers.push(
@@ -73,6 +80,7 @@ export default createPluginModule({
             authModule: authModuleGenerator({
               userAdminRoles: adminRoles,
               devWebPorts,
+              emailOtp: localAuthDefinition.emailOtp,
             }),
             emailPassword: appModuleGenerator({
               id: 'email-password',
@@ -83,6 +91,7 @@ export default createPluginModule({
                   devWebDomainPort,
                   requireNameOnRegistration:
                     localAuthDefinition.requireNameOnRegistration,
+                  emailOtp: localAuthDefinition.emailOtp,
                 }),
                 hasher: passwordHasherServiceGenerator({}),
               },
@@ -107,6 +116,7 @@ export default createPluginModule({
             authRoutes: authRoutesGenerator({
               requireNameOnRegistration:
                 localAuthDefinition.requireNameOnRegistration,
+              emailOtp: localAuthDefinition.emailOtp,
             }),
           });
         },

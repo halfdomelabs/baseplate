@@ -4,7 +4,9 @@ import { z } from 'zod';
 
 import { LOCAL_AUTH_AUTH_EMAIL_TEMPLATES_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  emailOtp: z.boolean().default(false),
+});
 
 /**
  * Generator for auth email templates.
@@ -17,7 +19,7 @@ export const authEmailTemplatesGenerator = createGenerator({
   name: 'local-auth/auth-email-templates',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ emailOtp }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
@@ -42,6 +44,13 @@ export const authEmailTemplatesGenerator = createGenerator({
           exportPath: paths.passwordResetEmail,
         });
 
+        if (emailOtp) {
+          emailTemplates.registerExport({
+            exportName: 'EmailOtpEmail',
+            exportPath: paths.emailOtpEmail,
+          });
+        }
+
         return {
           build: async (builder) => {
             await builder.apply(
@@ -49,6 +58,9 @@ export const authEmailTemplatesGenerator = createGenerator({
               renderers.passwordChangedEmail.render({}),
               renderers.passwordResetEmail.render({}),
             );
+            if (emailOtp) {
+              await builder.apply(renderers.emailOtpEmail.render({}));
+            }
           },
         };
       },

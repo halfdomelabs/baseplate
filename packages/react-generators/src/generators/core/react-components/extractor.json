@@ -509,6 +509,30 @@
       "sourceFile": "components/ui/input-group.tsx",
       "variables": {}
     },
+    "input-otp": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/input-otp.tsx",
+      "projectExports": {
+        "InputOtp": {},
+        "InputOtpField": {},
+        "InputOtpFieldController": {},
+        "InputOtpGroup": {},
+        "InputOtpSeparator": {},
+        "InputOtpSlot": {}
+      },
+      "referencedGeneratorTemplates": [
+        "cn",
+        "field",
+        "hooks-use-controller-merged",
+        "types-form"
+      ],
+      "sourceFile": "components/ui/input-otp.tsx",
+      "variables": {}
+    },
     "item": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

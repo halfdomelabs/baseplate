@@ -73,6 +73,16 @@ export interface LocalAuthCoreAuthModuleRenderers {
       >,
     ) => BuilderAction;
   };
+  servicesCodeVerification: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.servicesCodeVerification
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   userSessionService: {
     render: (
       options: Omit<
@@ -194,6 +204,21 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
                   prismaGeneratedImports,
                   prismaImports,
                 },
+                ...options,
+              }),
+          },
+          servicesCodeVerification: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.servicesCodeVerification,
+                destination: paths.servicesCodeVerification,
+                importMapProviders: {
+                  configServiceImports,
+                  prismaGeneratedImports,
+                  prismaImports,
+                },
+                generatorPaths: paths,
                 ...options,
               }),
           },

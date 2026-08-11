@@ -157,6 +157,42 @@
       "sourceFile": "module/services/auth-verification.service.ts",
       "variables": {}
     },
+    "services-code-verification": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/code-verification.service.ts",
+      "projectExports": {
+        "consumeCodeVerification": {
+          "isTypeOnly": false,
+          "name": "consumeCodeVerification"
+        },
+        "createCodeVerification": {
+          "isTypeOnly": false,
+          "name": "createCodeVerification"
+        },
+        "validateCodeVerification": {
+          "isTypeOnly": false,
+          "name": "validateCodeVerification"
+        }
+      },
+      "referencedGeneratorTemplates": ["services-auth-verification"],
+      "sourceFile": "module/services/code-verification.service.ts",
+      "variables": {}
+    },
     "session-cookie": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

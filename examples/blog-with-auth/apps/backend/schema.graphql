@@ -235,11 +235,13 @@ type Mutation {
   markAllNotificationsSeen: MarkAllNotificationsSeenPayload!
   markNotificationRead(input: MarkNotificationReadInput!): MarkNotificationReadPayload!
   registerWithEmailPassword(input: RegisterWithEmailPasswordInput!): RegisterWithEmailPasswordPayload!
+  requestEmailOtp(input: RequestEmailOtpInput!): RequestEmailOtpPayload!
   requestEmailVerification: RequestEmailVerificationPayload!
   requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
   resetPasswordWithToken(input: ResetPasswordWithTokenInput!): ResetPasswordWithTokenPayload!
   resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
   setNotificationPreference(input: SetNotificationPreferenceInput!): SetNotificationPreferencePayload!
+  signInWithEmailOtp(input: SignInWithEmailOtpInput!): SignInWithEmailOtpPayload!
   unlikeBlogPost(input: UnlikeBlogPostInput!): UnlikeBlogPostPayload!
   updateArticle(input: UpdateArticleInput!): UpdateArticlePayload!
   updateBlog(input: UpdateBlogInput!): UpdateBlogPayload!
@@ -364,6 +366,16 @@ type RegisterWithEmailPasswordPayload {
   session: UserSessionPayload!
 }
 
+"""Input type for requestEmailOtp mutation"""
+input RequestEmailOtpInput {
+  email: String!
+}
+
+"""Payload type for requestEmailOtp mutation"""
+type RequestEmailOtpPayload {
+  success: Boolean!
+}
+
 """Payload type for requestEmailVerification mutation"""
 type RequestEmailVerificationPayload {
   success: Boolean!
@@ -412,6 +424,18 @@ input SetNotificationPreferenceInput {
 """Payload type for setNotificationPreference mutation"""
 type SetNotificationPreferencePayload {
   preferences: [NotificationTopicPreference!]!
+}
+
+"""Input type for signInWithEmailOtp mutation"""
+input SignInWithEmailOtpInput {
+  code: String!
+  email: String!
+  name: String
+}
+
+"""Payload type for signInWithEmailOtp mutation"""
+type SignInWithEmailOtpPayload {
+  session: UserSessionPayload!
 }
 
 type Subscription {

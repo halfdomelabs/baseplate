@@ -164,6 +164,7 @@ function LoginPage(): React.JSX.Element {
             </Button>
           </div>
           <div className="mt-4 flex flex-col gap-4 text-center text-sm">
+            <TPL_OTP_LOGIN_LINK />
             <Link
               to="/auth/forgot-password"
               className="text-muted-foreground underline-offset-4 hover:underline"

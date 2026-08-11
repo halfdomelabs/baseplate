@@ -5,6 +5,8 @@ export interface AuthCoreAuthRoutesPaths {
   constants: string;
   forgotPassword: string;
   login: string;
+  loginOtp: string;
+  otpConstants: string;
   register: string;
   resetPassword: string;
   route: string;
@@ -27,6 +29,8 @@ const authCoreAuthRoutesPathsTask = createGeneratorTask({
           constants: `${routesRoot}/auth_/-constants.ts`,
           forgotPassword: `${routesRoot}/auth_/forgot-password.tsx`,
           login: `${routesRoot}/auth_/login.tsx`,
+          loginOtp: `${routesRoot}/auth_/login-otp.tsx`,
+          otpConstants: `${routesRoot}/auth_/-otp-constants.ts`,
           register: `${routesRoot}/auth_/register.tsx`,
           resetPassword: `${routesRoot}/auth_/reset-password.tsx`,
           route: `${routesRoot}/auth_/route.tsx`,

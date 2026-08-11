@@ -253,6 +253,14 @@ export function createLocalAuthPartialDefinition(
               type: 'json',
               isOptional: true,
             },
+            // Failed guesses against a short code. Only the emailed-code flow
+            // uses this; split-token rows leave it at 0, since their verifier
+            // is random enough that a single miss deletes the record outright.
+            {
+              name: 'attempts',
+              type: 'int',
+              options: { default: '0' },
+            },
             {
               name: 'expiresAt',
               type: 'dateTime',

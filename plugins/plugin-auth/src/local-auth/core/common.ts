@@ -7,6 +7,7 @@ import {
 
 import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
 
+import { LOCAL_AUTH_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
 import { createLocalAuthPluginDefinitionSchema } from './schema/plugin-definition.js';
 import { createLocalAuthSchemaChecker } from './schema/schema-issue-checker.js';
 
@@ -22,6 +23,7 @@ export default createPluginModule({
   },
   initialize: ({ pluginConfig, authModels, issueCheckers }, { pluginKey }) => {
     pluginConfig.schemas.set(pluginKey, createLocalAuthPluginDefinitionSchema);
+    pluginConfig.migrations.set(pluginKey, LOCAL_AUTH_PLUGIN_CONFIG_MIGRATIONS);
     authModels.getAuthModels.set(() => ({
       user: LOCAL_AUTH_MODELS.user,
     }));
