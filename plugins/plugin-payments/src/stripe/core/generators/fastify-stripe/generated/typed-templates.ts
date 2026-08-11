@@ -44,7 +44,7 @@ const serviceEventHandlers = createTsTemplateFile({
   },
   variables: {
     TPL_EVENT_HANDLERS: {},
-    TPL_SERVICES_DESTRUCTURE: {},
+    TPL_SERVICES_PARAM: {},
     TPL_SERVICES_TYPE: {},
   },
 });

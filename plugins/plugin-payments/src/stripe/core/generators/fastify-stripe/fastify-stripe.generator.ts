@@ -132,10 +132,10 @@ export const fastifyStripeGenerator = createGenerator({
         ].toSorted(compareStrings);
         const servicesType = servicesKeys.map((key) => quot(key)).join(' | ');
         const otherServiceKeys = servicesKeys.filter((key) => key !== 'stripe');
-        const servicesDestructure =
+        const servicesParam =
           otherServiceKeys.length > 0
-            ? `const { ${otherServiceKeys.join(', ')} } = services;`
-            : '';
+            ? `{ ${otherServiceKeys.join(', ')} }`
+            : '{}';
 
         return {
           build: async (builder) => {
@@ -156,8 +156,7 @@ export const fastifyStripeGenerator = createGenerator({
                       stripeWebhookConfigValues.eventHandlers,
                     ),
                     TPL_SERVICES_TYPE: tsCodeFragment(servicesType),
-                    TPL_SERVICES_DESTRUCTURE:
-                      tsCodeFragment(servicesDestructure),
+                    TPL_SERVICES_PARAM: tsCodeFragment(servicesParam),
                   },
                 },
               }),
