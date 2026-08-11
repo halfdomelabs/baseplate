@@ -12,13 +12,10 @@ export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
  * Each event type has a single handler. To handle multiple concerns for one
  * event, compose the logic within the handler function.
  *
- * @param services - The services closed over by handlers that need them.
  * @returns The event type to handler map.
  */
 export function createStripeEventHandlers(
-  services: Pick<AppServices, TPL_SERVICES_TYPE>,
+  TPL_SERVICES_PARAM: Pick<AppServices, TPL_SERVICES_TYPE>,
 ): Partial<Record<string, StripeEventHandler>> {
-  TPL_SERVICES_DESTRUCTURE;
-
   return TPL_EVENT_HANDLERS;
 }

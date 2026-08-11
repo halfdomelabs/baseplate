@@ -189,7 +189,7 @@ export function StripeDefinitionEditor({
                     label="Enable Billing"
                     name="billing.enabled"
                     control={control}
-                    description="When enabled, generates billing models, webhook handler, and subscription management code."
+                    description="When enabled, generates billing models and subscription management code, granting roles based on active subscriptions."
                   />
                 </SectionListSectionContent>
               </SectionListSection>
