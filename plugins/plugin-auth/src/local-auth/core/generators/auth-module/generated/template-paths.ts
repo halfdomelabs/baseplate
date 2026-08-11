@@ -11,7 +11,6 @@ export interface LocalAuthCoreAuthModulePaths {
   schemaUserSessionQueries: string;
   servicesAuthVerification: string;
   servicesCodeVerification: string;
-  servicesCodeVerificationTest: string;
   sessionCookie: string;
   userRolesMutations: string;
   userRolesService: string;
@@ -45,7 +44,6 @@ const localAuthCoreAuthModulePathsTask = createGeneratorTask({
           schemaUserSessionQueries: `${moduleRoot}/schema/user-session.queries.ts`,
           servicesAuthVerification: `${moduleRoot}/services/auth-verification.service.ts`,
           servicesCodeVerification: `${moduleRoot}/services/code-verification.service.ts`,
-          servicesCodeVerificationTest: `${moduleRoot}/services/code-verification.service.int.test.ts`,
           sessionCookie: `${moduleRoot}/utils/session-cookie.ts`,
           userRolesMutations: `${moduleRoot}/schema/user-roles.mutations.ts`,
           userRolesService: `${moduleRoot}/services/user-roles.service.ts`,

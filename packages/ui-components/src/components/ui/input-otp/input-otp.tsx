@@ -1,3 +1,5 @@
+'use client';
+
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { OTPField as OTPFieldPrimitive } from '@base-ui/react/otp-field';
@@ -119,16 +121,7 @@ function InputOtpField({
     <InputOtpGroup>
       {Array.from({ length: end - start }, (_, offset) => {
         const index = start + offset;
-        return (
-          <InputOtpSlot
-            key={index}
-            aria-invalid={!!error}
-            // The first input is labelled by the field label above.
-            aria-label={
-              index === 0 ? undefined : `Character ${index + 1} of ${length}`
-            }
-          />
-        );
+        return <InputOtpSlot key={index} aria-invalid={!!error} />;
       })}
     </InputOtpGroup>
   );

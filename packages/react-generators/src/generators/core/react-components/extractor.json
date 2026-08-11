@@ -3,9 +3,7 @@
   "templates": {
     "alert": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -15,25 +13,18 @@
         "AlertDescription": {},
         "AlertTitle": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/alert.tsx",
       "variables": {}
     },
     "autocomplete": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/autocomplete.tsx",
       "projectExports": {
-        "Autocomplete": {
-          "isTypeOnly": false,
-          "name": "Autocomplete"
-        },
+        "Autocomplete": { "isTypeOnly": false, "name": "Autocomplete" },
         "AutocompleteClear": {
           "isTypeOnly": false,
           "name": "AutocompleteClear"
@@ -58,18 +49,12 @@
           "isTypeOnly": false,
           "name": "AutocompleteInput"
         },
-        "AutocompleteItem": {
-          "isTypeOnly": false,
-          "name": "AutocompleteItem"
-        },
+        "AutocompleteItem": { "isTypeOnly": false, "name": "AutocompleteItem" },
         "AutocompleteLabel": {
           "isTypeOnly": false,
           "name": "AutocompleteLabel"
         },
-        "AutocompleteList": {
-          "isTypeOnly": false,
-          "name": "AutocompleteList"
-        },
+        "AutocompleteList": { "isTypeOnly": false, "name": "AutocompleteList" },
         "AutocompleteSeparator": {
           "isTypeOnly": false,
           "name": "AutocompleteSeparator"
@@ -91,37 +76,24 @@
           "name": "useAutocompleteFilter"
         }
       },
-      "referencedGeneratorTemplates": [
-        "cn",
-        "input-group",
-        "spinner"
-      ],
+      "referencedGeneratorTemplates": ["cn", "input-group", "spinner"],
       "sourceFile": "components/ui/autocomplete.tsx",
       "variables": {}
     },
     "badge": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/badge.tsx",
-      "projectExports": {
-        "Badge": {},
-        "badgeVariants": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Badge": {}, "badgeVariants": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/badge.tsx",
       "variables": {}
     },
     "breadcrumb": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/breadcrumb.tsx",
@@ -134,56 +106,37 @@
         "BreadcrumbPage": {},
         "BreadcrumbSeparator": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/breadcrumb.tsx",
       "variables": {}
     },
     "button": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/button.tsx",
-      "projectExports": {
-        "Button": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn",
-        "styles-button"
-      ],
+      "projectExports": { "Button": {} },
+      "referencedGeneratorTemplates": ["cn", "styles-button"],
       "sourceFile": "components/ui/button.tsx",
       "variables": {}
     },
     "calendar": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/calendar.tsx",
-      "projectExports": {
-        "Calendar": {}
-      },
-      "referencedGeneratorTemplates": [
-        "button",
-        "cn",
-        "styles-button"
-      ],
+      "projectExports": { "Calendar": {} },
+      "referencedGeneratorTemplates": ["button", "cn", "styles-button"],
       "sourceFile": "components/ui/calendar.tsx",
       "variables": {}
     },
     "card": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -196,43 +149,30 @@
         "CardHeader": {},
         "CardTitle": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/card.tsx",
       "variables": {}
     },
     "checkbox": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/checkbox.tsx",
-      "projectExports": {
-        "Checkbox": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Checkbox": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/checkbox.tsx",
       "variables": {}
     },
     "checkbox-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/checkbox-field.tsx",
-      "projectExports": {
-        "CheckboxField": {},
-        "CheckboxFieldController": {}
-      },
+      "projectExports": { "CheckboxField": {}, "CheckboxFieldController": {} },
       "referencedGeneratorTemplates": [
         "checkbox",
         "field",
@@ -244,50 +184,35 @@
     },
     "circular-progress": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/circular-progress.tsx",
-      "projectExports": {
-        "CircularProgress": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "CircularProgress": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/circular-progress.tsx",
       "variables": {}
     },
     "cn": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/cn.ts",
-      "projectExports": {
-        "cn": {}
-      },
+      "projectExports": { "cn": {} },
       "sourceFile": "src/utils/cn.ts",
       "variables": {}
     },
     "collapsible": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/collapsible.tsx",
       "projectExports": {
-        "Collapsible": {
-          "isTypeOnly": false,
-          "name": "Collapsible"
-        },
+        "Collapsible": { "isTypeOnly": false, "name": "Collapsible" },
         "CollapsibleContent": {
           "isTypeOnly": false,
           "name": "CollapsibleContent"
@@ -302,37 +227,24 @@
     },
     "combobox": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/combobox.tsx",
-      "projectExports": {
-        "Combobox": {}
-      },
-      "referencedGeneratorTemplates": [
-        "button",
-        "cn",
-        "input-group"
-      ],
+      "projectExports": { "Combobox": {} },
+      "referencedGeneratorTemplates": ["button", "cn", "input-group"],
       "sourceFile": "components/ui/combobox.tsx",
       "variables": {}
     },
     "combobox-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/combobox-field.tsx",
-      "projectExports": {
-        "ComboboxField": {},
-        "ComboboxFieldController": {}
-      },
+      "projectExports": { "ComboboxField": {}, "ComboboxFieldController": {} },
       "referencedGeneratorTemplates": [
         "combobox",
         "field",
@@ -344,16 +256,12 @@
     },
     "confirm-dialog": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/confirm-dialog.tsx",
-      "projectExports": {
-        "ConfirmDialog": {}
-      },
+      "projectExports": { "ConfirmDialog": {} },
       "referencedGeneratorTemplates": [
         "button",
         "dialog",
@@ -364,9 +272,7 @@
     },
     "date-picker-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -389,9 +295,7 @@
     },
     "date-time-picker-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -415,9 +319,7 @@
     },
     "dialog": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -433,22 +335,15 @@
         "DialogPortal": {},
         "DialogTitle": {},
         "DialogTrigger": {},
-        "DialogWidth": {
-          "isTypeOnly": true
-        }
+        "DialogWidth": { "isTypeOnly": true }
       },
-      "referencedGeneratorTemplates": [
-        "button",
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["button", "cn"],
       "sourceFile": "components/ui/dialog.tsx",
       "variables": {}
     },
     "dropdown": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/dropdown.tsx",
@@ -469,17 +364,13 @@
         "DropdownMenuSubTrigger": {},
         "DropdownMenuTrigger": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/dropdown.tsx",
       "variables": {}
     },
     "empty": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -493,176 +384,100 @@
         "emptyMediaVariants": {},
         "EmptyTitle": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/empty.tsx",
       "variables": {}
     },
     "error-display": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/error-display.tsx",
-      "projectExports": {
-        "ErrorDisplay": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "ErrorDisplay": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/error-display.tsx",
       "variables": {}
     },
     "errorable-loader": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/errorable-loader.tsx",
-      "projectExports": {
-        "ErrorableLoader": {}
-      },
-      "referencedGeneratorTemplates": [
-        "error-display",
-        "loader"
-      ],
+      "projectExports": { "ErrorableLoader": {} },
+      "referencedGeneratorTemplates": ["error-display", "loader"],
       "sourceFile": "components/ui/errorable-loader.tsx",
       "variables": {}
     },
     "field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/field.tsx",
       "projectExports": {
-        "Field": {
-          "isTypeOnly": false,
-          "name": "Field"
-        },
-        "FieldContent": {
-          "isTypeOnly": false,
-          "name": "FieldContent"
-        },
-        "FieldDescription": {
-          "isTypeOnly": false,
-          "name": "FieldDescription"
-        },
-        "FieldError": {
-          "isTypeOnly": false,
-          "name": "FieldError"
-        },
-        "FieldGroup": {
-          "isTypeOnly": false,
-          "name": "FieldGroup"
-        },
-        "FieldLabel": {
-          "isTypeOnly": false,
-          "name": "FieldLabel"
-        },
-        "FieldLegend": {
-          "isTypeOnly": false,
-          "name": "FieldLegend"
-        },
-        "FieldSeparator": {
-          "isTypeOnly": false,
-          "name": "FieldSeparator"
-        },
-        "FieldSet": {
-          "isTypeOnly": false,
-          "name": "FieldSet"
-        },
-        "FieldTitle": {
-          "isTypeOnly": false,
-          "name": "FieldTitle"
-        },
-        "fieldVariants": {
-          "isTypeOnly": false,
-          "name": "fieldVariants"
-        }
+        "Field": { "isTypeOnly": false, "name": "Field" },
+        "FieldContent": { "isTypeOnly": false, "name": "FieldContent" },
+        "FieldDescription": { "isTypeOnly": false, "name": "FieldDescription" },
+        "FieldError": { "isTypeOnly": false, "name": "FieldError" },
+        "FieldGroup": { "isTypeOnly": false, "name": "FieldGroup" },
+        "FieldLabel": { "isTypeOnly": false, "name": "FieldLabel" },
+        "FieldLegend": { "isTypeOnly": false, "name": "FieldLegend" },
+        "FieldSeparator": { "isTypeOnly": false, "name": "FieldSeparator" },
+        "FieldSet": { "isTypeOnly": false, "name": "FieldSet" },
+        "FieldTitle": { "isTypeOnly": false, "name": "FieldTitle" },
+        "fieldVariants": { "isTypeOnly": false, "name": "fieldVariants" }
       },
-      "referencedGeneratorTemplates": [
-        "cn",
-        "label",
-        "separator"
-      ],
+      "referencedGeneratorTemplates": ["cn", "label", "separator"],
       "sourceFile": "components/ui/field.tsx",
       "variables": {}
     },
     "hooks-use-controlled-state": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "hooks",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-controlled-state.ts",
-      "projectExports": {
-        "useControlledState": {}
-      },
+      "projectExports": { "useControlledState": {} },
       "sourceFile": "src/hooks/use-controlled-state.ts",
       "variables": {}
     },
     "hooks-use-controller-merged": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "hooks",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-controller-merged.ts",
-      "projectExports": {
-        "useControllerMerged": {}
-      },
-      "referencedGeneratorTemplates": [
-        "merge-refs"
-      ],
+      "projectExports": { "useControllerMerged": {} },
+      "referencedGeneratorTemplates": ["merge-refs"],
       "sourceFile": "src/hooks/use-controller-merged.ts",
       "variables": {}
     },
     "input": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/input.tsx",
-      "projectExports": {
-        "Input": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn",
-        "styles-input"
-      ],
+      "projectExports": { "Input": {} },
+      "referencedGeneratorTemplates": ["cn", "styles-input"],
       "sourceFile": "components/ui/input.tsx",
       "variables": {}
     },
     "input-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/input-field.tsx",
-      "projectExports": {
-        "InputField": {},
-        "InputFieldController": {}
-      },
+      "projectExports": { "InputField": {}, "InputFieldController": {} },
       "referencedGeneratorTemplates": [
         "cn",
         "field",
@@ -675,52 +490,28 @@
     },
     "input-group": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/input-group.tsx",
       "projectExports": {
-        "InputGroup": {
-          "isTypeOnly": false,
-          "name": "InputGroup"
-        },
-        "InputGroupAddon": {
-          "isTypeOnly": false,
-          "name": "InputGroupAddon"
-        },
-        "InputGroupButton": {
-          "isTypeOnly": false,
-          "name": "InputGroupButton"
-        },
-        "InputGroupInput": {
-          "isTypeOnly": false,
-          "name": "InputGroupInput"
-        },
-        "InputGroupText": {
-          "isTypeOnly": false,
-          "name": "InputGroupText"
-        },
+        "InputGroup": { "isTypeOnly": false, "name": "InputGroup" },
+        "InputGroupAddon": { "isTypeOnly": false, "name": "InputGroupAddon" },
+        "InputGroupButton": { "isTypeOnly": false, "name": "InputGroupButton" },
+        "InputGroupInput": { "isTypeOnly": false, "name": "InputGroupInput" },
+        "InputGroupText": { "isTypeOnly": false, "name": "InputGroupText" },
         "InputGroupTextarea": {
           "isTypeOnly": false,
           "name": "InputGroupTextarea"
         }
       },
-      "referencedGeneratorTemplates": [
-        "button",
-        "cn",
-        "input",
-        "textarea"
-      ],
+      "referencedGeneratorTemplates": ["button", "cn", "input", "textarea"],
       "sourceFile": "components/ui/input-group.tsx",
       "variables": {}
     },
     "input-otp": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -744,134 +535,76 @@
     },
     "item": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/item.tsx",
       "projectExports": {
-        "Item": {
-          "isTypeOnly": false,
-          "name": "Item"
-        },
-        "ItemActions": {
-          "isTypeOnly": false,
-          "name": "ItemActions"
-        },
-        "ItemContent": {
-          "isTypeOnly": false,
-          "name": "ItemContent"
-        },
-        "ItemDescription": {
-          "isTypeOnly": false,
-          "name": "ItemDescription"
-        },
-        "ItemFooter": {
-          "isTypeOnly": false,
-          "name": "ItemFooter"
-        },
-        "ItemGroup": {
-          "isTypeOnly": false,
-          "name": "ItemGroup"
-        },
-        "ItemHeader": {
-          "isTypeOnly": false,
-          "name": "ItemHeader"
-        },
-        "ItemMedia": {
-          "isTypeOnly": false,
-          "name": "ItemMedia"
-        },
+        "Item": { "isTypeOnly": false, "name": "Item" },
+        "ItemActions": { "isTypeOnly": false, "name": "ItemActions" },
+        "ItemContent": { "isTypeOnly": false, "name": "ItemContent" },
+        "ItemDescription": { "isTypeOnly": false, "name": "ItemDescription" },
+        "ItemFooter": { "isTypeOnly": false, "name": "ItemFooter" },
+        "ItemGroup": { "isTypeOnly": false, "name": "ItemGroup" },
+        "ItemHeader": { "isTypeOnly": false, "name": "ItemHeader" },
+        "ItemMedia": { "isTypeOnly": false, "name": "ItemMedia" },
         "itemMediaVariants": {
           "isTypeOnly": false,
           "name": "itemMediaVariants"
         },
-        "ItemSeparator": {
-          "isTypeOnly": false,
-          "name": "ItemSeparator"
-        },
-        "ItemTitle": {
-          "isTypeOnly": false,
-          "name": "ItemTitle"
-        },
-        "itemVariants": {
-          "isTypeOnly": false,
-          "name": "itemVariants"
-        }
+        "ItemSeparator": { "isTypeOnly": false, "name": "ItemSeparator" },
+        "ItemTitle": { "isTypeOnly": false, "name": "ItemTitle" },
+        "itemVariants": { "isTypeOnly": false, "name": "itemVariants" }
       },
-      "referencedGeneratorTemplates": [
-        "cn",
-        "separator"
-      ],
+      "referencedGeneratorTemplates": ["cn", "separator"],
       "sourceFile": "components/ui/item.tsx",
       "variables": {}
     },
     "label": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/label.tsx",
-      "projectExports": {
-        "Label": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Label": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/label.tsx",
       "variables": {}
     },
     "loader": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/loader.tsx",
-      "projectExports": {
-        "Loader": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Loader": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/loader.tsx",
       "variables": {}
     },
     "merge-refs": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/merge-refs.ts",
-      "projectExports": {
-        "mergeRefs": {}
-      },
+      "projectExports": { "mergeRefs": {} },
       "sourceFile": "src/utils/merge-refs.ts",
       "variables": {}
     },
     "multi-combobox-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/multi-combobox-field.tsx",
       "projectExports": {
         "MultiComboboxField": {},
         "MultiComboboxFieldController": {},
-        "MultiComboboxFieldProps": {
-          "isTypeOnly": true
-        }
+        "MultiComboboxFieldProps": { "isTypeOnly": true }
       },
       "referencedGeneratorTemplates": [
         "combobox",
@@ -884,9 +617,7 @@
     },
     "navigation-menu": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -902,44 +633,30 @@
         "NavigationMenuTrigger": {},
         "navigationMenuTriggerStyle": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/navigation-menu.tsx",
       "variables": {}
     },
     "not-found-card": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/not-found-card.tsx",
-      "projectExports": {
-        "NotFoundCard": {}
-      },
-      "referencedGeneratorTemplates": [
-        "button",
-        "error-display"
-      ],
+      "projectExports": { "NotFoundCard": {} },
+      "referencedGeneratorTemplates": ["button", "error-display"],
       "sourceFile": "components/ui/not-found-card.tsx",
       "variables": {}
     },
     "number-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/number-field.tsx",
       "projectExports": {
-        "NumberField": {
-          "isTypeOnly": false,
-          "name": "NumberField"
-        },
+        "NumberField": { "isTypeOnly": false, "name": "NumberField" },
         "NumberFieldController": {
           "isTypeOnly": false,
           "name": "NumberFieldController"
@@ -958,9 +675,7 @@
     },
     "popover": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -970,25 +685,18 @@
         "PopoverContent": {},
         "PopoverTrigger": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/popover.tsx",
       "variables": {}
     },
     "radio-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/radio-field.tsx",
       "projectExports": {
-        "RadioField": {
-          "isTypeOnly": false,
-          "name": "RadioField"
-        },
+        "RadioField": { "isTypeOnly": false, "name": "RadioField" },
         "RadioFieldController": {
           "isTypeOnly": false,
           "name": "RadioFieldController"
@@ -1005,67 +713,46 @@
     },
     "radio-group": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/radio-group.tsx",
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/radio-group.tsx",
       "variables": {}
     },
     "scroll-area": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/scroll-area.tsx",
-      "projectExports": {
-        "ScrollArea": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "ScrollArea": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/scroll-area.tsx",
       "variables": {}
     },
     "select": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/select.tsx",
-      "projectExports": {
-        "Select": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Select": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/select.tsx",
       "variables": {}
     },
     "select-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/select-field.tsx",
-      "projectExports": {
-        "SelectField": {},
-        "SelectFieldController": {}
-      },
+      "projectExports": { "SelectField": {}, "SelectFieldController": {} },
       "referencedGeneratorTemplates": [
         "field",
         "hooks-use-controller-merged",
@@ -1077,26 +764,18 @@
     },
     "separator": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/separator.tsx",
-      "projectExports": {
-        "Separator": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Separator": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/separator.tsx",
       "variables": {}
     },
     "sheet": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/sheet.tsx",
@@ -1110,18 +789,13 @@
         "SheetTitle": {},
         "SheetTrigger": {}
       },
-      "referencedGeneratorTemplates": [
-        "button",
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["button", "cn"],
       "sourceFile": "components/ui/sheet.tsx",
       "variables": {}
     },
     "sidebar": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/sidebar.tsx",
@@ -1166,125 +840,82 @@
     },
     "skeleton": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/skeleton.tsx",
-      "projectExports": {
-        "Skeleton": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Skeleton": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/skeleton.tsx",
       "variables": {}
     },
     "slider": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/slider.tsx",
-      "projectExports": {
-        "Slider": {
-          "isTypeOnly": false,
-          "name": "Slider"
-        }
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Slider": { "isTypeOnly": false, "name": "Slider" } },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/slider.tsx",
       "variables": {}
     },
     "spinner": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/spinner.tsx",
       "projectExports": {
-        "Spinner": {
-          "isTypeOnly": false,
-          "name": "Spinner"
-        }
+        "Spinner": { "isTypeOnly": false, "name": "Spinner" }
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/spinner.tsx",
       "variables": {}
     },
     "styles-button": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "styles",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/styles/button.ts",
-      "projectExports": {
-        "buttonVariants": {}
-      },
+      "projectExports": { "buttonVariants": {} },
       "sourceFile": "src/styles/button.ts",
       "variables": {}
     },
     "styles-input": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "styles",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/styles/input.ts",
-      "projectExports": {
-        "inputVariants": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "inputVariants": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "src/styles/input.ts",
       "variables": {}
     },
     "switch-component": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/switch.tsx",
-      "projectExports": {
-        "Switch": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Switch": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/switch.tsx",
       "variables": {}
     },
     "switch-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/switch-field.tsx",
-      "projectExports": {
-        "SwitchField": {},
-        "SwitchFieldController": {}
-      },
+      "projectExports": { "SwitchField": {}, "SwitchFieldController": {} },
       "referencedGeneratorTemplates": [
         "field",
         "hooks-use-controller-merged",
@@ -1296,9 +927,7 @@
     },
     "table": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
@@ -1313,74 +942,49 @@
         "TableHeader": {},
         "TableRow": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/table.tsx",
       "variables": {}
     },
     "textarea": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/textarea.tsx",
-      "projectExports": {
-        "Textarea": {}
-      },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "projectExports": { "Textarea": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/textarea.tsx",
       "variables": {}
     },
     "textarea-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/textarea-field.tsx",
-      "projectExports": {
-        "TextareaField": {},
-        "TextareaFieldController": {}
-      },
-      "referencedGeneratorTemplates": [
-        "field",
-        "textarea",
-        "types-form"
-      ],
+      "projectExports": { "TextareaField": {}, "TextareaFieldController": {} },
+      "referencedGeneratorTemplates": ["field", "textarea", "types-form"],
       "sourceFile": "components/ui/textarea-field.tsx",
       "variables": {}
     },
     "toaster": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/toaster.tsx",
-      "projectExports": {
-        "Toaster": {}
-      },
-      "referencedGeneratorTemplates": [
-        "styles-button"
-      ],
+      "projectExports": { "Toaster": {} },
+      "referencedGeneratorTemplates": ["styles-button"],
       "sourceFile": "components/ui/toaster.tsx",
       "variables": {}
     },
     "tooltip": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/tooltip.tsx",
@@ -1390,17 +994,13 @@
         "TooltipProvider": {},
         "TooltipTrigger": {}
       },
-      "referencedGeneratorTemplates": [
-        "cn"
-      ],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/tooltip.tsx",
       "variables": {}
     },
     "types-form": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "utils",
       "importMapProviders": {},
@@ -1410,76 +1010,51 @@
           "isTypeOnly": true,
           "name": "AddOptionRequiredFields"
         },
-        "FormFieldProps": {
-          "isTypeOnly": true,
-          "name": "FormFieldProps"
-        },
+        "FormFieldProps": { "isTypeOnly": true, "name": "FormFieldProps" },
         "MultiSelectOptionProps": {
           "isTypeOnly": true,
           "name": "MultiSelectOptionProps"
         },
-        "RadioOptionProps": {
-          "isTypeOnly": true,
-          "name": "RadioOptionProps"
-        },
-        "SelectOptionProps": {
-          "isTypeOnly": true,
-          "name": "SelectOptionProps"
-        }
+        "RadioOptionProps": { "isTypeOnly": true, "name": "RadioOptionProps" },
+        "SelectOptionProps": { "isTypeOnly": true, "name": "SelectOptionProps" }
       },
       "sourceFile": "src/types/form.ts",
       "variables": {}
     },
     "types-icon": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/types/icon.ts",
-      "projectExports": {
-        "IconElement": {
-          "isTypeOnly": true
-        }
-      },
+      "projectExports": { "IconElement": { "isTypeOnly": true } },
       "sourceFile": "src/types/icon.ts",
       "variables": {}
     },
     "use-confirm-dialog": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "hooks",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-confirm-dialog.ts",
       "projectExports": {
         "useConfirmDialog": {},
-        "UseConfirmDialogRequestOptions": {
-          "isTypeOnly": true
-        },
+        "UseConfirmDialogRequestOptions": { "isTypeOnly": true },
         "useConfirmDialogState": {}
       },
-      "referencedGeneratorTemplates": [
-        "button"
-      ],
+      "referencedGeneratorTemplates": ["button"],
       "sourceFile": "src/hooks/use-confirm-dialog.ts",
       "variables": {}
     },
     "use-mobile": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "hooks",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-mobile.ts",
-      "projectExports": {
-        "useIsMobile": {}
-      },
+      "projectExports": { "useIsMobile": {} },
       "sourceFile": "src/hooks/use-mobile.ts",
       "variables": {}
     }
