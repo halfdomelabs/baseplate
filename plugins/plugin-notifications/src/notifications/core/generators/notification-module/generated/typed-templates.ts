@@ -34,7 +34,11 @@ const channelsEmailChannel = createTsTemplateFile({
       '../templates/module/channels/email.channel.ts',
     ),
   },
-  variables: { TPL_NOTIFICATION_DIGEST_EMAIL: {}, TPL_NOTIFICATION_EMAIL: {} },
+  variables: {
+    TPL_EMAIL_COMPONENT: {},
+    TPL_NOTIFICATION_DIGEST_EMAIL: {},
+    TPL_NOTIFICATION_EMAIL: {},
+  },
 });
 
 const channelsTypes = createTsTemplateFile({

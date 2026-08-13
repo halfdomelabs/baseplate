@@ -50,6 +50,9 @@ export interface GenerateTemplateFilesOptions {
  * @param outputDirectories - The output directories to run the extractors on
  * @param generatorPackageMap - The map of package names with generators to package paths
  * @param logger - The logger to use
+ * @param workspacePackageDirectories - The absolute paths of every workspace package
+ * directory in the project (e.g. every `apps/*` and `libs/*`), used to detect literal
+ * imports from a sibling workspace package that should be parameterized instead.
  * @param options - The options to use
  */
 export async function runTemplateFileExtractors(
@@ -57,6 +60,7 @@ export async function runTemplateFileExtractors(
   outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
+  workspacePackageDirectories: string[] = [],
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
   const ignorePatterns = await loadIgnorePatterns(outputDirectory);
@@ -109,6 +113,7 @@ export async function runTemplateFileExtractors(
     configLookup,
     logger,
     outputDirectory,
+    workspacePackageDirectories,
     plugins: new Map(),
     fileContainer,
   });
@@ -128,6 +133,7 @@ export async function runTemplateFileExtractors(
     configLookup,
     logger,
     outputDirectory,
+    workspacePackageDirectories,
     plugins: pluginMap,
     fileContainer,
   });

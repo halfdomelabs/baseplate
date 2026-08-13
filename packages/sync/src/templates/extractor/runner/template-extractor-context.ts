@@ -18,18 +18,21 @@ export class TemplateExtractorContext<
     configLookup,
     logger,
     outputDirectory,
+    workspacePackageDirectories,
     plugins,
     fileContainer,
   }: {
     configLookup: TemplateExtractorConfigLookup;
     logger: Logger;
     outputDirectory?: string;
+    workspacePackageDirectories?: string[];
     plugins: Map<string, unknown>;
     fileContainer: TemplateExtractorFileContainer;
   }) {
     this.configLookup = configLookup;
     this.logger = logger;
     this.outputDirectory = outputDirectory;
+    this.workspacePackageDirectories = workspacePackageDirectories;
     this.plugins = plugins;
     this.fileContainer = fileContainer;
   }
@@ -63,6 +66,14 @@ export class TemplateExtractorContext<
    * the use of any generated project)
    */
   outputDirectory?: string;
+
+  /**
+   * The absolute paths of every workspace package directory in the project being
+   * extracted from (e.g. every `apps/*` and `libs/*`), not just `outputDirectory`.
+   *
+   * Undefined under the same conditions as `outputDirectory`.
+   */
+  workspacePackageDirectories?: string[];
 
   /**
    * The plugins available to the context.

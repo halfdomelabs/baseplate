@@ -66,11 +66,15 @@ export async function runTemplateExtractorsForProject(
       `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
     );
   }
+  const workspacePackageDirectories = Object.values(syncMetadata.packages).map(
+    (packageInfo) => packageInfo.path,
+  );
   await runTemplateFileExtractors(
     TEMPLATE_EXTRACTORS,
     appDirectory,
     generatorPackageMap,
     logger,
+    workspacePackageDirectories,
     options,
   );
   logger.info('Template extraction complete!');

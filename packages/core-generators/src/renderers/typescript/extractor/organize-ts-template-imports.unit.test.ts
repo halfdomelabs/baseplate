@@ -56,6 +56,7 @@ export function capitalizeString(str: string) {
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
+      workspacePackageDirectories: [],
       internalOutputRelativePaths: new Map([['/project-root/test.ts', 'test']]),
       resolver: mockResolver,
     };
@@ -83,6 +84,7 @@ export function capitalizeString(str: string) {
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
+      workspacePackageDirectories: [],
       internalOutputRelativePaths: new Map([['/project-root/test.ts', 'test']]),
       resolver: mockResolver,
     };
@@ -109,6 +111,7 @@ export function capitalizeString(str: string) {
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
+      workspacePackageDirectories: [],
       internalOutputRelativePaths: new Map([['/project-root/test.ts', 'test']]),
       resolver: mockResolver,
     };
@@ -167,6 +170,7 @@ export function test() {
     const context = {
       projectExportMap,
       outputDirectory: '/project-root',
+      workspacePackageDirectories: [],
       internalOutputRelativePaths: new Map([['module2.ts', 'module2']]),
       resolver: mockResolver,
     };
@@ -204,6 +208,7 @@ Module.A;
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
+      workspacePackageDirectories: [],
       internalOutputRelativePaths: new Map(),
       resolver: mockResolver,
     };
@@ -211,6 +216,91 @@ Module.A;
     await expect(
       organizeTsTemplateImports(filePath, contents, context),
     ).rejects.toThrow('cannot be a namespace import');
+  });
+
+  it('should throw for a literal import into a sibling workspace package', async () => {
+    // Regression test: a scoped import can resolve outside outputDirectory
+    // entirely (e.g. into a sibling `libs/*` package of the same example
+    // project) rather than into node_modules. That case must still be
+    // flagged, not treated as an ordinary external package import.
+    const mockResolver = {
+      async: vi
+        .fn()
+        .mockImplementation((_filePath: string, moduleSpecifier: string) => ({
+          path:
+            moduleSpecifier === '@example/transactional'
+              ? '/workspace/libs/transactional/index.ts'
+              : moduleSpecifier,
+          error: null,
+        })),
+      sync: vi.fn(),
+    } as unknown as ResolverFactory;
+
+    const filePath = '/workspace/apps/backend/test.ts';
+    const contents = `
+import { NotificationDigestEmail } from '@example/transactional';
+
+export const x = NotificationDigestEmail;
+`;
+
+    const context = {
+      projectExportMap: new Map(),
+      outputDirectory: '/workspace/apps/backend',
+      workspacePackageDirectories: [
+        '/workspace/apps/backend',
+        '/workspace/libs/transactional',
+      ],
+      internalOutputRelativePaths: new Map(),
+      resolver: mockResolver,
+    };
+
+    await expect(
+      organizeTsTemplateImports(filePath, contents, context),
+    ).rejects.toThrow(
+      /Workspace package import "@example\/transactional".*must be configured as a project export or converted to a template variable/,
+    );
+  });
+
+  it('should leave a real external package untouched even when a workspace directory is the project root', async () => {
+    // Regression test: `workspacePackageDirectories` can include the project
+    // root (which contains every package's node_modules), so a real npm
+    // package resolving through node_modules must not be mistaken for a
+    // sibling workspace package just because its path is nested under root.
+    const mockResolver = {
+      async: vi
+        .fn()
+        .mockImplementation((_filePath: string, moduleSpecifier: string) => ({
+          path:
+            moduleSpecifier === '@fastify/cookie'
+              ? '/workspace/node_modules/.pnpm/@fastify+cookie@1.0.0/node_modules/@fastify/cookie/index.js'
+              : moduleSpecifier,
+          error: null,
+        })),
+      sync: vi.fn(),
+    } as unknown as ResolverFactory;
+
+    const filePath = '/workspace/apps/backend/test.ts';
+    const contents = `
+import { fastifyCookie } from '@fastify/cookie';
+
+export const x = fastifyCookie;
+`;
+
+    const context = {
+      projectExportMap: new Map(),
+      outputDirectory: '/workspace/apps/backend',
+      workspacePackageDirectories: [
+        '/workspace',
+        '/workspace/apps/backend',
+        '/workspace/libs/transactional',
+      ],
+      internalOutputRelativePaths: new Map(),
+      resolver: mockResolver,
+    };
+
+    const result = await organizeTsTemplateImports(filePath, contents, context);
+
+    expect(result.contents).toContain(`from "@fastify/cookie"`);
   });
 
   describe('side effect imports', () => {
@@ -228,6 +318,7 @@ export const module = defineAppModule();
       const context = {
         projectExportMap: new Map(),
         outputDirectory: '/project-root',
+        workspacePackageDirectories: [],
         internalOutputRelativePaths: new Map(),
         resolver: mockResolver,
       };
@@ -250,6 +341,7 @@ export const plugin = 'plugin';
       const context = {
         projectExportMap: new Map(),
         outputDirectory: '/project-root',
+        workspacePackageDirectories: [],
         internalOutputRelativePaths: new Map([
           ['global-types.js', 'field-authorize-global-types'],
         ]),
@@ -281,6 +373,7 @@ export const setup = true;
       const context = {
         projectExportMap: new Map(),
         outputDirectory: '/project-root',
+        workspacePackageDirectories: [],
         internalOutputRelativePaths: new Map(),
         resolver: mockResolver,
       };
@@ -307,6 +400,7 @@ export const module = true;
       const context = {
         projectExportMap: new Map(),
         outputDirectory: '/project-root',
+        workspacePackageDirectories: [],
         internalOutputRelativePaths: new Map(),
         resolver: mockResolver,
       };
@@ -334,6 +428,7 @@ export function run() {
       const context = {
         projectExportMap: new Map(),
         outputDirectory: '/project-root',
+        workspacePackageDirectories: [],
         internalOutputRelativePaths: new Map(),
         resolver: mockResolver,
       };
@@ -368,6 +463,7 @@ export const module = defineAppModule();
       const context = {
         projectExportMap: new Map(),
         outputDirectory: '/project-root',
+        workspacePackageDirectories: [],
         internalOutputRelativePaths: new Map(),
         resolver: mockResolver,
       };
@@ -395,6 +491,7 @@ console.log(A);
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
+      workspacePackageDirectories: [],
       internalOutputRelativePaths: new Map(),
       resolver: mockResolver,
     };
