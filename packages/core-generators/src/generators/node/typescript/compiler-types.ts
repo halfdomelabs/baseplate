@@ -49,6 +49,12 @@ enum ModuleResolutionKind {
   Bundler = 'bundler',
 }
 
+enum ModuleDetectionKind {
+  Legacy = 'legacy',
+  Auto = 'auto',
+  Force = 'force',
+}
+
 enum ScriptTarget {
   /** @deprecated */
   ES3 = 'es3',
@@ -95,6 +101,7 @@ export interface TypescriptCompilerOptions {
   downlevelIteration?: boolean;
   emitBOM?: boolean;
   emitDecoratorMetadata?: boolean;
+  erasableSyntaxOnly?: boolean;
   exactOptionalPropertyTypes?: boolean;
   experimentalDecorators?: boolean;
   forceConsistentCasingInFileNames?: boolean;
@@ -110,6 +117,7 @@ export interface TypescriptCompilerOptions {
   mapRoot?: string;
   maxNodeModuleJsDepth?: number;
   module?: `${ModuleKind}`;
+  moduleDetection?: `${ModuleDetectionKind}`;
   moduleResolution?: `${ModuleResolutionKind}`;
   moduleSuffixes?: string[];
   noEmit?: boolean;

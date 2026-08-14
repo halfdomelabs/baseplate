@@ -59,7 +59,7 @@ export const reactTypescriptGenerator = createGenerator({
             typescriptSetup.compilerOptions.set(
               {
                 /* Compilation */
-                target: 'es2022',
+                target: 'es2023',
                 useDefineForClassFields: true,
                 lib: ['dom', 'dom.iterable', 'es2023'],
                 module: 'esnext',
@@ -68,7 +68,9 @@ export const reactTypescriptGenerator = createGenerator({
                 /* Bundler mode */
                 moduleResolution: 'bundler',
                 allowImportingTsExtensions: true,
+                allowArbitraryExtensions: true,
                 verbatimModuleSyntax: true,
+                moduleDetection: 'force',
                 noEmit: true,
                 jsx: 'react-jsx',
 
@@ -77,6 +79,7 @@ export const reactTypescriptGenerator = createGenerator({
                 noUncheckedIndexedAccess: true,
                 noUnusedLocals: true,
                 noUnusedParameters: true,
+                erasableSyntaxOnly: true,
                 noFallthroughCasesInSwitch: true,
                 noUncheckedSideEffectImports: true,
 
@@ -128,6 +131,7 @@ export const reactTypescriptGenerator = createGenerator({
                   noUncheckedIndexedAccess: true,
                   noUnusedLocals: true,
                   noUnusedParameters: true,
+                  erasableSyntaxOnly: true,
                   noFallthroughCasesInSwitch: true,
                   noUncheckedSideEffectImports: true,
                 },
