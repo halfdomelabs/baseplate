@@ -73,7 +73,7 @@
       "pathRootRelativePath": "{routes-root}/auth_/login.tsx",
       "referencedGeneratorTemplates": ["constants"],
       "sourceFile": "routes/auth_/login.tsx",
-      "variables": { "TPL_OTP_LOGIN_LINK": {} }
+      "variables": { "TPL_OTP_LOGIN_LINK": {}, "TPL_REGISTER_LINK": {} }
     },
     "login-otp": {
       "type": "ts",
@@ -117,7 +117,6 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-routes",
-      "group": "main",
       "importMapProviders": {
         "apolloErrorImportsProvider": {
           "importName": "apolloErrorImportsProvider",

@@ -49,6 +49,16 @@ export interface AuthCoreAuthRoutesRenderers {
       >,
     ) => BuilderAction;
   };
+  register: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.register
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   verifyEmail: {
     render: (
       options: Omit<
@@ -128,6 +138,21 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.otpConstants,
                 destination: paths.otpConstants,
+                ...options,
+              }),
+          },
+          register: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.register,
+                destination: paths.register,
+                importMapProviders: {
+                  apolloErrorImports,
+                  graphqlImports,
+                  reactComponentsImports,
+                  reactErrorImports,
+                  reactSessionImports,
+                },
                 ...options,
               }),
           },

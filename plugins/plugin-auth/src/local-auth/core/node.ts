@@ -7,6 +7,7 @@ import {
   appCompilerSpec,
   backendAppEntryType,
   createPluginModule,
+  pluginAppCompiler,
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
@@ -26,6 +27,7 @@ import {
   seedInitialUserGenerator,
 } from './generators/index.js';
 import { reactSessionGenerator } from './generators/react-session/react-session.generator.js';
+import { getLocalAuthWebAppData } from './schema/web-app-schema.js';
 
 export default createPluginModule({
   name: 'node',
@@ -99,14 +101,18 @@ export default createPluginModule({
           });
         },
       },
-      {
+      pluginAppCompiler({
         pluginKey,
         appType: webAppEntryType,
-        compile: ({ projectDefinition, appCompiler }) => {
+        compile: ({ projectDefinition, appDefinition, appCompiler }) => {
           const localAuthDefinition = PluginUtils.configByKeyOrThrow(
             projectDefinition,
             pluginKey,
           ) as LocalAuthPluginDefinition;
+
+          const disableRegistration =
+            getLocalAuthWebAppData(appDefinition, pluginKey)
+              ?.disableRegistration ?? false;
 
           appCompiler.addRootChildren({
             authApollo: authApolloGenerator({}),
@@ -117,10 +123,11 @@ export default createPluginModule({
               requireNameOnRegistration:
                 localAuthDefinition.requireNameOnRegistration,
               emailOtp: localAuthDefinition.emailOtp,
+              disableRegistration,
             }),
           });
         },
-      },
+      }),
     );
   },
 });

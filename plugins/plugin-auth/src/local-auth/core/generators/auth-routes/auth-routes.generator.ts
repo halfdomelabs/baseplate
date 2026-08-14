@@ -11,6 +11,7 @@ import { AUTH_CORE_AUTH_ROUTES_GENERATED as GENERATED_TEMPLATES } from './genera
 const descriptorSchema = z.object({
   requireNameOnRegistration: z.boolean(),
   emailOtp: z.boolean().default(false),
+  disableRegistration: z.boolean().default(false),
 });
 
 /**
@@ -20,7 +21,11 @@ export const authRoutesGenerator = createGenerator({
   name: 'auth/core/auth-routes',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ requireNameOnRegistration, emailOtp }) => ({
+  buildTasks: ({
+    requireNameOnRegistration,
+    emailOtp,
+    disableRegistration,
+  }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
@@ -69,8 +74,30 @@ export const authRoutesGenerator = createGenerator({
               Sign in with a code instead
             </Link>`
                       : '',
+                    TPL_REGISTER_LINK: disableRegistration
+                      ? ''
+                      : `<div>
+              Don't have an account?{' '}
+              <Link
+                to="/auth/register"
+                className="underline underline-offset-4"
+              >
+                Sign up
+              </Link>
+            </div>`,
                   },
-                  register: {
+                },
+              }),
+            );
+            await builder.apply(renderers.verifyEmail.render({}));
+            if (emailOtp) {
+              await builder.apply(renderers.otpConstants.render({}));
+              await builder.apply(renderers.loginOtp.render({}));
+            }
+            if (!disableRegistration) {
+              await builder.apply(
+                renderers.register.render({
+                  variables: {
                     TPL_REGISTER_SCHEMA: registerSchema,
                     TPL_REGISTER_INPUT: registerInput,
                     TPL_NAME_FORM_CONTROL: requireNameOnRegistration
@@ -84,13 +111,8 @@ export const authRoutesGenerator = createGenerator({
             />`
                       : '',
                   },
-                },
-              }),
-            );
-            await builder.apply(renderers.verifyEmail.render({}));
-            if (emailOtp) {
-              await builder.apply(renderers.otpConstants.render({}));
-              await builder.apply(renderers.loginOtp.render({}));
+                }),
+              );
             }
           },
         };

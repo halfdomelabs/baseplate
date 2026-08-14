@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as AuthRouteRouteImport } from './routes/auth_/route'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AuthAcceptInviteRouteImport } from './routes/auth_/accept-invite'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth_/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/auth_/login'
 import { Route as AuthLoginOtpRouteImport } from './routes/auth_/login-otp'
@@ -44,6 +45,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const AuthAcceptInviteRoute = AuthAcceptInviteRouteImport.update({
+  id: '/accept-invite',
+  path: '/accept-invite',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/forgot-password',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/accept-invite': typeof AuthAcceptInviteRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/login-otp': typeof AuthLoginOtpRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/accept-invite': typeof AuthAcceptInviteRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/login-otp': typeof AuthLoginOtpRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/auth_': typeof AuthRouteRouteWithChildren
+  '/auth_/accept-invite': typeof AuthAcceptInviteRoute
   '/auth_/forgot-password': typeof AuthForgotPasswordRoute
   '/auth_/login': typeof AuthLoginRoute
   '/auth_/login-otp': typeof AuthLoginOtpRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/auth/accept-invite'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/login-otp'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/auth/accept-invite'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/login-otp'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth_'
+    | '/auth_/accept-invite'
     | '/auth_/forgot-password'
     | '/auth_/login'
     | '/auth_/login-otp'
@@ -239,6 +251,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/auth_/accept-invite': {
+      id: '/auth_/accept-invite'
+      path: '/accept-invite'
+      fullPath: '/auth/accept-invite'
+      preLoaderRoute: typeof AuthAcceptInviteRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/auth_/forgot-password': {
       id: '/auth_/forgot-password'
@@ -356,6 +375,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 )
 
 interface AuthRouteRouteChildren {
+  AuthAcceptInviteRoute: typeof AuthAcceptInviteRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLoginOtpRoute: typeof AuthLoginOtpRoute
@@ -365,6 +385,7 @@ interface AuthRouteRouteChildren {
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthAcceptInviteRoute: AuthAcceptInviteRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthLoginOtpRoute: AuthLoginOtpRoute,

@@ -81,31 +81,7 @@ const login = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/auth_/login.tsx'),
   },
-  variables: { TPL_OTP_LOGIN_LINK: {} },
-});
-
-const register = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {
-    apolloErrorImports: apolloErrorImportsProvider,
-    graphqlImports: graphqlImportsProvider,
-    reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
-    reactSessionImports: reactSessionImportsProvider,
-  },
-  name: 'register',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/routes/auth_/register.tsx',
-    ),
-  },
-  variables: {
-    TPL_NAME_FORM_CONTROL: {},
-    TPL_REGISTER_INPUT: {},
-    TPL_REGISTER_SCHEMA: {},
-  },
+  variables: { TPL_OTP_LOGIN_LINK: {}, TPL_REGISTER_LINK: {} },
 });
 
 const resetPassword = createTsTemplateFile({
@@ -143,7 +119,6 @@ export const mainGroup = {
   constants,
   forgotPassword,
   login,
-  register,
   resetPassword,
   route,
 };
@@ -159,6 +134,29 @@ const otpConstants = createTsTemplateFile({
     ),
   },
   variables: {},
+});
+
+const register = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+    reactSessionImports: reactSessionImportsProvider,
+  },
+  name: 'register',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/register.tsx',
+    ),
+  },
+  variables: {
+    TPL_NAME_FORM_CONTROL: {},
+    TPL_REGISTER_INPUT: {},
+    TPL_REGISTER_SCHEMA: {},
+  },
 });
 
 const verifyEmail = createTsTemplateFile({
@@ -183,5 +181,6 @@ export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = {
   loginOtp,
   mainGroup,
   otpConstants,
+  register,
   verifyEmail,
 };
