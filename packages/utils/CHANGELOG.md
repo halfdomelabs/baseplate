@@ -1,5 +1,13 @@
 # @baseplate-dev/utils
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1019](https://github.com/halfdomelabs/baseplate/pull/1019) [`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a) Thanks [@kingston](https://github.com/kingston)! - `baseplate serve` now reads `.env.local` and `.env` from the current directory, so you can set the port per project with `BASEPLATE_PORT` or `PORT_OFFSET` without exporting shell variables. A plain `PORT` variable is no longer used for the serve port.
+
+- [#1027](https://github.com/halfdomelabs/baseplate/pull/1027) [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e) Thanks [@kingston](https://github.com/kingston)! - Bump nanoid dependency to 6.0.1.
+
 ## 0.6.17
 
 ## 0.6.16

@@ -1,5 +1,24 @@
 # @baseplate-dev/react-generators
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1027](https://github.com/halfdomelabs/baseplate/pull/1027) [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e) Thanks [@kingston](https://github.com/kingston)! - Generated React apps now use nanoid 6.0.1, matching the version already used on the backend.
+
+- [#1025](https://github.com/halfdomelabs/baseplate/pull/1025) [`8285b67`](https://github.com/halfdomelabs/baseplate/commit/8285b67d1627e0b4200d716ebdce6accc7fd67a1) Thanks [@kingston](https://github.com/kingston)! - Generated projects now target ES2024 with the latest Node 24 and Vite React tsconfig presets, including stricter linting options like unused-syntax and erasable-syntax checks for the frontend.
+
+- [#1023](https://github.com/halfdomelabs/baseplate/pull/1023) [`865e976`](https://github.com/halfdomelabs/baseplate/commit/865e97651f2306580f21532a939dc317d53bf4f8) Thanks [@kingston](https://github.com/kingston)! - Local auth can now offer passwordless sign-in with a single-use code emailed to the user, enabled with the new "Email Sign-in Codes" setting. Existing local auth projects pick up a schema change and will need a database migration on their next sync.
+
+- [#1016](https://github.com/halfdomelabs/baseplate/pull/1016) [`ff22f21`](https://github.com/halfdomelabs/baseplate/commit/ff22f21b3d92705b904fdacb90819bb3bdd6c303) Thanks [@kingston](https://github.com/kingston)! - The generated error boundary no longer emits an unused eslint-disable warning.
+
+- [#1013](https://github.com/halfdomelabs/baseplate/pull/1013) [`93aee4f`](https://github.com/halfdomelabs/baseplate/commit/93aee4f95c4cef9e16e08e1934ccae2d5d3f3ce6) Thanks [@kingston](https://github.com/kingston)! - Generated packages now use `@types/node` 24.13, so web and React library packages match the Node version the generated project already targets.
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`ce52092`](https://github.com/halfdomelabs/baseplate/commit/ce5209240d4163966967f60cc9fa6286c4f8dcbb), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`8285b67`](https://github.com/halfdomelabs/baseplate/commit/8285b67d1627e0b4200d716ebdce6accc7fd67a1)]:
+  - @baseplate-dev/utils@0.6.18
+  - @baseplate-dev/sync@0.6.18
+  - @baseplate-dev/core-generators@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

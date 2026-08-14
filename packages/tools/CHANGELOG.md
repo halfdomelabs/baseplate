@@ -1,5 +1,13 @@
 # @baseplate-dev/tools
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1025](https://github.com/halfdomelabs/baseplate/pull/1025) [`8285b67`](https://github.com/halfdomelabs/baseplate/commit/8285b67d1627e0b4200d716ebdce6accc7fd67a1) Thanks [@kingston](https://github.com/kingston)! - Generated projects now target ES2024 with the latest Node 24 and Vite React tsconfig presets, including stricter linting options like unused-syntax and erasable-syntax checks for the frontend.
+
+- [#1023](https://github.com/halfdomelabs/baseplate/pull/1023) [`865e976`](https://github.com/halfdomelabs/baseplate/commit/865e97651f2306580f21532a939dc317d53bf4f8) Thanks [@kingston](https://github.com/kingston)! - The shared Vitest configs now exclude generator template sources at any nesting depth, so a test file inside a template directory is no longer collected and run as a real test.
+
 ## 0.6.17
 
 ### Patch Changes

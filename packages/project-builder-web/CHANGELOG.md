@@ -1,5 +1,18 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1020](https://github.com/halfdomelabs/baseplate/pull/1020) [`a091468`](https://github.com/halfdomelabs/baseplate/commit/a091468889619613d028db530acd42f7ab476d58) Thanks [@kingston](https://github.com/kingston)! - Model fields can now have an optional description, editable from the field's options menu, which is included as the `description` on the corresponding generated GraphQL object type field.
+
+- [#1018](https://github.com/halfdomelabs/baseplate/pull/1018) [`56fe781`](https://github.com/halfdomelabs/baseplate/commit/56fe781fe175964866ca1fd590a5f5f98007c9c8) Thanks [@kingston](https://github.com/kingston)! - Upgraded module federation to the latest release, lifting the version pin that was held back by a shared-singleton regression.
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`865e976`](https://github.com/halfdomelabs/baseplate/commit/865e97651f2306580f21532a939dc317d53bf4f8), [`a091468`](https://github.com/halfdomelabs/baseplate/commit/a091468889619613d028db530acd42f7ab476d58)]:
+  - @baseplate-dev/utils@0.6.18
+  - @baseplate-dev/ui-components@0.6.18
+  - @baseplate-dev/project-builder-lib@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

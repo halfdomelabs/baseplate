@@ -1,5 +1,14 @@
 # @baseplate-dev/sync
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1024](https://github.com/halfdomelabs/baseplate/pull/1024) [`ce52092`](https://github.com/halfdomelabs/baseplate/commit/ce5209240d4163966967f60cc9fa6286c4f8dcbb) Thanks [@kingston](https://github.com/kingston)! - Template extraction now rejects a raw template that hardcodes a literal import from any workspace package in the source project, not just the app being extracted, so a copy-pasted import from another example's package can no longer slip into a shared generator unnoticed.
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e)]:
+  - @baseplate-dev/utils@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

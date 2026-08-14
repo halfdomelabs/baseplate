@@ -1,5 +1,17 @@
 # @baseplate-dev/core-generators
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1024](https://github.com/halfdomelabs/baseplate/pull/1024) [`ce52092`](https://github.com/halfdomelabs/baseplate/commit/ce5209240d4163966967f60cc9fa6286c4f8dcbb) Thanks [@kingston](https://github.com/kingston)! - Template extraction now rejects a raw template that hardcodes a literal import from any workspace package in the source project, not just the app being extracted, so a copy-pasted import from another example's package can no longer slip into a shared generator unnoticed.
+
+- [#1025](https://github.com/halfdomelabs/baseplate/pull/1025) [`8285b67`](https://github.com/halfdomelabs/baseplate/commit/8285b67d1627e0b4200d716ebdce6accc7fd67a1) Thanks [@kingston](https://github.com/kingston)! - Generated projects now target ES2024 with the latest Node 24 and Vite React tsconfig presets, including stricter linting options like unused-syntax and erasable-syntax checks for the frontend.
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`ce52092`](https://github.com/halfdomelabs/baseplate/commit/ce5209240d4163966967f60cc9fa6286c4f8dcbb), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e)]:
+  - @baseplate-dev/utils@0.6.18
+  - @baseplate-dev/sync@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes
