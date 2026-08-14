@@ -17,7 +17,7 @@ import {
   validateAuthVerification,
 } from '../../services/auth-verification.service.js';
 import {
-  AUTH_TOKEN_LENGTH,
+  AUTH_TOKEN_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
@@ -128,7 +128,7 @@ export async function requestPasswordReset({
 }
 
 const validateTokenSchema = z.object({
-  token: z.string().length(AUTH_TOKEN_LENGTH),
+  token: z.string().min(1).max(AUTH_TOKEN_MAX_LENGTH),
 });
 
 /**
@@ -159,7 +159,7 @@ export async function validatePasswordResetToken({
 }
 
 const completePasswordResetSchema = z.object({
-  token: z.string().length(AUTH_TOKEN_LENGTH),
+  token: z.string().min(1).max(AUTH_TOKEN_MAX_LENGTH),
   newPassword: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 

@@ -8,7 +8,7 @@ import type {
 import type { UserSessionPayload } from '%userSessionTypesImports';
 
 import {
-  AUTH_TOKEN_LENGTH,
+  AUTH_TOKEN_MAX_LENGTH,
   INVITE_TOKEN_EXPIRY_SEC,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
@@ -87,7 +87,7 @@ export async function inviteUser({
 }
 
 const validateTokenSchema = z.object({
-  token: z.string().length(AUTH_TOKEN_LENGTH),
+  token: z.string().min(1).max(AUTH_TOKEN_MAX_LENGTH),
 });
 
 /**
@@ -128,7 +128,7 @@ export async function validateInviteToken({
 }
 
 const acceptInviteSchema = z.object({
-  token: z.string().length(AUTH_TOKEN_LENGTH),
+  token: z.string().min(1).max(AUTH_TOKEN_MAX_LENGTH),
   newPassword: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 
@@ -193,6 +193,10 @@ export async function acceptInvite({
       update: {
         password: passwordHash,
       },
+    }),
+    prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerified: true },
     }),
   ]);
 

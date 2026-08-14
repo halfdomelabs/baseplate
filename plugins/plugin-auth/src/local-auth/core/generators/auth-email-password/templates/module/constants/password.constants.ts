@@ -27,8 +27,9 @@ export const EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC = 60 * 60 * 24;
 export const INVITE_TOKEN_EXPIRY_SEC = 60 * 60 * 24 * 7;
 
 /**
- * Exact length of an auth verification token (password reset, invite, etc.):
- * two base64url-encoded 16-byte values (22 chars each) joined by a `.`. See
- * `generateSplitToken` in `auth-verification.service.ts`.
+ * Safety upper bound on auth verification token length (password reset,
+ * invite, etc.), generous relative to the actual token format produced by
+ * `generateSplitToken` in `auth-verification.service.ts` so validation
+ * doesn't need to track that format exactly.
  */
-export const AUTH_TOKEN_LENGTH = 45;
+export const AUTH_TOKEN_MAX_LENGTH = 100;

@@ -182,7 +182,7 @@ function LoginPage(): React.JSX.Element {
             </Link>
             {/* TPL_REGISTER_LINK:START */}
             <div>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 to="/auth/register"
                 className="underline underline-offset-4"
