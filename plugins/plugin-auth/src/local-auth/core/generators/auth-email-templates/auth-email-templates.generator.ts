@@ -44,6 +44,11 @@ export const authEmailTemplatesGenerator = createGenerator({
           exportPath: paths.passwordResetEmail,
         });
 
+        emailTemplates.registerExport({
+          exportName: 'InviteEmail',
+          exportPath: paths.inviteEmail,
+        });
+
         if (emailOtp) {
           emailTemplates.registerExport({
             exportName: 'EmailOtpEmail',
@@ -57,6 +62,7 @@ export const authEmailTemplatesGenerator = createGenerator({
               renderers.accountVerificationEmail.render({}),
               renderers.passwordChangedEmail.render({}),
               renderers.passwordResetEmail.render({}),
+              renderers.inviteEmail.render({}),
             );
             if (emailOtp) {
               await builder.apply(renderers.emailOtpEmail.render({}));

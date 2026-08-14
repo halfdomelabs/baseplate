@@ -180,6 +180,7 @@ function LoginPage(): React.JSX.Element {
             >
               Forgot your password?
             </Link>
+            {/* TPL_REGISTER_LINK:START */}
             <div>
               Don&apos;t have an account?{' '}
               <Link
@@ -189,6 +190,7 @@ function LoginPage(): React.JSX.Element {
                 Sign up
               </Link>
             </div>
+            {/* TPL_REGISTER_LINK:END */}
           </div>
         </form>
       </CardContent>

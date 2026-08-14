@@ -27,6 +27,19 @@
       "sourceFile": "src/emails/auth/email-otp.email.tsx",
       "variables": {}
     },
+    "invite-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/emails/auth/invite.email.tsx",
+      "sourceFile": "src/emails/auth/invite.email.tsx",
+      "variables": {}
+    },
     "password-changed-email": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

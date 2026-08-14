@@ -9,6 +9,26 @@ import path from 'node:path';
 
 import { reactSessionImportsProvider } from '#src/local-auth/core/generators/react-session/generated/ts-import-providers.js';
 
+const acceptInvite = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+    reactSessionImports: reactSessionImportsProvider,
+  },
+  name: 'accept-invite',
+  referencedGeneratorTemplates: { constants: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/accept-invite.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const loginOtp = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -178,6 +198,7 @@ const verifyEmail = createTsTemplateFile({
 });
 
 export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = {
+  acceptInvite,
   loginOtp,
   mainGroup,
   otpConstants,

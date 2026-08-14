@@ -4,6 +4,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 export interface LocalAuthAuthEmailTemplatesPaths {
   accountVerificationEmail: string;
   emailOtpEmail: string;
+  inviteEmail: string;
   passwordChangedEmail: string;
   passwordResetEmail: string;
 }
@@ -26,6 +27,7 @@ const localAuthAuthEmailTemplatesPathsTask = createGeneratorTask({
         localAuthAuthEmailTemplatesPaths: {
           accountVerificationEmail: `${srcRoot}/emails/auth/account-verification.email.tsx`,
           emailOtpEmail: `${srcRoot}/emails/auth/email-otp.email.tsx`,
+          inviteEmail: `${srcRoot}/emails/auth/invite.email.tsx`,
           passwordChangedEmail: `${srcRoot}/emails/auth/password-changed.email.tsx`,
           passwordResetEmail: `${srcRoot}/emails/auth/password-reset.email.tsx`,
         },

@@ -9,6 +9,11 @@
     "instanceData": {},
     "template": "email-otp-email"
   },
+  "invite.email.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/auth-email-templates",
+    "instanceData": {},
+    "template": "invite-email"
+  },
   "password-changed.email.tsx": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/auth-email-templates",
     "instanceData": {},

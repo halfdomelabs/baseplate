@@ -1,13 +1,16 @@
-import * as React from 'react';
+// @ts-nocheck
 
-import { Button } from '../../components/button.js';
-import { Divider } from '../../components/divider.js';
-import { Heading } from '../../components/heading.js';
-import { EmailLayout } from '../../components/layout.js';
-import { Section } from '../../components/section.js';
-import { Text } from '../../components/text.js';
-import { theme } from '../../constants/theme.js';
-import { defineEmail } from '../../types/email-component.types.js';
+import {
+  Button,
+  defineEmail,
+  Divider,
+  EmailLayout,
+  Heading,
+  Section,
+  Text,
+  theme,
+} from '%transactionalLibImports';
+import * as React from 'react';
 
 interface InviteProps {
   acceptLink: string;

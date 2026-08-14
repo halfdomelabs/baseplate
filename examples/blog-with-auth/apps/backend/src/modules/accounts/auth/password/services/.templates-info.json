@@ -9,6 +9,11 @@
     "instanceData": {},
     "template": "services-email-verification"
   },
+  "invite.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "services-invite"
+  },
   "password-hasher.service.ts": {
     "generator": "@baseplate-dev/fastify-generators#auth/password-hasher-service",
     "instanceData": {},

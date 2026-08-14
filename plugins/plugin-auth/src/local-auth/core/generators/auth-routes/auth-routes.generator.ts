@@ -77,7 +77,7 @@ export const authRoutesGenerator = createGenerator({
                     TPL_REGISTER_LINK: disableRegistration
                       ? ''
                       : `<div>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 to="/auth/register"
                 className="underline underline-offset-4"
@@ -90,6 +90,7 @@ export const authRoutesGenerator = createGenerator({
               }),
             );
             await builder.apply(renderers.verifyEmail.render({}));
+            await builder.apply(renderers.acceptInvite.render({}));
             if (emailOtp) {
               await builder.apply(renderers.otpConstants.render({}));
               await builder.apply(renderers.loginOtp.render({}));

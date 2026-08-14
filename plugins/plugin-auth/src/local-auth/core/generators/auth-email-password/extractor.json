@@ -56,6 +56,24 @@
       "sourceFile": "module/schema/email-verification.mutations.ts",
       "variables": {}
     },
+    "schema-invite-mutations": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "authModuleImportsProvider": {
+          "importName": "authModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/invite.mutations.ts",
+      "referencedGeneratorTemplates": ["services-invite"],
+      "sourceFile": "module/schema/invite.mutations.ts",
+      "variables": { "TPL_ADMIN_ROLES": {}, "TPL_USER_OBJECT_TYPE": {} }
+    },
     "schema-password-reset-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -162,6 +180,48 @@
       "referencedGeneratorTemplates": ["constants-password"],
       "sourceFile": "module/services/email-verification.service.ts",
       "variables": { "TPL_ACCOUNT_VERIFICATION_EMAIL": {} }
+    },
+    "services-invite": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "authModuleImportsProvider": {
+          "importName": "authModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
+        },
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "passwordHasherServiceImportsProvider": {
+          "importName": "passwordHasherServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/password-hasher-service/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "requestServiceContextImportsProvider": {
+          "importName": "requestServiceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
+        },
+        "userSessionTypesImportsProvider": {
+          "importName": "userSessionTypesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/invite.service.ts",
+      "referencedGeneratorTemplates": ["constants-password"],
+      "sourceFile": "module/services/invite.service.ts",
+      "variables": { "TPL_INVITE_EMAIL": {} }
     },
     "services-password-reset": {
       "type": "ts",

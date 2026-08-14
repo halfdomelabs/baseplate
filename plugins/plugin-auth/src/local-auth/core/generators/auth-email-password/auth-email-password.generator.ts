@@ -58,6 +58,7 @@ export const authEmailPasswordGenerator = createGenerator({
         appModule.moduleImports.push(
           paths.schemaUserPasswordMutations,
           paths.schemaPasswordResetMutations,
+          paths.schemaInviteMutations,
           paths.schemaEmailVerificationMutations,
         );
         if (emailOtp) {
@@ -79,17 +80,20 @@ export const authEmailPasswordGenerator = createGenerator({
         const transactionalLibPackageName =
           transactionalLibConfig.getTransactionalLibPackageName();
 
+        const adminRolesFragment = TsCodeUtils.mergeFragmentsAsArrayPresorted(
+          adminRoles.map((r) => quot(r)).toSorted(),
+        );
+        const userObjectTypeFragment =
+          userObjectType.getTypeReference().fragment;
+
         return {
           build: async (builder) => {
             await builder.apply(
               renderers.moduleGroup.render({
                 variables: {
                   schemaUserPasswordMutations: {
-                    TPL_ADMIN_ROLES: TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                      adminRoles.map((r) => quot(r)).toSorted(),
-                    ),
-                    TPL_USER_OBJECT_TYPE:
-                      userObjectType.getTypeReference().fragment,
+                    TPL_ADMIN_ROLES: adminRolesFragment,
+                    TPL_USER_OBJECT_TYPE: userObjectTypeFragment,
                   },
                   servicesPasswordReset: {
                     TPL_PASSWORD_RESET_EMAIL: TsCodeUtils.importFragment(
@@ -108,6 +112,24 @@ export const authEmailPasswordGenerator = createGenerator({
                         )
                       : '',
                   },
+                },
+              }),
+            );
+            await builder.apply(
+              renderers.servicesInvite.render({
+                variables: {
+                  TPL_INVITE_EMAIL: TsCodeUtils.importFragment(
+                    'InviteEmail',
+                    transactionalLibPackageName,
+                  ),
+                },
+              }),
+            );
+            await builder.apply(
+              renderers.schemaInviteMutations.render({
+                variables: {
+                  TPL_ADMIN_ROLES: adminRolesFragment,
+                  TPL_USER_OBJECT_TYPE: userObjectTypeFragment,
                 },
               }),
             );

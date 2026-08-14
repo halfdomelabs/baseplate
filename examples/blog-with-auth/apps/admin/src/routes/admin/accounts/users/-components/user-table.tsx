@@ -36,11 +36,12 @@ import {
 import { graphql, readFragment } from '@src/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
-import { getApolloErrorCode } from '@src/utils/apollo-error';
 
+import type { inviteUserDialogUserFragment } from './invite-user-dialog';
 import type { passwordResetDialogUserFragment } from './password-reset-dialog';
 import type { roleManagerDialogUserFragment } from './role-manager-dialog';
 
+import { InviteUserDialog } from './invite-user-dialog';
 import { PasswordResetDialog } from './password-reset-dialog';
 import { RoleManagerDialog } from './role-manager-dialog';
 
@@ -57,18 +58,6 @@ export const userListPageDeleteUserMutation = graphql(`
 `);
 /* HOISTED:delete-action-mutation:END */
 
-/* HOISTED:invite-user-action-mutation:START */
-export const userListPageInviteUserMutation = graphql(`
-  mutation UserListPageInviteUser($input: InviteUserInput!) {
-    inviteUser(input: $input) {
-      user {
-        id
-      }
-    }
-  }
-`);
-/* HOISTED:invite-user-action-mutation:END */
-
 /* TPL_COMPONENT_NAME=UserTable */
 /* TPL_ITEMS_FRAGMENT_NAME=userTableItemsFragment */
 
@@ -78,6 +67,7 @@ export const userTableItemsFragment = graphql(`
     email
     id
     name
+    ...InviteUserDialog_user
     ...PasswordResetDialog_user
     ...RoleManagerDialog_user
     roles {
@@ -105,6 +95,9 @@ export function UserTable(
   const [passwordResetUser, setPasswordResetUser] = useState<FragmentType<
     typeof passwordResetDialogUserFragment
   > | null>(null);
+  const [inviteUserTarget, setInviteUserTarget] = useState<FragmentType<
+    typeof inviteUserDialogUserFragment
+  > | null>(null);
   const { requestConfirm } = useConfirmDialog();
   const [deleteUser] = useMutation(userListPageDeleteUserMutation, {
     update: (cache, result) => {
@@ -114,7 +107,6 @@ export function UserTable(
       cache.gc();
     },
   });
-  const [inviteUser] = useMutation(userListPageInviteUserMutation);
 
   function handleDelete(item: ResultOf<typeof userTableItemsFragment>): void {
     requestConfirm({
@@ -131,45 +123,6 @@ export function UserTable(
             toast.error(
               logAndFormatError(err, 'Sorry, we could not delete the user.'),
             );
-          });
-      },
-    });
-  }
-
-  function handleInvite(item: ResultOf<typeof userTableItemsFragment>): void {
-    requestConfirm({
-      title: 'Send Invite',
-      content: `Send an invite email to ${item.email}?`,
-      onConfirm: () => {
-        inviteUser({
-          variables: { input: { userId: item.id } },
-        })
-          .then(() => {
-            toast.success('Invite sent!');
-          })
-          .catch((err: unknown) => {
-            const errorCode = getApolloErrorCode(err, [
-              'user-already-has-account',
-              'user-has-no-email',
-            ] as const);
-            switch (errorCode) {
-              case 'user-already-has-account': {
-                toast.error('This user already has a password set.');
-                break;
-              }
-              case 'user-has-no-email': {
-                toast.error('This user has no email address to invite.');
-                break;
-              }
-              case null: {
-                toast.error(
-                  logAndFormatError(
-                    err,
-                    'Sorry, we could not send the invite.',
-                  ),
-                );
-              }
-            }
           });
       },
     });
@@ -265,7 +218,7 @@ export function UserTable(
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => {
-                        handleInvite(item);
+                        setInviteUserTarget(item);
                       }}
                     >
                       <MdMailOutline className="mr-2 h-4 w-4" />
@@ -303,6 +256,15 @@ export function UserTable(
           open={!!passwordResetUser}
           onOpenChange={(open) => {
             if (!open) setPasswordResetUser(null);
+          }}
+        />
+      )}
+      {inviteUserTarget && (
+        <InviteUserDialog
+          user={inviteUserTarget}
+          open={!!inviteUserTarget}
+          onOpenChange={(open) => {
+            if (!open) setInviteUserTarget(null);
           }}
         />
       )}

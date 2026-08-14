@@ -64,6 +64,16 @@ export interface LocalAuthCoreAuthEmailPasswordRenderers {
       >,
     ) => BuilderAction;
   };
+  schemaInviteMutations: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaInviteMutations
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   servicesEmailOtp: {
     render: (
       options: Omit<
@@ -79,6 +89,16 @@ export interface LocalAuthCoreAuthEmailPasswordRenderers {
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesEmailVerification
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  servicesInvite: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesInvite
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -185,6 +205,20 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 ...options,
               }),
           },
+          schemaInviteMutations: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaInviteMutations,
+                destination: paths.schemaInviteMutations,
+                importMapProviders: {
+                  authModuleImports,
+                  pothosImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
           servicesEmailOtp: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -217,6 +251,26 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   prismaImports,
                   rateLimitImports,
                   requestServiceContextImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          servicesInvite: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesInvite,
+                destination: paths.servicesInvite,
+                importMapProviders: {
+                  authModuleImports,
+                  configServiceImports,
+                  errorHandlerServiceImports,
+                  passwordHasherServiceImports,
+                  prismaGeneratedImports,
+                  prismaImports,
+                  requestServiceContextImports,
+                  userSessionTypesImports,
                 },
                 generatorPaths: paths,
                 ...options,
