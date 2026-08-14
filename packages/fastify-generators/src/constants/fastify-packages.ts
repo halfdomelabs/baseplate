@@ -3,7 +3,7 @@ export const FASTIFY_PACKAGES = {
   fastify: '5.11.0',
   '@fastify/helmet': '13.1.0',
   'fastify-plugin': '6.0.0',
-  nanoid: '6.0.0',
+  nanoid: '6.0.1',
 
   pino: '10.3.1',
   'pino-pretty': '13.1.3',
