@@ -44,7 +44,7 @@
     "better-auth": "1.6.23",
     "graphql": "16.14.0",
     "loglevel": "1.9.2",
-    "nanoid": "5.1.6",
+    "nanoid": "6.0.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-dropzone": "19.2.0",

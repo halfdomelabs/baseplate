@@ -58,7 +58,7 @@
     "graphql-scalars": "1.23.0",
     "graphql-yoga": "5.15.1",
     "ioredis": "5.11.1",
-    "nanoid": "6.0.0",
+    "nanoid": "6.0.1",
     "pg-boss": "12.26.3",
     "pino": "10.3.1",
     "postmark": "5.1.0",

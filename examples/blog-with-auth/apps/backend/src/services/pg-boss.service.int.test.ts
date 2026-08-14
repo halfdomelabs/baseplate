@@ -529,6 +529,9 @@ describe('pg-boss service integration tests', () => {
       const jobId = await runtime.enqueue(token, { value: 'test' });
       assert(jobId);
       await deferred.promise;
+      // The hook resolves the deferred before boss.complete() persists -
+      // let the adapter settle the job before reading its state back.
+      await sleep(1000);
 
       // Fires once, on the attempt no retry follows - not on the way there.
       expect(attemptNumbers).toEqual([1, 2]);
