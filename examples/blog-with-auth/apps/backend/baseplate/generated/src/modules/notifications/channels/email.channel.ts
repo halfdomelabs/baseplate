@@ -33,7 +33,7 @@ export interface NotificationEmailContent {
    * only consumer re-widens it when handing both back to `email.send`.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly component: EmailComponent<any>;
+  readonly component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <any>;
   readonly data: unknown;
   /** Overrides the component's own subject when present. */
   readonly subject?: string;
@@ -44,7 +44,7 @@ export interface NotificationEmailContent {
  * two cannot drift as its layout evolves.
  */
 type DigestItem = NonNullable<
-  typeof NotificationDigestEmail.PreviewProps
+  typeof /* TPL_NOTIFICATION_DIGEST_EMAIL:START */ NotificationDigestEmail /* TPL_NOTIFICATION_DIGEST_EMAIL:END */.PreviewProps
 >['items'][number];
 
 /**
@@ -54,7 +54,7 @@ type DigestItem = NonNullable<
  * compile error at the call site even though the stored shape is untyped.
  */
 export function notificationEmail<P extends object>(
-  component: EmailComponent<P>,
+  component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
   data: P,
   options?: { subject?: string },
 ): NotificationEmailContent {

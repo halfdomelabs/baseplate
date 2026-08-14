@@ -92,7 +92,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
       string,
       Map<string, string[]>
     >();
-    const { outputDirectory } = context;
+    const { outputDirectory, workspacePackageDirectories = [] } = context;
     if (!outputDirectory) {
       throw new Error(
         'Write template files requires a project output directory',
@@ -157,6 +157,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
             generatorName,
             projectExportMap,
             outputDirectory,
+            workspacePackageDirectories,
             internalOutputRelativePaths,
             resolver: getResolverFactory(outputDirectory),
           };

@@ -379,6 +379,10 @@ export const notificationModuleGenerator = createGenerator({
                       'NotificationDigestEmail',
                       transactionalLibConfig.getTransactionalLibPackageName(),
                     ),
+                    TPL_EMAIL_COMPONENT: TsCodeUtils.typeImportFragment(
+                      'EmailComponent',
+                      transactionalLibConfig.getTransactionalLibPackageName(),
+                    ),
                   },
                 }),
               );

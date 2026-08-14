@@ -30,6 +30,13 @@ export interface TsTemplateImportLookupContext {
    */
   outputDirectory: string;
   /**
+   * The absolute paths of every workspace package directory in the project being
+   * extracted from (e.g. every `apps/*` and `libs/*`), not just `outputDirectory`.
+   * Used to detect literal imports from a sibling workspace package that should be
+   * parameterized instead of baked into the template.
+   */
+  workspacePackageDirectories: string[];
+  /**
    * A map of output relative paths to the name of the template in the generator.
    */
   internalOutputRelativePaths: Map<string, string>;
@@ -46,25 +53,38 @@ function isWorkspacePackageImport(
   moduleSpecifier: string,
   resolvedPath: string,
   outputDirectory: string,
+  workspacePackageDirectories: string[],
 ): boolean {
   // Check if it's a scoped package import
   if (!moduleSpecifier.startsWith('@')) {
     return false;
   }
 
-  // Check if resolved path is within the workspace (not node_modules)
-  if (!resolvedPath.startsWith(outputDirectory)) {
-    return false;
+  if (resolvedPath.startsWith(outputDirectory)) {
+    // Check if it's in a workspace package location (libs/, packages/, apps/)
+    // nested inside the app being extracted.
+    const relativePath = path.relative(outputDirectory, resolvedPath);
+    return (
+      relativePath.startsWith('libs/') ||
+      relativePath.startsWith('packages/') ||
+      relativePath.startsWith('apps/')
+    );
   }
 
-  // Check if it's in a workspace package location (libs/, packages/, apps/)
-  const relativePath = path.relative(outputDirectory, resolvedPath);
-  const isInWorkspaceLocation =
-    relativePath.startsWith('libs/') ||
-    relativePath.startsWith('packages/') ||
-    relativePath.startsWith('apps/');
-
-  return isInWorkspaceLocation;
+  // Otherwise, check if it resolves into a *sibling* workspace package of the
+  // same project (e.g. a workspace-local lib imported by its literal package
+  // name) rather than a real external npm package. One of the workspace
+  // directories may be the project root itself (which contains every
+  // package's node_modules), so a real npm package resolving through
+  // node_modules must still be excluded even though its path is nested
+  // under that directory.
+  return workspacePackageDirectories.some((dir) => {
+    if (dir === outputDirectory || !resolvedPath.startsWith(dir)) {
+      return false;
+    }
+    const relativePath = path.relative(dir, resolvedPath);
+    return !relativePath.split(path.sep).includes('node_modules');
+  });
 }
 
 /**
@@ -124,6 +144,7 @@ async function resolveTemplateImport(
   filePath: string,
   resolver: ResolverFactory,
   outputDirectory: string,
+  workspacePackageDirectories: string[],
 ): Promise<string | undefined> {
   if (isBuiltin(moduleSpecifier)) {
     return undefined;
@@ -155,7 +176,12 @@ async function resolveTemplateImport(
   const resolvedPath = resolutionResult.path;
 
   if (
-    isWorkspacePackageImport(moduleSpecifier, resolvedPath, outputDirectory)
+    isWorkspacePackageImport(
+      moduleSpecifier,
+      resolvedPath,
+      outputDirectory,
+      workspacePackageDirectories,
+    )
   ) {
     throw new Error(
       `Workspace package import "${moduleSpecifier}" in ${filePath} must be configured as a project export or converted to a template variable. ` +
@@ -185,6 +211,7 @@ async function organizeSideEffectImports(
     internalOutputRelativePaths,
     resolver,
     outputDirectory,
+    workspacePackageDirectories,
   }: TsTemplateImportLookupContext,
   referencedGeneratorTemplates: Set<string>,
 ): Promise<void> {
@@ -201,6 +228,7 @@ async function organizeSideEffectImports(
       filePath,
       resolver,
       outputDirectory,
+      workspacePackageDirectories,
     );
 
     // Builtins and type-only packages are left untouched
@@ -267,6 +295,7 @@ export async function organizeTsTemplateImports(
     internalOutputRelativePaths,
     resolver,
     outputDirectory,
+    workspacePackageDirectories,
   }: TsTemplateImportLookupContext,
 ): Promise<OrganizeTsTemplateImportsResult> {
   const project = new Project({ useInMemoryFileSystem: true });
@@ -343,6 +372,7 @@ export async function organizeTsTemplateImports(
       internalOutputRelativePaths,
       resolver,
       outputDirectory,
+      workspacePackageDirectories,
     },
     referencedGeneratorTemplates,
   );
@@ -355,6 +385,7 @@ export async function organizeTsTemplateImports(
         filePath,
         resolver,
         outputDirectory,
+        workspacePackageDirectories,
       );
       // Builtins and type-only packages are left untouched
       if (!resolvedPath) {
