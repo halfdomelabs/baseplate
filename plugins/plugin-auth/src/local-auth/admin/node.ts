@@ -10,10 +10,12 @@ import {
   createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
+import type { AdminCrudInviteUserActionDefinition } from './schema/invite-user-action.js';
 import type { AdminCrudManageRolesActionDefinition } from './schema/manage-role-action.js';
 import type { AdminCrudResetPasswordActionDefinition } from './schema/reset-password-action.js';
 import type { AdminCrudRolesColumnDefinition } from './schema/roles-column.js';
 
+import { adminCrudInviteUserActionGenerator } from './generators/admin-crud-invite-user-action/index.js';
 import { adminCrudManageRolesActionGenerator } from './generators/admin-crud-manage-roles-action/index.js';
 import { adminCrudResetPasswordActionGenerator } from './generators/admin-crud-reset-password-action/index.js';
 import { adminCrudRolesColumnGenerator } from './generators/admin-crud-roles-column/index.js';
@@ -59,6 +61,18 @@ function buildResetPasswordActionCompiler(): AdminCrudActionCompiler<AdminCrudRe
   };
 }
 
+function buildInviteUserActionCompiler(): AdminCrudActionCompiler<AdminCrudInviteUserActionDefinition> {
+  return {
+    name: 'invite-user',
+    compileAction(definition, { order }) {
+      return adminCrudInviteUserActionGenerator({
+        order,
+        position: definition.position,
+      });
+    },
+  };
+}
+
 export default createPluginModule({
   name: 'node',
   dependencies: {
@@ -69,6 +83,7 @@ export default createPluginModule({
     adminCrudActionCompiler.actions.addMany([
       buildManageRolesActionCompiler(),
       buildResetPasswordActionCompiler(),
+      buildInviteUserActionCompiler(),
     ]);
     adminCrudColumnCompiler.columns.add(buildRolesColumnCompiler());
   },

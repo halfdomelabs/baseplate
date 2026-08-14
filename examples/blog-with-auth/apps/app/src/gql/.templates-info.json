@@ -1,0 +1,12 @@
+{
+  "graphql.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "gql-graphql"
+  },
+  "index.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "gql-index"
+  }
+}

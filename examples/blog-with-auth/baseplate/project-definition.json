@@ -49,6 +49,11 @@
                   "type": "reset-password"
                 },
                 {
+                  "id": "admin-crud-action:InvT3nvW9qXz",
+                  "position": "dropdown",
+                  "type": "invite-user"
+                },
+                {
                   "id": "admin-crud-action:Z8ZyGeeo23AT",
                   "position": "dropdown",
                   "type": "delete"
@@ -84,11 +89,21 @@
       "id": "app:I3X22H8XDMp1",
       "name": "admin",
       "pluginData": {
+        "baseplate-dev_plugin-auth_local-auth": { "disableRegistration": true },
         "baseplate-dev_plugin-notifications_notifications": {
           "includeNotifications": true
         }
       },
       "title": "Blog Admin",
+      "type": "web"
+    },
+    {
+      "description": "Public-facing blog app",
+      "devPort": 5031,
+      "enableSubscriptions": true,
+      "id": "app:Iq6OppLmXRGm",
+      "name": "app",
+      "title": "Blog",
       "type": "web"
     },
     {
@@ -155,6 +170,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:adbpe9Hhybb1",
             "isOptional": false,
             "name": "id",
@@ -162,6 +178,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:jIanyyf_ZfcU",
             "isOptional": false,
             "name": "title",
@@ -169,6 +186,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Dv9F1fcSohQ7",
             "isOptional": false,
             "name": "content",
@@ -176,6 +194,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:RT_HtouwECvt",
             "isOptional": false,
             "name": "createdAt",
@@ -183,6 +202,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:MijHKarW5Htf",
             "isOptional": false,
             "name": "updatedAt",
@@ -213,6 +233,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:x5uM_Nhnixmv",
             "isOptional": false,
             "name": "id",
@@ -220,6 +241,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Ia5IOZYxjSk7",
             "isOptional": false,
             "name": "type",
@@ -227,6 +249,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:yO1pPNae8Ikp",
             "isOptional": false,
             "name": "identifier",
@@ -234,6 +257,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:zNj1JW0Qzts5",
             "isOptional": false,
             "name": "value",
@@ -241,6 +265,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:h8RjTcvjiTB9",
             "isOptional": true,
             "name": "userId",
@@ -248,6 +273,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Dr_czFEaco9V",
             "isOptional": true,
             "name": "metadata",
@@ -255,6 +281,7 @@
             "type": "json"
           },
           {
+            "description": "",
             "id": "model-scalar-field:vwwNR4j2QQad",
             "isOptional": false,
             "name": "attempts",
@@ -262,6 +289,7 @@
             "type": "int"
           },
           {
+            "description": "",
             "id": "model-scalar-field:JBzoMuV1SZO8",
             "isOptional": false,
             "name": "expiresAt",
@@ -269,6 +297,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:i1R3iha91I8Q",
             "isOptional": false,
             "name": "createdAt",
@@ -340,6 +369,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:PPNcQYjHcLJM",
             "isOptional": false,
             "name": "id",
@@ -347,6 +377,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:5r4qOjWPHo7k",
             "isOptional": false,
             "name": "name",
@@ -354,6 +385,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:5r4qOjWPcsk",
             "isOptional": false,
             "name": "userId",
@@ -361,6 +393,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:G5ODFua2_9E_",
             "isOptional": false,
             "name": "updatedAt",
@@ -368,6 +401,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:fOVkXTd3P1Jy",
             "isOptional": false,
             "name": "createdAt",
@@ -442,6 +476,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:6AEaW6mjUeMi",
             "isOptional": false,
             "name": "id",
@@ -449,6 +484,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:dLndbykf8h2f",
             "isOptional": false,
             "name": "blogId",
@@ -456,6 +492,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:PNfjIfpZjmkw",
             "isOptional": false,
             "name": "publisherId",
@@ -463,6 +500,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:LfIe_qCQqQ42",
             "isOptional": false,
             "name": "title",
@@ -470,6 +508,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:p29bxCvmh_n8",
             "isOptional": false,
             "name": "content",
@@ -477,6 +516,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:cK70M8wINoNY",
             "isOptional": true,
             "name": "metadata",
@@ -484,6 +524,7 @@
             "type": "json"
           },
           {
+            "description": "",
             "id": "model-scalar-field:lKjrrVtoNkEP",
             "isOptional": false,
             "name": "updatedAt",
@@ -491,6 +532,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:wJJXYvWWcOOS",
             "isOptional": false,
             "name": "createdAt",
@@ -544,6 +586,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:wpD68TdtdkBQ",
             "isOptional": false,
             "name": "id",
@@ -551,6 +594,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:e2Aue_Hqz22b",
             "isOptional": false,
             "name": "postId",
@@ -558,6 +602,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:8uX4vyGKjiiR",
             "isOptional": false,
             "name": "userId",
@@ -565,6 +610,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:PJRj6nnvRIKl",
             "isOptional": false,
             "name": "createdAt",
@@ -626,6 +672,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:EwhSjvGdsL9q",
             "isOptional": false,
             "name": "blogId",
@@ -633,6 +680,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:HBbSkN0_M0TR",
             "isOptional": false,
             "name": "userId",
@@ -640,6 +688,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:vQybRRnJi3TW",
             "isOptional": false,
             "name": "updatedAt",
@@ -647,6 +696,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:u0mMHdHGq4u6",
             "isOptional": false,
             "name": "createdAt",
@@ -696,6 +746,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:edpeeBlxJPPt",
             "isOptional": false,
             "name": "id",
@@ -703,6 +754,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:edl19SCQRZdz",
             "isOptional": false,
             "name": "blogId",
@@ -710,6 +762,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:7ZbaMW8463OU",
             "isOptional": false,
             "name": "userId",
@@ -717,6 +770,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Jsrk2LCnRypv",
             "isOptional": false,
             "name": "note",
@@ -724,6 +778,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:EPC6KXsCqswQ",
             "isOptional": false,
             "name": "updatedAt",
@@ -731,6 +786,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:49cULB6kAu9x",
             "isOptional": false,
             "name": "createdAt",
@@ -776,6 +832,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:wYhgAJSgXPZE",
             "isOptional": false,
             "name": "id",
@@ -783,6 +840,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:EGERCD1_NPr0",
             "isOptional": false,
             "name": "type",
@@ -790,6 +848,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:5GzDKWmkJ8iB",
             "isOptional": false,
             "name": "templateVersion",
@@ -797,6 +856,7 @@
             "type": "int"
           },
           {
+            "description": "",
             "id": "model-scalar-field:IrjJTma3AkMr",
             "isOptional": false,
             "name": "recipientId",
@@ -804,6 +864,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:O6ng6hjKfXbH",
             "isOptional": true,
             "name": "requestId",
@@ -811,6 +872,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:tQhFu9rMDHak",
             "isOptional": false,
             "name": "inApp",
@@ -818,6 +880,7 @@
             "type": "boolean"
           },
           {
+            "description": "",
             "id": "model-scalar-field:pvklBj1i7oLL",
             "isOptional": true,
             "name": "params",
@@ -825,6 +888,7 @@
             "type": "json"
           },
           {
+            "description": "",
             "id": "model-scalar-field:AgKCMj6lv0P0",
             "isOptional": true,
             "name": "frozenContent",
@@ -832,6 +896,7 @@
             "type": "json"
           },
           {
+            "description": "",
             "id": "model-scalar-field:kNtg8f3YNfMI",
             "isOptional": true,
             "name": "seenAt",
@@ -839,6 +904,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Xp19DCiSf6FO",
             "isOptional": true,
             "name": "readAt",
@@ -846,6 +912,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:lPJtt2cEk3j1",
             "isOptional": true,
             "name": "dismissedAt",
@@ -853,6 +920,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:z9x4MFHWgf6P",
             "isOptional": false,
             "name": "createdAt",
@@ -860,6 +928,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Idrt8gLdEwPm",
             "isOptional": true,
             "name": "expiresAt",
@@ -867,6 +936,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:AbTgDX0MepGS",
             "isOptional": false,
             "name": "groupKey",
@@ -874,6 +944,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:LJ9uDTbBXmTP",
             "isOptional": false,
             "name": "feedSortKey",
@@ -947,6 +1018,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:Har4D6UNojpY",
             "isOptional": false,
             "name": "id",
@@ -954,6 +1026,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:zS1X1uCrOrps",
             "isOptional": false,
             "name": "requestId",
@@ -961,6 +1034,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:eqJ_fpWYXMQ9",
             "isOptional": false,
             "name": "channel",
@@ -968,6 +1042,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:QltxRt33KLfR",
             "isOptional": false,
             "name": "status",
@@ -975,6 +1050,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Bn5CGx4wTZf3",
             "isOptional": false,
             "name": "attempts",
@@ -982,6 +1058,7 @@
             "type": "int"
           },
           {
+            "description": "",
             "id": "model-scalar-field:JZandhdspVaY",
             "isOptional": true,
             "name": "lastError",
@@ -989,6 +1066,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:NiTifOpe25kF",
             "isOptional": false,
             "name": "createdAt",
@@ -996,6 +1074,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Mr9RzOfxqjEO",
             "isOptional": false,
             "name": "updatedAt",
@@ -1003,6 +1082,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Hu3a3EEgUzDa",
             "isOptional": false,
             "name": "notificationId",
@@ -1010,6 +1090,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:FwkXtPrxlw2h",
             "isOptional": true,
             "name": "deliveredAt",
@@ -1017,6 +1098,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:REMEJMP9Jfli",
             "isOptional": false,
             "name": "feedSortKey",
@@ -1024,6 +1106,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:DKD6G01q16Nn",
             "isOptional": false,
             "name": "recipientId",
@@ -1031,6 +1114,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:itXl6URdusls",
             "isOptional": false,
             "name": "mode",
@@ -1038,6 +1122,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:WLAlwR_urPuH",
             "isOptional": true,
             "name": "digestDueAt",
@@ -1110,6 +1195,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:6SFmGn4aGjbs",
             "isOptional": false,
             "name": "id",
@@ -1117,6 +1203,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:xSM90aPLhP6_",
             "isOptional": false,
             "name": "userId",
@@ -1124,6 +1211,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:FWJ1xc6fI6YJ",
             "isOptional": false,
             "name": "topicKey",
@@ -1131,6 +1219,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:hFcbq7tRLxrI",
             "isOptional": false,
             "name": "channel",
@@ -1138,6 +1227,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:iArZVBUZA7GO",
             "isOptional": false,
             "name": "mode",
@@ -1145,6 +1235,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:p2ybirGc82H_",
             "isOptional": true,
             "name": "digestWindowSeconds",
@@ -1152,6 +1243,7 @@
             "type": "int"
           },
           {
+            "description": "",
             "id": "model-scalar-field:7YqNBMAAUwLz",
             "isOptional": false,
             "name": "createdAt",
@@ -1159,6 +1251,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:YCWPPRua1xkx",
             "isOptional": false,
             "name": "updatedAt",
@@ -1205,6 +1298,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:BV9CMlJTJN9j",
             "isOptional": false,
             "name": "id",
@@ -1212,6 +1306,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:FY249MTV2fb5",
             "isOptional": false,
             "name": "type",
@@ -1219,6 +1314,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:PE_4ktl9BClx",
             "isOptional": false,
             "name": "templateVersion",
@@ -1226,6 +1322,7 @@
             "type": "int"
           },
           {
+            "description": "",
             "id": "model-scalar-field:BvLZFB2VTihF",
             "isOptional": true,
             "name": "params",
@@ -1233,6 +1330,7 @@
             "type": "json"
           },
           {
+            "description": "",
             "id": "model-scalar-field:W_q7qWEYHQ7m",
             "isOptional": false,
             "name": "createdAt",
@@ -1240,6 +1338,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:aYNhDl6qRgsd",
             "isOptional": true,
             "name": "frozenContent",
@@ -1247,6 +1346,7 @@
             "type": "json"
           },
           {
+            "description": "",
             "id": "model-scalar-field:syW_IDebLE_G",
             "isOptional": false,
             "name": "fanoutStatus",
@@ -1274,6 +1374,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:FwFLIDsUpJbX",
             "isOptional": false,
             "name": "key",
@@ -1281,6 +1382,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:5CkPRDkMexZG",
             "isOptional": false,
             "name": "points",
@@ -1288,6 +1390,7 @@
             "type": "int"
           },
           {
+            "description": "",
             "id": "model-scalar-field:OBYWG0Ngi9Ze",
             "isOptional": true,
             "name": "expire",
@@ -1341,6 +1444,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:iZSakQLjj07M",
             "isOptional": false,
             "name": "id",
@@ -1348,6 +1452,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:XrDYaOEQ6GZC",
             "isOptional": true,
             "name": "email",
@@ -1355,6 +1460,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:HQJa_S0ldCJR",
             "isOptional": true,
             "name": "phone",
@@ -1362,6 +1468,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:AETlnfzdbjWt",
             "isOptional": false,
             "name": "updatedAt",
@@ -1369,6 +1476,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:ejT1yp4u8OHD",
             "isOptional": false,
             "name": "createdAt",
@@ -1376,6 +1484,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Nt9rwwOeW9zR",
             "isOptional": true,
             "name": "name",
@@ -1383,6 +1492,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:3oj4N7YBdqYo",
             "isOptional": false,
             "name": "emailVerified",
@@ -1420,6 +1530,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:z6JrpgbtlGck",
             "isOptional": false,
             "name": "id",
@@ -1427,6 +1538,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:aJSc9y1cCfDp",
             "isOptional": false,
             "name": "userId",
@@ -1434,6 +1546,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:98UwMjc3dVa1",
             "isOptional": false,
             "name": "providerId",
@@ -1441,6 +1554,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:fm33dSfRzjKE",
             "isOptional": false,
             "name": "createdAt",
@@ -1448,6 +1562,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:UKyqtZ6HlWKN",
             "isOptional": false,
             "name": "updatedAt",
@@ -1455,6 +1570,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:zBHXTEcLfpva",
             "isOptional": false,
             "name": "accountId",
@@ -1462,6 +1578,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:9QYbV59Qh4mv",
             "isOptional": true,
             "name": "password",
@@ -1507,6 +1624,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:7f865kOwXryv",
             "isOptional": false,
             "name": "userId",
@@ -1514,6 +1632,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:1SNeYwyIj_Jy",
             "isOptional": false,
             "name": "role",
@@ -1521,6 +1640,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:SGKA5W77rUL5",
             "isOptional": false,
             "name": "updatedAt",
@@ -1528,6 +1648,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:uT7TyReHg24r",
             "isOptional": false,
             "name": "createdAt",
@@ -1558,6 +1679,7 @@
       "model": {
         "fields": [
           {
+            "description": "",
             "id": "model-scalar-field:CjiJr2PTCCeT",
             "isOptional": false,
             "name": "id",
@@ -1565,6 +1687,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:wIR0RC08zqov",
             "isOptional": false,
             "name": "token",
@@ -1572,6 +1695,7 @@
             "type": "string"
           },
           {
+            "description": "",
             "id": "model-scalar-field:7Y3oZIHFIY2V",
             "isOptional": false,
             "name": "userId",
@@ -1579,6 +1703,7 @@
             "type": "uuid"
           },
           {
+            "description": "",
             "id": "model-scalar-field:Y1Mg5lJh4IG0",
             "isOptional": false,
             "name": "expiresAt",
@@ -1586,6 +1711,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:sEIUglst63xV",
             "isOptional": false,
             "name": "renewedAt",
@@ -1593,6 +1719,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:SFSrsPqRYtLD",
             "isOptional": false,
             "name": "createdAt",
@@ -1600,6 +1727,7 @@
             "type": "dateTime"
           },
           {
+            "description": "",
             "id": "model-scalar-field:__RpraUxczSN",
             "isOptional": false,
             "name": "updatedAt",
@@ -1698,6 +1826,7 @@
         "emailOtp": true,
         "requireNameOnRegistration": true
       },
+      "configSchemaVersion": 1,
       "id": "plugin:baseplate-dev_plugin-auth_local-auth",
       "name": "local-auth",
       "packageName": "@baseplate-dev/plugin-auth",

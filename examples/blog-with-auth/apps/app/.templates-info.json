@@ -1,0 +1,44 @@
+{
+  "README.md": {
+    "generator": "@baseplate-dev/react-generators#core/react",
+    "instanceData": {
+      "variables": { "TPL_PROJECT_NAME": "blog-with-auth-app" }
+    },
+    "template": "readme"
+  },
+  "codegen.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "codegen"
+  },
+  "eslint.config.js": {
+    "generator": "@baseplate-dev/core-generators#node/eslint",
+    "instanceData": {},
+    "template": "eslint-config"
+  },
+  "graphql.config.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "graphql-config"
+  },
+  "index.html": {
+    "generator": "@baseplate-dev/react-generators#core/react",
+    "instanceData": {
+      "variables": {
+        "TPL_DESCRIPTION": "Public-facing blog app",
+        "TPL_TITLE": "Blog"
+      }
+    },
+    "template": "index-html"
+  },
+  "vite.config.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react",
+    "instanceData": {},
+    "template": "vite-config"
+  },
+  "vitest.config.ts": {
+    "generator": "@baseplate-dev/core-generators#node/vitest",
+    "instanceData": {},
+    "template": "vitest-config"
+  }
+}

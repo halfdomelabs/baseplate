@@ -9,6 +9,26 @@ import path from 'node:path';
 
 import { reactSessionImportsProvider } from '#src/local-auth/core/generators/react-session/generated/ts-import-providers.js';
 
+const acceptInvite = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+    reactSessionImports: reactSessionImportsProvider,
+  },
+  name: 'accept-invite',
+  referencedGeneratorTemplates: { constants: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/accept-invite.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const loginOtp = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -81,31 +101,7 @@ const login = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/auth_/login.tsx'),
   },
-  variables: { TPL_OTP_LOGIN_LINK: {} },
-});
-
-const register = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {
-    apolloErrorImports: apolloErrorImportsProvider,
-    graphqlImports: graphqlImportsProvider,
-    reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
-    reactSessionImports: reactSessionImportsProvider,
-  },
-  name: 'register',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/routes/auth_/register.tsx',
-    ),
-  },
-  variables: {
-    TPL_NAME_FORM_CONTROL: {},
-    TPL_REGISTER_INPUT: {},
-    TPL_REGISTER_SCHEMA: {},
-  },
+  variables: { TPL_OTP_LOGIN_LINK: {}, TPL_REGISTER_LINK: {} },
 });
 
 const resetPassword = createTsTemplateFile({
@@ -143,7 +139,6 @@ export const mainGroup = {
   constants,
   forgotPassword,
   login,
-  register,
   resetPassword,
   route,
 };
@@ -159,6 +154,29 @@ const otpConstants = createTsTemplateFile({
     ),
   },
   variables: {},
+});
+
+const register = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+    reactSessionImports: reactSessionImportsProvider,
+  },
+  name: 'register',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/register.tsx',
+    ),
+  },
+  variables: {
+    TPL_NAME_FORM_CONTROL: {},
+    TPL_REGISTER_INPUT: {},
+    TPL_REGISTER_SCHEMA: {},
+  },
 });
 
 const verifyEmail = createTsTemplateFile({
@@ -180,8 +198,10 @@ const verifyEmail = createTsTemplateFile({
 });
 
 export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = {
+  acceptInvite,
   loginOtp,
   mainGroup,
   otpConstants,
+  register,
   verifyEmail,
 };

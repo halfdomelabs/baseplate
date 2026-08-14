@@ -2,6 +2,7 @@ import { reactRoutesProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface AuthCoreAuthRoutesPaths {
+  acceptInvite: string;
   constants: string;
   forgotPassword: string;
   login: string;
@@ -26,6 +27,7 @@ const authCoreAuthRoutesPathsTask = createGeneratorTask({
     return {
       providers: {
         authCoreAuthRoutesPaths: {
+          acceptInvite: `${routesRoot}/auth_/accept-invite.tsx`,
           constants: `${routesRoot}/auth_/-constants.ts`,
           forgotPassword: `${routesRoot}/auth_/forgot-password.tsx`,
           login: `${routesRoot}/auth_/login.tsx`,

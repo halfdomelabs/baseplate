@@ -171,15 +171,7 @@ function LoginPage(): React.JSX.Element {
             >
               Forgot your password?
             </Link>
-            <div>
-              Don&apos;t have an account?{' '}
-              <Link
-                to="/auth/register"
-                className="underline underline-offset-4"
-              >
-                Sign up
-              </Link>
-            </div>
+            <TPL_REGISTER_LINK />
           </div>
         </form>
       </CardContent>

@@ -9,6 +9,7 @@ import {
   resetUserPassword,
 } from '../services/user-password.service.js';
 
+/* TPL_REGISTER_MUTATION:START */
 builder.mutationField('registerWithEmailPassword', (t) =>
   t.fieldWithInputPayload({
     authorize: ['public'],
@@ -30,6 +31,7 @@ builder.mutationField('registerWithEmailPassword', (t) =>
       }),
   }),
 );
+/* TPL_REGISTER_MUTATION:END */
 
 builder.mutationField('loginWithEmailPassword', (t) =>
   t.fieldWithInputPayload({

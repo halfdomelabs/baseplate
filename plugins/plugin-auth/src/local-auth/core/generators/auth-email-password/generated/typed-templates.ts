@@ -76,7 +76,11 @@ const schemaUserPasswordMutations = createTsTemplateFile({
       '../templates/module/schema/user-password.mutations.ts',
     ),
   },
-  variables: { TPL_ADMIN_ROLES: {}, TPL_USER_OBJECT_TYPE: {} },
+  variables: {
+    TPL_ADMIN_ROLES: {},
+    TPL_REGISTER_MUTATION: {},
+    TPL_USER_OBJECT_TYPE: {},
+  },
 });
 
 const servicesPasswordReset = createTsTemplateFile({
@@ -181,6 +185,23 @@ const schemaEmailVerificationMutations = createTsTemplateFile({
   variables: {},
 });
 
+const schemaInviteMutations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    authModuleImports: authModuleImportsProvider,
+    pothosImports: pothosImportsProvider,
+  },
+  name: 'schema-invite-mutations',
+  referencedGeneratorTemplates: { servicesInvite: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/invite.mutations.ts',
+    ),
+  },
+  variables: { TPL_ADMIN_ROLES: {}, TPL_USER_OBJECT_TYPE: {} },
+});
+
 const servicesEmailOtp = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -224,11 +245,36 @@ const servicesEmailVerification = createTsTemplateFile({
   variables: { TPL_ACCOUNT_VERIFICATION_EMAIL: {} },
 });
 
+const servicesInvite = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    authModuleImports: authModuleImportsProvider,
+    configServiceImports: configServiceImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    passwordHasherServiceImports: passwordHasherServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+    requestServiceContextImports: requestServiceContextImportsProvider,
+    userSessionTypesImports: userSessionTypesImportsProvider,
+  },
+  name: 'services-invite',
+  referencedGeneratorTemplates: { constantsPassword: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/invite.service.ts',
+    ),
+  },
+  variables: { TPL_INVITE_EMAIL: {} },
+});
+
 export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = {
   constantsOtp,
   moduleGroup,
   schemaEmailOtpMutations,
   schemaEmailVerificationMutations,
+  schemaInviteMutations,
   servicesEmailOtp,
   servicesEmailVerification,
+  servicesInvite,
 };

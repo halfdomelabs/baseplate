@@ -19,6 +19,16 @@ import { AUTH_CORE_AUTH_ROUTES_PATHS } from './template-paths.js';
 import { AUTH_CORE_AUTH_ROUTES_TEMPLATES } from './typed-templates.js';
 
 export interface AuthCoreAuthRoutesRenderers {
+  acceptInvite: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.acceptInvite
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   loginOtp: {
     render: (
       options: Omit<
@@ -44,6 +54,16 @@ export interface AuthCoreAuthRoutesRenderers {
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.otpConstants
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  register: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.register
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -91,6 +111,22 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
     return {
       providers: {
         authCoreAuthRoutesRenderers: {
+          acceptInvite: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.acceptInvite,
+                destination: paths.acceptInvite,
+                importMapProviders: {
+                  apolloErrorImports,
+                  graphqlImports,
+                  reactComponentsImports,
+                  reactErrorImports,
+                  reactSessionImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
           loginOtp: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -128,6 +164,21 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.otpConstants,
                 destination: paths.otpConstants,
+                ...options,
+              }),
+          },
+          register: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.register,
+                destination: paths.register,
+                importMapProviders: {
+                  apolloErrorImports,
+                  graphqlImports,
+                  reactComponentsImports,
+                  reactErrorImports,
+                  reactSessionImports,
+                },
                 ...options,
               }),
           },

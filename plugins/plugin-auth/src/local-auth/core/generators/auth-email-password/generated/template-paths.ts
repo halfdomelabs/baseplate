@@ -6,10 +6,12 @@ export interface LocalAuthCoreAuthEmailPasswordPaths {
   constantsPassword: string;
   schemaEmailOtpMutations: string;
   schemaEmailVerificationMutations: string;
+  schemaInviteMutations: string;
   schemaPasswordResetMutations: string;
   schemaUserPasswordMutations: string;
   servicesEmailOtp: string;
   servicesEmailVerification: string;
+  servicesInvite: string;
   servicesPasswordReset: string;
   servicesUserPassword: string;
 }
@@ -35,10 +37,12 @@ const localAuthCoreAuthEmailPasswordPathsTask = createGeneratorTask({
           constantsPassword: `${moduleRoot}/constants/password.constants.ts`,
           schemaEmailOtpMutations: `${moduleRoot}/schema/email-otp.mutations.ts`,
           schemaEmailVerificationMutations: `${moduleRoot}/schema/email-verification.mutations.ts`,
+          schemaInviteMutations: `${moduleRoot}/schema/invite.mutations.ts`,
           schemaPasswordResetMutations: `${moduleRoot}/schema/password-reset.mutations.ts`,
           schemaUserPasswordMutations: `${moduleRoot}/schema/user-password.mutations.ts`,
           servicesEmailOtp: `${moduleRoot}/services/email-otp.service.ts`,
           servicesEmailVerification: `${moduleRoot}/services/email-verification.service.ts`,
+          servicesInvite: `${moduleRoot}/services/invite.service.ts`,
           servicesPasswordReset: `${moduleRoot}/services/password-reset.service.ts`,
           servicesUserPassword: `${moduleRoot}/services/user-password.service.ts`,
         },

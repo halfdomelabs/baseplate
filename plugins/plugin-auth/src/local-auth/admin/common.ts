@@ -6,6 +6,7 @@ import {
   createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
+import { createAdminCrudInviteUserActionSchema } from './schema/invite-user-action.js';
 import { createAdminCrudManageRolesActionSchema } from './schema/manage-role-action.js';
 import { createAdminCrudResetPasswordActionSchema } from './schema/reset-password-action.js';
 import { createAdminCrudRolesColumnSchema } from './schema/roles-column.js';
@@ -30,6 +31,14 @@ export default createPluginModule({
       createAdminCrudActionType({
         name: 'reset-password',
         createSchema: createAdminCrudResetPasswordActionSchema,
+      }),
+    );
+
+    // Register the invite-user action type
+    adminCrudAction.actions.add(
+      createAdminCrudActionType({
+        name: 'invite-user',
+        createSchema: createAdminCrudInviteUserActionSchema,
       }),
     );
 

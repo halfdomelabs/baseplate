@@ -35,6 +35,15 @@ export default createPluginModule({
           LOCAL_AUTH_MODELS.user,
         getNewAction: () => ({ type: 'reset-password', position: 'dropdown' }),
       },
+      {
+        pluginKey,
+        name: 'invite-user',
+        label: 'Send Invite',
+        isAvailableForModel: (definition, modelId) =>
+          ModelUtils.byIdOrThrow(definition, modelId).name ===
+          LOCAL_AUTH_MODELS.user,
+        getNewAction: () => ({ type: 'invite-user', position: 'dropdown' }),
+      },
     ]);
 
     adminCrudColumnWeb.columns.add({

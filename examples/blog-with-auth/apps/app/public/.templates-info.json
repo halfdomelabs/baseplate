@@ -1,0 +1,7 @@
+{
+  "favicon.ico": {
+    "generator": "@baseplate-dev/react-generators#core/react",
+    "instanceData": {},
+    "template": "favicon"
+  }
+}

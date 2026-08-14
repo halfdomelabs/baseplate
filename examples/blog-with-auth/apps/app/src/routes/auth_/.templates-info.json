@@ -1,0 +1,52 @@
+{
+  "-constants.ts": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "constants"
+  },
+  "-otp-constants.ts": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "otp-constants"
+  },
+  "accept-invite.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "accept-invite"
+  },
+  "forgot-password.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "forgot-password"
+  },
+  "login-otp.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "login-otp"
+  },
+  "login.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "login"
+  },
+  "register.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "register"
+  },
+  "reset-password.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "reset-password"
+  },
+  "route.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "route"
+  },
+  "verify-email.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "verify-email"
+  }
+}

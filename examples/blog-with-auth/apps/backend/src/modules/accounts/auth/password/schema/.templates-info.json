@@ -9,6 +9,11 @@
     "instanceData": {},
     "template": "schema-email-verification-mutations"
   },
+  "invite.mutations.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "schema-invite-mutations"
+  },
   "password-reset.mutations.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
     "instanceData": {},

@@ -7,6 +7,7 @@ import {
   appCompilerSpec,
   backendAppEntryType,
   createPluginModule,
+  pluginAppCompiler,
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
@@ -26,6 +27,7 @@ import {
   seedInitialUserGenerator,
 } from './generators/index.js';
 import { reactSessionGenerator } from './generators/react-session/react-session.generator.js';
+import { getLocalAuthWebAppData } from './schema/web-app-schema.js';
 
 export default createPluginModule({
   name: 'node',
@@ -66,6 +68,17 @@ export default createPluginModule({
             devWebPorts[0] ??
             projectDefinition.settings.general.portOffset + 30;
 
+          // The register mutation is shared by every web app on this
+          // backend, so it can only be dropped once none of them allow
+          // self-service registration.
+          const disableRegistration =
+            webApps.length > 0 &&
+            webApps.every(
+              (app) =>
+                getLocalAuthWebAppData(app, pluginKey)?.disableRegistration ??
+                false,
+            );
+
           const additionalAdminRoles =
             localAuthDefinition.additionalUserAdminRoles.map((role) =>
               definitionContainer.nameFromId(role),
@@ -92,6 +105,7 @@ export default createPluginModule({
                   requireNameOnRegistration:
                     localAuthDefinition.requireNameOnRegistration,
                   emailOtp: localAuthDefinition.emailOtp,
+                  disableRegistration,
                 }),
                 hasher: passwordHasherServiceGenerator({}),
               },
@@ -99,14 +113,18 @@ export default createPluginModule({
           });
         },
       },
-      {
+      pluginAppCompiler({
         pluginKey,
         appType: webAppEntryType,
-        compile: ({ projectDefinition, appCompiler }) => {
+        compile: ({ projectDefinition, appDefinition, appCompiler }) => {
           const localAuthDefinition = PluginUtils.configByKeyOrThrow(
             projectDefinition,
             pluginKey,
           ) as LocalAuthPluginDefinition;
+
+          const disableRegistration =
+            getLocalAuthWebAppData(appDefinition, pluginKey)
+              ?.disableRegistration ?? false;
 
           appCompiler.addRootChildren({
             authApollo: authApolloGenerator({}),
@@ -117,10 +135,11 @@ export default createPluginModule({
               requireNameOnRegistration:
                 localAuthDefinition.requireNameOnRegistration,
               emailOtp: localAuthDefinition.emailOtp,
+              disableRegistration,
             }),
           });
         },
-      },
+      }),
     );
   },
 });

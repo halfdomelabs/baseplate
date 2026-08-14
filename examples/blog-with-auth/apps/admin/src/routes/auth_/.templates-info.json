@@ -9,6 +9,11 @@
     "instanceData": {},
     "template": "otp-constants"
   },
+  "accept-invite.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "accept-invite"
+  },
   "forgot-password.tsx": {
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
     "instanceData": {},
@@ -23,11 +28,6 @@
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
     "instanceData": {},
     "template": "login"
-  },
-  "register.tsx": {
-    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
-    "instanceData": {},
-    "template": "register"
   },
   "reset-password.tsx": {
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",

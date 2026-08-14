@@ -1,0 +1,199 @@
+import { useMutation } from '@apollo/client/react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+import { Button } from '@src/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@src/components/ui/card';
+import { InputFieldController } from '@src/components/ui/input-field';
+import { graphql } from '@src/gql';
+import { logAndFormatError } from '@src/services/error-formatter';
+import { logError } from '@src/services/error-logger';
+import { userSessionClient } from '@src/services/user-session-client';
+import { getApolloErrorCode } from '@src/utils/apollo-error';
+
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from './-constants';
+
+export const Route = createFileRoute('/auth_/login')({
+  validateSearch: z.object({
+    return_to: z
+      .string()
+      .refine((v) => v.startsWith('/') && !v.startsWith('//'))
+      .optional(),
+  }),
+  component: LoginPage,
+  beforeLoad: ({ search: { return_to }, context: { userId } }) => {
+    if (userId) {
+      throw redirect({ to: return_to ?? '/' });
+    }
+  },
+});
+
+const formSchema = z.object({
+  email: z
+    .email('Please enter a valid email address')
+    .transform((value) => value.toLowerCase()),
+  password: z
+    .string()
+    .min(
+      PASSWORD_MIN_LENGTH,
+      `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+    )
+    .max(PASSWORD_MAX_LENGTH),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+const loginWithEmailPasswordMutation = graphql(`
+  mutation LoginWithEmailPassword($input: LoginWithEmailPasswordInput!) {
+    loginWithEmailPassword(input: $input) {
+      session {
+        userId
+      }
+    }
+  }
+`);
+
+function LoginPage(): React.JSX.Element {
+  const {
+    control,
+    handleSubmit,
+    resetField,
+    setError: setFormError,
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    reValidateMode: 'onBlur',
+  });
+  const [loginWithEmailPassword, { loading }] = useMutation(
+    loginWithEmailPasswordMutation,
+  );
+  const navigate = useNavigate();
+  const { return_to } = Route.useSearch();
+
+  const onSubmit = (data: FormData): void => {
+    loginWithEmailPassword({
+      variables: {
+        input: {
+          email: data.email,
+          password: data.password,
+        },
+      },
+    })
+      .then(({ data }) => {
+        if (!data) {
+          throw new Error('No data returned from login mutation');
+        }
+        const { userId } = data.loginWithEmailPassword.session;
+        userSessionClient.signIn(userId);
+
+        navigate({ to: return_to ?? '/', replace: true }).catch(logError);
+      })
+      .catch((err: unknown) => {
+        const errorCode = getApolloErrorCode(err, [
+          'invalid-credentials',
+          'login-ip-rate-limited',
+          'login-consecutive-fails-blocked',
+        ] as const);
+        switch (errorCode) {
+          case 'invalid-credentials': {
+            resetField('password');
+            setFormError(
+              'password',
+              { message: 'Invalid email or password' },
+              { shouldFocus: true },
+            );
+            break;
+          }
+          case 'login-ip-rate-limited':
+          case 'login-consecutive-fails-blocked': {
+            resetField('password');
+            setFormError('password', {
+              message:
+                'Too many failed login attempts. Please reset your password or try again later.',
+            });
+            break;
+          }
+          case null: {
+            toast.error(
+              logAndFormatError(err, 'Sorry, we could not log you in.'),
+            );
+          }
+        }
+      });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Login to your account</CardTitle>
+        <CardDescription>
+          Enter your email below to login to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col gap-4">
+            <InputFieldController
+              control={control}
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="user@example.com"
+            />
+            <InputFieldController
+              control={control}
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              placeholder="Password"
+            />
+            <Button type="submit" className="w-full" disabled={loading}>
+              Login
+            </Button>
+          </div>
+          <div className="mt-4 flex flex-col gap-4 text-center text-sm">
+            {/* TPL_OTP_LOGIN_LINK:START */}
+            <Link
+              to="/auth/login-otp"
+              search={{ return_to }}
+              className="text-muted-foreground underline-offset-4 hover:underline"
+            >
+              Sign in with a code instead
+            </Link>
+            {/* TPL_OTP_LOGIN_LINK:END */}
+            <Link
+              to="/auth/forgot-password"
+              className="text-muted-foreground underline-offset-4 hover:underline"
+            >
+              Forgot your password?
+            </Link>
+            {/* TPL_REGISTER_LINK:START */}
+            <div>
+              Don&apos;t have an account?{' '}
+              <Link
+                to="/auth/register"
+                className="underline underline-offset-4"
+              >
+                Sign up
+              </Link>
+            </div>
+            {/* TPL_REGISTER_LINK:END */}
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}

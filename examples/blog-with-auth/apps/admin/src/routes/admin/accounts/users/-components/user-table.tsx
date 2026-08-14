@@ -8,6 +8,7 @@ import {
   MdDelete,
   MdEdit,
   MdKey,
+  MdMailOutline,
   MdMoreVert,
   MdSecurity,
 } from 'react-icons/md';
@@ -36,9 +37,11 @@ import { graphql, readFragment } from '@src/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
+import type { inviteUserDialogUserFragment } from './invite-user-dialog';
 import type { passwordResetDialogUserFragment } from './password-reset-dialog';
 import type { roleManagerDialogUserFragment } from './role-manager-dialog';
 
+import { InviteUserDialog } from './invite-user-dialog';
 import { PasswordResetDialog } from './password-reset-dialog';
 import { RoleManagerDialog } from './role-manager-dialog';
 
@@ -64,6 +67,7 @@ export const userTableItemsFragment = graphql(`
     email
     id
     name
+    ...InviteUserDialog_user
     ...PasswordResetDialog_user
     ...RoleManagerDialog_user
     roles {
@@ -90,6 +94,9 @@ export function UserTable(
   > | null>(null);
   const [passwordResetUser, setPasswordResetUser] = useState<FragmentType<
     typeof passwordResetDialogUserFragment
+  > | null>(null);
+  const [inviteUserTarget, setInviteUserTarget] = useState<FragmentType<
+    typeof inviteUserDialogUserFragment
   > | null>(null);
   const { requestConfirm } = useConfirmDialog();
   const [deleteUser] = useMutation(userListPageDeleteUserMutation, {
@@ -211,6 +218,14 @@ export function UserTable(
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => {
+                        setInviteUserTarget(item);
+                      }}
+                    >
+                      <MdMailOutline className="mr-2 h-4 w-4" />
+                      Send Invite
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
                         handleDelete(item);
                       }}
                     >
@@ -241,6 +256,15 @@ export function UserTable(
           open={!!passwordResetUser}
           onOpenChange={(open) => {
             if (!open) setPasswordResetUser(null);
+          }}
+        />
+      )}
+      {inviteUserTarget && (
+        <InviteUserDialog
+          user={inviteUserTarget}
+          open={!!inviteUserTarget}
+          onOpenChange={(open) => {
+            if (!open) setInviteUserTarget(null);
           }}
         />
       )}

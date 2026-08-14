@@ -13,10 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as AuthRouteRouteImport } from './routes/auth_/route'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AuthAcceptInviteRouteImport } from './routes/auth_/accept-invite'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth_/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/auth_/login'
 import { Route as AuthLoginOtpRouteImport } from './routes/auth_/login-otp'
-import { Route as AuthRegisterRouteImport } from './routes/auth_/register'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth_/reset-password'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth_/verify-email'
 import { Route as AdminAccountsUsersRouteRouteImport } from './routes/admin/accounts/users/route'
@@ -45,6 +45,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AuthAcceptInviteRoute = AuthAcceptInviteRouteImport.update({
+  id: '/accept-invite',
+  path: '/accept-invite',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
@@ -58,11 +63,6 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 const AuthLoginOtpRoute = AuthLoginOtpRouteImport.update({
   id: '/login-otp',
   path: '/login-otp',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
@@ -106,10 +106,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/accept-invite': typeof AuthAcceptInviteRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/login-otp': typeof AuthLoginOtpRoute
-  '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/admin/': typeof AdminIndexRoute
@@ -122,10 +122,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/accept-invite': typeof AuthAcceptInviteRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/login-otp': typeof AuthLoginOtpRoute
-  '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/admin': typeof AdminIndexRoute
@@ -139,10 +139,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/auth_': typeof AuthRouteRouteWithChildren
+  '/auth_/accept-invite': typeof AuthAcceptInviteRoute
   '/auth_/forgot-password': typeof AuthForgotPasswordRoute
   '/auth_/login': typeof AuthLoginRoute
   '/auth_/login-otp': typeof AuthLoginOtpRoute
-  '/auth_/register': typeof AuthRegisterRoute
   '/auth_/reset-password': typeof AuthResetPasswordRoute
   '/auth_/verify-email': typeof AuthVerifyEmailRoute
   '/admin/': typeof AdminIndexRoute
@@ -158,10 +158,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/auth/accept-invite'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/login-otp'
-    | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/admin/'
@@ -174,10 +174,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/auth/accept-invite'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/login-otp'
-    | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/admin'
@@ -190,10 +190,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth_'
+    | '/auth_/accept-invite'
     | '/auth_/forgot-password'
     | '/auth_/login'
     | '/auth_/login-otp'
-    | '/auth_/register'
     | '/auth_/reset-password'
     | '/auth_/verify-email'
     | '/admin/'
@@ -240,6 +240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/auth_/accept-invite': {
+      id: '/auth_/accept-invite'
+      path: '/accept-invite'
+      fullPath: '/auth/accept-invite'
+      preLoaderRoute: typeof AuthAcceptInviteRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/auth_/forgot-password': {
       id: '/auth_/forgot-password'
       path: '/forgot-password'
@@ -259,13 +266,6 @@ declare module '@tanstack/react-router' {
       path: '/login-otp'
       fullPath: '/auth/login-otp'
       preLoaderRoute: typeof AuthLoginOtpRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth_/register': {
-      id: '/auth_/register'
-      path: '/register'
-      fullPath: '/auth/register'
-      preLoaderRoute: typeof AuthRegisterRouteImport
       parentRoute: typeof AuthRouteRoute
     }
     '/auth_/reset-password': {
@@ -356,19 +356,19 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 )
 
 interface AuthRouteRouteChildren {
+  AuthAcceptInviteRoute: typeof AuthAcceptInviteRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLoginOtpRoute: typeof AuthLoginOtpRoute
-  AuthRegisterRoute: typeof AuthRegisterRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthAcceptInviteRoute: AuthAcceptInviteRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthLoginOtpRoute: AuthLoginOtpRoute,
-  AuthRegisterRoute: AuthRegisterRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
 }

@@ -1,4 +1,9 @@
 {
+  "invite-user-dialog.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/admin/admin-crud-invite-user-action",
+    "instanceData": {},
+    "template": "invite-user-dialog"
+  },
   "password-reset-dialog.tsx": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/admin/admin-crud-reset-password-action",
     "instanceData": {},
