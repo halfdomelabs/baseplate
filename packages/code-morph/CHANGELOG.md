@@ -1,5 +1,12 @@
 # @baseplate-dev/code-morph
 
+## 0.6.18
+
+### Patch Changes
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e)]:
+  - @baseplate-dev/utils@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @baseplate-dev/plugin-observability
 
+## 0.6.18
+
+### Patch Changes
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`ce52092`](https://github.com/halfdomelabs/baseplate/commit/ce5209240d4163966967f60cc9fa6286c4f8dcbb), [`e766854`](https://github.com/halfdomelabs/baseplate/commit/e766854f565d24003c7d4adc8011445953713917), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`8285b67`](https://github.com/halfdomelabs/baseplate/commit/8285b67d1627e0b4200d716ebdce6accc7fd67a1), [`865e976`](https://github.com/halfdomelabs/baseplate/commit/865e97651f2306580f21532a939dc317d53bf4f8), [`a091468`](https://github.com/halfdomelabs/baseplate/commit/a091468889619613d028db530acd42f7ab476d58), [`ff22f21`](https://github.com/halfdomelabs/baseplate/commit/ff22f21b3d92705b904fdacb90819bb3bdd6c303), [`93aee4f`](https://github.com/halfdomelabs/baseplate/commit/93aee4f95c4cef9e16e08e1934ccae2d5d3f3ce6)]:
+  - @baseplate-dev/utils@0.6.18
+  - @baseplate-dev/sync@0.6.18
+  - @baseplate-dev/core-generators@0.6.18
+  - @baseplate-dev/fastify-generators@0.6.18
+  - @baseplate-dev/react-generators@0.6.18
+  - @baseplate-dev/ui-components@0.6.18
+  - @baseplate-dev/project-builder-lib@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1019](https://github.com/halfdomelabs/baseplate/pull/1019) [`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a) Thanks [@kingston](https://github.com/kingston)! - `baseplate serve` now reads `.env.local` and `.env` from the current directory, so you can set the port per project with `BASEPLATE_PORT` or `PORT_OFFSET` without exporting shell variables. A plain `PORT` variable is no longer used for the serve port.
+
+- [#1017](https://github.com/halfdomelabs/baseplate/pull/1017) [`eb219ec`](https://github.com/halfdomelabs/baseplate/commit/eb219ec27b78e7b7447ba60bc07900557a783297) Thanks [@kingston](https://github.com/kingston)! - The MCP server and CLI now load action handlers only when an action runs, cutting startup memory substantially, and the MCP server has moved to v2 of the Model Context Protocol SDK.
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`ce52092`](https://github.com/halfdomelabs/baseplate/commit/ce5209240d4163966967f60cc9fa6286c4f8dcbb), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`eb219ec`](https://github.com/halfdomelabs/baseplate/commit/eb219ec27b78e7b7447ba60bc07900557a783297), [`a091468`](https://github.com/halfdomelabs/baseplate/commit/a091468889619613d028db530acd42f7ab476d58), [`56fe781`](https://github.com/halfdomelabs/baseplate/commit/56fe781fe175964866ca1fd590a5f5f98007c9c8)]:
+  - @baseplate-dev/project-builder-server@0.6.18
+  - @baseplate-dev/utils@0.6.18
+  - @baseplate-dev/project-builder-lib@0.6.18
+  - @baseplate-dev/project-builder-web@0.6.18
+  - @baseplate-dev/project-builder-common@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

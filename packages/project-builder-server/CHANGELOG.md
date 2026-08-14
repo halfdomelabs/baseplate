@@ -1,5 +1,25 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1019](https://github.com/halfdomelabs/baseplate/pull/1019) [`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a) Thanks [@kingston](https://github.com/kingston)! - `baseplate serve` now reads `.env.local` and `.env` from the current directory, so you can set the port per project with `BASEPLATE_PORT` or `PORT_OFFSET` without exporting shell variables. A plain `PORT` variable is no longer used for the serve port.
+
+- [#1024](https://github.com/halfdomelabs/baseplate/pull/1024) [`ce52092`](https://github.com/halfdomelabs/baseplate/commit/ce5209240d4163966967f60cc9fa6286c4f8dcbb) Thanks [@kingston](https://github.com/kingston)! - Template extraction now rejects a raw template that hardcodes a literal import from any workspace package in the source project, not just the app being extracted, so a copy-pasted import from another example's package can no longer slip into a shared generator unnoticed.
+
+- [#1017](https://github.com/halfdomelabs/baseplate/pull/1017) [`eb219ec`](https://github.com/halfdomelabs/baseplate/commit/eb219ec27b78e7b7447ba60bc07900557a783297) Thanks [@kingston](https://github.com/kingston)! - The MCP server and CLI now load action handlers only when an action runs, cutting startup memory substantially, and the MCP server has moved to v2 of the Model Context Protocol SDK.
+
+- [#1020](https://github.com/halfdomelabs/baseplate/pull/1020) [`a091468`](https://github.com/halfdomelabs/baseplate/commit/a091468889619613d028db530acd42f7ab476d58) Thanks [@kingston](https://github.com/kingston)! - Model fields can now have an optional description, editable from the field's options menu, which is included as the `description` on the corresponding generated GraphQL object type field.
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`ce52092`](https://github.com/halfdomelabs/baseplate/commit/ce5209240d4163966967f60cc9fa6286c4f8dcbb), [`e766854`](https://github.com/halfdomelabs/baseplate/commit/e766854f565d24003c7d4adc8011445953713917), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e), [`8285b67`](https://github.com/halfdomelabs/baseplate/commit/8285b67d1627e0b4200d716ebdce6accc7fd67a1), [`865e976`](https://github.com/halfdomelabs/baseplate/commit/865e97651f2306580f21532a939dc317d53bf4f8), [`a091468`](https://github.com/halfdomelabs/baseplate/commit/a091468889619613d028db530acd42f7ab476d58), [`ff22f21`](https://github.com/halfdomelabs/baseplate/commit/ff22f21b3d92705b904fdacb90819bb3bdd6c303), [`93aee4f`](https://github.com/halfdomelabs/baseplate/commit/93aee4f95c4cef9e16e08e1934ccae2d5d3f3ce6)]:
+  - @baseplate-dev/utils@0.6.18
+  - @baseplate-dev/sync@0.6.18
+  - @baseplate-dev/core-generators@0.6.18
+  - @baseplate-dev/fastify-generators@0.6.18
+  - @baseplate-dev/react-generators@0.6.18
+  - @baseplate-dev/project-builder-lib@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes

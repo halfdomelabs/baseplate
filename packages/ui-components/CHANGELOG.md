@@ -1,5 +1,14 @@
 # @baseplate-dev/ui-components
 
+## 0.6.18
+
+### Patch Changes
+
+- [#1023](https://github.com/halfdomelabs/baseplate/pull/1023) [`865e976`](https://github.com/halfdomelabs/baseplate/commit/865e97651f2306580f21532a939dc317d53bf4f8) Thanks [@kingston](https://github.com/kingston)! - Local auth can now offer passwordless sign-in with a single-use code emailed to the user, enabled with the new "Email Sign-in Codes" setting. Existing local auth projects pick up a schema change and will need a database migration on their next sync.
+
+- Updated dependencies [[`eeff7b5`](https://github.com/halfdomelabs/baseplate/commit/eeff7b5895155dc252720d70ced0eca64272ad6a), [`6f6e083`](https://github.com/halfdomelabs/baseplate/commit/6f6e0834b3963046e91e509fc6638130f290428e)]:
+  - @baseplate-dev/utils@0.6.18
+
 ## 0.6.17
 
 ### Patch Changes
