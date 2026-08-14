@@ -121,16 +121,23 @@ function LoginOtpPage(): React.JSX.Element {
     requestEmailOtp({ variables: { input: { email } } })
       .then(() => {
         setSentToEmail(email);
-        setNeedsName(false);
         setResendCooldown(EMAIL_OTP_RESEND_COOLDOWN_SEC);
-        codeForm.reset({ code: '', name: '' });
+        // Only the code is cleared: a resend keeps any name already collected
+        // so the user does not have to type it a second time.
+        codeForm.resetField('code');
       })
       .catch((err: unknown) => {
         const errorCode = getApolloErrorCode(err, ['too-many-requests']);
         if (errorCode === 'too-many-requests') {
-          emailForm.setError('email', {
-            message: 'Too many sign-in code requests. Please try again later.',
-          });
+          const message =
+            'Too many sign-in code requests. Please try again later.';
+          // The email form is unmounted once a code has been sent, so a
+          // rate-limited resend has nowhere to show a field error.
+          if (sentToEmail) {
+            toast.error(message);
+          } else {
+            emailForm.setError('email', { message });
+          }
           return;
         }
         toast.error(

@@ -109,6 +109,10 @@ export async function createCodeVerification({
  * The record is deleted when the code has expired or the attempt budget is
  * exhausted. Pass the returned record to {@link consumeCodeVerification} to
  * complete the flow.
+ *
+ * Both cleanup paths delete by filter rather than by primary key: simultaneous
+ * callers can each decide the record should go, and only one of them removes a
+ * row. A keyed delete would raise on the others instead of returning null.
  */
 export async function validateCodeVerification({
   type,
@@ -130,7 +134,7 @@ export async function validateCodeVerification({
   }
 
   if (record.expiresAt < new Date()) {
-    await prisma.authVerification.delete({ where: { id: record.id } });
+    await prisma.authVerification.deleteMany({ where: { id: record.id } });
     return null;
   }
 
@@ -147,7 +151,7 @@ export async function validateCodeVerification({
   });
 
   if (attempts >= maxAttempts) {
-    await prisma.authVerification.delete({ where: { id: record.id } });
+    await prisma.authVerification.deleteMany({ where: { id: record.id } });
   }
 
   return null;
