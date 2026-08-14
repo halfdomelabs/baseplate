@@ -14,7 +14,6 @@
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:login": "src/routes/auth_/login.tsx",
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:login-otp": "src/routes/auth_/login-otp.tsx",
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:otp-constants": "src/routes/auth_/-otp-constants.ts",
-  "@baseplate-dev/plugin-auth#auth/core/auth-routes:register": "src/routes/auth_/register.tsx",
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:reset-password": "src/routes/auth_/reset-password.tsx",
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:route": "src/routes/auth_/route.tsx",
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:verify-email": "src/routes/auth_/verify-email.tsx",

@@ -1,4 +1,8 @@
-import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
+import {
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
+} from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
   configServiceProvider,
@@ -23,6 +27,7 @@ const descriptorSchema = z.object({
   devWebDomainPort: z.number(),
   requireNameOnRegistration: z.boolean(),
   emailOtp: z.boolean().default(false),
+  disableRegistration: z.boolean().default(false),
 });
 
 /**
@@ -37,6 +42,7 @@ export const authEmailPasswordGenerator = createGenerator({
     devWebDomainPort,
     requireNameOnRegistration,
     emailOtp,
+    disableRegistration,
   }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
@@ -68,6 +74,7 @@ export const authEmailPasswordGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
+        paths: GENERATED_TEMPLATES.paths.provider,
         renderers: GENERATED_TEMPLATES.renderers.provider,
         transactionalLibConfig: transactionalLibConfigProvider,
         userObjectType: pothosTypeOutputProvider
@@ -76,7 +83,7 @@ export const authEmailPasswordGenerator = createGenerator({
             createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
           ),
       },
-      run({ renderers, transactionalLibConfig, userObjectType }) {
+      run({ paths, renderers, transactionalLibConfig, userObjectType }) {
         const transactionalLibPackageName =
           transactionalLibConfig.getTransactionalLibPackageName();
 
@@ -86,6 +93,38 @@ export const authEmailPasswordGenerator = createGenerator({
         const userObjectTypeFragment =
           userObjectType.getTypeReference().fragment;
 
+        // Kept as its own fragment (rather than a separate mutations file)
+        // since the backend serves every web app, and only one field needs
+        // to disappear when every web app has registration disabled.
+        const registerMutationFragment = disableRegistration
+          ? ''
+          : tsCodeFragment(
+              `builder.mutationField('registerWithEmailPassword', (t) =>
+  t.fieldWithInputPayload({
+    authorize: ['public'],
+    payload: {
+      session: t.payload.field({ type: userSessionPayload }),
+    },
+    input: {
+      email: t.input.field({ required: true, type: 'String' }),
+      name: t.input.field({ required: false, type: 'String' }),
+      password: t.input.field({ required: true, type: 'String' }),
+    },
+    resolve: async (root, { input }, context) =>
+      registerUserWithEmailAndPassword({
+        input: {
+          ...input,
+          name: input.name ?? undefined,
+        },
+        context,
+      }),
+  }),
+);`,
+              tsImportBuilder(['registerUserWithEmailAndPassword']).from(
+                paths.servicesUserPassword,
+              ),
+            );
+
         return {
           build: async (builder) => {
             await builder.apply(
@@ -93,6 +132,7 @@ export const authEmailPasswordGenerator = createGenerator({
                 variables: {
                   schemaUserPasswordMutations: {
                     TPL_ADMIN_ROLES: adminRolesFragment,
+                    TPL_REGISTER_MUTATION: registerMutationFragment,
                     TPL_USER_OBJECT_TYPE: userObjectTypeFragment,
                   },
                   servicesPasswordReset: {

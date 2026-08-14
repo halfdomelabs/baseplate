@@ -1,0 +1,12 @@
+{
+  "__root.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "root-route"
+  },
+  "index.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "placeholder-index"
+  }
+}

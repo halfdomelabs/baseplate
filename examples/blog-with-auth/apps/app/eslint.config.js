@@ -1,0 +1,394 @@
+import eslint from '@eslint/js';
+import graphqlPlugin from '@graphql-eslint/eslint-plugin';
+import vitest from '@vitest/eslint-plugin';
+import eslintConfigPrettier from 'eslint-config-prettier/flat';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
+import eslintPluginImportX, { importX } from 'eslint-plugin-import-x';
+import reactJsxA11yPlugin from 'eslint-plugin-jsx-a11y';
+import perfectionist from 'eslint-plugin-perfectionist';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import { defineConfig } from 'eslint/config';
+import globals from 'globals';
+import tsEslint from 'typescript-eslint';
+
+const tsFileGlobs = ['**/*.{mts,cts,ts,tsx}'];
+
+// Specifies which patterns of files are allowed to have dev dependencies
+// For example, test files are allowed to have dev dependencies
+const FILES_WITH_DEV_DEPENDENCIES = /* TPL_DEV_DEPENDENCIES:START */ [
+  '**/*.bench.{js,ts,jsx,tsx}',
+  '**/*.test-helper.{js,ts,jsx,tsx}',
+  '**/*.test.{js,ts,jsx,tsx}',
+  '**/__mocks__/**/*',
+  '**/tests/**/*',
+  '*.{js,ts,mjs,mts,cjs,cts}',
+  '.*.{js,ts,mjs,mts,cjs,cts}',
+]; /* TPL_DEV_DEPENDENCIES:END */
+
+// Specifies which files are ignored by ESLint
+const IGNORE_FILES = /* TPL_IGNORE_FILES:START */ [
+  'baseplate',
+  'build',
+  'dist',
+  'node_modules',
+  'src/gql',
+  'src/route-tree.gen.ts',
+]; /* TPL_IGNORE_FILES:END */
+
+// Specifies which files should use the default tsconfig.json project
+// This is useful for certain files outside the src directory, e.g. config files
+const TS_DEFAULT_PROJECT_FILES =
+  /* TPL_DEFAULT_PROJECT_FILES:START */ []; /* TPL_DEFAULT_PROJECT_FILES:END */
+
+export default defineConfig(
+  // ESLint Configs for all files
+  eslint.configs.recommended,
+  {
+    linterOptions: {
+      reportUnusedDisableDirectives: 'warn',
+      reportUnusedInlineConfigs: 'warn',
+    },
+    languageOptions: {
+      globals: {
+        ...globals./* TPL_GLOBALS:START */ browser /* TPL_GLOBALS:END */,
+      },
+    },
+    rules: {
+      // disallow console.log since that is typically used for debugging
+      'no-console': ['error', { allow: ['warn', 'error', 'debug', 'info'] }],
+      // Enforce object shorthand syntax to keep object properties concise.
+      'object-shorthand': ['error', 'always'],
+      // Enforce the use of template literals instead of string concatenation.
+      'prefer-template': 'error',
+      // Enforce using concise arrow function syntax when possible.
+      'arrow-body-style': ['error', 'as-needed'],
+      // Encourage the use of arrow functions for callbacks to avoid `this` binding issues.
+      // Allow named functions to be used in arrow functions to support generic functions being passed in
+      // e.g. generic components using forwardRef
+      'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
+      // Disallow renaming imports, exports, or destructured variables to the same name.
+      'no-useless-rename': 'error',
+      // Allow empty patterns in function parameters which are used in test fixtures
+      'no-empty-pattern': ['error', { allowObjectPatternsAsParameters: true }],
+    },
+  },
+
+  // Typescript ESLint Configs
+  {
+    files: tsFileGlobs,
+    extends: [
+      ...tsEslint.configs.strictTypeChecked,
+      ...tsEslint.configs.stylisticTypeChecked,
+    ],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+        projectService: {
+          // allow default project for root configs
+          allowDefaultProject: TS_DEFAULT_PROJECT_FILES,
+        },
+      },
+    },
+    rules: {
+      // require explicit return types for functions for faster type checking
+      '@typescript-eslint/explicit-function-return-type': [
+        'error',
+        { allowExpressions: true, allowTypedFunctionExpressions: true },
+      ],
+      // Ensure consistent usage of type exports
+      '@typescript-eslint/consistent-type-exports': 'error',
+      // Ensure consistent usage of type imports
+      '@typescript-eslint/consistent-type-imports': 'error',
+      // Allow more relaxed template expression checks
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allowBoolean: true,
+          allowNumber: true,
+        },
+      ],
+      // Allow constant loop conditions
+      '@typescript-eslint/no-unnecessary-condition': [
+        'error',
+        { allowConstantLoopConditions: true },
+      ],
+      // Allow ternary operators to be used when checking for empty string
+      '@typescript-eslint/prefer-nullish-coalescing': [
+        'error',
+        { ignoreTernaryTests: true },
+      ],
+      // Catch new union members silently falling into a generic `default` case
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+    },
+  },
+
+  // Import-X Configs
+  importX.flatConfigs.recommended,
+  importX.flatConfigs.typescript,
+  {
+    rules: {
+      // Let Typescript handle it since it checks for unresolved imports
+      'import-x/namespace': 'off',
+      'import-x/default': 'off',
+      'import-x/no-unresolved': 'off',
+
+      // Allow named default imports without flagging them as errors
+      'import-x/no-named-as-default': 'off',
+
+      // Allow named default members without flagging them as errors
+      'import-x/no-named-as-default-member': 'off',
+
+      // Disallow importing dependencies that aren't explicitly listed in the package.json,
+      // except for those explicitly allowed under `devDependencies` (e.g., test files)
+      'import-x/no-extraneous-dependencies': [
+        'error',
+        { devDependencies: FILES_WITH_DEV_DEPENDENCIES },
+      ],
+
+      // Disallow import relative packages (e.g., `import '../other-package/foo'`)
+      'import-x/no-relative-packages': 'error',
+    },
+    settings: {
+      'import-x/resolver-next': [createTypeScriptImportResolver()],
+    },
+  },
+
+  // Unicorn Configs
+  eslintPluginUnicorn.configs['unopinionated'],
+  {
+    rules: {
+      // Allow ternary operators to be used when appropriate (this conflicts with https://typescript-eslint.io/rules/prefer-nullish-coalescing/)
+      'unicorn/prefer-logical-operator-over-ternary': 'off',
+
+      // Re-enable with the arrow-function carve-out since the unopinionated preset omits this rule by default
+      'unicorn/consistent-function-scoping': [
+        'error',
+        { checkArrowFunctions: false },
+      ],
+
+      // A bit over-eager flagging any module references
+      'unicorn/prefer-module': 'off',
+
+      // False positives with array-like functions (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1394)
+      'unicorn/no-array-method-this-argument': 'off',
+
+      // Prevents returning undefined from functions which Typescript assumes is void
+      'unicorn/no-useless-undefined': 'off',
+
+      // While we use CJS, we cannot use top-level await
+      'unicorn/prefer-top-level-await': 'off',
+
+      // Can be too strict if you prefer to have shorter cases for negated conditions
+      'unicorn/no-negated-condition': 'off',
+
+      // Allow usage of utf-8 text encoding since it's consistent with the WHATWG spec
+      // and autofixing can cause unexpected changes (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1926)
+      'unicorn/text-encoding-identifier-case': 'off',
+
+      // Enforce for-of/array methods over manual index loops; the unopinionated preset omits this rule by default
+      'unicorn/no-for-loop': 'error',
+
+      // Enforce kebab-case filenames (repo convention); the unopinionated preset omits this rule by default
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+          },
+          ignore: [
+            String.raw`^-[a-z0-9\-\.]+$`,
+            String.raw`^\$[a-zA-Z0-9\.]+$`,
+          ],
+        },
+      ],
+    },
+  },
+
+  // Perfectionist Configs
+  {
+    plugins: { perfectionist },
+    rules: {
+      // Enforces a consistent sorting order for import and export statements
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          internalPattern: ['^@src/'],
+          // We use the default groups but ensure we place the side-effect imports last except for instrumentation
+          groups: [
+            'instrument',
+            'type-import',
+            ['value-builtin', 'value-external'],
+            'type-internal',
+            'value-internal',
+            ['type-parent', 'type-sibling', 'type-index'],
+            ['value-parent', 'value-sibling', 'value-index'],
+            'ts-equals-import',
+            'side-effect',
+            'unknown',
+          ],
+          customGroups: [
+            {
+              selector: 'side-effect',
+              groupName: 'instrument',
+              elementNamePattern: String.raw`instrument(.test-helper)?(\.js)?$`,
+            },
+          ],
+        },
+      ],
+      'perfectionist/sort-exports': ['error'],
+      'perfectionist/sort-named-imports': ['error'],
+      'perfectionist/sort-named-exports': ['error'],
+    },
+  },
+
+  /* TPL_TAILWIND_CONFIG:COMMENT:START */
+
+  // Tailwind CSS Correctness
+  eslintPluginBetterTailwindcss.configs['correctness'],
+  {
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: './src/styles.css',
+      },
+    },
+  },
+  {
+    rules: {
+      'better-tailwindcss/no-unknown-classes': [
+        'error',
+        {
+          detectComponentClasses: true,
+          ignore: ['toaster'],
+        },
+      ],
+    },
+  },
+
+  /* TPL_TAILWIND_CONFIG:COMMENT:END */
+
+  /* TPL_EXTRA_CONFIGS:COMMENT:START */
+
+  // GraphQL Configs
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    processor: graphqlPlugin.processor,
+  },
+  {
+    files: ['**/*.graphql'],
+    languageOptions: { parser: graphqlPlugin.parser },
+    plugins: { '@graphql-eslint': graphqlPlugin },
+    rules: {
+      ...graphqlPlugin.configs['flat/operations-recommended'].rules,
+      '@graphql-eslint/known-directives': ['off'],
+      '@graphql-eslint/naming-convention': [
+        'error',
+        {
+          allowLeadingUnderscore: true,
+          VariableDefinition: 'camelCase',
+          OperationDefinition: {
+            style: 'PascalCase',
+            forbiddenPrefixes: ['Query', 'Mutation', 'Subscription', 'Get'],
+            forbiddenSuffixes: ['Query', 'Mutation', 'Subscription'],
+          },
+          FragmentDefinition: {
+            // Use a regex that allows "Pascal" OR "Pascal_camel"
+            // It checks:
+            //   - Starts with Uppercase (Pascal part)
+            //   - Optionally follows with _lowercase (camel part)
+            requiredPattern: /^[A-Z][a-zA-Z0-9]*(_[a-z][a-zA-Z0-9]*)?$/,
+            forbiddenPrefixes: ['Fragment'],
+            forbiddenSuffixes: ['Fragment'],
+          },
+        },
+      ],
+    },
+  },
+
+  // React & A11y
+  {
+    files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
+    extends: [
+      reactPlugin.configs.flat.recommended,
+      reactPlugin.configs.flat['jsx-runtime'],
+      reactJsxA11yPlugin.flatConfigs.recommended,
+    ],
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+    rules: {
+      // Disable for Base UI's render prop pattern where content is injected via useRender
+      'jsx-a11y/anchor-has-content': 'off',
+    },
+  },
+
+  // Typescript
+  {
+    files: ['**/*.{tsx,mtsx}'],
+    rules: {
+      // Allow promises to be returned from functions for attributes in React
+      // to allow for React Hook Form handleSubmit to work as expected
+      // See https://github.com/orgs/react-hook-form/discussions/8020
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksVoidReturn: { attributes: false } },
+      ],
+
+      // Allow redirect and notFound to be thrown from routes
+      '@typescript-eslint/only-throw-error': [
+        'error',
+        {
+          allow: ['NotFoundError', 'Redirect'],
+        },
+      ],
+
+      // Component return types are overwhelmingly restatements of what TS already
+      // infers from JSX (e.g. React.ReactElement); not worth the annotation noise
+      '@typescript-eslint/explicit-function-return-type': 'off',
+
+      // Pure duplication with TypeScript prop typing
+      'react/prop-types': 'off',
+    },
+  },
+
+  // React Hooks
+  reactHooksPlugin.configs.flat['recommended-latest'],
+  {
+    rules: {
+      // Disable new strict rules from react-hooks v7 until we enable React Compiler
+      'react-hooks/refs': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
+      'react-hooks/incompatible-library': 'off',
+    },
+  },
+
+  // Import-X
+  eslintPluginImportX.flatConfigs.react,
+
+  // Vitest Configs
+  {
+    files: ['**/*.test.{ts,js,tsx,jsx}', 'tests/**'],
+    plugins: { vitest },
+    rules: {
+      ...vitest.configs.recommended.rules,
+      // Helpful in dev but should flag as errors when linting
+      'vitest/no-focused-tests': 'error',
+    },
+    settings: {
+      vitest: {
+        typecheck: true,
+      },
+    },
+  },
+  /* TPL_EXTRA_CONFIGS:COMMENT:END */
+
+  // Global Ignores
+  { ignores: IGNORE_FILES },
+
+  eslintConfigPrettier,
+);

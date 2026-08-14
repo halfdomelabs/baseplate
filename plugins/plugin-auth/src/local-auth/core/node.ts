@@ -68,6 +68,17 @@ export default createPluginModule({
             devWebPorts[0] ??
             projectDefinition.settings.general.portOffset + 30;
 
+          // The register mutation is shared by every web app on this
+          // backend, so it can only be dropped once none of them allow
+          // self-service registration.
+          const disableRegistration =
+            webApps.length > 0 &&
+            webApps.every(
+              (app) =>
+                getLocalAuthWebAppData(app, pluginKey)?.disableRegistration ??
+                false,
+            );
+
           const additionalAdminRoles =
             localAuthDefinition.additionalUserAdminRoles.map((role) =>
               definitionContainer.nameFromId(role),
@@ -94,6 +105,7 @@ export default createPluginModule({
                   requireNameOnRegistration:
                     localAuthDefinition.requireNameOnRegistration,
                   emailOtp: localAuthDefinition.emailOtp,
+                  disableRegistration,
                 }),
                 hasher: passwordHasherServiceGenerator({}),
               },

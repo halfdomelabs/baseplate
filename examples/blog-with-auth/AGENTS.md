@@ -9,6 +9,7 @@ blog-with-auth is a full-stack TypeScript monorepo built with [Baseplate](https:
 ### Applications
 
 - **admin** — `web` app in `apps/admin/`
+- **app** — `web` app in `apps/app/`
 - **backend** — `backend` app in `apps/backend/`
 
 ## Build & Test Commands

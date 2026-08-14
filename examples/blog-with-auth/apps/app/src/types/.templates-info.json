@@ -1,0 +1,12 @@
+{
+  "form.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "types-form"
+  },
+  "icon.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "types-icon"
+  }
+}

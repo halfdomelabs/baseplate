@@ -76,7 +76,11 @@ const schemaUserPasswordMutations = createTsTemplateFile({
       '../templates/module/schema/user-password.mutations.ts',
     ),
   },
-  variables: { TPL_ADMIN_ROLES: {}, TPL_USER_OBJECT_TYPE: {} },
+  variables: {
+    TPL_ADMIN_ROLES: {},
+    TPL_REGISTER_MUTATION: {},
+    TPL_USER_OBJECT_TYPE: {},
+  },
 });
 
 const servicesPasswordReset = createTsTemplateFile({

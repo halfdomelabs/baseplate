@@ -3,33 +3,12 @@
 import {
   authenticateUserWithEmailAndPassword,
   changeUserPassword,
-  registerUserWithEmailAndPassword,
   resetUserPassword,
 } from '$servicesUserPassword';
 import { userSessionPayload } from '%authModuleImports';
 import { builder } from '%pothosImports';
 
-builder.mutationField('registerWithEmailPassword', (t) =>
-  t.fieldWithInputPayload({
-    authorize: ['public'],
-    payload: {
-      session: t.payload.field({ type: userSessionPayload }),
-    },
-    input: {
-      email: t.input.field({ required: true, type: 'String' }),
-      name: t.input.field({ required: false, type: 'String' }),
-      password: t.input.field({ required: true, type: 'String' }),
-    },
-    resolve: async (root, { input }, context) =>
-      registerUserWithEmailAndPassword({
-        input: {
-          ...input,
-          name: input.name ?? undefined,
-        },
-        context,
-      }),
-  }),
-);
+TPL_REGISTER_MUTATION;
 
 builder.mutationField('loginWithEmailPassword', (t) =>
   t.fieldWithInputPayload({

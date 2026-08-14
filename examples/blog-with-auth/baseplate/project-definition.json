@@ -89,11 +89,21 @@
       "id": "app:I3X22H8XDMp1",
       "name": "admin",
       "pluginData": {
+        "baseplate-dev_plugin-auth_local-auth": { "disableRegistration": true },
         "baseplate-dev_plugin-notifications_notifications": {
           "includeNotifications": true
         }
       },
       "title": "Blog Admin",
+      "type": "web"
+    },
+    {
+      "description": "Public-facing blog app",
+      "devPort": 5031,
+      "enableSubscriptions": true,
+      "id": "app:Iq6OppLmXRGm",
+      "name": "app",
+      "title": "Blog",
       "type": "web"
     },
     {

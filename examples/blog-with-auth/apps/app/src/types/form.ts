@@ -1,0 +1,65 @@
+export interface FormFieldProps {
+  label?: React.ReactNode;
+  error?: React.ReactNode;
+  description?: React.ReactNode;
+  disabled?: boolean;
+}
+
+type SelectOptionLabelRenderer<OptionType> = (
+  value: OptionType,
+  options: { selected: boolean },
+) => React.ReactNode;
+
+type SelectOptionStringExtractor<OptionType> = (value: OptionType) => string;
+
+type SelectOptionStringOrNullExtractor<OptionType> = (
+  value: OptionType,
+) => string | null;
+
+export interface MultiSelectOptionProps<OptionType> {
+  options: OptionType[];
+  onChange?: (value: string[]) => void;
+  value?: string[];
+  renderItemLabel?: SelectOptionLabelRenderer<OptionType>;
+  getOptionLabel?: SelectOptionStringExtractor<OptionType>;
+  getOptionValue?: SelectOptionStringExtractor<OptionType>;
+  placeholder?: string;
+}
+
+/**
+ * Options for a radio group. Unlike a select, each option must have a non-null
+ * value: "no selection" is expressed by leaving the group unchecked, so a
+ * `null`-valued option would be indistinguishable from an empty field.
+ */
+export interface RadioOptionProps<OptionType> {
+  options: OptionType[];
+  onChange?: (value: string | null) => void;
+  value?: string | null;
+  renderItemLabel?: SelectOptionLabelRenderer<OptionType>;
+  getOptionLabel?: SelectOptionStringExtractor<OptionType>;
+  getOptionValue?: SelectOptionStringExtractor<OptionType>;
+}
+
+export interface SelectOptionProps<OptionType> {
+  options: OptionType[];
+  onChange?: (value: string | null) => void;
+  value?: string | null;
+  renderItemLabel?: SelectOptionLabelRenderer<OptionType>;
+  getOptionLabel?: SelectOptionStringExtractor<OptionType>;
+  getOptionValue?: SelectOptionStringOrNullExtractor<OptionType>;
+  placeholder?: string;
+}
+
+export type AddOptionRequiredFields<OptionType> = (OptionType extends {
+  label: string;
+}
+  ? unknown
+  : {
+      renderItemLabel?: SelectOptionLabelRenderer<OptionType>;
+      getOptionLabel: SelectOptionStringExtractor<OptionType>;
+    }) &
+  (OptionType extends { value: string }
+    ? unknown
+    : {
+        getOptionValue: SelectOptionStringOrNullExtractor<OptionType>;
+      });
