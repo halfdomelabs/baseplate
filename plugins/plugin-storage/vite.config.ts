@@ -8,7 +8,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 export default defineConfig(async (): Promise<UserConfig> => {
-  const viteTargets = await getModuleFederationTargets(__dirname, {
+  const viteTargets = await getModuleFederationTargets(import.meta.dirname, {
     overridePluginGlobs: ['src/*/plugin.json'],
   });
   return {
