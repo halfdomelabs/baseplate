@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@eslint/js": "catalog:",
-    "@tsconfig/node22": "^22.0.5",
+    "@tsconfig/node24": "^24.0.4",
     "@tsconfig/vite-react": "^8.1.1",
     "@vitest/eslint-plugin": "^1.6.23",
     "eslint-config-prettier": "^10.1.8",
