@@ -40,6 +40,7 @@ export const createAuthorizerRoleSchema = definitionSchemaWithSlots(
          * - `exists()` / `all()` — quantify over a has-many relation
          *
          * @example 'model.userId === userId'
+         * @example 'model.deletedAt === null'
          * @example "hasRole('admin')"
          * @example "hasRole(model.blog, 'owner')"
          * @example 'exists(model.members, { userId: userId })'

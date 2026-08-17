@@ -211,10 +211,84 @@ describe('parseAuthorizerExpression', () => {
       );
     });
 
-    it('should reject null literal', () => {
-      expect(() => parseAuthorizerExpression('model.status === null')).toThrow(
+    it('should parse model.deletedAt === null', () => {
+      const result = parseAuthorizerExpression('model.deletedAt === null');
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '===',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'deletedAt',
+          start: 0,
+          end: 15,
+        },
+        right: {
+          type: 'literalValue',
+          value: null,
+          start: 20,
+          end: 24,
+        },
+      });
+      expect(result.modelFieldRefs).toEqual(['deletedAt']);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should parse model.deletedAt !== null', () => {
+      const result = parseAuthorizerExpression('model.deletedAt !== null');
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '!==',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'deletedAt',
+          start: 0,
+          end: 15,
+        },
+        right: {
+          type: 'literalValue',
+          value: null,
+          start: 20,
+          end: 24,
+        },
+      });
+    });
+
+    it('should parse null literal on left side (commutative)', () => {
+      const result = parseAuthorizerExpression('null === model.deletedAt');
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '===',
+        left: {
+          type: 'literalValue',
+          value: null,
+          start: 0,
+          end: 4,
+        },
+        right: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'deletedAt',
+          start: 9,
+          end: 24,
+        },
+      });
+    });
+
+    it('should reject comparing null to null', () => {
+      expect(() => parseAuthorizerExpression('null === null')).toThrow(
         AuthorizerExpressionParseError,
       );
+    });
+
+    it('should reject undefined, pointing at null instead', () => {
+      expect(() =>
+        parseAuthorizerExpression('model.deletedAt === undefined'),
+      ).toThrow(/Use `null` instead/);
     });
   });
 
@@ -681,6 +755,23 @@ describe('parseAuthorizerExpression', () => {
         { type: 'relationFilter' }
       >;
       expect(ast.conditions[0]?.field).toBe('isCompleted');
+    });
+
+    it('should parse exists with null literal condition', () => {
+      const result = parseAuthorizerExpression(
+        'exists(model.tasks, { deletedAt: null })',
+      );
+
+      expect(result.ast.type).toBe('relationFilter');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'relationFilter' }
+      >;
+      expect(ast.conditions[0]?.field).toBe('deletedAt');
+      expect(ast.conditions[0]?.value).toMatchObject({
+        type: 'literalValue',
+        value: null,
+      });
     });
 
     it('should reject exists with no arguments', () => {

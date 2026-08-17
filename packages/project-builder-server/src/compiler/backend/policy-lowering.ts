@@ -40,6 +40,7 @@ import {
 } from './authorizer-expression-codegen-utils.js';
 import {
   generateQueryFilterExpressionCode,
+  referencesAuthContext,
   referencesOnlyGuaranteedAuthField,
 } from './query-filter-codegen.js';
 
@@ -184,6 +185,7 @@ function createPolicyLoweringVisitor(
    * Fallback: lower any node to `r.where`/`r.userWhere` using the query-filter
    * codegen. `r.userWhere` applies when the node references `auth.userId` and
    * no other auth field — its non-null guarantee lets the null-check collapse.
+   * A node that reads nothing off the context takes no callback parameter.
    */
   const asWhere = (node: AuthorizerExpressionNode): string => {
     const useUserPrincipal = referencesOnlyGuaranteedAuthField(node);
@@ -197,9 +199,11 @@ function createPolicyLoweringVisitor(
     const wrapped = whereBody.trimStart().startsWith('{')
       ? `(${whereBody})`
       : whereBody;
-    return useUserPrincipal
-      ? `r.userWhere((session) => ${wrapped})`
-      : `r.where((ctx) => ${wrapped})`;
+    if (useUserPrincipal) {
+      return `r.userWhere((session) => ${wrapped})`;
+    }
+    const param = referencesAuthContext(node) ? '(ctx)' : '()';
+    return `r.where(${param} => ${wrapped})`;
   };
 
   return {

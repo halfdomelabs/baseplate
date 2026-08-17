@@ -1,3 +1,5 @@
+import type { FieldComparisonNode } from '@baseplate-dev/project-builder-lib';
+
 import { parseAuthorizerExpression } from '@baseplate-dev/project-builder-lib';
 import { describe, expect, it } from 'vitest';
 
@@ -69,6 +71,12 @@ describe('lowerExpressionToRoleTree', () => {
       );
     });
 
+    it('null literal → match', () => {
+      expect(lower('model.deletedAt === null')).toBe(
+        'r.match(() => ({ deletedAt: null }))',
+      );
+    });
+
     it('model-vs-model comparison is NOT matchable → throws (never emits an out-of-scope `model` ref)', () => {
       // Both sides are model fields, so `r.match` can't bind one to a scalar.
       // It falls through to the where fallback, which rejects the comparison
@@ -82,13 +90,59 @@ describe('lowerExpressionToRoleTree', () => {
   describe('r.where — fallback for non-matchable comparisons', () => {
     it('!== falls back to r.where', () => {
       expect(lower("model.status !== 'draft'")).toBe(
-        "r.where((ctx) => ({ status: { not: 'draft' } }))",
+        "r.where(() => ({ status: { not: 'draft' } }))",
       );
     });
 
     it('!== against auth field userId falls back to r.userWhere (no null-guard)', () => {
       expect(lower('model.id !== userId')).toBe(
         'r.userWhere((session) => ({ id: { not: session.userId } }))',
+      );
+    });
+
+    it('!== null falls back to r.where with a not-null filter', () => {
+      expect(lower('model.engagementEffectiveAt !== null')).toBe(
+        'r.where(() => ({ engagementEffectiveAt: { not: null } }))',
+      );
+    });
+
+    it('keeps the ctx parameter when the where body reads from it', () => {
+      // Built by hand: `userId` is the only auth field the parser accepts, and
+      // it always collapses to `r.userWhere`. Any other auth field keeps the
+      // null-guard, so the emitted body genuinely reads `ctx`.
+      const ast: FieldComparisonNode = {
+        type: 'fieldComparison',
+        operator: '!==',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'orgId',
+          start: 0,
+          end: 11,
+        },
+        right: {
+          type: 'fieldRef',
+          source: 'auth',
+          field: 'orgId',
+          start: 16,
+          end: 21,
+        },
+      };
+
+      expect(lowerExpressionToRoleTree(ast, ctxWith())).toBe(
+        'r.where((ctx) => (ctx.auth.orgId != null ? { orgId: { not: ctx.auth.orgId } } : false))',
+      );
+    });
+
+    it('!== null composes with delegation across a relation', () => {
+      expect(
+        lower(
+          'model.engagementEffectiveAt !== null && hasRole(model.members, "owner")',
+          ctxWith({ members: VIA_MANY_MEMBERS }),
+        ),
+      ).toBe(
+        'r.all([r.where(() => ({ engagementEffectiveAt: { not: null } })), ' +
+          "r.viaMany(blogUserPolicy, 'owner', 'members')])",
       );
     });
   });
@@ -214,6 +268,12 @@ describe('lowerExpressionToRoleTree', () => {
     it('exists(...) referencing only userId → r.userWhere (no null-guard)', () => {
       expect(lower('exists(model.members, { userId: userId })')).toBe(
         'r.userWhere((session) => ({ members: { some: { userId: session.userId } } }))',
+      );
+    });
+
+    it('exists(...) with a null condition value → r.where', () => {
+      expect(lower('exists(model.members, { deletedAt: null })')).toBe(
+        'r.where(() => ({ members: { some: { deletedAt: null } } }))',
       );
     });
   });

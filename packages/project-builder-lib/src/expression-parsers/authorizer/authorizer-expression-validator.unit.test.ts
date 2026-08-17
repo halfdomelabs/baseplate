@@ -43,6 +43,30 @@ function createMockPluginStore(
   ]);
 }
 
+/** Build `model.<field> <operator> null`. */
+function nullComparison(
+  field: string,
+  operator: '===' | '!==' = '!==',
+): FieldComparisonNode {
+  return {
+    type: 'fieldComparison',
+    operator,
+    left: {
+      type: 'fieldRef',
+      source: 'model',
+      field,
+      start: 0,
+      end: 6 + field.length,
+    },
+    right: {
+      type: 'literalValue',
+      value: null,
+      start: 11 + field.length,
+      end: 15 + field.length,
+    },
+  };
+}
+
 describe('validateAuthorizerExpression', () => {
   const defaultModelContext = buildModelExpressionContext(
     {
@@ -886,6 +910,177 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toEqual([]);
+    });
+  });
+
+  describe('null literal validation', () => {
+    const nullableModelContext = buildModelExpressionContext(
+      {
+        id: 'model-1',
+        name: 'Case',
+        fields: [
+          { name: 'id', type: 'string' },
+          { name: 'title', type: 'string' },
+          { name: 'engagementEffectiveAt', type: 'dateTime', isOptional: true },
+          { name: 'createdAt', type: 'dateTime' },
+          { name: 'metadata', type: 'json', isOptional: true },
+        ],
+      },
+      [],
+    );
+
+    it('should allow null comparison against an optional field', () => {
+      const warnings = validateAuthorizerExpression(
+        nullComparison('engagementEffectiveAt'),
+        nullableModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should allow null comparison against an optional field with ===', () => {
+      const warnings = validateAuthorizerExpression(
+        nullComparison('engagementEffectiveAt', '==='),
+        nullableModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for null comparison against a required field', () => {
+      const warnings = validateAuthorizerExpression(
+        nullComparison('title'),
+        nullableModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]?.message).toContain("'title'");
+      expect(warnings[0]?.message).toContain("'Case'");
+      expect(warnings[0]?.message).toContain('required');
+    });
+
+    it('should warn for null comparison against a required dateTime field', () => {
+      // `dateTime` hits the type switch's permissive default, so the nullability
+      // check must not be routed through it.
+      const warnings = validateAuthorizerExpression(
+        nullComparison('createdAt'),
+        nullableModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]?.message).toContain("'createdAt'");
+    });
+
+    it('should warn for null comparison against an optional json field', () => {
+      // Prisma requires DbNull/JsonNull for json fields, so a plain null
+      // comparison would not compile in the generated project.
+      const warnings = validateAuthorizerExpression(
+        nullComparison('metadata'),
+        nullableModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]?.message).toContain("'metadata'");
+      expect(warnings[0]?.message).toContain('json');
+    });
+
+    it('should not warn when the context carries no nullability info', () => {
+      const warnings = validateAuthorizerExpression(
+        nullComparison('title'),
+        {
+          modelName: nullableModelContext.modelName,
+          scalarFieldNames: nullableModelContext.scalarFieldNames,
+          fieldTypes: nullableModelContext.fieldTypes,
+        },
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for null condition value against a required foreign field', () => {
+      const modelContext = buildModelExpressionContext(
+        {
+          id: 'model-1',
+          name: 'Case',
+          fields: [{ name: 'id', type: 'string' }],
+          model: { relations: [] },
+        },
+        [
+          {
+            id: 'model-2',
+            name: 'CaseVendor',
+            fields: [
+              { name: 'id', type: 'string' },
+              { name: 'caseId', type: 'string' },
+              { name: 'role', type: 'string' },
+              { name: 'removedAt', type: 'dateTime', isOptional: true },
+            ],
+            model: {
+              relations: [
+                {
+                  name: 'case',
+                  modelRef: 'model-1',
+                  foreignRelationName: 'vendors',
+                  references: [],
+                },
+              ],
+            },
+          },
+        ],
+      );
+
+      const buildAst = (field: string): RelationFilterNode => ({
+        type: 'relationFilter',
+        relationName: 'vendors',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field,
+            fieldStart: 24,
+            fieldEnd: 24 + field.length,
+            value: {
+              type: 'literalValue',
+              value: null,
+              start: 26 + field.length,
+              end: 30 + field.length,
+            },
+          },
+        ],
+      });
+
+      expect(
+        validateAuthorizerExpression(
+          buildAst('removedAt'),
+          modelContext,
+          defaultPluginStore,
+          defaultDefinition,
+        ),
+      ).toEqual([]);
+
+      const warnings = validateAuthorizerExpression(
+        buildAst('role'),
+        modelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]?.message).toContain("'role'");
+      expect(warnings[0]?.message).toContain("'CaseVendor'");
     });
   });
 

@@ -28,7 +28,7 @@ export type AuthorizerExpressionNode =
 /**
  * A literal value in a comparison expression.
  *
- * Supports string, number, and boolean literal values.
+ * Supports string, number, boolean, and null literal values.
  *
  * @example
  * ```typescript
@@ -37,12 +37,15 @@ export type AuthorizerExpressionNode =
  *
  * // true in model.isPublished === true
  * { type: 'literalValue', value: true, start: 20, end: 24 }
+ *
+ * // null in model.deletedAt === null
+ * { type: 'literalValue', value: null, start: 20, end: 24 }
  * ```
  */
 export interface LiteralValueNode {
   type: 'literalValue';
   /** The literal value */
-  value: string | number | boolean;
+  value: string | number | boolean | null;
   /** Start position in the source */
   start: number;
   /** End position in the source */
