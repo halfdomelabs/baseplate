@@ -13,6 +13,9 @@ export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin' /* TPL_ROUTE_PATH:END */,
 )({
   beforeLoad: ({ context: { session }, location }) => {
+    // An unsettled session cannot answer either question, so the guard re-runs when
+    // it settles rather than deciding now.
+    if (session.isPending) return;
     if (!session.userId) {
       throw redirect({
         to: /* TPL_LOGIN_URL_PATH:START */ '/auth/login' /* TPL_LOGIN_URL_PATH:END */,
@@ -21,10 +24,7 @@ export const Route = createFileRoute(
         },
       });
     }
-    // Roles are unknown until the server confirms them, e.g. right after another tab
-    // signs in, so the check re-runs when the session settles rather than denying now.
     if (
-      !session.isPending &&
       REQUIRED_ROLES.size > 0 &&
       !session.roles.some((role) => REQUIRED_ROLES.has(role))
     ) {
