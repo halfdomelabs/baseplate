@@ -48,5 +48,6 @@ const rateLimitCoreRateLimitImportsTask = createGeneratorTask({
 });
 
 export const RATE_LIMIT_CORE_RATE_LIMIT_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-rate-limit#rate-limit/core/rate-limit',
   task: rateLimitCoreRateLimitImportsTask,
 };

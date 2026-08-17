@@ -53,5 +53,6 @@ const nodeVitestImportsTask = createGeneratorTask({
 });
 
 export const NODE_VITEST_IMPORTS = {
+  generatorName: '@baseplate-dev/core-generators#node/vitest',
   task: nodeVitestImportsTask,
 };

@@ -56,5 +56,6 @@ const localAuthCoreAuthHooksImportsTask = createGeneratorTask({
 });
 
 export const LOCAL_AUTH_CORE_AUTH_HOOKS_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-auth#local-auth/core/auth-hooks',
   task: localAuthCoreAuthHooksImportsTask,
 };

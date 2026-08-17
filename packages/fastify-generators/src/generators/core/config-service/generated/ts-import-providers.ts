@@ -46,5 +46,6 @@ const coreConfigServiceImportsTask = createGeneratorTask({
 });
 
 export const CORE_CONFIG_SERVICE_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#core/config-service',
   task: coreConfigServiceImportsTask,
 };

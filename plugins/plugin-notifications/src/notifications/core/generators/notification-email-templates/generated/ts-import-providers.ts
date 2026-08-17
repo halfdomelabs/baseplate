@@ -52,5 +52,7 @@ const notificationsCoreNotificationEmailTemplatesImportsTask =
   });
 
 export const NOTIFICATIONS_CORE_NOTIFICATION_EMAIL_TEMPLATES_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates',
   task: notificationsCoreNotificationEmailTemplatesImportsTask,
 };

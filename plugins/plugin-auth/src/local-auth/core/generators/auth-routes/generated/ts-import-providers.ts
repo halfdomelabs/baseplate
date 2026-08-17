@@ -44,5 +44,6 @@ const authCoreAuthRoutesImportsTask = createGeneratorTask({
 });
 
 export const AUTH_CORE_AUTH_ROUTES_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-auth#auth/core/auth-routes',
   task: authCoreAuthRoutesImportsTask,
 };

@@ -56,5 +56,6 @@ const authAuthContextImportsTask = createGeneratorTask({
 });
 
 export const AUTH_AUTH_CONTEXT_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#auth/auth-context',
   task: authAuthContextImportsTask,
 };

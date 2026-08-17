@@ -78,5 +78,6 @@ const prismaDataUtilsImportsTask = createGeneratorTask({
 });
 
 export const PRISMA_DATA_UTILS_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#prisma/data-utils',
   task: prismaDataUtilsImportsTask,
 };

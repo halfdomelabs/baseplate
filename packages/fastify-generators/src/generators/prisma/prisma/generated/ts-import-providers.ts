@@ -55,5 +55,6 @@ const prismaPrismaImportsTask = createGeneratorTask({
 });
 
 export const PRISMA_PRISMA_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#prisma/prisma',
   task: prismaPrismaImportsTask,
 };

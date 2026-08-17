@@ -46,5 +46,6 @@ const coreReactSentryImportsTask = createGeneratorTask({
 });
 
 export const CORE_REACT_SENTRY_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-observability#core/react-sentry',
   task: coreReactSentryImportsTask,
 };

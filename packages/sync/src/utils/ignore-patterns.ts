@@ -20,6 +20,7 @@ export async function loadIgnorePatterns(
     '.DS_Store',
     'Thumbs.db',
     '.paths-metadata.json',
+    '.package-imports-metadata.json',
     'baseplate/**/*',
     'schema.graphql',
     '/apps/**/*',

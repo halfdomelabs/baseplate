@@ -46,5 +46,6 @@ const stripeFastifyStripeImportsTask = createGeneratorTask({
 });
 
 export const STRIPE_FASTIFY_STRIPE_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-payments#stripe/fastify-stripe',
   task: stripeFastifyStripeImportsTask,
 };

@@ -40,5 +40,6 @@ const pgBossCorePgBossImportsTask = createGeneratorTask({
 });
 
 export const PG_BOSS_CORE_PG_BOSS_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-queue#pg-boss/core/pg-boss',
   task: pgBossCorePgBossImportsTask,
 };

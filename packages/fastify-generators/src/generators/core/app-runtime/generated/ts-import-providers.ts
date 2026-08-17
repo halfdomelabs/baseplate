@@ -50,5 +50,6 @@ const coreAppRuntimeImportsTask = createGeneratorTask({
 });
 
 export const CORE_APP_RUNTIME_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#core/app-runtime',
   task: coreAppRuntimeImportsTask,
 };

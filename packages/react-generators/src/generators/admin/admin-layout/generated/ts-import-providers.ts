@@ -42,5 +42,6 @@ const adminAdminLayoutImportsTask = createGeneratorTask({
 });
 
 export const ADMIN_ADMIN_LAYOUT_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#admin/admin-layout',
   task: adminAdminLayoutImportsTask,
 };

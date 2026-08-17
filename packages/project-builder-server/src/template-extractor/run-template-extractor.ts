@@ -15,6 +15,11 @@ import {
   runTemplateFileExtractors,
 } from '@baseplate-dev/sync';
 
+import {
+  loadSnapshotManifest,
+  resolveBaseplateDir,
+  resolveSnapshotDirectory,
+} from '#src/diff/snapshot/index.js';
 import { discoverPlugins } from '#src/plugins/plugin-discovery.js';
 import { readSyncMetadata } from '#src/sync/sync-metadata-service.js';
 
@@ -54,28 +59,43 @@ export async function runTemplateExtractorsForProject(
       app ? ` for app ${app}` : ''
     }...`,
   );
-  const appDirectories = Object.values(syncMetadata.packages)
-    .filter((packageInfo) => packageInfo.name.includes(app))
-    .map((packageInfo) => packageInfo.path);
-  const appDirectory = appDirectories[0];
-  if (!appDirectory) {
+  const matchingPackages = Object.values(syncMetadata.packages).filter(
+    (packageInfo) => packageInfo.name.includes(app),
+  );
+  const matchingPackage = matchingPackages[0];
+  if (!matchingPackage) {
     throw new Error(`No app directories found for ${app}`);
   }
-  if (appDirectories.length > 1) {
+  if (matchingPackages.length > 1) {
     throw new Error(
-      `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
+      `Found multiple app directories for ${app}: ${matchingPackages
+        .map((packageInfo) => packageInfo.path)
+        .join(', ')}`,
     );
   }
+  const { name: appName, path: appDirectory } = matchingPackage;
   const workspacePackageDirectories = Object.values(syncMetadata.packages).map(
     (packageInfo) => packageInfo.path,
   );
+
+  // Files the project has deliberately diverged from their generated output carry
+  // project-specific changes, so extracting them would bake those into the shared template.
+  const snapshotDirectory = resolveSnapshotDirectory(
+    resolveBaseplateDir(directory),
+    appName,
+  );
+  const snapshot = await loadSnapshotManifest(snapshotDirectory);
+  const excludedOutputRelativePaths = snapshot?.files.modified.map(
+    (entry) => entry.path,
+  );
+
   await runTemplateFileExtractors(
     TEMPLATE_EXTRACTORS,
     appDirectory,
     generatorPackageMap,
     logger,
     workspacePackageDirectories,
-    options,
+    { ...options, excludedOutputRelativePaths },
   );
   logger.info('Template extraction complete!');
 }

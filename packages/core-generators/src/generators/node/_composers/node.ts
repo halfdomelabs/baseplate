@@ -3,6 +3,7 @@ import type {
   InferDescriptorFromGenerator,
 } from '@baseplate-dev/sync';
 
+import { packageImportsGenerator } from '#src/generators/metadata/package-imports/index.js';
 import { pathRootsGenerator } from '#src/generators/metadata/path-roots/index.js';
 
 import { eslintGenerator } from '../eslint/index.js';
@@ -24,6 +25,7 @@ export const composeNodeGenerator = (
       eslint: eslintGenerator({}),
       tsUtils: tsUtilsGenerator({}),
       pathRoots: pathRootsGenerator({}),
+      packageImports: packageImportsGenerator({}),
       ...descriptor.children,
     },
   });

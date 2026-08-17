@@ -60,5 +60,6 @@ const apolloReactApolloImportsTask = createGeneratorTask({
 });
 
 export const APOLLO_REACT_APOLLO_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#apollo/react-apollo',
   task: apolloReactApolloImportsTask,
 };

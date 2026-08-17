@@ -54,5 +54,6 @@ const stripeBillingModuleImportsTask = createGeneratorTask({
 });
 
 export const STRIPE_BILLING_MODULE_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-payments#stripe/billing-module',
   task: stripeBillingModuleImportsTask,
 };

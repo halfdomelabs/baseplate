@@ -45,5 +45,7 @@ const pothosPothosPrismaFiltersFileImportsTask = createGeneratorTask({
 });
 
 export const POTHOS_POTHOS_PRISMA_FILTERS_FILE_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/fastify-generators#pothos/pothos-prisma-filters-file',
   task: pothosPothosPrismaFiltersFileImportsTask,
 };

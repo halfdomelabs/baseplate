@@ -48,5 +48,6 @@ const authAuthRolesImportsTask = createGeneratorTask({
 });
 
 export const AUTH_AUTH_ROLES_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#auth/auth-roles',
   task: authAuthRolesImportsTask,
 };

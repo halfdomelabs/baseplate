@@ -17,6 +17,7 @@ import {
   reactLibraryDefinitionSchemaEntry,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  reactComponentsGenerator,
   reactComponentsLibraryGenerator,
   reactLibraryGenerator,
   reactTailwindGenerator,
@@ -61,7 +62,10 @@ class ReactLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition>
           ),
         }),
         ...(isComponentsSource
-          ? { reactComponentsLibrary: reactComponentsLibraryGenerator({}) }
+          ? {
+              reactComponentsLibrary: reactComponentsLibraryGenerator({}),
+              reactComponents: reactComponentsGenerator({ mode: 'library' }),
+            }
           : {}),
       },
     });

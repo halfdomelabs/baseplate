@@ -46,5 +46,6 @@ const coreReactErrorImportsTask = createGeneratorTask({
 });
 
 export const CORE_REACT_ERROR_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#core/react-error',
   task: coreReactErrorImportsTask,
 };

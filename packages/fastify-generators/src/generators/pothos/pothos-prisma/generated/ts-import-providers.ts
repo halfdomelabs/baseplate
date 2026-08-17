@@ -46,5 +46,6 @@ const pothosPothosPrismaImportsTask = createGeneratorTask({
 });
 
 export const POTHOS_POTHOS_PRISMA_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#pothos/pothos-prisma',
   task: pothosPothosPrismaImportsTask,
 };

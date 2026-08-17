@@ -31,5 +31,6 @@ const betterAuthBetterAuthHooksImportsTask = createGeneratorTask({
 });
 
 export const BETTER_AUTH_BETTER_AUTH_HOOKS_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-auth#better-auth/better-auth-hooks',
   task: betterAuthBetterAuthHooksImportsTask,
 };

@@ -1,11 +1,11 @@
 {
   "button.ts": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "styles-button"
   },
   "input.ts": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "styles-input"
   }

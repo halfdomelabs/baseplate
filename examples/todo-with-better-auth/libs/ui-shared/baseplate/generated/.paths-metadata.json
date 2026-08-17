@@ -1,4 +1,5 @@
 [
+  { "canonicalPath": "@/src/components", "pathRootName": "components-root" },
   { "canonicalPath": "@", "pathRootName": "package-root" },
   { "canonicalPath": "@/src", "pathRootName": "src-root" }
 ]

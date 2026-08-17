@@ -45,5 +45,7 @@ const notificationsCoreNotificationWebImportsTask = createGeneratorTask({
 });
 
 export const NOTIFICATIONS_CORE_NOTIFICATION_WEB_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/plugin-notifications#notifications/core/notification-web',
   task: notificationsCoreNotificationWebImportsTask,
 };

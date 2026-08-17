@@ -134,5 +134,7 @@ const notificationsCoreNotificationModuleImportsTask = createGeneratorTask({
 });
 
 export const NOTIFICATIONS_CORE_NOTIFICATION_MODULE_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/plugin-notifications#notifications/core/notification-module',
   task: notificationsCoreNotificationModuleImportsTask,
 };

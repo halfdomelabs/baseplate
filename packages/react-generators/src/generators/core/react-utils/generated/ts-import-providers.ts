@@ -42,5 +42,6 @@ const coreReactUtilsImportsTask = createGeneratorTask({
 });
 
 export const CORE_REACT_UTILS_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#core/react-utils',
   task: coreReactUtilsImportsTask,
 };

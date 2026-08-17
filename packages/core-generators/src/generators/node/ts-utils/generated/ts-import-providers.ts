@@ -47,5 +47,6 @@ const nodeTsUtilsImportsTask = createGeneratorTask({
 });
 
 export const NODE_TS_UTILS_IMPORTS = {
+  generatorName: '@baseplate-dev/core-generators#node/ts-utils',
   task: nodeTsUtilsImportsTask,
 };

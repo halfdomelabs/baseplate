@@ -48,5 +48,6 @@ const coreAppModuleSetupImportsTask = createGeneratorTask({
 });
 
 export const CORE_APP_MODULE_SETUP_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#core/app-module-setup',
   task: coreAppModuleSetupImportsTask,
 };

@@ -67,5 +67,6 @@ const adminAdminComponentsImportsTask = createGeneratorTask({
 });
 
 export const ADMIN_ADMIN_COMPONENTS_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#admin/admin-components',
   task: adminAdminComponentsImportsTask,
 };

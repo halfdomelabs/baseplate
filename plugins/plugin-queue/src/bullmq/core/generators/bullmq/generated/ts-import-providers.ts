@@ -40,5 +40,6 @@ const bullmqCoreBullmqImportsTask = createGeneratorTask({
 });
 
 export const BULLMQ_CORE_BULLMQ_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-queue#bullmq/core/bullmq',
   task: bullmqCoreBullmqImportsTask,
 };

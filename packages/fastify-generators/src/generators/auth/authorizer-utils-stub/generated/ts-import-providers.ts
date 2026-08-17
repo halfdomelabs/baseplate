@@ -36,5 +36,7 @@ const prismaAuthorizerUtilsStubImportsTask = createGeneratorTask({
 });
 
 export const PRISMA_AUTHORIZER_UTILS_STUB_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/fastify-generators#prisma/authorizer-utils-stub',
   task: prismaAuthorizerUtilsStubImportsTask,
 };

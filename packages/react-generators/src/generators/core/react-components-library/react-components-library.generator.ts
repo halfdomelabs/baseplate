@@ -1,8 +1,7 @@
 import {
-  createNodePackagesTask,
-  extractPackageVersions,
   normalizeModuleSpecifier,
   packageScope,
+  pathRootsProvider,
   tsCodeFragment,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -10,10 +9,8 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { compareStrings } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import { reactPathsProvider } from '#src/providers/react-paths.js';
 
-import { CORE_REACT_COMPONENTS_GENERATED } from '../react-components/generated/index.js';
 import { reactComponentsImportsProvider } from '../react-components/generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
@@ -21,42 +18,34 @@ const descriptorSchema = z.object({});
 const BARREL_DESTINATION = 'src/index.ts';
 
 /**
- * Generator that renders the `react-components` template set (Button, Dialog,
- * Toaster, form controllers, etc.) into a `react-library` package instead of
- * an app, and re-exports every symbol from `src/index.ts` so the package can
- * be imported by name from a consuming app.
+ * Generator that turns a `react-library` package into the home of the shared
+ * `react-components` template set (Button, Dialog, Toaster, form controllers, etc.).
  *
- * Composed by the library compiler when a web app opts in to sourcing its
- * shared components from this library (`componentsLibraryRef`).
+ * It supplies the components path root that `core/react-components` renders against in
+ * `library` mode, and re-exports every symbol from `src/index.ts` so the package can be
+ * imported by name from a consuming app.
+ *
+ * Composed by the library compiler alongside `coreReactComponentsGenerator({ mode: 'library' })`
+ * when a web app opts in to sourcing its shared components from this library
+ * (`componentsLibraryRef`).
  */
 export const reactComponentsLibraryGenerator = createGenerator({
   name: 'core/react-components-library',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(REACT_PACKAGES, [
-        '@base-ui/react',
-        'clsx',
-        'react-hook-form',
-        'react-icons',
-        'zustand',
-        'class-variance-authority',
-        'sonner',
-        'react-day-picker',
-        'date-fns',
-        'tailwind-merge',
-      ]),
-      // `not-found-card.tsx` uses router hooks/components — a peer since a
-      // second copy of the router in the tree would break navigation context
-      peer: extractPackageVersions(REACT_PACKAGES, ['@tanstack/react-router']),
-      dev: extractPackageVersions(REACT_PACKAGES, ['@tanstack/react-router']),
-    }),
     reactPaths: createGeneratorTask({
+      dependencies: {
+        pathRoots: pathRootsProvider,
+      },
       exports: {
         reactPaths: reactPathsProvider.export(packageScope),
       },
-      run() {
+      run({ pathRoots }) {
+        // Mirrors `core/react` in an app so the component templates keep resolving against
+        // `{components-root}` when they are extracted from the library instead of an app.
+        pathRoots.registerPathRoot('components-root', '@/src/components');
+
         return {
           providers: {
             reactPaths: {
@@ -66,25 +55,14 @@ export const reactComponentsLibraryGenerator = createGenerator({
         };
       },
     }),
-    paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
-    imports: CORE_REACT_COMPONENTS_GENERATED.imports.task,
-    renderers: CORE_REACT_COMPONENTS_GENERATED.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        renderers: CORE_REACT_COMPONENTS_GENERATED.renderers.provider,
         reactComponentsImports: reactComponentsImportsProvider,
         typescriptFile: typescriptFileProvider,
       },
-      run({ renderers, reactComponentsImports, typescriptFile }) {
+      run({ reactComponentsImports, typescriptFile }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              renderers.componentsGroup.render({}),
-              renderers.hooksGroup.render({}),
-              renderers.stylesGroup.render({}),
-              renderers.utilsGroup.render({}),
-            );
-
             const symbolsByModule = new Map<
               string,
               { name: string; isTypeOnly: boolean }[]
