@@ -310,6 +310,18 @@ async function organizeSideEffectImports(
 }
 
 /**
+ * Builds the error thrown when a template file imports a namespace binding.
+ */
+function createNamespaceImportError(
+  moduleSpecifier: string,
+  filePath: string,
+): Error {
+  return new Error(
+    `Import ${moduleSpecifier} in ${filePath} cannot be a namespace import since namespace imports are not supported for template extraction.`,
+  );
+}
+
+/**
  * Rewrites an import from a declared cross-package module specifier to the placeholder specifier
  * of the import provider backing it, recording the project exports it consumed.
  */
@@ -322,10 +334,7 @@ function resolveDeclaredPackageImportDeclaration(
   const { moduleSpecifier } = importDeclaration;
 
   if (importDeclaration.namespaceImport) {
-    throw new Error(
-      `Import ${moduleSpecifier} in ${filePath} cannot be a namespace import since it are not supported currently
-          for template extraction.`,
-    );
+    throw createNamespaceImportError(moduleSpecifier, filePath);
   }
 
   const importDeclarations: TsImportDeclaration[] = [];
@@ -528,10 +537,7 @@ export async function organizeTsTemplateImports(
         return [fixedImportDeclaration];
       }
       if (importDeclaration.namespaceImport) {
-        throw new Error(
-          `Import ${moduleSpecifier} in ${filePath} cannot be a namespace import since it are not supported currently
-          for template extraction.`,
-        );
+        throw createNamespaceImportError(moduleSpecifier, filePath);
       }
       // look up the corresponding import in the project exports
       const pathExports = projectExportMap.get(relativeOutputPath);
