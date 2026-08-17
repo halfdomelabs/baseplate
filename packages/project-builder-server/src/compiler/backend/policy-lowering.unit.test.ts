@@ -69,6 +69,12 @@ describe('lowerExpressionToRoleTree', () => {
       );
     });
 
+    it('null literal → match', () => {
+      expect(lower('model.deletedAt === null')).toBe(
+        'r.match(() => ({ deletedAt: null }))',
+      );
+    });
+
     it('model-vs-model comparison is NOT matchable → throws (never emits an out-of-scope `model` ref)', () => {
       // Both sides are model fields, so `r.match` can't bind one to a scalar.
       // It falls through to the where fallback, which rejects the comparison
@@ -89,6 +95,24 @@ describe('lowerExpressionToRoleTree', () => {
     it('!== against auth field userId falls back to r.userWhere (no null-guard)', () => {
       expect(lower('model.id !== userId')).toBe(
         'r.userWhere((session) => ({ id: { not: session.userId } }))',
+      );
+    });
+
+    it('!== null falls back to r.where with a not-null filter', () => {
+      expect(lower('model.engagementEffectiveAt !== null')).toBe(
+        'r.where((ctx) => ({ engagementEffectiveAt: { not: null } }))',
+      );
+    });
+
+    it('!== null composes with delegation across a relation', () => {
+      expect(
+        lower(
+          'model.engagementEffectiveAt !== null && hasRole(model.members, "owner")',
+          ctxWith({ members: VIA_MANY_MEMBERS }),
+        ),
+      ).toBe(
+        'r.all([r.where((ctx) => ({ engagementEffectiveAt: { not: null } })), ' +
+          "r.viaMany(blogUserPolicy, 'owner', 'members')])",
       );
     });
   });
@@ -214,6 +238,12 @@ describe('lowerExpressionToRoleTree', () => {
     it('exists(...) referencing only userId → r.userWhere (no null-guard)', () => {
       expect(lower('exists(model.members, { userId: userId })')).toBe(
         'r.userWhere((session) => ({ members: { some: { userId: session.userId } } }))',
+      );
+    });
+
+    it('exists(...) with a null condition value → r.where', () => {
+      expect(lower('exists(model.members, { deletedAt: null })')).toBe(
+        'r.where((ctx) => ({ members: { some: { deletedAt: null } } }))',
       );
     });
   });

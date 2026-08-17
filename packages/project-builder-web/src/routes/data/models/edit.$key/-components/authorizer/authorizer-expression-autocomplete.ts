@@ -311,6 +311,7 @@ export function createAuthorizerCompletions(
     },
     { label: 'true', type: 'keyword' },
     { label: 'false', type: 'keyword' },
+    { label: 'null', type: 'keyword' },
   ];
 
   const booleanValueCompletions: Completion[] = [
@@ -397,6 +398,7 @@ export function createAuthorizerCompletions(
     }),
     { label: 'true', type: 'keyword' },
     { label: 'false', type: 'keyword' },
+    { label: 'null', type: 'keyword' },
   ];
 
   // Add per-relation snippets. hasRole/hasSomeRole work across BOTH directions:

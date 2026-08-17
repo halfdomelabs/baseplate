@@ -23,6 +23,7 @@ but only the following constructs are valid.
 | -------------------------------------------- | ----------------------------------------------------------- |
 | `model.<field> === userId`                   | Compare a field on the row to the principal (`!==` also OK) |
 | `model.<field> === 'literal'`                | Compare a field to a string/number/boolean literal          |
+| `model.<field> !== null`                     | Compare an optional field against `null` (`===` also OK)    |
 | `isAuthenticated`                            | Any signed-in principal                                     |
 | `hasRole('admin')`                           | Principal holds a global role                               |
 | `hasSomeRole(['admin', 'editor'])`           | Principal holds any of several global roles                 |

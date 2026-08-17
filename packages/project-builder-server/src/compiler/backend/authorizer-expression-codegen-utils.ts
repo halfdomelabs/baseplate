@@ -16,10 +16,10 @@ import { quot } from '@baseplate-dev/utils';
  * Serialize a literal value as a TypeScript literal string.
  *
  * - Strings are quoted with `quot()`
- * - Numbers and booleans are emitted as-is via `String()`
+ * - Numbers, booleans, and null are emitted as-is via `String()`
  */
 export function serializeLiteralValue(
-  value: string | number | boolean,
+  value: string | number | boolean | null,
 ): string {
   if (typeof value === 'string') {
     return quot(value);

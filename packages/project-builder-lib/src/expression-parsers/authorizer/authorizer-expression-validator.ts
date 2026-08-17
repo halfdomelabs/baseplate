@@ -34,6 +34,8 @@ export interface RelationValidationInfo {
   foreignScalarFieldNames?: Set<string>;
   /** Field type map for the foreign model (for type-checking relation filter condition values) */
   foreignFieldTypes?: Map<string, string>;
+  /** Names of optional (nullable) fields on the foreign model (for null-literal checks) */
+  foreignNullableFieldNames?: Set<string>;
   /** Whether this is a local relation (FK on this model) or foreign/reverse (FK on the other model) */
   direction: 'local' | 'foreign';
 }
@@ -48,6 +50,8 @@ export interface ModelValidationContext {
   scalarFieldNames: Set<string>;
   /** Map of field name → field type (for literal type-checking) */
   fieldTypes: Map<string, string>;
+  /** Names of optional (nullable) fields on the model (for null-literal checks) */
+  nullableFieldNames?: Set<string>;
   /** Map of relation name → relation validation info (for nested authorizer checks) */
   relationInfo?: Map<string, RelationValidationInfo>;
 }
@@ -89,6 +93,22 @@ function getAuthRoleInfo(
       roles?.filter((role) => role.autoAssigned).map((role) => role.name),
     ),
   };
+}
+
+/**
+ * Resolve whether a field is nullable, returning `undefined` when it cannot be
+ * determined — either the model carries no nullability info, or the field does
+ * not exist (which is warned about separately).
+ */
+function resolveFieldNullability(
+  fieldName: string,
+  scalarFieldNames: Set<string> | undefined,
+  nullableFieldNames: Set<string> | undefined,
+): boolean | undefined {
+  if (!nullableFieldNames || !scalarFieldNames?.has(fieldName)) {
+    return undefined;
+  }
+  return nullableFieldNames.has(fieldName);
 }
 
 /**
@@ -160,15 +180,17 @@ export function validateAuthorizerExpression(
         fieldRef.source === 'model' &&
         literalNode !== null
       ) {
-        const fieldType = modelContext.fieldTypes.get(fieldRef.field);
-        if (fieldType) {
-          validateLiteralTypeCompatibility(
+        validateLiteralCompatibility(
+          fieldRef.field,
+          modelContext.modelName,
+          modelContext.fieldTypes.get(fieldRef.field),
+          resolveFieldNullability(
             fieldRef.field,
-            fieldType,
-            modelContext.modelName,
-            literalNode,
-          );
-        }
+            modelContext.scalarFieldNames,
+            modelContext.nullableFieldNames,
+          ),
+          literalNode,
+        );
       }
     },
     hasRole(node) {
@@ -322,31 +344,60 @@ export function validateAuthorizerExpression(
       }
 
       // Type-check literal condition values against foreign field types
-      if (
-        condition.value.type === 'literalValue' &&
-        relation.foreignFieldTypes
-      ) {
-        const foreignFieldType = relation.foreignFieldTypes.get(
+      if (condition.value.type === 'literalValue') {
+        validateLiteralCompatibility(
           condition.field,
-        );
-        if (foreignFieldType) {
-          validateLiteralTypeCompatibility(
+          relation.foreignModelName,
+          relation.foreignFieldTypes?.get(condition.field),
+          resolveFieldNullability(
             condition.field,
-            foreignFieldType,
-            relation.foreignModelName,
-            condition.value,
-          );
-        }
+            relation.foreignScalarFieldNames,
+            relation.foreignNullableFieldNames,
+          ),
+          condition.value,
+        );
       }
     }
   }
 
-  function validateLiteralTypeCompatibility(
+  /**
+   * Warn if a literal cannot match a field: an incompatible type, or `null`
+   * against a required or json field.
+   *
+   * `fieldType` and `isNullable` are `undefined` when unknown, in which case the
+   * corresponding check is skipped.
+   */
+  function validateLiteralCompatibility(
     fieldName: string,
-    fieldType: string,
     modelName: string,
+    fieldType: string | undefined,
+    isNullable: boolean | undefined,
     literalNode: LiteralValueNode,
   ): void {
+    // `null` is type-compatible with any field type, so it is checked against
+    // nullability instead. This must happen before the type switch below, which
+    // would otherwise see `typeof null === 'object'`.
+    if (literalNode.value === null) {
+      if (fieldType === 'json') {
+        // Prisma filters json nulls through `DbNull`/`JsonNull` rather than
+        // `null`, so a plain null comparison would not compile.
+        warnings.push({
+          message: `Field '${fieldName}' on model '${modelName}' is a json field, which cannot be compared to null.`,
+          start: literalNode.start,
+          end: literalNode.end,
+        });
+      } else if (isNullable === false) {
+        warnings.push({
+          message: `Field '${fieldName}' on model '${modelName}' is required and can never be null.`,
+          start: literalNode.start,
+          end: literalNode.end,
+        });
+      }
+      return;
+    }
+
+    if (!fieldType) return;
+
     const literalJsType = typeof literalNode.value;
 
     const isCompatible = (() => {
@@ -419,10 +470,10 @@ interface ExpressionContextModel {
   name: string;
   authorizer?: { roles?: readonly { name: string }[] };
   /** Top-level fields (used by raw JSON shapes) */
-  fields?: readonly { name: string; type?: string }[];
+  fields?: readonly { name: string; type?: string; isOptional?: boolean }[];
   model?: {
     /** Nested fields (used by typed ModelConfig objects) */
-    fields?: readonly { name: string; type?: string }[];
+    fields?: readonly { name: string; type?: string; isOptional?: boolean }[];
     relations?: readonly {
       name: string;
       modelRef: string;
@@ -450,7 +501,7 @@ function buildAuthorizerRoleNames(model: ExpressionContextModel): Set<string> {
  */
 function getModelFields(
   model: ExpressionContextModel,
-): readonly { name: string; type?: string }[] {
+): readonly { name: string; type?: string; isOptional?: boolean }[] {
   // Fields can be at top level (raw JSON) or nested under model (typed ModelConfig)
   return model.fields ?? model.model?.fields ?? [];
 }
@@ -458,18 +509,27 @@ function getModelFields(
 function buildFieldInfo(model: ExpressionContextModel): {
   foreignScalarFieldNames: Set<string> | undefined;
   foreignFieldTypes: Map<string, string> | undefined;
+  foreignNullableFieldNames: Set<string> | undefined;
 } {
   const fieldNames = new Set<string>();
   const fieldTypes = new Map<string, string>();
+  const nullableFieldNames = new Set<string>();
   for (const field of getModelFields(model)) {
     fieldNames.add(field.name);
     if (field.type) {
       fieldTypes.set(field.name, field.type);
     }
+    if (field.isOptional) {
+      nullableFieldNames.add(field.name);
+    }
   }
+  const hasFields = fieldNames.size > 0;
   return {
-    foreignScalarFieldNames: fieldNames.size > 0 ? fieldNames : undefined,
+    foreignScalarFieldNames: hasFields ? fieldNames : undefined,
     foreignFieldTypes: fieldTypes.size > 0 ? fieldTypes : undefined,
+    // Keyed off whether the model has fields at all: an empty set means "no
+    // nullable fields", which is different from "nullability unknown".
+    foreignNullableFieldNames: hasFields ? nullableFieldNames : undefined,
   };
 }
 
@@ -491,10 +551,14 @@ export function buildModelExpressionContext(
   // Build scalar field info for the current model
   const scalarFieldNames = new Set<string>();
   const fieldTypes = new Map<string, string>();
+  const nullableFieldNames = new Set<string>();
   for (const field of getModelFields(model)) {
     scalarFieldNames.add(field.name);
     if (field.type) {
       fieldTypes.set(field.name, field.type);
+    }
+    if (field.isOptional) {
+      nullableFieldNames.add(field.name);
     }
   }
 
@@ -555,6 +619,7 @@ export function buildModelExpressionContext(
     modelName: model.name,
     scalarFieldNames,
     fieldTypes,
+    nullableFieldNames,
     relationInfo,
   };
 }

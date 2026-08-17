@@ -204,7 +204,7 @@ function convertBinaryExpression(node: BinaryExpression): FieldComparisonNode {
 
 /**
  * Convert an expression node to either a FieldRefNode or a LiteralValueNode.
- * Supports string, number, and boolean literals.
+ * Supports string, number, boolean, and null literals.
  */
 function convertFieldRefOrLiteral(
   node: Expression,
@@ -225,6 +225,7 @@ function convertFieldRefOrLiteral(
   if (node.type === 'Literal') {
     const { value } = node;
     if (
+      value === null ||
       typeof value === 'string' ||
       typeof value === 'number' ||
       typeof value === 'boolean'
@@ -237,7 +238,15 @@ function convertFieldRefOrLiteral(
       } satisfies LiteralValueNode;
     }
     throw new AuthorizerExpressionParseError(
-      'Unsupported literal type. Only string, number, and boolean literals are supported.',
+      'Unsupported literal type. Only string, number, boolean, and null literals are supported.',
+      node,
+    );
+  }
+  // Acorn parses `undefined` as an identifier, so it would otherwise be reported
+  // as an unknown field reference.
+  if (node.type === 'Identifier' && node.name === 'undefined') {
+    throw new AuthorizerExpressionParseError(
+      'Unsupported literal `undefined`. Use `null` instead.',
       node,
     );
   }
