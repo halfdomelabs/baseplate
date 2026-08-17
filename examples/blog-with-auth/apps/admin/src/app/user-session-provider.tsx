@@ -1,9 +1,7 @@
 import type React from 'react';
 
 import { useApolloClient, useQuery } from '@apollo/client/react';
-import { useEffect, useMemo, useState } from 'react';
-
-import type { SessionData } from '../hooks/use-session';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 
 import { ErrorableLoader } from '../components/ui/errorable-loader';
 import { graphql } from '../gql';
@@ -27,10 +25,12 @@ const getCurrentUserSessionQuery = graphql(`
 export function UserSessionProvider({
   children,
 }: UserSessionProviderProps): React.JSX.Element {
-  const [cachedUserId, setCachedUserId] = useState<string | undefined>(
-    userSessionClient.getUserId(),
-  );
   const apolloClient = useApolloClient();
+
+  const session = useSyncExternalStore(
+    userSessionClient.subscribe,
+    userSessionClient.getSession,
+  );
 
   const { data: sessionQueryData, error: sessionError } = useQuery(
     getCurrentUserSessionQuery,
@@ -39,53 +39,21 @@ export function UserSessionProvider({
     },
   );
 
-  const session = useMemo((): SessionData | undefined => {
-    if (!sessionQueryData && cachedUserId) {
-      // wait for server to fetch before loading session
-      return undefined;
-    }
-    if (!sessionQueryData?.currentUserSession) {
-      return {
-        userId: undefined,
-        isAuthenticated: false,
-        roles: ['public'],
-      };
-    }
-    return {
-      userId: sessionQueryData.currentUserSession.userId,
-      isAuthenticated: true,
-      roles: sessionQueryData.currentUserSession.roles,
-    };
-  }, [sessionQueryData, cachedUserId]);
-
   useEffect(() => {
-    const unsubscribe = userSessionClient.onUserIdChange((newUserId) => {
-      if (newUserId !== cachedUserId) {
-        setCachedUserId(newUserId);
-        // Make sure to reset the Apollo client to clear any cached data
-        apolloClient.resetStore().catch(logError);
-      }
-    });
-
-    return unsubscribe;
-  }, [cachedUserId, apolloClient]);
-
-  useEffect(() => {
-    // Once we have server session data, sync it with the client
-    if (sessionQueryData) {
-      const serverUserId = sessionQueryData.currentUserSession?.userId;
-      const clientUserId = userSessionClient.getUserId();
-
-      // If server says different user (or no user), update the client
-      if (serverUserId !== clientUserId) {
-        if (serverUserId) {
-          userSessionClient.signIn(serverUserId);
-        } else {
-          userSessionClient.signOut();
-        }
-      }
-    }
+    if (!sessionQueryData) return;
+    userSessionClient.setServerSession(
+      sessionQueryData.currentUserSession ?? undefined,
+    );
   }, [sessionQueryData]);
+
+  // The Apollo cache belongs to exactly one identity, so reset it whenever the
+  // identity changes and no data fetched for the previous user survives.
+  const cacheUserId = useRef(userSessionClient.getPersistedUserId());
+  useEffect(() => {
+    if (!session || session.userId === cacheUserId.current) return;
+    cacheUserId.current = session.userId;
+    apolloClient.resetStore().catch(logError);
+  }, [session, apolloClient]);
 
   if (!session) {
     return <ErrorableLoader error={sessionError} />;

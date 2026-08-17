@@ -13,7 +13,11 @@ import { localAuthHooksImportsProvider } from '#src/local-auth/core/generators/a
 const userSessionClient = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: { reactUtilsImports: reactUtilsImportsProvider },
+  importMapProviders: {
+    authHooksImports: authHooksImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactUtilsImports: reactUtilsImportsProvider,
+  },
   name: 'user-session-client',
   projectExports: { UserSessionClient: {}, userSessionClient: {} },
   source: {
@@ -29,7 +33,6 @@ const userSessionProvider = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {
-    authHooksImports: authHooksImportsProvider,
     graphqlImports: graphqlImportsProvider,
     localAuthHooksImports: localAuthHooksImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,

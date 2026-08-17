@@ -13,6 +13,7 @@ import { useSession } from '../hooks/use-session';
 import { routeTree } from '../route-tree.gen';
 import { logError } from '../services/error-logger';
 import { identifySentryUser } from '../services/sentry';
+import { userSessionClient } from '../services/user-session-client';
 import { InvalidRoleError } from '../utils/auth-errors';
 
 function ErrorComponent({
@@ -92,6 +93,26 @@ export function AppRoutes(): React.ReactElement {
       id: userId,
     });
   }, [userId]);
+
+  // RouterProvider only copies the context into the router when it renders, so push
+  // the session in as soon as it changes. Otherwise a navigation triggered in the
+  // same tick as a sign in or sign out runs its guards against the old session.
+  useEffect(
+    () =>
+      userSessionClient.subscribe(() => {
+        const currentSession = userSessionClient.getSession();
+        if (!currentSession) return;
+        router.update({
+          ...router.options,
+          context: {
+            ...router.options.context,
+            session: currentSession,
+            userId: currentSession.userId,
+          },
+        });
+      }),
+    [],
+  );
   /* TPL_COMPONENT_SETUP:END */
 
   /* TPL_ROUTER_CONTEXT:START */

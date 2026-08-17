@@ -11,7 +11,7 @@ import {
   Loader,
 } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * A component that waits for the Better Auth session to be loaded before rendering its children.
@@ -27,13 +27,22 @@ export function AuthLoadedGate({
   const { isPending, error } = authClient.useSession();
   const logOut = useLogOut();
 
+  // Better Auth marks the session pending again whenever it refetches with no data
+  // cached, which includes signing in. Everything below this gate, including the
+  // Apollo client and its cache, would be thrown away each time, so the gate only
+  // ever renders before the first session has loaded.
+  const hasLoadedSession = useRef(false);
+  if (!isPending && !error) {
+    hasLoadedSession.current = true;
+  }
+
   useEffect(() => {
     if (error) {
       logError(error);
     }
   }, [error]);
 
-  if (error) {
+  if (error && !hasLoadedSession.current) {
     return (
       <div className="flex h-full items-center justify-center">
         <Card className="w-sm space-y-4 p-4">
@@ -49,7 +58,7 @@ export function AuthLoadedGate({
     );
   }
 
-  if (isPending) return <Loader />;
+  if (isPending && !hasLoadedSession.current) return <Loader />;
 
   return <>{children}</>;
 }

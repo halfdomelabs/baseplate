@@ -35,7 +35,7 @@ vi.mock('../user-session-client', () => ({
   userSessionClient: {
     signOut: vi.fn(),
     signIn: vi.fn(),
-    getUserId: vi.fn(),
+    getPersistedUserId: vi.fn(),
   },
 }));
 

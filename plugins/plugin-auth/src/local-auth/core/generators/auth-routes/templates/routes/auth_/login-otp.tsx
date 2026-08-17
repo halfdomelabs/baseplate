@@ -72,6 +72,7 @@ const signInWithEmailOtpMutation = graphql(`
     signInWithEmailOtp(input: $input) {
       session {
         userId
+        roles
       }
     }
   }
@@ -163,8 +164,8 @@ function LoginOtpPage(): React.JSX.Element {
         if (!data) {
           throw new Error('No data returned from sign-in mutation');
         }
-        const { userId } = data.signInWithEmailOtp.session;
-        userSessionClient.signIn(userId);
+        const { userId, roles } = data.signInWithEmailOtp.session;
+        userSessionClient.signIn(userId, roles);
 
         navigate({ to: return_to ?? '/', replace: true }).catch(logError);
       })
