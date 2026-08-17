@@ -62,6 +62,7 @@ const loginWithEmailPasswordMutation = graphql(`
     loginWithEmailPassword(input: $input) {
       session {
         userId
+        roles
       }
     }
   }
@@ -96,8 +97,8 @@ function LoginPage(): React.JSX.Element {
         if (!data) {
           throw new Error('No data returned from login mutation');
         }
-        const { userId } = data.loginWithEmailPassword.session;
-        userSessionClient.signIn(userId);
+        const { userId, roles } = data.loginWithEmailPassword.session;
+        userSessionClient.signIn(userId, roles);
 
         navigate({ to: return_to ?? '/', replace: true }).catch(logError);
       })

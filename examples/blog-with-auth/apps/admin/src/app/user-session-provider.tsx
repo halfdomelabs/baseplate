@@ -27,6 +27,8 @@ export function UserSessionProvider({
 }: UserSessionProviderProps): React.JSX.Element {
   const apolloClient = useApolloClient();
 
+  // The session comes from the session client rather than the query, since signing
+  // in clears the Apollo cache and would otherwise blank the session mid-transition.
   const session = useSyncExternalStore(
     userSessionClient.subscribe,
     userSessionClient.getSession,
@@ -55,6 +57,7 @@ export function UserSessionProvider({
     apolloClient.resetStore().catch(logError);
   }, [session, apolloClient]);
 
+  // Only reachable before the first session is known, when nothing has mounted yet.
   if (!session) {
     return <ErrorableLoader error={sessionError} />;
   }

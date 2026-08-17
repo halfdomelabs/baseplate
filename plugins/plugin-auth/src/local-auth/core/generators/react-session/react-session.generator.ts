@@ -1,5 +1,8 @@
 import { TsCodeUtils, tsImportBuilder } from '@baseplate-dev/core-generators';
-import { reactAppConfigProvider } from '@baseplate-dev/react-generators';
+import {
+  reactAppConfigProvider,
+  reactRouterConfigProvider,
+} from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -33,6 +36,43 @@ export const reactSessionGenerator = createGenerator({
             ])`<UserSessionProvider>${contents}</UserSessionProvider>`,
           type: 'router',
         });
+      },
+    }),
+    reactRouterConfig: createGeneratorTask({
+      dependencies: {
+        reactRouterConfig: reactRouterConfigProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+      },
+      run({ reactRouterConfig, paths }) {
+        reactRouterConfig.routerSetupFragments.set(
+          'auth-session-router-sync',
+          TsCodeUtils.templateWithImports([
+            tsImportBuilder(['useEffect']).from('react'),
+            tsImportBuilder(['userSessionClient']).from(
+              paths.userSessionClient,
+            ),
+          ])`
+          // RouterProvider only copies the context into the router when it renders, so push
+          // the session in as soon as it changes. Otherwise a navigation triggered in the
+          // same tick as a sign in or sign out runs its guards against the old session.
+          useEffect(
+            () =>
+              userSessionClient.subscribe(() => {
+                const currentSession = userSessionClient.getSession();
+                if (!currentSession) return;
+                router.update({
+                  ...router.options,
+                  context: {
+                    ...router.options.context,
+                    session: currentSession,
+                    userId: currentSession.userId,
+                  },
+                });
+              }),
+            [],
+          );
+          `,
+        );
       },
     }),
     main: createGeneratorTask({

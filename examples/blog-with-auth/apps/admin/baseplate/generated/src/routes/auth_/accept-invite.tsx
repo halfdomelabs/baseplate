@@ -74,6 +74,7 @@ const acceptInviteMutation = graphql(`
     acceptInvite(input: $input) {
       session {
         userId
+        roles
       }
     }
   }
@@ -146,8 +147,8 @@ function AcceptInvitePage(): React.JSX.Element {
         if (!data) {
           throw new Error('No data returned from accept invite mutation');
         }
-        const { userId } = data.acceptInvite.session;
-        userSessionClient.signIn(userId);
+        const { userId, roles } = data.acceptInvite.session;
+        userSessionClient.signIn(userId, roles);
 
         navigate({ to: '/', replace: true }).catch(logError);
       })

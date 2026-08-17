@@ -21,7 +21,10 @@ export const Route = createFileRoute(
         },
       });
     }
+    // Roles are unknown until the server confirms them, e.g. right after another tab
+    // signs in, so the check re-runs when the session settles rather than denying now.
     if (
+      !session.isPending &&
       REQUIRED_ROLES.size > 0 &&
       !session.roles.some((role) => REQUIRED_ROLES.has(role))
     ) {
