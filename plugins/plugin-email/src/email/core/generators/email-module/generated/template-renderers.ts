@@ -10,6 +10,8 @@ import {
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { transactionalLibImportsProvider } from '#src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.js';
+
 import { EMAIL_CORE_EMAIL_MODULE_PATHS } from './template-paths.js';
 import { EMAIL_CORE_EMAIL_MODULE_TEMPLATES } from './typed-templates.js';
 
@@ -38,6 +40,7 @@ const emailCoreEmailModuleRenderersTask = createGeneratorTask({
     paths: EMAIL_CORE_EMAIL_MODULE_PATHS.provider,
     queuesImports: queuesImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
+    transactionalLibImports: transactionalLibImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
@@ -49,6 +52,7 @@ const emailCoreEmailModuleRenderersTask = createGeneratorTask({
     paths,
     queuesImports,
     serviceContextImports,
+    transactionalLibImports,
     typescriptFile,
   }) {
     return {
@@ -64,6 +68,7 @@ const emailCoreEmailModuleRenderersTask = createGeneratorTask({
                   loggerServiceImports,
                   queuesImports,
                   serviceContextImports,
+                  transactionalLibImports,
                 },
                 generatorPaths: paths,
                 ...options,

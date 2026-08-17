@@ -80,5 +80,6 @@ const queueCoreQueuesImportsTask = createGeneratorTask({
 });
 
 export const QUEUE_CORE_QUEUES_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-queue#queue/core/queues',
   task: queueCoreQueuesImportsTask,
 };

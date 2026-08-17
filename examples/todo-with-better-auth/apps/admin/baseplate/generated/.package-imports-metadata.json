@@ -1,0 +1,6 @@
+[
+  {
+    "moduleSpecifier": "@prisma-crud/ui-shared",
+    "generatorName": "@baseplate-dev/react-generators#core/react-components"
+  }
+]

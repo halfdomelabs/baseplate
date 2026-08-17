@@ -390,7 +390,11 @@ export function renderTsImportProviders(
     'imports',
   );
 
+  // `generatorName` is the fully qualified name, which generators cannot derive at sync time
+  // (createGenerator only stores the short name). Consumers pass it to
+  // registerPackageImportProvider when they wire this provider up across packages.
   const barrelExportFragment = tsTemplate`export const ${generatedExportName} = {
+    generatorName: ${quot(generatorName)},
     task: ${importsTaskFragment.exportName},
   };`;
 

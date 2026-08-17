@@ -53,5 +53,7 @@ const prismaPrismaQueryFilterUtilsImportsTask = createGeneratorTask({
 });
 
 export const PRISMA_PRISMA_QUERY_FILTER_UTILS_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/fastify-generators#prisma/prisma-query-filter-utils',
   task: prismaPrismaQueryFilterUtilsImportsTask,
 };

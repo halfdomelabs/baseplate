@@ -70,5 +70,6 @@ const emailTransactionalLibImportsTask = createGeneratorTask({
 });
 
 export const EMAIL_TRANSACTIONAL_LIB_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-email#email/transactional-lib',
   task: emailTransactionalLibImportsTask,
 };

@@ -49,5 +49,6 @@ const pothosPothosSortOrderImportsTask = createGeneratorTask({
 });
 
 export const POTHOS_POTHOS_SORT_ORDER_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#pothos/pothos-sort-order',
   task: pothosPothosSortOrderImportsTask,
 };

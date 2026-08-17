@@ -49,5 +49,7 @@ const betterAuthBetterAuthAdminModuleImportsTask = createGeneratorTask({
 });
 
 export const BETTER_AUTH_BETTER_AUTH_ADMIN_MODULE_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/plugin-auth#better-auth/better-auth-admin-module',
   task: betterAuthBetterAuthAdminModuleImportsTask,
 };

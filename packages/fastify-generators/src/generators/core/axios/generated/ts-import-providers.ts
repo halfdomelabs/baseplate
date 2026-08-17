@@ -40,5 +40,6 @@ const coreAxiosImportsTask = createGeneratorTask({
 });
 
 export const CORE_AXIOS_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#core/axios',
   task: coreAxiosImportsTask,
 };

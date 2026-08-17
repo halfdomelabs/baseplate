@@ -46,5 +46,6 @@ const coreFastifyRedisImportsTask = createGeneratorTask({
 });
 
 export const CORE_FASTIFY_REDIS_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#core/fastify-redis',
   task: coreFastifyRedisImportsTask,
 };

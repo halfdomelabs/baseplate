@@ -48,5 +48,6 @@ const apolloApolloErrorImportsTask = createGeneratorTask({
 });
 
 export const APOLLO_APOLLO_ERROR_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#apollo/apollo-error',
   task: apolloApolloErrorImportsTask,
 };

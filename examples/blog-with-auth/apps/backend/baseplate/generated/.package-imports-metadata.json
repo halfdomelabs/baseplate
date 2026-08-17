@@ -1,0 +1,6 @@
+[
+  {
+    "moduleSpecifier": "@blog-with-auth/transactional",
+    "generatorName": "@baseplate-dev/plugin-email#email/transactional-lib"
+  }
+]

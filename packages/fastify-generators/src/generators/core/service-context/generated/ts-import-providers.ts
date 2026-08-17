@@ -60,5 +60,6 @@ const coreServiceContextImportsTask = createGeneratorTask({
 });
 
 export const CORE_SERVICE_CONTEXT_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#core/service-context',
   task: coreServiceContextImportsTask,
 };

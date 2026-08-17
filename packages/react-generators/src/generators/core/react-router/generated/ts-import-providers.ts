@@ -46,5 +46,6 @@ const coreReactRouterImportsTask = createGeneratorTask({
 });
 
 export const CORE_REACT_ROUTER_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#core/react-router',
   task: coreReactRouterImportsTask,
 };

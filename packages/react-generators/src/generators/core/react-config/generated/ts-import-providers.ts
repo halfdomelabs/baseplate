@@ -42,5 +42,6 @@ const coreReactConfigImportsTask = createGeneratorTask({
 });
 
 export const CORE_REACT_CONFIG_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#core/react-config',
   task: coreReactConfigImportsTask,
 };

@@ -40,14 +40,11 @@ function buildTransformedMessage(
 }
 
 async function renderEmailComponent<P extends object>(
-  component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
+  component: EmailComponent<P>,
   data: P,
 ): Promise<{ html: string; text: string; subject: string }> {
   try {
-    return await /* TPL_RENDER_EMAIL:START */ renderEmail(
-      /* TPL_RENDER_EMAIL:END */ component,
-      data,
-    );
+    return await renderEmail(component, data);
   } catch (error) {
     throw new Error(`Failed to render email template: ${component.name}`, {
       cause: error,
@@ -77,7 +74,7 @@ export interface EmailService {
    * @returns The job ID of the email job.
    */
   send<P extends object>(
-    component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
+    component: EmailComponent<P>,
     options: { data: P } & EmailSendOptions,
   ): Promise<string | undefined>;
 }
@@ -105,7 +102,7 @@ export function createEmailService({
   }
 
   async function send<P extends object>(
-    component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
+    component: EmailComponent<P>,
     options: { data: P } & EmailSendOptions,
   ): Promise<string | undefined> {
     const rendered = await renderEmailComponent(component, options.data);

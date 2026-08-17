@@ -38,5 +38,6 @@ const pothosPothosImportsTask = createGeneratorTask({
 });
 
 export const POTHOS_POTHOS_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#pothos/pothos',
   task: pothosPothosImportsTask,
 };

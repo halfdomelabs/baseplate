@@ -46,5 +46,6 @@ const localAuthCoreReactSessionImportsTask = createGeneratorTask({
 });
 
 export const LOCAL_AUTH_CORE_REACT_SESSION_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-auth#local-auth/core/react-session',
   task: localAuthCoreReactSessionImportsTask,
 };

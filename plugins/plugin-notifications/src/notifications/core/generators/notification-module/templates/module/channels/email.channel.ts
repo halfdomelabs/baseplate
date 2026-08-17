@@ -7,6 +7,7 @@ import type {
   RenderSource,
 } from '$servicesNotificationRenderer';
 import type { EmailService } from '%emailModuleImports';
+import type { EmailComponent } from '%transactionalLibImports';
 
 import { segmentsToText } from '$servicesNotificationContent';
 import { logError } from '%errorHandlerServiceImports';
@@ -27,7 +28,7 @@ export interface NotificationEmailContent {
    * only consumer re-widens it when handing both back to `email.send`.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly component: TPL_EMAIL_COMPONENT<any>;
+  readonly component: EmailComponent<any>;
   readonly data: unknown;
   /** Overrides the component's own subject when present. */
   readonly subject?: string;
@@ -48,7 +49,7 @@ type DigestItem = NonNullable<
  * compile error at the call site even though the stored shape is untyped.
  */
 export function notificationEmail<P extends object>(
-  component: TPL_EMAIL_COMPONENT<P>,
+  component: EmailComponent<P>,
   data: P,
   options?: { subject?: string },
 ): NotificationEmailContent {

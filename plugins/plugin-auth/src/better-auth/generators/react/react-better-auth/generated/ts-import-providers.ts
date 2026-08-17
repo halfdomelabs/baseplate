@@ -44,5 +44,6 @@ const betterAuthReactBetterAuthImportsTask = createGeneratorTask({
 });
 
 export const BETTER_AUTH_REACT_BETTER_AUTH_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-auth#better-auth/react-better-auth',
   task: betterAuthReactBetterAuthImportsTask,
 };

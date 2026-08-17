@@ -61,5 +61,6 @@ const localAuthCoreAuthModuleImportsTask = createGeneratorTask({
 });
 
 export const LOCAL_AUTH_CORE_AUTH_MODULE_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-auth#local-auth/core/auth-module',
   task: localAuthCoreAuthModuleImportsTask,
 };

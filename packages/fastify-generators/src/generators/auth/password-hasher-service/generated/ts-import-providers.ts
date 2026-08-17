@@ -49,5 +49,7 @@ const authPasswordHasherServiceImportsTask = createGeneratorTask({
 });
 
 export const AUTH_PASSWORD_HASHER_SERVICE_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/fastify-generators#auth/password-hasher-service',
   task: authPasswordHasherServiceImportsTask,
 };

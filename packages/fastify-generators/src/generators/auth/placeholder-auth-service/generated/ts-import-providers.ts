@@ -45,5 +45,7 @@ const authPlaceholderAuthServiceImportsTask = createGeneratorTask({
 });
 
 export const AUTH_PLACEHOLDER_AUTH_SERVICE_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/fastify-generators#auth/placeholder-auth-service',
   task: authPlaceholderAuthServiceImportsTask,
 };

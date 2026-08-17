@@ -58,5 +58,6 @@ const vitestPrismaVitestImportsTask = createGeneratorTask({
 });
 
 export const VITEST_PRISMA_VITEST_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#vitest/prisma-vitest',
   task: vitestPrismaVitestImportsTask,
 };

@@ -21,6 +21,7 @@ import {
   TS_TEMPLATE_TYPE,
   tsTemplateMetadataSchema,
 } from '../templates/types.js';
+import { buildDeclaredPackageImportsMap } from './build-declared-package-imports-map.js';
 import { buildExternalImportProvidersMap } from './build-external-import-providers-map.js';
 import { buildTsProjectExportMap } from './build-ts-project-export-map.js';
 import { getResolverFactory } from './get-resolver-factory.js';
@@ -124,6 +125,10 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
       externalImportProvidersMap,
       templatesOutputRelativePathMap,
     );
+    const declaredPackageImportMap = await buildDeclaredPackageImportsMap(
+      context,
+      externalImportProvidersMap,
+    );
 
     const filesByGenerator = groupBy(files, (f) => f.generator);
 
@@ -156,6 +161,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
           const writeContext: WriteTsTemplateFileContext = {
             generatorName,
             projectExportMap,
+            declaredPackageImportMap,
             outputDirectory,
             workspacePackageDirectories,
             internalOutputRelativePaths,

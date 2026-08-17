@@ -114,5 +114,6 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
 });
 
 export const FASTIFY_STORAGE_MODULE_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-storage#fastify/storage-module',
   task: fastifyStorageModuleImportsTask,
 };

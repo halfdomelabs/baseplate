@@ -66,5 +66,7 @@ const localAuthCoreAuthEmailPasswordImportsTask = createGeneratorTask({
 });
 
 export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/plugin-auth#local-auth/core/auth-email-password',
   task: localAuthCoreAuthEmailPasswordImportsTask,
 };

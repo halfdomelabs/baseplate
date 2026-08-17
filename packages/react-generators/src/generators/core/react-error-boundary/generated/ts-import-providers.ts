@@ -46,5 +46,6 @@ const coreReactErrorBoundaryImportsTask = createGeneratorTask({
 });
 
 export const CORE_REACT_ERROR_BOUNDARY_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#core/react-error-boundary',
   task: coreReactErrorBoundaryImportsTask,
 };

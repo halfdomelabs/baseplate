@@ -56,5 +56,6 @@ const reactUploadComponentsImportsTask = createGeneratorTask({
 });
 
 export const REACT_UPLOAD_COMPONENTS_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-storage#react/upload-components',
   task: reactUploadComponentsImportsTask,
 };

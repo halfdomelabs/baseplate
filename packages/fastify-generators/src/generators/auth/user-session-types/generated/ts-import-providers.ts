@@ -50,5 +50,6 @@ const authUserSessionTypesImportsTask = createGeneratorTask({
 });
 
 export const AUTH_USER_SESSION_TYPES_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#auth/user-session-types',
   task: authUserSessionTypesImportsTask,
 };

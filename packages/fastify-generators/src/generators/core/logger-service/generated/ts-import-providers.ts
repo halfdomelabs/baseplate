@@ -44,5 +44,6 @@ const coreLoggerServiceImportsTask = createGeneratorTask({
 });
 
 export const CORE_LOGGER_SERVICE_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#core/logger-service',
   task: coreLoggerServiceImportsTask,
 };

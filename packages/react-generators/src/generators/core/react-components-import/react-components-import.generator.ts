@@ -3,6 +3,7 @@ import {
   createTsImportMap,
   extractPackageVersions,
   nodeProvider,
+  packageImportsProvider,
   packageScope,
   tsCodeFragment,
 } from '@baseplate-dev/core-generators';
@@ -12,7 +13,10 @@ import { z } from 'zod';
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
 import { reactAppConfigProvider } from '../react-app/index.js';
-import { reactComponentsImportsSchema } from '../react-components/generated/ts-import-providers.js';
+import {
+  CORE_REACT_COMPONENTS_IMPORTS,
+  reactComponentsImportsSchema,
+} from '../react-components/generated/ts-import-providers.js';
 import { reactComponentsImportsProvider } from '../react-components/index.js';
 import { reactTailwindProvider } from '../react-tailwind/index.js';
 
@@ -57,13 +61,21 @@ export const reactComponentsImportGenerator = createGenerator({
     wiring: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
+        packageImports: packageImportsProvider,
         reactTailwind: reactTailwindProvider,
       },
-      run({ node, reactTailwind }) {
+      run({ node, packageImports, reactTailwind }) {
         node.packages.addPackages({
           prod: { [packageName]: 'workspace:*' },
         });
         reactTailwind.addSourceGlob(relativeSourceGlob);
+        // Templates rendered into the app import these components by the library's package
+        // name, which is project-specific; declaring it lets extraction map those imports
+        // back to `reactComponentsImportsProvider` instead of rejecting them.
+        packageImports.registerPackageImportProvider({
+          moduleSpecifier: packageName,
+          generatorName: CORE_REACT_COMPONENTS_IMPORTS.generatorName,
+        });
       },
     }),
     imports: createGeneratorTask({

@@ -485,5 +485,6 @@ const coreReactComponentsImportsTask = createGeneratorTask({
 });
 
 export const CORE_REACT_COMPONENTS_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#core/react-components',
   task: coreReactComponentsImportsTask,
 };

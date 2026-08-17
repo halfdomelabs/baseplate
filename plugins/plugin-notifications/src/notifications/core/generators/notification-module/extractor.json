@@ -12,6 +12,10 @@
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/channels/email.channel.ts",
@@ -36,7 +40,6 @@
       ],
       "sourceFile": "module/channels/email.channel.ts",
       "variables": {
-        "TPL_EMAIL_COMPONENT": {},
         "TPL_NOTIFICATION_DIGEST_EMAIL": {},
         "TPL_NOTIFICATION_EMAIL": {}
       }

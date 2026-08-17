@@ -1,0 +1,6 @@
+[
+  {
+    "moduleSpecifier": "@prisma-crud/transactional",
+    "generatorName": "@baseplate-dev/plugin-email#email/transactional-lib"
+  }
+]

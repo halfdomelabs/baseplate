@@ -50,5 +50,6 @@ const coreFastifySentryImportsTask = createGeneratorTask({
 });
 
 export const CORE_FASTIFY_SENTRY_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-observability#core/fastify-sentry',
   task: coreFastifySentryImportsTask,
 };

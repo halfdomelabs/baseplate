@@ -64,5 +64,6 @@ const emailCoreEmailModuleImportsTask = createGeneratorTask({
 });
 
 export const EMAIL_CORE_EMAIL_MODULE_IMPORTS = {
+  generatorName: '@baseplate-dev/plugin-email#email/core/email-module',
   task: emailCoreEmailModuleImportsTask,
 };

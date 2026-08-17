@@ -47,5 +47,7 @@ const placeholderAuthCorePlaceholderAuthModuleImportsTask = createGeneratorTask(
 );
 
 export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_MODULE_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-module',
   task: placeholderAuthCorePlaceholderAuthModuleImportsTask,
 };

@@ -66,5 +66,6 @@ const coreErrorHandlerServiceImportsTask = createGeneratorTask({
 });
 
 export const CORE_ERROR_HANDLER_SERVICE_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#core/error-handler-service',
   task: coreErrorHandlerServiceImportsTask,
 };

@@ -1,5 +1,6 @@
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { groupBy, uniq } from 'es-toolkit';
+import path from 'node:path';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
@@ -34,6 +35,12 @@ export interface RunTemplateFileExtractorsOptions {
    * Whether to skip cleaning the output directories (templates and generated).
    */
   skipClean?: boolean;
+  /**
+   * Output relative paths to exclude from extraction, e.g. files the project has
+   * deliberately diverged from their generated output via a snapshot. Their contents are
+   * project-specific, so extracting them would bake those changes into the shared template.
+   */
+  excludedOutputRelativePaths?: string[];
 }
 
 export interface GenerateTemplateFilesOptions {
@@ -67,6 +74,15 @@ export async function runTemplateFileExtractors(
   const { entries: templateMetadataFiles, orphanedEntries } =
     await readTemplateInfoFiles(outputDirectory, ignorePatterns);
 
+  // Excluded files still take part in the project export and template path maps — they exist
+  // in the output and other templates may import from them — they are just never read back
+  // into a template themselves.
+  const excludedAbsolutePaths = new Set(
+    options?.excludedOutputRelativePaths?.map((relativePath) =>
+      path.join(outputDirectory, relativePath),
+    ),
+  );
+
   const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
   await configLookup.initialize();
 
@@ -87,8 +103,8 @@ export async function runTemplateFileExtractors(
     const generatorNames = templateMetadataFiles.map(
       (m) => m.templateInfo.generator,
     );
-    const missingGeneratorNames = generatorNames.filter(
-      (name) => !configLookup.getExtractorConfig(name),
+    const missingGeneratorNames = uniq(
+      generatorNames.filter((name) => !configLookup.getExtractorConfig(name)),
     );
     if (missingGeneratorNames.length > 0) {
       logger.info(
@@ -153,6 +169,15 @@ export async function runTemplateFileExtractors(
 
   const filesByType = groupBy(filesWithTypeAndMetadata, (f) => f.templateType);
 
+  const excludedCount = filesWithTypeAndMetadata.filter((f) =>
+    excludedAbsolutePaths.has(f.absolutePath),
+  ).length;
+  if (excludedCount > 0) {
+    logger.info(
+      `Skipping ${excludedCount} template file(s) that the project has diverged from their generated output.`,
+    );
+  }
+
   // Get the metadata entries for each file
   const metadataEntries: TemplateFileExtractorMetadataEntry[] = [];
   for (const [type, files] of Object.entries(filesByType)) {
@@ -164,6 +189,7 @@ export async function runTemplateFileExtractors(
     const parsedFiles = files
       // Only files with instanceData are extractable
       .filter((f) => f.templateInfo.instanceData !== undefined)
+      .filter((f) => !excludedAbsolutePaths.has(f.absolutePath))
       .map((f) => {
         const { absolutePath: path, templateInfo, metadata, modifiedTime } = f;
         try {

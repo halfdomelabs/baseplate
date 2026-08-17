@@ -1,21 +1,21 @@
 {
   "use-confirm-dialog.ts": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "use-confirm-dialog"
   },
   "use-controlled-state.ts": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "hooks-use-controlled-state"
   },
   "use-controller-merged.ts": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "hooks-use-controller-merged"
   },
   "use-mobile.ts": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "use-mobile"
   }

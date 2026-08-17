@@ -1,261 +1,261 @@
 {
   "alert.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "alert"
   },
   "autocomplete.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "autocomplete"
   },
   "badge.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "badge"
   },
   "breadcrumb.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "breadcrumb"
   },
   "button.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "button"
   },
   "calendar.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "calendar"
   },
   "card.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "card"
   },
   "checkbox-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "checkbox-field"
   },
   "checkbox.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "checkbox"
   },
   "circular-progress.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "circular-progress"
   },
   "collapsible.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "collapsible"
   },
   "combobox-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "combobox-field"
   },
   "combobox.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "combobox"
   },
   "confirm-dialog.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "confirm-dialog"
   },
   "date-picker-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "date-picker-field"
   },
   "date-time-picker-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "date-time-picker-field"
   },
   "dialog.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "dialog"
   },
   "dropdown.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "dropdown"
   },
   "empty.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "empty"
   },
   "error-display.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "error-display"
   },
   "errorable-loader.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "errorable-loader"
   },
   "field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "field"
   },
   "input-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "input-field"
   },
   "input-group.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "input-group"
   },
   "input-otp.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "input-otp"
   },
   "input.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "input"
   },
   "item.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "item"
   },
   "label.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "label"
   },
   "loader.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "loader"
   },
   "multi-combobox-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "multi-combobox-field"
   },
   "navigation-menu.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "navigation-menu"
   },
   "not-found-card.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "not-found-card"
   },
   "number-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "number-field"
   },
   "popover.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "popover"
   },
   "radio-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "radio-field"
   },
   "radio-group.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "radio-group"
   },
   "scroll-area.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "scroll-area"
   },
   "select-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "select-field"
   },
   "select.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "select"
   },
   "separator.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "separator"
   },
   "sheet.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "sheet"
   },
   "sidebar.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "sidebar"
   },
   "skeleton.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "skeleton"
   },
   "slider.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "slider"
   },
   "spinner.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "spinner"
   },
   "switch-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "switch-field"
   },
   "switch.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "switch-component"
   },
   "table.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "table"
   },
   "textarea-field.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "textarea-field"
   },
   "textarea.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "textarea"
   },
   "toaster.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "toaster"
   },
   "tooltip.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "tooltip"
   }

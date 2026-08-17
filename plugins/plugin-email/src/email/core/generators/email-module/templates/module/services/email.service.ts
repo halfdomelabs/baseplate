@@ -8,9 +8,11 @@ import type {
   TransformedEmailMessage,
 } from '$emailTypes';
 import type { QueueService } from '%queuesImports';
+import type { EmailComponent } from '%transactionalLibImports';
 
 import { sendEmailQueue } from '$sendEmailQueue';
 import { getConfig } from '%configServiceImports';
+import { renderEmail } from '%transactionalLibImports';
 
 function normalizeEmailAddresses(addresses: string | string[]): string[] {
   return Array.isArray(addresses) ? addresses : [addresses];
@@ -36,11 +38,11 @@ function buildTransformedMessage(
 }
 
 async function renderEmailComponent<P extends object>(
-  component: TPL_EMAIL_COMPONENT<P>,
+  component: EmailComponent<P>,
   data: P,
 ): Promise<{ html: string; text: string; subject: string }> {
   try {
-    return await TPL_RENDER_EMAIL(component, data);
+    return await renderEmail(component, data);
   } catch (error) {
     throw new Error(`Failed to render email template: ${component.name}`, {
       cause: error,
@@ -70,7 +72,7 @@ export interface EmailService {
    * @returns The job ID of the email job.
    */
   send<P extends object>(
-    component: TPL_EMAIL_COMPONENT<P>,
+    component: EmailComponent<P>,
     options: { data: P } & EmailSendOptions,
   ): Promise<string | undefined>;
 }
@@ -98,7 +100,7 @@ export function createEmailService({
   }
 
   async function send<P extends object>(
-    component: TPL_EMAIL_COMPONENT<P>,
+    component: EmailComponent<P>,
     options: { data: P } & EmailSendOptions,
   ): Promise<string | undefined> {
     const rendered = await renderEmailComponent(component, options.data);

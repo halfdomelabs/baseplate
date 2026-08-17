@@ -42,5 +42,6 @@ const authAuthErrorsImportsTask = createGeneratorTask({
 });
 
 export const AUTH_AUTH_ERRORS_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#auth/auth-errors',
   task: authAuthErrorsImportsTask,
 };

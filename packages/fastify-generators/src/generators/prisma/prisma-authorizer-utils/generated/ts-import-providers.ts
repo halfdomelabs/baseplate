@@ -112,5 +112,7 @@ const prismaPrismaAuthorizerUtilsImportsTask = createGeneratorTask({
 });
 
 export const PRISMA_PRISMA_AUTHORIZER_UTILS_IMPORTS = {
+  generatorName:
+    '@baseplate-dev/fastify-generators#prisma/prisma-authorizer-utils',
   task: prismaPrismaAuthorizerUtilsImportsTask,
 };

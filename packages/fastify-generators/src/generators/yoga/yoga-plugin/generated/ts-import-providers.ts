@@ -44,5 +44,6 @@ const yogaYogaPluginImportsTask = createGeneratorTask({
 });
 
 export const YOGA_YOGA_PLUGIN_IMPORTS = {
+  generatorName: '@baseplate-dev/fastify-generators#yoga/yoga-plugin',
   task: yogaYogaPluginImportsTask,
 };

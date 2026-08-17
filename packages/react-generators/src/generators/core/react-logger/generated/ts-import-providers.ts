@@ -42,5 +42,6 @@ const coreReactLoggerImportsTask = createGeneratorTask({
 });
 
 export const CORE_REACT_LOGGER_IMPORTS = {
+  generatorName: '@baseplate-dev/react-generators#core/react-logger',
   task: coreReactLoggerImportsTask,
 };
