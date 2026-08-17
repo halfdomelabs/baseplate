@@ -9,30 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
-import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
-import { Route as AuthRegisterRouteImport } from './routes/auth/register'
-import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthRegisterRouteImport } from './routes/auth/register'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as AdminTodosTodoListRouteRouteImport } from './routes/admin/todos/todo-list/route'
-import { Route as AdminTodosTodoListIndexRouteImport } from './routes/admin/todos/todo-list/index'
-import { Route as AdminTodosTodoListNewRouteImport } from './routes/admin/todos/todo-list/new'
-import { Route as AdminTodosTodoListIdRouteImport } from './routes/admin/todos/todo-list/$id'
 import { Route as AdminAccountsUsersUserRouteRouteImport } from './routes/admin/accounts/users/user/route'
+import { Route as AdminTodosTodoListIndexRouteImport } from './routes/admin/todos/todo-list/index'
+import { Route as AdminTodosTodoListIdRouteImport } from './routes/admin/todos/todo-list/$id'
+import { Route as AdminTodosTodoListNewRouteImport } from './routes/admin/todos/todo-list/new'
 import { Route as AdminAccountsUsersUserIndexRouteImport } from './routes/admin/accounts/users/user/index'
 import { Route as AdminAccountsUsersUserIdRouteImport } from './routes/admin/accounts/users/user/$id'
 
-const AdminRouteRoute = AdminRouteRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -40,19 +40,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
-  id: '/auth/verify-email',
-  path: '/auth/verify-email',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/auth/reset-password',
-  path: '/auth/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
-  id: '/auth/register',
-  path: '/auth/register',
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/auth/forgot-password',
+  path: '/auth/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -60,9 +50,19 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
-  id: '/auth/forgot-password',
-  path: '/auth/forgot-password',
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/auth/verify-email',
+  path: '/auth/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTodosTodoListRouteRoute = AdminTodosTodoListRouteRouteImport.update({
@@ -70,14 +70,15 @@ const AdminTodosTodoListRouteRoute = AdminTodosTodoListRouteRouteImport.update({
   path: '/todos/todo-list',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAccountsUsersUserRouteRoute =
+  AdminAccountsUsersUserRouteRouteImport.update({
+    id: '/accounts/users/user',
+    path: '/accounts/users/user',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminTodosTodoListIndexRoute = AdminTodosTodoListIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminTodosTodoListRouteRoute,
-} as any)
-const AdminTodosTodoListNewRoute = AdminTodosTodoListNewRouteImport.update({
-  id: '/new',
-  path: '/new',
   getParentRoute: () => AdminTodosTodoListRouteRoute,
 } as any)
 const AdminTodosTodoListIdRoute = AdminTodosTodoListIdRouteImport.update({
@@ -85,12 +86,11 @@ const AdminTodosTodoListIdRoute = AdminTodosTodoListIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminTodosTodoListRouteRoute,
 } as any)
-const AdminAccountsUsersUserRouteRoute =
-  AdminAccountsUsersUserRouteRouteImport.update({
-    id: '/accounts/users/user',
-    path: '/accounts/users/user',
-    getParentRoute: () => AdminRouteRoute,
-  } as any)
+const AdminTodosTodoListNewRoute = AdminTodosTodoListNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminTodosTodoListRouteRoute,
+} as any)
 const AdminAccountsUsersUserIndexRoute =
   AdminAccountsUsersUserIndexRouteImport.update({
     id: '/',
@@ -216,18 +216,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -237,25 +237,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/auth/verify-email': {
-      id: '/auth/verify-email'
-      path: '/auth/verify-email'
-      fullPath: '/auth/verify-email'
-      preLoaderRoute: typeof AuthVerifyEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/reset-password': {
-      id: '/auth/reset-password'
-      path: '/auth/reset-password'
-      fullPath: '/auth/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/register': {
-      id: '/auth/register'
-      path: '/auth/register'
-      fullPath: '/auth/register'
-      preLoaderRoute: typeof AuthRegisterRouteImport
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/auth/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login': {
@@ -265,11 +251,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/forgot-password': {
-      id: '/auth/forgot-password'
-      path: '/auth/forgot-password'
-      fullPath: '/auth/forgot-password'
-      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify-email': {
+      id: '/auth/verify-email'
+      path: '/auth/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/todos/todo-list': {
@@ -279,18 +279,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTodosTodoListRouteRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/accounts/users/user': {
+      id: '/admin/accounts/users/user'
+      path: '/accounts/users/user'
+      fullPath: '/admin/accounts/users/user'
+      preLoaderRoute: typeof AdminAccountsUsersUserRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/todos/todo-list/': {
       id: '/admin/todos/todo-list/'
       path: '/'
       fullPath: '/admin/todos/todo-list/'
       preLoaderRoute: typeof AdminTodosTodoListIndexRouteImport
-      parentRoute: typeof AdminTodosTodoListRouteRoute
-    }
-    '/admin/todos/todo-list/new': {
-      id: '/admin/todos/todo-list/new'
-      path: '/new'
-      fullPath: '/admin/todos/todo-list/new'
-      preLoaderRoute: typeof AdminTodosTodoListNewRouteImport
       parentRoute: typeof AdminTodosTodoListRouteRoute
     }
     '/admin/todos/todo-list/$id': {
@@ -300,12 +300,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTodosTodoListIdRouteImport
       parentRoute: typeof AdminTodosTodoListRouteRoute
     }
-    '/admin/accounts/users/user': {
-      id: '/admin/accounts/users/user'
-      path: '/accounts/users/user'
-      fullPath: '/admin/accounts/users/user'
-      preLoaderRoute: typeof AdminAccountsUsersUserRouteRouteImport
-      parentRoute: typeof AdminRouteRoute
+    '/admin/todos/todo-list/new': {
+      id: '/admin/todos/todo-list/new'
+      path: '/new'
+      fullPath: '/admin/todos/todo-list/new'
+      preLoaderRoute: typeof AdminTodosTodoListNewRouteImport
+      parentRoute: typeof AdminTodosTodoListRouteRoute
     }
     '/admin/accounts/users/user/': {
       id: '/admin/accounts/users/user/'
