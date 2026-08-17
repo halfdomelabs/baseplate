@@ -1302,6 +1302,15 @@ function createDeltaType(events: { at: Date }[]): {
   return { type, windows };
 }
 
+/**
+ * An event the next send must count as new. Stamped ahead of the clock because the
+ * boundary is the last delivery's own `new Date()` at millisecond resolution — an event
+ * stamped as that delivery returns can land in the same millisecond and read as not-new.
+ */
+function eventAfterLastDelivery(): { at: Date } {
+  return { at: new Date(Date.now() + 60_000) };
+}
+
 /** Settles one row's email delivery, so the next send has an anchor. */
 async function deliver(
   service: ReturnType<typeof createService>,
@@ -1344,7 +1353,7 @@ describe('delivery-time resolution (delta anchors)', () => {
 
     // The delta proper: measured from the first delivery, only the new event
     // counts.
-    events.push({ at: new Date() });
+    events.push(eventAfterLastDelivery());
     await service.notify(type, { recipientId, input: { threadId: 't1' } });
     const rearmed = await prisma.notification.findFirstOrThrow({
       where: { recipientId },
@@ -1361,7 +1370,10 @@ describe('delivery-time resolution (delta anchors)', () => {
 
   it('never writes the delta back to the row', async () => {
     const recipientId = await createUser(0);
-    const events = [{ at: new Date('2026-01-01') }, { at: new Date() }];
+    const events = [
+      { at: new Date('2026-01-01') },
+      { at: new Date('2026-01-02') },
+    ];
     const { type } = createDeltaType(events);
     const channel = createRecordingChannel();
     const service = createService({
@@ -1378,7 +1390,7 @@ describe('delivery-time resolution (delta anchors)', () => {
     // Delivered once, so the second send has an anchor.
     await deliver(service, first.id);
 
-    events.push({ at: new Date() });
+    events.push(eventAfterLastDelivery());
     await service.notify(type, { recipientId, input: { threadId: 't1' } });
     const before = await prisma.notification.findFirstOrThrow({
       where: { recipientId },
@@ -1423,7 +1435,7 @@ describe('delivery-time resolution (delta anchors)', () => {
 
     // A second generation, armed and then abandoned unsent. A real state
     // change, since an unchanged notify is a no-op and would arm nothing.
-    events.push({ at: new Date() });
+    events.push(eventAfterLastDelivery());
     await service.notify(type, { recipientId, input: { threadId: 't1' } });
     const expired = await service.outbox.expireStaleDeliveries({
       expireBefore: new Date(Date.now() + 1000),
@@ -1432,7 +1444,7 @@ describe('delivery-time resolution (delta anchors)', () => {
 
     // A third generation, delivered. Its window must still start at the last
     // real send.
-    events.push({ at: new Date() });
+    events.push(eventAfterLastDelivery());
     await service.notify(type, { recipientId, input: { threadId: 't1' } });
     const third = await prisma.notification.findFirstOrThrow({
       where: { recipientId },
