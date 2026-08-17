@@ -7,7 +7,10 @@ import {
   serviceContextImportsProvider,
   yogaPluginImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
+import {
+  emailModuleImportsProvider,
+  transactionalLibImportsProvider,
+} from '@baseplate-dev/plugin-email';
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
@@ -16,6 +19,7 @@ const channelsEmailChannel = createTsTemplateFile({
   importMapProviders: {
     emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    transactionalLibImports: transactionalLibImportsProvider,
   },
   name: 'channels-email-channel',
   projectExports: {
@@ -34,11 +38,7 @@ const channelsEmailChannel = createTsTemplateFile({
       '../templates/module/channels/email.channel.ts',
     ),
   },
-  variables: {
-    TPL_EMAIL_COMPONENT: {},
-    TPL_NOTIFICATION_DIGEST_EMAIL: {},
-    TPL_NOTIFICATION_EMAIL: {},
-  },
+  variables: { TPL_NOTIFICATION_DIGEST_EMAIL: {}, TPL_NOTIFICATION_EMAIL: {} },
 });
 
 const channelsTypes = createTsTemplateFile({

@@ -13,6 +13,10 @@
         "queuesImportsProvider": {
           "importName": "queuesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        },
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/email.service.ts",
@@ -29,7 +33,7 @@
       },
       "referencedGeneratorTemplates": ["email-types", "send-email-queue"],
       "sourceFile": "module/services/email.service.ts",
-      "variables": { "TPL_EMAIL_COMPONENT": {}, "TPL_RENDER_EMAIL": {} }
+      "variables": {}
     },
     "email-types": {
       "type": "ts",

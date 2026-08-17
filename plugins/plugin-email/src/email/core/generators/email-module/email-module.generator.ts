@@ -2,6 +2,8 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   createNodePackagesTask,
+  createTsImportMap,
+  packageImportsProvider,
   packageScope,
   tsCodeFragment,
   TsCodeUtils,
@@ -20,6 +22,12 @@ import {
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
+
+import {
+  EMAIL_TRANSACTIONAL_LIB_IMPORTS,
+  transactionalLibImportsProvider,
+  transactionalLibImportsSchema,
+} from '#src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.js';
 
 import { EMAIL_CORE_EMAIL_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
@@ -84,6 +92,40 @@ export const emailModuleGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: {
         [transactionalLibPackageName]: 'workspace:*',
+      },
+    }),
+    // Re-expose the transactional lib's import map against its package name so backend
+    // templates can import from it directly, and declare it so template extraction can map
+    // those imports back to the provider instead of baking in the project's package name.
+    transactionalLibImports: createGeneratorTask({
+      dependencies: {
+        packageImports: packageImportsProvider,
+      },
+      exports: {
+        transactionalLibImports:
+          transactionalLibImportsProvider.export(packageScope),
+      },
+      run({ packageImports }) {
+        packageImports.registerPackageImportProvider({
+          moduleSpecifier: transactionalLibPackageName,
+          generatorName: EMAIL_TRANSACTIONAL_LIB_IMPORTS.generatorName,
+        });
+
+        const importsInput = Object.fromEntries(
+          Object.keys(transactionalLibImportsSchema).map((key) => [
+            key,
+            transactionalLibPackageName,
+          ]),
+        ) as Record<keyof typeof transactionalLibImportsSchema, string>;
+
+        return {
+          providers: {
+            transactionalLibImports: createTsImportMap(
+              transactionalLibImportsSchema,
+              importsInput,
+            ),
+          },
+        };
       },
     }),
     // Add EMAIL_DEFAULT_FROM config field
@@ -161,22 +203,7 @@ export const emailModuleGenerator = createGenerator({
       run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              renderers.mainGroup.render({
-                variables: {
-                  emailService: {
-                    TPL_RENDER_EMAIL: TsCodeUtils.importFragment(
-                      'renderEmail',
-                      transactionalLibPackageName,
-                    ),
-                    TPL_EMAIL_COMPONENT: TsCodeUtils.typeImportFragment(
-                      'EmailComponent',
-                      transactionalLibPackageName,
-                    ),
-                  },
-                },
-              }),
-            );
+            await builder.apply(renderers.mainGroup.render({}));
           },
         };
       },

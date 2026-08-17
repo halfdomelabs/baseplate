@@ -13,7 +13,10 @@ import {
   serviceContextImportsProvider,
   yogaPluginImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
+import {
+  emailModuleImportsProvider,
+  transactionalLibImportsProvider,
+} from '@baseplate-dev/plugin-email';
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
@@ -78,6 +81,7 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
     prismaImports: prismaImportsProvider,
     queuesImports: queuesImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
+    transactionalLibImports: transactionalLibImportsProvider,
     typescriptFile: typescriptFileProvider,
     yogaPluginImports: yogaPluginImportsProvider,
   },
@@ -94,6 +98,7 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
     prismaImports,
     queuesImports,
     serviceContextImports,
+    transactionalLibImports,
     typescriptFile,
     yogaPluginImports,
   }) {
@@ -109,6 +114,7 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   emailModuleImports,
                   errorHandlerServiceImports,
+                  transactionalLibImports,
                 },
                 generatorPaths: paths,
                 ...options,

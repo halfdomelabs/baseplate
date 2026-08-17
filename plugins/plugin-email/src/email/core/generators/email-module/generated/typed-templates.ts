@@ -7,12 +7,15 @@ import {
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
+import { transactionalLibImportsProvider } from '#src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.js';
+
 const emailService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {
     configServiceImports: configServiceImportsProvider,
     queuesImports: queuesImportsProvider,
+    transactionalLibImports: transactionalLibImportsProvider,
   },
   name: 'email-service',
   projectExports: {
@@ -27,7 +30,7 @@ const emailService = createTsTemplateFile({
       '../templates/module/services/email.service.ts',
     ),
   },
-  variables: { TPL_EMAIL_COMPONENT: {}, TPL_RENDER_EMAIL: {} },
+  variables: {},
 });
 
 const emailTypes = createTsTemplateFile({
