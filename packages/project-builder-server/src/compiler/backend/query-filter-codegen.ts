@@ -84,6 +84,30 @@ export function referencesOnlyGuaranteedAuthField(
   return authFieldRefs.length > 0 && authFieldRefs.every(isGuaranteedAuthField);
 }
 
+/** Is this operand a reference to the auth context (`ctx.auth.*` once emitted)? */
+function isAuthFieldRef(node: FieldRefNode | LiteralValueNode): boolean {
+  return node.type === 'fieldRef' && node.source === 'auth';
+}
+
+/**
+ * Does the emitted where clause read from the service context at all? `ctx` only
+ * ever appears as `ctx.auth.*`, so a node with no auth reference compiles to a
+ * closed-over constant and its callback can take no parameter.
+ */
+export function referencesAuthContext(node: AuthorizerExpressionNode): boolean {
+  return visitAuthorizerExpression<boolean>(node, {
+    fieldComparison: (n) => [n.left, n.right].some(isAuthFieldRef),
+    hasRole: () => true,
+    hasSomeRole: () => true,
+    isAuthenticated: () => true,
+    // No where form — these throw before any code is emitted.
+    nestedHasRole: () => false,
+    nestedHasSomeRole: () => false,
+    relationFilter: (n) => n.conditions.some((c) => isAuthFieldRef(c.value)),
+    binaryLogical: (n, _ctx, visit) => visit(n.left) || visit(n.right),
+  });
+}
+
 /**
  * Build a visitor that emits Prisma where-clause code from AST nodes.
  *

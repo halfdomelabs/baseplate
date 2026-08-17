@@ -1,3 +1,5 @@
+import type { FieldComparisonNode } from '@baseplate-dev/project-builder-lib';
+
 import { parseAuthorizerExpression } from '@baseplate-dev/project-builder-lib';
 import { describe, expect, it } from 'vitest';
 
@@ -88,7 +90,7 @@ describe('lowerExpressionToRoleTree', () => {
   describe('r.where — fallback for non-matchable comparisons', () => {
     it('!== falls back to r.where', () => {
       expect(lower("model.status !== 'draft'")).toBe(
-        "r.where((ctx) => ({ status: { not: 'draft' } }))",
+        "r.where(() => ({ status: { not: 'draft' } }))",
       );
     });
 
@@ -100,7 +102,35 @@ describe('lowerExpressionToRoleTree', () => {
 
     it('!== null falls back to r.where with a not-null filter', () => {
       expect(lower('model.engagementEffectiveAt !== null')).toBe(
-        'r.where((ctx) => ({ engagementEffectiveAt: { not: null } }))',
+        'r.where(() => ({ engagementEffectiveAt: { not: null } }))',
+      );
+    });
+
+    it('keeps the ctx parameter when the where body reads from it', () => {
+      // Built by hand: `userId` is the only auth field the parser accepts, and
+      // it always collapses to `r.userWhere`. Any other auth field keeps the
+      // null-guard, so the emitted body genuinely reads `ctx`.
+      const ast: FieldComparisonNode = {
+        type: 'fieldComparison',
+        operator: '!==',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'orgId',
+          start: 0,
+          end: 11,
+        },
+        right: {
+          type: 'fieldRef',
+          source: 'auth',
+          field: 'orgId',
+          start: 16,
+          end: 21,
+        },
+      };
+
+      expect(lowerExpressionToRoleTree(ast, ctxWith())).toBe(
+        'r.where((ctx) => (ctx.auth.orgId != null ? { orgId: { not: ctx.auth.orgId } } : false))',
       );
     });
 
@@ -111,7 +141,7 @@ describe('lowerExpressionToRoleTree', () => {
           ctxWith({ members: VIA_MANY_MEMBERS }),
         ),
       ).toBe(
-        'r.all([r.where((ctx) => ({ engagementEffectiveAt: { not: null } })), ' +
+        'r.all([r.where(() => ({ engagementEffectiveAt: { not: null } })), ' +
           "r.viaMany(blogUserPolicy, 'owner', 'members')])",
       );
     });
@@ -243,7 +273,7 @@ describe('lowerExpressionToRoleTree', () => {
 
     it('exists(...) with a null condition value → r.where', () => {
       expect(lower('exists(model.members, { deletedAt: null })')).toBe(
-        'r.where((ctx) => ({ members: { some: { deletedAt: null } } }))',
+        'r.where(() => ({ members: { some: { deletedAt: null } } }))',
       );
     });
   });
