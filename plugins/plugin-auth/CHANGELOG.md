@@ -1,5 +1,23 @@
 # @baseplate-dev/plugin-auth
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1028](https://github.com/halfdomelabs/baseplate/pull/1028) [`94d84c1`](https://github.com/halfdomelabs/baseplate/commit/94d84c1ce807fe7fa55eb1f6f01515a6fea137f6) Thanks [@kingston](https://github.com/kingston)! - Signing in, signing out, and session changes from another tab no longer unmount the app, so the previous screen no longer flashes before the new one and page state survives the transition.
+
+- Updated dependencies [[`daef666`](https://github.com/halfdomelabs/baseplate/commit/daef666c5710453aa3a5777976e8ba4e70025135), [`616d2f5`](https://github.com/halfdomelabs/baseplate/commit/616d2f5cb41a91e01b1689309a56d5b2525037dc), [`94d84c1`](https://github.com/halfdomelabs/baseplate/commit/94d84c1ce807fe7fa55eb1f6f01515a6fea137f6), [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84)]:
+  - @baseplate-dev/core-generators@0.6.19
+  - @baseplate-dev/fastify-generators@0.6.19
+  - @baseplate-dev/project-builder-lib@0.6.19
+  - @baseplate-dev/react-generators@0.6.19
+  - @baseplate-dev/plugin-email@0.6.19
+  - @baseplate-dev/sync@0.6.19
+  - @baseplate-dev/plugin-queue@0.6.19
+  - @baseplate-dev/plugin-rate-limit@0.6.19
+  - @baseplate-dev/ui-components@0.6.19
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes

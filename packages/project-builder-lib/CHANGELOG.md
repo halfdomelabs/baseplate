@@ -1,5 +1,16 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1031](https://github.com/halfdomelabs/baseplate/pull/1031) [`616d2f5`](https://github.com/halfdomelabs/baseplate/commit/616d2f5cb41a91e01b1689309a56d5b2525037dc) Thanks [@kingston](https://github.com/kingston)! - Authorization expressions can now compare an optional field against `null` (e.g. `model.engagementEffectiveAt !== null`), including as an `exists()`/`all()` condition value, so presence-gated rules no longer have to be hand-written. Comparing a required field, or a `json` field, against `null` is flagged as a warning.
+
+- Updated dependencies [[`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84)]:
+  - @baseplate-dev/sync@0.6.19
+  - @baseplate-dev/ui-components@0.6.19
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes
