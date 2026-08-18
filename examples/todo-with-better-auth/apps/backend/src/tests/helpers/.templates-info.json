@@ -23,5 +23,10 @@
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},
     "template": "storage-test-helper"
+  },
+  "worker-database.test-helper.ts": {
+    "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+    "instanceData": {},
+    "template": "worker-database-test-helper"
   }
 }

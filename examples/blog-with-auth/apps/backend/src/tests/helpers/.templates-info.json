@@ -18,5 +18,10 @@
     "generator": "@baseplate-dev/fastify-generators#core/service-context",
     "instanceData": {},
     "template": "test-helper"
+  },
+  "worker-database.test-helper.ts": {
+    "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+    "instanceData": {},
+    "template": "worker-database-test-helper"
   }
 }

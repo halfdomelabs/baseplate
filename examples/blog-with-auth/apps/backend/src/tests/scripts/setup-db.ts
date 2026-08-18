@@ -1,13 +1,23 @@
-import { acquireWorkerDatabase } from '../helpers/db.test-helper.js';
+import {
+  ensureWorkerDatabase,
+  getWorkerDatabaseUrl,
+} from '../helpers/worker-database.test-helper.js';
 
 // Runs once per test file, before the file's imports are evaluated, to point
-// this worker at its own database. This must only import db.test-helper:
-// pulling in anything that reaches src/services/prisma.ts would construct the
-// Prisma client (and cache the config) against the maintenance database.
+// this worker at its own database. Nothing here may reach
+// src/services/prisma.ts, which would cache its config against the maintenance
+// database.
 const maintenanceDatabaseUrl = process.env.TEST_MAINTENANCE_DATABASE_URL;
 
 if (process.env.TEST_MODE !== 'unit' && maintenanceDatabaseUrl) {
-  process.env.DATABASE_URL = await acquireWorkerDatabase(
-    maintenanceDatabaseUrl,
-  );
+  await ensureWorkerDatabase(async () => {
+    // Dynamic so that files which never clone don't load the Prisma client
+    // db.test-helper reaches for. Keep worker-database.test-helper free of it
+    // too, since that one is imported statically above.
+    const { acquireWorkerDatabase } = await import(
+      /* TPL_DB_TEST_HELPER_PATH:START */ '@src/tests/helpers/db.test-helper.js' /* TPL_DB_TEST_HELPER_PATH:END */
+    );
+    await acquireWorkerDatabase(maintenanceDatabaseUrl);
+  });
+  process.env.DATABASE_URL = getWorkerDatabaseUrl(maintenanceDatabaseUrl);
 }

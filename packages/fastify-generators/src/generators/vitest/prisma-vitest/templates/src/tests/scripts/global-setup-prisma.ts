@@ -3,6 +3,7 @@
 import type { TestProject } from 'vitest/node';
 
 import { createTemplateDatabase, dropStaleTestDatabases } from '$dbTestHelper';
+import { clearWorkerDatabaseRecords } from '$workerDatabaseTestHelper';
 
 export default async function setup(
   project: TestProject,
@@ -20,16 +21,18 @@ export default async function setup(
 
   // Sweep first so a previously crashed run cannot leak worker databases.
   await dropStaleTestDatabases(DATABASE_URL);
+  clearWorkerDatabaseRecords();
   await createTemplateDatabase(DATABASE_URL);
 
-  // Workers clone their own database from the template in setup-db.test-helper.
-  // DATABASE_URL is left pointing at the maintenance database, which is the only
-  // connection allowed to issue CREATE/DROP DATABASE.
+  // Workers clone their own database from the template in setup-db.ts.
+  // DATABASE_URL is left pointing at the maintenance database, which is the
+  // only connection allowed to issue CREATE/DROP DATABASE.
   project.config.env.TEST_MAINTENANCE_DATABASE_URL = DATABASE_URL;
 
   console.info('\nTest database template created and migrations ran!');
 
   return async () => {
     await dropStaleTestDatabases(DATABASE_URL, { keepTemplate: true });
+    clearWorkerDatabaseRecords();
   };
 }

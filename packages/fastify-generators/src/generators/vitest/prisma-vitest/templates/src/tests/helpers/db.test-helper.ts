@@ -1,14 +1,15 @@
 // @ts-nocheck
 
+import {
+  getTemplateDatabaseUrl,
+  getWorkerDatabaseName,
+  TEMPLATE_DATABASE_NAME,
+  TEST_DATABASE_NAME,
+} from '$workerDatabaseTestHelper';
 import { PrismaClient } from '%prismaGeneratedImports';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
-
-const TEST_DATABASE_NAME = TPL_TEST_DB;
-
-/** Database cloned by each worker; never connected to by tests directly. */
-const TEMPLATE_DATABASE_NAME = `${TEST_DATABASE_NAME}_template`;
 
 /**
  * Postgres rejects `CREATE DATABASE ... WITH TEMPLATE` while another session is
@@ -20,49 +21,12 @@ const CLONE_MAX_ATTEMPTS = 5;
  * Quotes a Postgres identifier for safe interpolation into DDL.
  *
  * `CREATE`/`DROP DATABASE` take no bind parameters, so names must be inlined.
- * Double-quoting (with embedded quotes doubled) is the standard-conformant way
- * to do that for an arbitrary name, including one read back from `pg_database`.
  *
  * @param identifier Identifier to quote.
  * @returns The double-quoted identifier.
  */
 function quoteIdentifier(identifier: string): string {
   return `"${identifier.replaceAll('"', '""')}"`;
-}
-
-/**
- * Returns the 1-based Vitest worker slot for the current process.
- *
- * `VITEST_POOL_ID` is bounded by `maxWorkers` and stays fixed for a process's
- * lifetime, so it yields at most `maxWorkers` databases. `VITEST_WORKER_ID`
- * looks similar but increments per test *file*, which would create one database
- * per file. Falls back to 1 outside a worker (e.g. in global setup).
- */
-export function getTestWorkerId(): number {
-  const poolId = Number(process.env.VITEST_POOL_ID ?? '1');
-  return Number.isInteger(poolId) && poolId > 0 ? poolId : 1;
-}
-
-/** Returns the database name for a given worker slot. */
-export function getWorkerDatabaseName(workerId: number): string {
-  return `${TEST_DATABASE_NAME}_${workerId}`;
-}
-
-/**
- * Replaces the database name in a Postgres connection string, preserving
- * credentials, port and query parameters such as `?schema=public`.
- *
- * @param connectionString Source connection string.
- * @param database Database name to switch to.
- * @returns The rewritten connection string.
- */
-export function replaceDatabase(
-  connectionString: string,
-  database: string,
-): string {
-  const url = new URL(connectionString);
-  url.pathname = `/${database}`;
-  return url.toString();
 }
 
 /**
@@ -99,9 +63,6 @@ async function withMaintenanceClient<T>(
  * Drops every database left over from a previous run, optionally sparing the
  * template.
  *
- * Sweeping at start-up rather than relying on teardown makes cleanup
- * self-healing: a crashed or cancelled run cannot leak databases into the next.
- *
  * @param databaseUrl Maintenance database URL.
  * @param options.keepTemplate Retain the template database.
  * @returns Names of the databases dropped.
@@ -111,8 +72,8 @@ export async function dropStaleTestDatabases(
   { keepTemplate = false }: { keepTemplate?: boolean } = {},
 ): Promise<string[]> {
   // The LIKE query is only a coarse prefilter (`_` is a LIKE wildcard); this
-  // pattern is the authoritative allowlist of what we may DROP. Safe to embed
-  // unescaped since TEST_DATABASE_NAME is validated to `[a-z0-9_]` at generation.
+  // pattern is the authoritative allowlist of what we may DROP. TEST_DATABASE_NAME
+  // is restricted to `[a-z0-9_]`, so it needs no escaping here.
   const workerDatabasePattern = new RegExp(
     String.raw`^${TEST_DATABASE_NAME}_\d+$`,
   );
@@ -141,9 +102,6 @@ export async function dropStaleTestDatabases(
 /**
  * Creates the template database and applies all migrations to it.
  *
- * Called once per run from global setup; workers clone the result instead of
- * each paying for `prisma migrate deploy`.
- *
  * @param databaseUrl Maintenance database URL.
  * @returns The template database's connection string.
  */
@@ -159,10 +117,7 @@ export async function createTemplateDatabase(
     await client.$executeRawUnsafe(`CREATE DATABASE ${quotedTemplate}`);
   });
 
-  const templateDatabaseUrl = replaceDatabase(
-    databaseUrl,
-    TEMPLATE_DATABASE_NAME,
-  );
+  const templateDatabaseUrl = getTemplateDatabaseUrl(databaseUrl);
 
   execSync('pnpm prisma migrate deploy', {
     cwd: path.resolve(import.meta.dirname, '../../../'),
@@ -176,20 +131,15 @@ export async function createTemplateDatabase(
 }
 
 /**
- * Returns a connection string for this worker's database, cloning it from the
- * template on first use.
- *
- * Idempotent by design: Vitest reuses a worker slot across successive test
- * files, each in a fresh process, so an existing database is the normal case
- * rather than an error. Per-test cleanup hooks keep it usable.
+ * Clones this worker's database from the template, if it does not already
+ * exist.
  *
  * @param databaseUrl Maintenance database URL.
- * @returns This worker's database connection string.
  */
 export async function acquireWorkerDatabase(
   databaseUrl: string,
-): Promise<string> {
-  const databaseName = getWorkerDatabaseName(getTestWorkerId());
+): Promise<void> {
+  const databaseName = getWorkerDatabaseName();
 
   await withMaintenanceClient(databaseUrl, async (client) => {
     const existing = await client.$queryRaw<{ datname: string }[]>`
@@ -213,6 +163,4 @@ export async function acquireWorkerDatabase(
       }
     }
   });
-
-  return replaceDatabase(databaseUrl, databaseName);
 }
