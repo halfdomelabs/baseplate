@@ -14,13 +14,17 @@ import { VITEST_PRISMA_VITEST_PATHS } from './template-paths.js';
 
 export const prismaVitestImportsSchema = createTsImportMapSchema({
   acquireWorkerDatabase: {},
+  clearWorkerDatabaseRecords: {},
   createTemplateDatabase: {},
   dropStaleTestDatabases: {},
+  ensureWorkerDatabase: {},
+  getTemplateDatabaseUrl: {},
   getTestPrisma: {},
-  getTestWorkerId: {},
   getWorkerDatabaseName: {},
+  getWorkerDatabaseUrl: {},
   prismaMock: {},
-  replaceDatabase: {},
+  TEMPLATE_DATABASE_NAME: {},
+  TEST_DATABASE_NAME: {},
 });
 
 export type PrismaVitestImportsProvider = TsImportMapProviderFromSchema<
@@ -44,13 +48,17 @@ const vitestPrismaVitestImportsTask = createGeneratorTask({
       providers: {
         prismaVitestImports: createTsImportMap(prismaVitestImportsSchema, {
           acquireWorkerDatabase: paths.dbTestHelper,
+          clearWorkerDatabaseRecords: paths.workerDatabaseTestHelper,
           createTemplateDatabase: paths.dbTestHelper,
           dropStaleTestDatabases: paths.dbTestHelper,
+          ensureWorkerDatabase: paths.workerDatabaseTestHelper,
+          getTemplateDatabaseUrl: paths.workerDatabaseTestHelper,
           getTestPrisma: paths.dbTestHelper,
-          getTestWorkerId: paths.dbTestHelper,
-          getWorkerDatabaseName: paths.dbTestHelper,
+          getWorkerDatabaseName: paths.workerDatabaseTestHelper,
+          getWorkerDatabaseUrl: paths.workerDatabaseTestHelper,
           prismaMock: paths.prismaTestHelper,
-          replaceDatabase: paths.dbTestHelper,
+          TEMPLATE_DATABASE_NAME: paths.workerDatabaseTestHelper,
+          TEST_DATABASE_NAME: paths.workerDatabaseTestHelper,
         }),
       },
     };

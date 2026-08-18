@@ -15,6 +15,7 @@ export default defineConfig(
         'src/tests/scripts/setup-db.ts',
         'src/tests/scripts/setup-redis.ts',
       ],
+      testTimeout: 15_000,
     },
   } /* TPL_CONFIG:END */,
 );

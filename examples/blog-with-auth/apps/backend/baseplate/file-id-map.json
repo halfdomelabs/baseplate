@@ -111,6 +111,7 @@
   "@baseplate-dev/fastify-generators#vitest/prisma-vitest:global-setup-prisma": "src/tests/scripts/global-setup-prisma.ts",
   "@baseplate-dev/fastify-generators#vitest/prisma-vitest:prisma-test-helper": "src/tests/helpers/prisma.test-helper.ts",
   "@baseplate-dev/fastify-generators#vitest/prisma-vitest:setup-db": "src/tests/scripts/setup-db.ts",
+  "@baseplate-dev/fastify-generators#vitest/prisma-vitest:worker-database-test-helper": "src/tests/helpers/worker-database.test-helper.ts",
   "@baseplate-dev/fastify-generators#yoga/yoga-plugin:graphql-plugin": "src/plugins/graphql/index.ts",
   "@baseplate-dev/fastify-generators#yoga/yoga-plugin:pubsub": "src/plugins/graphql/pubsub.ts",
   "@baseplate-dev/fastify-generators#yoga/yoga-plugin:use-graph-logger": "src/plugins/graphql/use-graph-logger.ts",

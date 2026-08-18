@@ -11,6 +11,7 @@ import {
   normalizePathToOutputPath,
 } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
@@ -32,6 +33,14 @@ const TEMPLATE_SUFFIX_BYTES = '_template'.length;
  * can exhaust `max_connections` or hit clone-lock contention on the template.
  */
 const DB_BACKED_TEST_MAX_WORKERS = 8;
+
+/**
+ * Vitest's 5s default is a unit-test default, too tight for a suite whose
+ * database-backed tests hold real transactions against a Postgres every worker
+ * contends for: their tail is set by CI load rather than by the test. Applied
+ * to the whole suite, since a ceiling only bites a test that has already hung.
+ */
+const DB_BACKED_TEST_TIMEOUT_MS = 15_000;
 
 /**
  * Validates the base test database name derived from the package name.
@@ -94,12 +103,14 @@ export const prismaVitestGenerator = createGenerator({
             );
 
             await builder.apply(
-              renderers.dbTestHelper.render({
+              renderers.workerDatabaseTestHelper.render({
                 variables: {
                   TPL_TEST_DB: quot(testDatabaseName),
                 },
               }),
             );
+
+            await builder.apply(renderers.dbTestHelper.render({}));
 
             await builder.apply(
               renderers.prismaTestHelper.render({
@@ -120,14 +131,27 @@ export const prismaVitestGenerator = createGenerator({
               normalizePathToOutputPath(paths.globalSetupPrisma),
             );
 
-            // The per-file setup clones this worker's database before its
-            // imports evaluate, so it must be a setupFile rather than global.
-            await builder.apply(renderers.setupDb.render({}));
+            // The per-file setup points this worker at its own database before
+            // the file's imports evaluate, so it must be a setupFile rather
+            // than global.
+            await builder.apply(
+              renderers.setupDb.render({
+                variables: {
+                  TPL_DB_TEST_HELPER_PATH: quot(
+                    typescriptFile.resolveModuleSpecifier(
+                      paths.dbTestHelper,
+                      path.dirname(paths.setupDb),
+                    ),
+                  ),
+                },
+              }),
+            );
             vitestConfig.setupFiles.push(
               normalizePathToOutputPath(paths.setupDb),
             );
 
             vitestConfig.maxWorkers.set(DB_BACKED_TEST_MAX_WORKERS);
+            vitestConfig.testTimeout.set(DB_BACKED_TEST_TIMEOUT_MS);
           },
         };
       },

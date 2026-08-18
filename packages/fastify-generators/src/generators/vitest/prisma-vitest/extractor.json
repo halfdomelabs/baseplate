@@ -16,13 +16,11 @@
         "acquireWorkerDatabase": {},
         "createTemplateDatabase": {},
         "dropStaleTestDatabases": {},
-        "getTestPrisma": {},
-        "getTestWorkerId": {},
-        "getWorkerDatabaseName": {},
-        "replaceDatabase": {}
+        "getTestPrisma": {}
       },
+      "referencedGeneratorTemplates": ["worker-database-test-helper"],
       "sourceFile": "src/tests/helpers/db.test-helper.ts",
-      "variables": { "TPL_TEST_DB": {} }
+      "variables": {}
     },
     "global-setup-prisma": {
       "type": "ts",
@@ -30,7 +28,10 @@
       "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/tests/scripts/global-setup-prisma.ts",
-      "referencedGeneratorTemplates": ["db-test-helper"],
+      "referencedGeneratorTemplates": [
+        "db-test-helper",
+        "worker-database-test-helper"
+      ],
       "sourceFile": "src/tests/scripts/global-setup-prisma.ts",
       "variables": {}
     },
@@ -54,9 +55,27 @@
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/tests/scripts/setup-db.ts",
-      "referencedGeneratorTemplates": ["db-test-helper"],
+      "referencedGeneratorTemplates": ["worker-database-test-helper"],
       "sourceFile": "src/tests/scripts/setup-db.ts",
-      "variables": {}
+      "variables": { "TPL_DB_TEST_HELPER_PATH": {} }
+    },
+    "worker-database-test-helper": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/tests/helpers/worker-database.test-helper.ts",
+      "projectExports": {
+        "clearWorkerDatabaseRecords": {},
+        "ensureWorkerDatabase": {},
+        "getTemplateDatabaseUrl": {},
+        "getWorkerDatabaseName": {},
+        "getWorkerDatabaseUrl": {},
+        "TEMPLATE_DATABASE_NAME": {},
+        "TEST_DATABASE_NAME": {}
+      },
+      "sourceFile": "src/tests/helpers/worker-database.test-helper.ts",
+      "variables": { "TPL_TEST_DB": {} }
     }
   }
 }

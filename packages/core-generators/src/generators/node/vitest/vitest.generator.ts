@@ -23,12 +23,30 @@ const descriptorSchema = z.object({
   includeTestHelpers: z.boolean().default(true),
 });
 
+/**
+ * Renders a number the way `unicorn/numeric-separators-style` wants it, since
+ * the generated config is linted by the consuming app's own stricter config.
+ *
+ * The rule enforces its five-digit threshold in both directions, so `1_000` is
+ * as much an error as `15000`.
+ *
+ * @param value Number to render.
+ * @returns The literal, underscore-grouped only from five digits up.
+ */
+function renderNumericLiteral(value: number): string {
+  const literal = String(value);
+  return literal.length < 5
+    ? literal
+    : literal.replaceAll(/\B(?=(\d{3})+(?!\d))/g, '_');
+}
+
 const [setupTask, vitestConfigProvider, vitestConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       globalSetupFiles: t.array<string>(),
       setupFiles: t.array<string>(),
       maxWorkers: t.number(),
+      testTimeout: t.number(),
       environment: t.scalar<'jsdom' | 'happy-dom'>(),
     }),
     {
@@ -67,6 +85,7 @@ export const vitestGenerator = createGenerator({
           globalSetupFiles,
           setupFiles,
           maxWorkers,
+          testTimeout,
           environment,
         },
         renderers,
@@ -98,8 +117,12 @@ export const vitestGenerator = createGenerator({
                 maxWorkers === undefined
                   ? undefined
                   : tsCodeFragment(
-                      `process.env.TEST_MODE === 'unit' ? undefined : ${maxWorkers}`,
+                      `process.env.TEST_MODE === 'unit' ? undefined : ${renderNumericLiteral(maxWorkers)}`,
                     ),
+              testTimeout:
+                testTimeout === undefined
+                  ? undefined
+                  : renderNumericLiteral(testTimeout),
             });
 
             await builder.apply(

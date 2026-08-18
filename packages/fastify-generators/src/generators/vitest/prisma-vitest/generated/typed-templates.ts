@@ -15,24 +15,25 @@ const dbTestHelper = createTsTemplateFile({
     createTemplateDatabase: {},
     dropStaleTestDatabases: {},
     getTestPrisma: {},
-    getTestWorkerId: {},
-    getWorkerDatabaseName: {},
-    replaceDatabase: {},
   },
+  referencedGeneratorTemplates: { workerDatabaseTestHelper: {} },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/src/tests/helpers/db.test-helper.ts',
     ),
   },
-  variables: { TPL_TEST_DB: {} },
+  variables: {},
 });
 
 const globalSetupPrisma = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'global-setup-prisma',
-  referencedGeneratorTemplates: { dbTestHelper: {} },
+  referencedGeneratorTemplates: {
+    dbTestHelper: {},
+    workerDatabaseTestHelper: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -60,14 +61,36 @@ const setupDb = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'setup-db',
-  referencedGeneratorTemplates: { dbTestHelper: {} },
+  referencedGeneratorTemplates: { workerDatabaseTestHelper: {} },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/src/tests/scripts/setup-db.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_DB_TEST_HELPER_PATH: {} },
+});
+
+const workerDatabaseTestHelper = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'worker-database-test-helper',
+  projectExports: {
+    clearWorkerDatabaseRecords: {},
+    ensureWorkerDatabase: {},
+    getTemplateDatabaseUrl: {},
+    getWorkerDatabaseName: {},
+    getWorkerDatabaseUrl: {},
+    TEMPLATE_DATABASE_NAME: {},
+    TEST_DATABASE_NAME: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/tests/helpers/worker-database.test-helper.ts',
+    ),
+  },
+  variables: { TPL_TEST_DB: {} },
 });
 
 export const VITEST_PRISMA_VITEST_TEMPLATES = {
@@ -75,4 +98,5 @@ export const VITEST_PRISMA_VITEST_TEMPLATES = {
   globalSetupPrisma,
   prismaTestHelper,
   setupDb,
+  workerDatabaseTestHelper,
 };
