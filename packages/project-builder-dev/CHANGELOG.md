@@ -1,5 +1,15 @@
 # @baseplate-dev/project-builder-dev
 
+## 0.6.19
+
+### Patch Changes
+
+- Updated dependencies [[`616d2f5`](https://github.com/halfdomelabs/baseplate/commit/616d2f5cb41a91e01b1689309a56d5b2525037dc), [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84)]:
+  - @baseplate-dev/project-builder-lib@0.6.19
+  - @baseplate-dev/project-builder-server@0.6.19
+  - @baseplate-dev/project-builder-web@0.6.19
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes

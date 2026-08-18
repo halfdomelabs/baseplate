@@ -1,5 +1,14 @@
 # @baseplate-dev/sync
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1030](https://github.com/halfdomelabs/baseplate/pull/1030) [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84) Thanks [@kingston](https://github.com/kingston)! - Template extraction now resolves imports of a generated sibling package back to the import provider that owns them, and skips files the project has snapshotted as diverged, so apps sourcing their UI components from a shared library can have their templates extracted. The generated email service and notification email channel no longer carry `/* TPL_* */` marker comments.
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes
