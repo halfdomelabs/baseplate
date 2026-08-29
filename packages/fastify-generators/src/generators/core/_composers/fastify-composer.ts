@@ -8,6 +8,7 @@ import { fastifyVitestGenerator } from '#src/generators/vitest/index.js';
 import { appModuleSetupGenerator } from '../app-module-setup/index.js';
 import { appModuleGenerator } from '../app-module/index.js';
 import { appRuntimeGenerator } from '../app-runtime/index.js';
+import { appSecretGenerator } from '../app-secret/index.js';
 import { configServiceGenerator } from '../config-service/index.js';
 import { errorHandlerServiceGenerator } from '../error-handler-service/index.js';
 import { fastifyCookieContextGenerator } from '../fastify-cookie-context/index.js';
@@ -35,6 +36,7 @@ export function composeFastifyApplication(
       }),
       appModuleSetup: appModuleSetupGenerator({}),
       appRuntime: appRuntimeGenerator({}),
+      appSecret: appSecretGenerator({}),
       errorHandler: errorHandlerServiceGenerator({}),
       config: configServiceGenerator({}),
       fastifyServer: fastifyServerGenerator({}),
