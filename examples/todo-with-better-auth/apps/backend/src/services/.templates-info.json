@@ -1,4 +1,9 @@
 {
+  "app-secret.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/app-secret",
+    "instanceData": {},
+    "template": "app-secret"
+  },
   "axios.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/axios",
     "instanceData": {},

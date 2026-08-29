@@ -5,6 +5,20 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   ALLOWED_ORIGINS: z.string().default(''),
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
+  // Secret the app derives all signing keys from (at least 32 characters). Never used directly.
+  APP_SECRET: z.string().regex(/^[a-zA-Z0-9\-_+=/]{32,}$/),
+  // Comma-separated previously-active values of APP_SECRET, in any order. Remove one to invalidate the tokens it signed. Leave empty until the first rotation.
+  APP_SECRET_PREVIOUS: z
+    .string()
+    .default('')
+    .refine(
+      (value) =>
+        value === '' ||
+        value
+          .split(',')
+          .every((entry) => /^[a-zA-Z0-9\-_+=/]{32,}$/.test(entry.trim())),
+      'Each entry must meet the same requirements as APP_SECRET',
+    ),
   // Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)
   AUTH_FRONTEND_URL: z.url(),
   // AWS access key ID

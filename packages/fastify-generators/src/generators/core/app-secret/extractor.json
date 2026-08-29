@@ -1,0 +1,24 @@
+{
+  "name": "core/app-secret",
+  "templates": {
+    "app-secret": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/app-secret.ts",
+      "projectExports": {
+        "createSigner": { "isTypeOnly": false, "name": "createSigner" },
+        "deriveKey": { "isTypeOnly": false, "name": "deriveKey" },
+        "SecretPolicy": { "isTypeOnly": true, "name": "SecretPolicy" },
+        "Signer": { "isTypeOnly": true, "name": "Signer" }
+      },
+      "sourceFile": "src/services/app-secret.ts",
+      "variables": {}
+    }
+  }
+}

@@ -32,6 +32,7 @@
       { "path": "src/scripts/seed-demo-post.ts" },
       { "path": "src/scripts/send-test-digest.ts" },
       { "path": "src/scripts/send-test-notification.ts" },
+      { "path": "src/services/app-secret.unit.test.ts" },
       { "path": "src/services/pg-boss.service.int.test.ts" },
       { "path": "src/utils/app-runtime.unit.test.ts" }
     ],
