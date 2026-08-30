@@ -3,6 +3,7 @@
 import type { AuthRole } from '%authRolesImports';
 import type { EmailService } from '%emailModuleImports';
 
+import { deriveKey } from '%appSecretImports';
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { getConfig } from '%configServiceImports';
 import { prisma } from '%prismaImports';
@@ -43,7 +44,7 @@ export type Auth = ReturnType<typeof buildAuth>;
 export const buildAuth = ({ email }: AuthServiceDeps) =>
   betterAuth({
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
-    secret: config.BETTER_AUTH_SECRET,
+    secret: deriveKey('auth:better-auth:v1').toString('base64url'),
     baseURL: config.BETTER_AUTH_URL,
     basePath: '/auth',
     emailAndPassword: {

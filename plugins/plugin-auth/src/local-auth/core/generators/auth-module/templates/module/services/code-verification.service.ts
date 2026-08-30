@@ -3,7 +3,7 @@
 import type { AuthVerification, Prisma } from '%prismaGeneratedImports';
 
 import { safeCompare } from '$servicesAuthVerification';
-import { getConfig } from '%configServiceImports';
+import { deriveKey } from '%appSecretImports';
 import { prisma } from '%prismaImports';
 import * as crypto from 'node:crypto';
 
@@ -37,7 +37,7 @@ function hashCode({
   code: string;
 }): string {
   return crypto
-    .createHmac('sha256', getConfig().AUTH_SECRET)
+    .createHmac('sha256', deriveKey('auth:code-verification:v1'))
     .update(`${type}:${identifier}:${code}`)
     .digest('hex');
 }

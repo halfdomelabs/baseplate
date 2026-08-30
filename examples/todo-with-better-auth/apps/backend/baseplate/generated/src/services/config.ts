@@ -31,8 +31,6 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   AWS_UPLOADS_BUCKET: z.string().min(1),
   // Hosted URL prefix for uploads, e.g. https://uploads.example.com
   AWS_UPLOADS_URL: z.string().min(1),
-  // Better Auth secret key for signing sessions
-  BETTER_AUTH_SECRET: z.string().min(32),
   // Better Auth base URL (backend server URL)
   BETTER_AUTH_URL: z.url(),
   // Connection URL of the database

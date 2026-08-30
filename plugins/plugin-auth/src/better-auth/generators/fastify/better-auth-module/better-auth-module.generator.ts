@@ -41,14 +41,6 @@ export const betterAuthModuleGenerator = createGenerator({
     imports: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.imports.task,
     renderers: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.renderers.task,
     config: createProviderTask(configServiceProvider, (configService) => {
-      const betterAuthSecret = 'dev-secret-change-me-in-production';
-      configService.configFields.set('BETTER_AUTH_SECRET', {
-        validator: tsCodeFragment('z.string().min(32)'),
-        comment: 'Better Auth secret key for signing sessions',
-        seedValue: betterAuthSecret,
-        exampleValue: betterAuthSecret,
-      });
-
       const betterAuthUrl = `http://localhost:${String(devBackendPort)}`;
 
       configService.configFields.set('BETTER_AUTH_URL', {

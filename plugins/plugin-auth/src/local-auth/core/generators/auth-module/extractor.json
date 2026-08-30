@@ -20,16 +20,6 @@
       "sourceFile": "module/schema/auth-role.enum.ts",
       "variables": {}
     },
-    "cookie-signer": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
-      "group": "utils",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/utils/cookie-signer.ts",
-      "sourceFile": "module/utils/cookie-signer.ts",
-      "variables": {}
-    },
     "queues-cleanup-auth-verification": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -161,9 +151,9 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        "appSecretImportsProvider": {
+          "importName": "appSecretImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-secret/generated/ts-import-providers.ts"
         },
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
@@ -266,6 +256,10 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "importMapProviders": {
+        "appSecretImportsProvider": {
+          "importName": "appSecretImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-secret/generated/ts-import-providers.ts"
+        },
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
@@ -303,7 +297,6 @@
         }
       },
       "referencedGeneratorTemplates": [
-        "cookie-signer",
         "session-cookie",
         "user-session-constants",
         "verify-request-origin"

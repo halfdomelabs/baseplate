@@ -1,5 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  appSecretImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -196,7 +197,7 @@ const servicesAuthVerification = createTsTemplateFile({
 const servicesCodeVerification = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
-    configServiceImports: configServiceImportsProvider,
+    appSecretImports: appSecretImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
   },
@@ -219,6 +220,7 @@ const servicesCodeVerification = createTsTemplateFile({
 const userSessionService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
+    appSecretImports: appSecretImportsProvider,
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
@@ -230,7 +232,6 @@ const userSessionService = createTsTemplateFile({
   name: 'user-session-service',
   projectExports: { CookieUserSessionService: { isTypeOnly: false } },
   referencedGeneratorTemplates: {
-    cookieSigner: {},
     sessionCookie: {},
     userSessionConstants: {},
     verifyRequestOrigin: {},
@@ -242,20 +243,6 @@ const userSessionService = createTsTemplateFile({
     ),
   },
   variables: { TPL_PRISMA_USER_SESSION: {} },
-});
-
-const cookieSigner = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'utils',
-  importMapProviders: {},
-  name: 'cookie-signer',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/utils/cookie-signer.ts',
-    ),
-  },
-  variables: {},
 });
 
 const sessionCookie = createTsTemplateFile({
@@ -286,7 +273,7 @@ const verifyRequestOrigin = createTsTemplateFile({
   variables: {},
 });
 
-export const utilsGroup = { cookieSigner, sessionCookie, verifyRequestOrigin };
+export const utilsGroup = { sessionCookie, verifyRequestOrigin };
 
 export const LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES = {
   constantsGroup,

@@ -8,7 +8,6 @@
       {
         "path": "src/modules/accounts/auth/services/code-verification.service.int.test.ts"
       },
-      { "path": "src/modules/accounts/auth/utils/cookie-signer.unit.test.ts" },
       { "path": "src/modules/blogs/authorizers/policy.unit.test.ts" },
       { "path": "src/modules/blogs/notifications/blog-notification-types.ts" },
       { "path": "src/modules/blogs/schema/blog-post-like.mutations.ts" },

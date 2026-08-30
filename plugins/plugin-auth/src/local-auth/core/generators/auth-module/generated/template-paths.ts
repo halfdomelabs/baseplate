@@ -3,7 +3,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface LocalAuthCoreAuthModulePaths {
   authRoleEnum: string;
-  cookieSigner: string;
   queuesCleanupAuthVerification: string;
   queuesCleanupAuthVerificationWorker: string;
   schemaUserSessionMutations: string;
@@ -36,7 +35,6 @@ const localAuthCoreAuthModulePathsTask = createGeneratorTask({
       providers: {
         localAuthCoreAuthModulePaths: {
           authRoleEnum: `${moduleRoot}/schema/auth-role.enum.ts`,
-          cookieSigner: `${moduleRoot}/utils/cookie-signer.ts`,
           queuesCleanupAuthVerification: `${moduleRoot}/queues/cleanup-auth-verification.queue.ts`,
           queuesCleanupAuthVerificationWorker: `${moduleRoot}/queues/cleanup-auth-verification.worker.ts`,
           schemaUserSessionMutations: `${moduleRoot}/schema/user-session.mutations.ts`,

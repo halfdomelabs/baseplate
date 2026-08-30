@@ -54,17 +54,6 @@ export const authModuleGenerator = createGenerator({
             }
           : {}),
       });
-
-      const authSecret = 'a-secret-key-1234567890';
-      configService.configFields.set('AUTH_SECRET', {
-        validator: tsCodeFragment(
-          'z.string().regex(/^[a-zA-Z0-9-_+=/]{20,}$/)',
-        ),
-        comment:
-          'Secret key for signing auth cookie (at least 20 alphanumeric characters)',
-        seedValue: authSecret,
-        exampleValue: authSecret,
-      });
     }),
     appModule: createGeneratorTask({
       dependencies: {

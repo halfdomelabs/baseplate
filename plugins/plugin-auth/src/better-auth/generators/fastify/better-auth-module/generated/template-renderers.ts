@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   appRuntimeImportsProvider,
+  appSecretImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -78,6 +79,7 @@ const betterAuthBetterAuthModuleRenderers =
 const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
   dependencies: {
     appRuntimeImports: appRuntimeImportsProvider,
+    appSecretImports: appSecretImportsProvider,
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
@@ -94,6 +96,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
   },
   run({
     appRuntimeImports,
+    appSecretImports,
     authContextImports,
     authRolesImports,
     configServiceImports,
@@ -113,6 +116,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
                 template: BETTER_AUTH_BETTER_AUTH_MODULE_TEMPLATES.auth,
                 destination: paths.auth,
                 importMapProviders: {
+                  appSecretImports,
                   authRolesImports,
                   configServiceImports,
                   emailModuleImports,

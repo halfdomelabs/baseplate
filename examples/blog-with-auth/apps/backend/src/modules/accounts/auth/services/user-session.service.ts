@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto';
 
 import type { RequestServiceContext } from '@src/utils/request-service-context.js';
 
+import { createSigner } from '@src/services/app-secret.js';
 import { getConfig, isDevelopment } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 import { ForbiddenError } from '@src/utils/http-errors.js';
@@ -23,7 +24,6 @@ import {
   USER_SESSION_RENEWAL_THRESHOLD_SEC,
 } from '../constants/user-session.constants.js';
 import { InvalidSessionError } from '../types/auth-session.types.js';
-import { signObject, unsignObject } from '../utils/cookie-signer.js';
 import { getUserSessionCookieName } from '../utils/session-cookie.js';
 import { verifyRequestOrigin } from '../utils/verify-request-origin.js';
 
@@ -31,6 +31,8 @@ interface SessionCookieValue {
   // Session token
   token: string;
 }
+
+const sessionCookieSigner = createSigner<SessionCookieValue>('auth:session:v1');
 
 function getCookieOptions(): CookieSerializeOptions {
   return {
@@ -134,7 +136,7 @@ export class CookieUserSessionService implements UserSessionService {
     ];
 
     const cookieName = getUserSessionCookieName(context.reqInfo.headers);
-    const cookieValue = signObject({ token }, getConfig().AUTH_SECRET);
+    const cookieValue = sessionCookieSigner.sign({ token });
 
     context.cookieStore.set(cookieName, cookieValue, getCookieOptions());
 
@@ -191,15 +193,11 @@ export class CookieUserSessionService implements UserSessionService {
       throw new ForbiddenError('Invalid Origin header');
     }
     try {
-      // Unsign the session cookie
-      const sessionCookieResult = unsignObject(
-        sessionCookieValue,
-        getConfig().AUTH_SECRET,
-      ) as SessionCookieValue | undefined;
+      const sessionCookieResult =
+        sessionCookieSigner.verify(sessionCookieValue);
       if (!sessionCookieResult) throw new InvalidSessionError();
 
       const { token } = sessionCookieResult;
-      if (typeof token !== 'string') throw new InvalidSessionError();
 
       // Fetch and validate user session
       const userSession =
@@ -227,7 +225,7 @@ export class CookieUserSessionService implements UserSessionService {
               expiresAt: sessionExpiryResult.newExpiry,
             },
           });
-        const newSignedCookie = signObject({ token }, getConfig().AUTH_SECRET);
+        const newSignedCookie = sessionCookieSigner.sign({ token });
         reply.setCookie(cookieName, newSignedCookie, getCookieOptions());
       }
 
