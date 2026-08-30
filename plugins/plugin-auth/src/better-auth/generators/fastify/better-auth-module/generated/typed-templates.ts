@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   appRuntimeImportsProvider,
+  appSecretImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -14,6 +15,7 @@ import path from 'node:path';
 const auth = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
+    appSecretImports: appSecretImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
     emailModuleImports: emailModuleImportsProvider,

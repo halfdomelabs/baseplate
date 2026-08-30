@@ -4,11 +4,6 @@
     "instanceData": {},
     "template": "auth-context-utils"
   },
-  "cookie-signer.ts": {
-    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
-    "instanceData": {},
-    "template": "cookie-signer"
-  },
   "session-cookie.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
     "instanceData": {},

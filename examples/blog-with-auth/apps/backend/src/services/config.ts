@@ -24,8 +24,6 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
     ),
   // Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)
   AUTH_FRONTEND_URL: z.url(),
-  // Secret key for signing auth cookie (at least 20 alphanumeric characters)
-  AUTH_SECRET: z.string().regex(/^[a-zA-Z0-9-_+=/]{20,}$/),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
   // Default sender email address for transactional emails

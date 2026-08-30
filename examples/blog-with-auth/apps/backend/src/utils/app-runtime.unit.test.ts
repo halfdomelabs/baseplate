@@ -10,8 +10,10 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 const DISCONNECTED_TEST_ENV: Record<string, string> = {
   ALLOWED_ORIGINS: '',
   APP_ENVIRONMENT: 'test',
+  // Any 32+ character value from the allowed set; nothing here signs or
+  // verifies anything, it only has to satisfy the config validator.
+  APP_SECRET: 'a'.repeat(32),
   AUTH_FRONTEND_URL: 'http://localhost:1',
-  AUTH_SECRET: 'a'.repeat(20),
   DATABASE_URL: 'postgresql://user:pass@localhost:1/db',
   EMAIL_DEFAULT_FROM: 'noreply@example.com',
   POSTMARK_SERVER_TOKEN: 'test-postmark-token',

@@ -6,6 +6,7 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { customSession } from 'better-auth/plugins';
 
+import { deriveKey } from '@src/services/app-secret.js';
 import { getConfig } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 
@@ -47,7 +48,7 @@ export type Auth = ReturnType<typeof buildAuth>;
 export const buildAuth = ({ email }: AuthServiceDeps) =>
   betterAuth({
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
-    secret: config.BETTER_AUTH_SECRET,
+    secret: deriveKey('auth:better-auth:v1').toString('base64url'),
     baseURL: config.BETTER_AUTH_URL,
     basePath: '/auth',
     emailAndPassword: {

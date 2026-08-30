@@ -9,6 +9,10 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
       "importMapProviders": {
+        "appSecretImportsProvider": {
+          "importName": "appSecretImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-secret/generated/ts-import-providers.ts"
+        },
         "authRolesImportsProvider": {
           "importName": "authRolesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"

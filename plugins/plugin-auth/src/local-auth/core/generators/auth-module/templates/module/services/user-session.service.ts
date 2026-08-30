@@ -10,7 +10,6 @@ import type {
 import type { CookieSerializeOptions } from '@fastify/cookie';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
-import { signObject, unsignObject } from '$cookieSigner';
 import { getUserSessionCookieName } from '$sessionCookie';
 import {
   USER_SESSION_DURATION_SEC,
@@ -18,6 +17,7 @@ import {
   USER_SESSION_RENEWAL_THRESHOLD_SEC,
 } from '$userSessionConstants';
 import { verifyRequestOrigin } from '$verifyRequestOrigin';
+import { createSigner } from '%appSecretImports';
 import { InvalidSessionError } from '%authContextImports';
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { getConfig, isDevelopment } from '%configServiceImports';
@@ -29,6 +29,8 @@ interface SessionCookieValue {
   // Session token
   token: string;
 }
+
+const sessionCookieSigner = createSigner<SessionCookieValue>('auth:session:v1');
 
 function getCookieOptions(): CookieSerializeOptions {
   return {
@@ -131,7 +133,7 @@ export class CookieUserSessionService implements UserSessionService {
     ];
 
     const cookieName = getUserSessionCookieName(context.reqInfo.headers);
-    const cookieValue = signObject({ token }, getConfig().AUTH_SECRET);
+    const cookieValue = sessionCookieSigner.sign({ token });
 
     context.cookieStore.set(cookieName, cookieValue, getCookieOptions());
 
@@ -187,15 +189,11 @@ export class CookieUserSessionService implements UserSessionService {
       throw new ForbiddenError('Invalid Origin header');
     }
     try {
-      // Unsign the session cookie
-      const sessionCookieResult = unsignObject(
-        sessionCookieValue,
-        getConfig().AUTH_SECRET,
-      ) as SessionCookieValue | undefined;
+      const sessionCookieResult =
+        sessionCookieSigner.verify(sessionCookieValue);
       if (!sessionCookieResult) throw new InvalidSessionError();
 
       const { token } = sessionCookieResult;
-      if (typeof token !== 'string') throw new InvalidSessionError();
 
       // Fetch and validate user session
       const userSession = await TPL_PRISMA_USER_SESSION.findUnique({
@@ -220,7 +218,7 @@ export class CookieUserSessionService implements UserSessionService {
             expiresAt: sessionExpiryResult.newExpiry,
           },
         });
-        const newSignedCookie = signObject({ token }, getConfig().AUTH_SECRET);
+        const newSignedCookie = sessionCookieSigner.sign({ token });
         reply.setCookie(cookieName, newSignedCookie, getCookieOptions());
       }
 

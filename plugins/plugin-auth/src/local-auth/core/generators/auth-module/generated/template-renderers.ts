@@ -6,6 +6,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  appSecretImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -112,6 +113,7 @@ const localAuthCoreAuthModuleRenderers =
 
 const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
   dependencies: {
+    appSecretImports: appSecretImportsProvider,
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
@@ -129,6 +131,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
     localAuthCoreAuthModuleRenderers: localAuthCoreAuthModuleRenderers.export(),
   },
   run({
+    appSecretImports,
     authContextImports,
     authRolesImports,
     configServiceImports,
@@ -214,7 +217,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
                   LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.servicesCodeVerification,
                 destination: paths.servicesCodeVerification,
                 importMapProviders: {
-                  configServiceImports,
+                  appSecretImports,
                   prismaGeneratedImports,
                   prismaImports,
                 },
@@ -229,6 +232,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
                   LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.userSessionService,
                 destination: paths.userSessionService,
                 importMapProviders: {
+                  appSecretImports,
                   authContextImports,
                   authRolesImports,
                   configServiceImports,
