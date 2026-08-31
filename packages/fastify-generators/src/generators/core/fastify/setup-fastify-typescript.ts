@@ -24,7 +24,7 @@ export const fastifyTypescriptTask = createGeneratorTask({
       ],
       esModuleInterop: true,
       module: 'nodenext',
-      moduleResolution: 'node16',
+      moduleResolution: 'nodenext',
       strict: true,
       noUncheckedIndexedAccess: true,
       removeComments: true,
