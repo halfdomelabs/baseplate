@@ -7,7 +7,7 @@ import type {
   RequestServiceContextWith,
 } from '@src/utils/request-service-context.js';
 
-import { getConfig } from '@src/services/config.js';
+import { getWebUrl } from '@src/services/app-urls.js';
 import { prisma } from '@src/services/prisma.js';
 import { BadRequestError, NotFoundError } from '@src/utils/http-errors.js';
 import { handleZodRequestValidationError } from '@src/utils/zod.js';
@@ -75,7 +75,10 @@ export async function inviteUser({
     expiresInSec: INVITE_TOKEN_EXPIRY_SEC,
   });
 
-  const acceptLink = `${getConfig().AUTH_FRONTEND_URL}/auth/accept-invite?token=${encodeURIComponent(token)}`;
+  const acceptLink = getWebUrl(
+    /* TPL_AUTH_WEB_APP:START */ 'app' /* TPL_AUTH_WEB_APP:END */,
+    `/auth/accept-invite?token=${encodeURIComponent(token)}`,
+  );
 
   await services.email.send(
     /* TPL_INVITE_EMAIL:START */ InviteEmail /* TPL_INVITE_EMAIL:END */,

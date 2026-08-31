@@ -1,5 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  appUrlsImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   passwordHasherServiceImportsProvider,
@@ -87,8 +88,8 @@ const servicesPasswordReset = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'module',
   importMapProviders: {
+    appUrlsImports: appUrlsImportsProvider,
     authModuleImports: authModuleImportsProvider,
-    configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     passwordHasherServiceImports: passwordHasherServiceImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -112,7 +113,11 @@ const servicesPasswordReset = createTsTemplateFile({
       '../templates/module/services/password-reset.service.ts',
     ),
   },
-  variables: { TPL_PASSWORD_CHANGED_EMAIL: {}, TPL_PASSWORD_RESET_EMAIL: {} },
+  variables: {
+    TPL_AUTH_WEB_APP: {},
+    TPL_PASSWORD_CHANGED_EMAIL: {},
+    TPL_PASSWORD_RESET_EMAIL: {},
+  },
 });
 
 const servicesUserPassword = createTsTemplateFile({
@@ -227,8 +232,8 @@ const servicesEmailOtp = createTsTemplateFile({
 const servicesEmailVerification = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
+    appUrlsImports: appUrlsImportsProvider,
     authModuleImports: authModuleImportsProvider,
-    configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaImports: prismaImportsProvider,
     rateLimitImports: rateLimitImportsProvider,
@@ -242,14 +247,14 @@ const servicesEmailVerification = createTsTemplateFile({
       '../templates/module/services/email-verification.service.ts',
     ),
   },
-  variables: { TPL_ACCOUNT_VERIFICATION_EMAIL: {} },
+  variables: { TPL_ACCOUNT_VERIFICATION_EMAIL: {}, TPL_AUTH_WEB_APP: {} },
 });
 
 const servicesInvite = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
+    appUrlsImports: appUrlsImportsProvider,
     authModuleImports: authModuleImportsProvider,
-    configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     passwordHasherServiceImports: passwordHasherServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
@@ -265,7 +270,7 @@ const servicesInvite = createTsTemplateFile({
       '../templates/module/services/invite.service.ts',
     ),
   },
-  variables: { TPL_INVITE_EMAIL: {} },
+  variables: { TPL_AUTH_WEB_APP: {}, TPL_INVITE_EMAIL: {} },
 });
 
 export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = {

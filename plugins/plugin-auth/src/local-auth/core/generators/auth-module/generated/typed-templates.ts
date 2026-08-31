@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   appSecretImportsProvider,
+  appUrlsImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -221,6 +222,7 @@ const userSessionService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     appSecretImports: appSecretImportsProvider,
+    appUrlsImports: appUrlsImportsProvider,
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,

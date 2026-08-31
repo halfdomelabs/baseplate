@@ -155,13 +155,13 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
+        "appUrlsImportsProvider": {
+          "importName": "appUrlsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-urls/generated/ts-import-providers.ts"
+        },
         "authModuleImportsProvider": {
           "importName": "authModuleImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
-        },
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
         },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
@@ -183,19 +183,22 @@
       "pathRootRelativePath": "{module-root}/services/email-verification.service.ts",
       "referencedGeneratorTemplates": ["constants-password"],
       "sourceFile": "module/services/email-verification.service.ts",
-      "variables": { "TPL_ACCOUNT_VERIFICATION_EMAIL": {} }
+      "variables": {
+        "TPL_ACCOUNT_VERIFICATION_EMAIL": {},
+        "TPL_AUTH_WEB_APP": {}
+      }
     },
     "services-invite": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
+        "appUrlsImportsProvider": {
+          "importName": "appUrlsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-urls/generated/ts-import-providers.ts"
+        },
         "authModuleImportsProvider": {
           "importName": "authModuleImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
-        },
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
         },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
@@ -225,20 +228,20 @@
       "pathRootRelativePath": "{module-root}/services/invite.service.ts",
       "referencedGeneratorTemplates": ["constants-password"],
       "sourceFile": "module/services/invite.service.ts",
-      "variables": { "TPL_INVITE_EMAIL": {} }
+      "variables": { "TPL_AUTH_WEB_APP": {}, "TPL_INVITE_EMAIL": {} }
     },
     "services-password-reset": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "module",
       "importMapProviders": {
+        "appUrlsImportsProvider": {
+          "importName": "appUrlsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-urls/generated/ts-import-providers.ts"
+        },
         "authModuleImportsProvider": {
           "importName": "authModuleImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
-        },
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
         },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
@@ -286,6 +289,7 @@
       ],
       "sourceFile": "module/services/password-reset.service.ts",
       "variables": {
+        "TPL_AUTH_WEB_APP": {},
         "TPL_PASSWORD_CHANGED_EMAIL": {},
         "TPL_PASSWORD_RESET_EMAIL": {}
       }

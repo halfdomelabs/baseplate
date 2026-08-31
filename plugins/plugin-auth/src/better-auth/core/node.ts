@@ -3,6 +3,7 @@ import {
   appCompilerSpec,
   backendAppEntryType,
   createPluginModule,
+  getAppUrls,
   pluginAppCompiler,
   PluginUtils,
   webAppEntryType,
@@ -44,19 +45,19 @@ export default createPluginModule({
           definitionContainer,
         }) => {
           const auth = getAuthPluginDefinition(projectDefinition);
+
+          const { webApps: webAppUrls } = getAppUrls(projectDefinition);
+          const authWebApp = webAppUrls.find((app) => app.isDefault);
+          if (!authWebApp) {
+            throw new Error(
+              'Unable to determine which web app auth emails should link to',
+            );
+          }
+
           const betterAuthDefinition = PluginUtils.configByKeyOrThrow(
             projectDefinition,
             pluginKey,
           ) as BetterAuthPluginDefinition;
-
-          // Get web app ports
-          const webApps = projectDefinition.apps.filter(
-            (app) => app.type === 'web',
-          );
-          const devWebPorts = webApps.map((app) => app.devPort);
-          const devWebDomainPort =
-            devWebPorts[0] ??
-            projectDefinition.settings.general.portOffset + 30;
 
           const additionalAdminRoles =
             betterAuthDefinition.additionalUserAdminRoles.map((role) =>
@@ -70,9 +71,8 @@ export default createPluginModule({
               initialUserRoles: ['admin'],
             }),
             betterAuthModule: betterAuthModuleGenerator({
-              devWebPorts,
               devBackendPort: appDefinition.devPort,
-              devWebDomainPort,
+              webAppName: authWebApp.name,
             }),
             betterAuthAdminModule: betterAuthAdminModuleGenerator({
               adminRoles,

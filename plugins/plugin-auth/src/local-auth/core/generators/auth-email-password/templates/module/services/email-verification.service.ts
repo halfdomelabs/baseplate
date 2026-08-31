@@ -6,11 +6,11 @@ import type {
 } from '%requestServiceContextImports';
 
 import { EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC } from '$constantsPassword';
+import { getWebUrl } from '%appUrlsImports';
 import {
   createAuthVerification,
   validateAuthVerification,
 } from '%authModuleImports';
-import { getConfig } from '%configServiceImports';
 import { BadRequestError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
 import { memoizeRateLimiter } from '%rateLimitImports';
@@ -91,7 +91,10 @@ export async function requestEmailVerification({
   });
 
   // Construct verification URL using configured domain
-  const verifyLink = `${getConfig().AUTH_FRONTEND_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
+  const verifyLink = getWebUrl(
+    TPL_AUTH_WEB_APP,
+    `/auth/verify-email?token=${encodeURIComponent(token)}`,
+  );
 
   await services.email.send(TPL_ACCOUNT_VERIFICATION_EMAIL, {
     to: user.email,

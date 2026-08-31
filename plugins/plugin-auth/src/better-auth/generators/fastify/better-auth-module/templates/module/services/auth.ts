@@ -4,6 +4,7 @@ import type { AuthRole } from '%authRolesImports';
 import type { EmailService } from '%emailModuleImports';
 
 import { deriveKey } from '%appSecretImports';
+import { getWebOrigins, getWebUrl } from '%appUrlsImports';
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { getConfig } from '%configServiceImports';
 import { prisma } from '%prismaImports';
@@ -50,7 +51,10 @@ export const buildAuth = ({ email }: AuthServiceDeps) =>
     emailAndPassword: {
       enabled: true,
       async sendResetPassword({ token, user }) {
-        const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${token}`;
+        const resetLink = getWebUrl(
+          TPL_AUTH_WEB_APP,
+          `/auth/reset-password?token=${token}`,
+        );
         await email.send(TPL_PASSWORD_RESET_EMAIL, {
           to: user.email,
           data: { resetLink },
@@ -61,7 +65,10 @@ export const buildAuth = ({ email }: AuthServiceDeps) =>
     emailVerification: {
       sendOnSignUp: true,
       async sendVerificationEmail({ token, user }) {
-        const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${token}`;
+        const verifyLink = getWebUrl(
+          TPL_AUTH_WEB_APP,
+          `/auth/verify-email?token=${token}`,
+        );
         await email.send(TPL_ACCOUNT_VERIFICATION_EMAIL, {
           to: user.email,
           data: { verifyLink },
@@ -77,9 +84,7 @@ export const buildAuth = ({ email }: AuthServiceDeps) =>
         generateId: false,
       },
     },
-    trustedOrigins: config.ALLOWED_ORIGINS.split(',')
-      .map((o) => o.trim())
-      .filter(Boolean),
+    trustedOrigins: getWebOrigins(),
     user: {
       modelName: 'User',
       changeEmail: {

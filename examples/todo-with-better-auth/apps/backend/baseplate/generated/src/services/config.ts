@@ -1,8 +1,20 @@
 import { z } from 'zod';
 
+/* HOISTED:origin-url-validator:START */
+const originUrl = z
+  .url({ protocol: /^https?$/ })
+  .refine((url) => {
+    const parsed = new URL(url);
+    return parsed.pathname === '/' && !parsed.search && !parsed.hash;
+  }, 'Must be an origin without a path, e.g. https://app.example.com')
+  .transform((url) => url.replace(/\/+$/, ''));
+/* HOISTED:origin-url-validator:END */
+
 const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
-  // Comma-separated list of allowed CORS origins (e.g. https://example.com,https://app.example.com)
-  ALLOWED_ORIGINS: z.string().default(''),
+  // Additional origins to trust beyond this project's web apps, comma-separated. For a preview deployment or a marketing site. Each must be an exact origin.
+  ADDITIONAL_WEB_ORIGINS: z.string().default(''),
+  // Public origin of this backend, used for links a third party has to reach (e.g. https://api.example.com)
+  API_URL: originUrl,
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
   // Secret the app derives all signing keys from (at least 32 characters). Never used directly.
@@ -19,8 +31,6 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
           .every((entry) => /^[a-zA-Z0-9\-_+=/]{32,}$/.test(entry.trim())),
       'Each entry must meet the same requirements as APP_SECRET',
     ),
-  // Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)
-  AUTH_FRONTEND_URL: z.url(),
   // AWS access key ID
   AWS_ACCESS_KEY_ID: z.string().min(1),
   // AWS default region
@@ -55,6 +65,10 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   STRIPE_ENDPOINT_SECRET: z.string().min(1),
   // Stripe secret API key
   STRIPE_SECRET_KEY: z.string().min(1),
+  // Public origin of the admin web app (e.g. https://app.example.com)
+  WEB_URL_ADMIN: originUrl,
+  // Public origin of the web web app (e.g. https://app.example.com)
+  WEB_URL_WEB: originUrl,
 }); /* TPL_CONFIG_SCHEMA:END */
 
 type Config = z.infer<typeof configSchema>;

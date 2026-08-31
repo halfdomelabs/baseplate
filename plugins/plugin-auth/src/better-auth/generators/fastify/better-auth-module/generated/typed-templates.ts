@@ -2,6 +2,7 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   appRuntimeImportsProvider,
   appSecretImportsProvider,
+  appUrlsImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -16,6 +17,7 @@ const auth = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     appSecretImports: appSecretImportsProvider,
+    appUrlsImports: appUrlsImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
     emailModuleImports: emailModuleImportsProvider,
@@ -36,6 +38,7 @@ const auth = createTsTemplateFile({
   },
   variables: {
     TPL_ACCOUNT_VERIFICATION_EMAIL: {},
+    TPL_AUTH_WEB_APP: {},
     TPL_PASSWORD_RESET_EMAIL: {},
     TPL_USER_ROLE_MODEL: {},
   },

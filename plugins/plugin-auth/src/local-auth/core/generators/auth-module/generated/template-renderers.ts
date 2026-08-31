@@ -7,6 +7,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   appSecretImportsProvider,
+  appUrlsImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -114,6 +115,7 @@ const localAuthCoreAuthModuleRenderers =
 const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
   dependencies: {
     appSecretImports: appSecretImportsProvider,
+    appUrlsImports: appUrlsImportsProvider,
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
@@ -132,6 +134,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
   },
   run({
     appSecretImports,
+    appUrlsImports,
     authContextImports,
     authRolesImports,
     configServiceImports,
@@ -233,6 +236,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
                 destination: paths.userSessionService,
                 importMapProviders: {
                   appSecretImports,
+                  appUrlsImports,
                   authContextImports,
                   authRolesImports,
                   configServiceImports,

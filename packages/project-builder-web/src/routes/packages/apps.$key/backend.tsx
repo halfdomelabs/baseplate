@@ -99,6 +99,13 @@ function BackendAppEditPage(): React.JSX.Element {
                 registerOptions={{ valueAsNumber: true }}
                 description="Port number for the development server (e.g., 5001)"
               />
+              <InputFieldController
+                label="Public URL"
+                control={control}
+                name="url"
+                placeholder={`http://localhost:${String(backendDefinition.devPort)}`}
+                description="Origin this backend is served from once deployed. Leave blank to use the development server."
+              />
             </SectionListSectionContent>
           </SectionListSection>
 

@@ -6,6 +6,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  appUrlsImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   passwordHasherServiceImportsProvider,
@@ -113,6 +114,7 @@ const localAuthCoreAuthEmailPasswordRenderers =
 
 const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
   dependencies: {
+    appUrlsImports: appUrlsImportsProvider,
     authModuleImports: authModuleImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
@@ -131,6 +133,7 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
       localAuthCoreAuthEmailPasswordRenderers.export(),
   },
   run({
+    appUrlsImports,
     authModuleImports,
     configServiceImports,
     errorHandlerServiceImports,
@@ -163,8 +166,8 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.moduleGroup,
                 paths,
                 importMapProviders: {
+                  appUrlsImports,
                   authModuleImports,
-                  configServiceImports,
                   errorHandlerServiceImports,
                   passwordHasherServiceImports,
                   pothosImports,
@@ -245,8 +248,8 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesEmailVerification,
                 destination: paths.servicesEmailVerification,
                 importMapProviders: {
+                  appUrlsImports,
                   authModuleImports,
-                  configServiceImports,
                   errorHandlerServiceImports,
                   prismaImports,
                   rateLimitImports,
@@ -263,8 +266,8 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesInvite,
                 destination: paths.servicesInvite,
                 importMapProviders: {
+                  appUrlsImports,
                   authModuleImports,
-                  configServiceImports,
                   errorHandlerServiceImports,
                   passwordHasherServiceImports,
                   prismaGeneratedImports,

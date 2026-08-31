@@ -260,6 +260,10 @@
           "importName": "appSecretImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-secret/generated/ts-import-providers.ts"
         },
+        "appUrlsImportsProvider": {
+          "importName": "appUrlsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-urls/generated/ts-import-providers.ts"
+        },
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"

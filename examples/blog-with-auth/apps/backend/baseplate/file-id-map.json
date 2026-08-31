@@ -33,6 +33,7 @@
   "@baseplate-dev/fastify-generators#core/app-runtime:app-runtime": "src/utils/app-runtime.ts",
   "@baseplate-dev/fastify-generators#core/app-runtime:runtime-services": "src/utils/runtime-services.ts",
   "@baseplate-dev/fastify-generators#core/app-secret:app-secret": "src/services/app-secret.ts",
+  "@baseplate-dev/fastify-generators#core/app-urls:app-urls": "src/services/app-urls.ts",
   "@baseplate-dev/fastify-generators#core/config-service:config": "src/services/config.ts",
   "@baseplate-dev/fastify-generators#core/config-service:env": ".env",
   "@baseplate-dev/fastify-generators#core/config-service:env-example": ".env.example",

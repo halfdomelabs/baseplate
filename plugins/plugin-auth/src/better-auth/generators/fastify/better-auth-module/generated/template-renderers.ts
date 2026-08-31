@@ -5,6 +5,7 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   appRuntimeImportsProvider,
   appSecretImportsProvider,
+  appUrlsImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -80,6 +81,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
   dependencies: {
     appRuntimeImports: appRuntimeImportsProvider,
     appSecretImports: appSecretImportsProvider,
+    appUrlsImports: appUrlsImportsProvider,
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
@@ -97,6 +99,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
   run({
     appRuntimeImports,
     appSecretImports,
+    appUrlsImports,
     authContextImports,
     authRolesImports,
     configServiceImports,
@@ -117,6 +120,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
                 destination: paths.auth,
                 importMapProviders: {
                   appSecretImports,
+                  appUrlsImports,
                   authRolesImports,
                   configServiceImports,
                   emailModuleImports,

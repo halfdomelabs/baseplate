@@ -1,11 +1,20 @@
 import { z } from 'zod';
 
+/* HOISTED:origin-url-validator:START */
+const originUrl = z
+  .url({ protocol: /^https?$/ })
+  .refine((url) => {
+    const parsed = new URL(url);
+    return parsed.pathname === '/' && !parsed.search && !parsed.hash;
+  }, 'Must be an origin without a path, e.g. https://app.example.com')
+  .transform((url) => url.replace(/\/+$/, ''));
+/* HOISTED:origin-url-validator:END */
+
 const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
-  // Comma-separated list of additional allowed origins for CSRF protection (e.g. https://example.com,https://app.example.com)
-  ALLOWED_ORIGINS: z
-    .string()
-    .optional()
-    .transform((val) => (val ? val.split(',').map((s) => s.trim()) : [])),
+  // Additional origins to trust beyond this project's web apps, comma-separated. For a preview deployment or a marketing site. Each must be an exact origin.
+  ADDITIONAL_WEB_ORIGINS: z.string().default(''),
+  // Public origin of this backend, used for links a third party has to reach (e.g. https://api.example.com)
+  API_URL: originUrl,
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
   // Secret the app derives all signing keys from (at least 32 characters). Never used directly.
@@ -22,8 +31,6 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
           .every((entry) => /^[a-zA-Z0-9\-_+=/]{32,}$/.test(entry.trim())),
       'Each entry must meet the same requirements as APP_SECRET',
     ),
-  // Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)
-  AUTH_FRONTEND_URL: z.url(),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
   // Default sender email address for transactional emails
@@ -42,6 +49,10 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   SERVER_HOST: z.string().default('localhost'),
   // Port to bind the server to
   SERVER_PORT: z.coerce.number().min(1).max(65_535).default(5001),
+  // Public origin of the admin web app (e.g. https://app.example.com)
+  WEB_URL_ADMIN: originUrl,
+  // Public origin of the app web app (e.g. https://app.example.com)
+  WEB_URL_APP: originUrl,
 }); /* TPL_CONFIG_SCHEMA:END */
 
 type Config = z.infer<typeof configSchema>;

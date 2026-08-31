@@ -106,6 +106,7 @@ export function buildInitialApps(
       name: 'backend',
       type: 'backend' as const,
       devPort: portOffset + 1,
+      url: '',
     });
   }
 
@@ -116,6 +117,7 @@ export function buildInitialApps(
       name: webName,
       type: 'web',
       devPort: portOffset + 30 + webNames.indexOf(webName),
+      url: '',
       title: startCase(webName),
       description: isAdmin ? 'Admin panel' : 'Web application',
       enableSubscriptions: false,
