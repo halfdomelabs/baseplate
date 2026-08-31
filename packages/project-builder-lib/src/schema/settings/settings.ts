@@ -7,6 +7,7 @@ import { infrastructureSettingsSchema } from './infrastructure.js';
 import { monorepoSettingsSchema } from './monorepo.js';
 import { createTemplateExtractorSchema } from './template-extractor.js';
 import { createThemeSchema } from './theme.js';
+import { createUrlsSettingsSchema } from './urls.js';
 
 /**
  * Complete project settings schema
@@ -17,6 +18,7 @@ import { createThemeSchema } from './theme.js';
  * - monorepo: Monorepo folder configuration (optional)
  * - templateExtractor: Template extraction configuration (optional)
  * - theme: UI theme and color palette configuration (optional)
+ * - urls: Which web app is the project's primary client (optional)
  */
 export const createSettingsSchema = definitionSchema((ctx) =>
   z.object({
@@ -56,5 +58,13 @@ export const createSettingsSchema = definitionSchema((ctx) =>
      * When omitted, uses default theme configuration.
      */
     theme: createThemeSchema(ctx).optional(),
+
+    /**
+     * URL configuration (optional)
+     *
+     * Records the project's primary web app. When omitted, the first web app
+     * not named "admin" is used.
+     */
+    urls: createUrlsSettingsSchema(ctx).optional(),
   }),
 );

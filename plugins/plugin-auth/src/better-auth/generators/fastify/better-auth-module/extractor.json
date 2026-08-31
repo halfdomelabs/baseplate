@@ -13,6 +13,10 @@
           "importName": "appSecretImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-secret/generated/ts-import-providers.ts"
         },
+        "appUrlsImportsProvider": {
+          "importName": "appUrlsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-urls/generated/ts-import-providers.ts"
+        },
         "authRolesImportsProvider": {
           "importName": "authRolesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
@@ -40,6 +44,7 @@
       "sourceFile": "module/services/auth.ts",
       "variables": {
         "TPL_ACCOUNT_VERIFICATION_EMAIL": {},
+        "TPL_AUTH_WEB_APP": {},
         "TPL_PASSWORD_RESET_EMAIL": {},
         "TPL_USER_ROLE_MODEL": {}
       }

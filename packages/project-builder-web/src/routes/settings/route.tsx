@@ -39,6 +39,9 @@ function SettingsLayout(): React.JSX.Element {
             <NavigationMenuLink render={<Link to={`/settings/monorepo`} />}>
               Monorepo
             </NavigationMenuLink>
+            <NavigationMenuLink render={<Link to={`/settings/urls`} />}>
+              URLs
+            </NavigationMenuLink>
             <NavigationMenuLink
               render={<Link to={`/settings/theme-builder`} />}
             >

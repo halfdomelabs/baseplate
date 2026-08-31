@@ -7,6 +7,7 @@ import {
   appCompilerSpec,
   backendAppEntryType,
   createPluginModule,
+  getAppUrls,
   pluginAppCompiler,
   PluginUtils,
   webAppEntryType,
@@ -59,14 +60,17 @@ export default createPluginModule({
 
           const authDefinition = getAuthPluginDefinition(projectDefinition);
 
-          // Get web app ports
           const webApps = projectDefinition.apps.filter(
             (app) => app.type === 'web',
           );
-          const devWebPorts = webApps.map((app) => app.devPort);
-          const devWebDomainPort =
-            devWebPorts[0] ??
-            projectDefinition.settings.general.portOffset + 30;
+
+          const { webApps: webAppUrls } = getAppUrls(projectDefinition);
+          const authWebApp = webAppUrls.find((app) => app.isDefault);
+          if (!authWebApp) {
+            throw new Error(
+              'Unable to determine which web app auth emails should link to',
+            );
+          }
 
           // The register mutation is shared by every web app on this
           // backend, so it can only be dropped once none of them allow
@@ -92,7 +96,6 @@ export default createPluginModule({
             }),
             authModule: authModuleGenerator({
               userAdminRoles: adminRoles,
-              devWebPorts,
               emailOtp: localAuthDefinition.emailOtp,
             }),
             emailPassword: appModuleGenerator({
@@ -101,7 +104,7 @@ export default createPluginModule({
               children: {
                 module: authEmailPasswordGenerator({
                   adminRoles,
-                  devWebDomainPort,
+                  webAppName: authWebApp.name,
                   requireNameOnRegistration:
                     localAuthDefinition.requireNameOnRegistration,
                   emailOtp: localAuthDefinition.emailOtp,

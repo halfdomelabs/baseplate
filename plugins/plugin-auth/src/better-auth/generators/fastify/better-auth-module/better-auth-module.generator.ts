@@ -19,6 +19,7 @@ import {
   createGeneratorTask,
   createProviderTask,
 } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { BETTER_AUTH_MODELS } from '#src/better-auth/constants/model-names.js';
@@ -27,16 +28,16 @@ import { BETTER_AUTH_PACKAGES } from '#src/better-auth/constants/packages.js';
 import { BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
-  devWebPorts: z.array(z.number()).default([]),
   devBackendPort: z.number(),
-  devWebDomainPort: z.number(),
+  /** Web app the links in auth emails point at. */
+  webAppName: z.string(),
 });
 
 export const betterAuthModuleGenerator = createGenerator({
   name: 'better-auth/better-auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ devWebPorts, devBackendPort, devWebDomainPort }) => ({
+  buildTasks: ({ devBackendPort, webAppName }) => ({
     paths: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.paths.task,
     imports: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.imports.task,
     renderers: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.renderers.task,
@@ -48,25 +49,6 @@ export const betterAuthModuleGenerator = createGenerator({
         comment: 'Better Auth base URL (backend server URL)',
         seedValue: betterAuthUrl,
         exampleValue: betterAuthUrl,
-      });
-
-      const allowedOrigins = devWebPorts
-        .map((p) => `http://localhost:${String(p)}`)
-        .join(',');
-
-      configService.configFields.set('ALLOWED_ORIGINS', {
-        validator: tsCodeFragment('z.string().default("")'),
-        comment:
-          'Comma-separated list of allowed CORS origins (e.g. https://example.com,https://app.example.com)',
-        seedValue: allowedOrigins,
-        exampleValue: allowedOrigins,
-      });
-
-      configService.configFields.set('AUTH_FRONTEND_URL', {
-        validator: tsCodeFragment('z.url()'),
-        comment:
-          'Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)',
-        exampleValue: `http://localhost:${devWebDomainPort}`,
       });
     }),
     main: createGeneratorTask({
@@ -103,6 +85,7 @@ export const betterAuthModuleGenerator = createGenerator({
             await builder.apply(
               renderers.auth.render({
                 variables: {
+                  TPL_AUTH_WEB_APP: quot(webAppName),
                   TPL_USER_ROLE_MODEL: prismaOutput.getPrismaModelFragment(
                     BETTER_AUTH_MODELS.userRole,
                   ),

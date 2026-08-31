@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "app-secret"
   },
+  "app-urls.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/app-urls",
+    "instanceData": {},
+    "template": "app-urls"
+  },
   "config.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/config-service",
     "instanceData": {},

@@ -1,0 +1,25 @@
+{
+  "name": "core/app-urls",
+  "templates": {
+    "app-urls": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/app-urls.ts",
+      "projectExports": {
+        "getApiUrl": { "isTypeOnly": false, "name": "getApiUrl" },
+        "getWebAppForUrl": { "isTypeOnly": false, "name": "getWebAppForUrl" },
+        "getWebOrigins": { "isTypeOnly": false, "name": "getWebOrigins" },
+        "getWebUrl": { "isTypeOnly": false, "name": "getWebUrl" },
+        "WebAppName": { "isTypeOnly": true, "name": "WebAppName" }
+      },
+      "sourceFile": "src/services/app-urls.ts",
+      "variables": { "TPL_WEB_APP_NAMES": {}, "TPL_WEB_APP_ORIGINS": {} }
+    }
+  }
+}

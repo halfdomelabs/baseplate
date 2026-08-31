@@ -5,7 +5,7 @@ import type {
   RequestServiceContextWith,
 } from '@src/utils/request-service-context.js';
 
-import { getConfig } from '@src/services/config.js';
+import { getWebUrl } from '@src/services/app-urls.js';
 import { prisma } from '@src/services/prisma.js';
 import { memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
@@ -92,7 +92,10 @@ export async function requestEmailVerification({
   });
 
   // Construct verification URL using configured domain
-  const verifyLink = `${getConfig().AUTH_FRONTEND_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
+  const verifyLink = getWebUrl(
+    /* TPL_AUTH_WEB_APP:START */ 'app' /* TPL_AUTH_WEB_APP:END */,
+    `/auth/verify-email?token=${encodeURIComponent(token)}`,
+  );
 
   await services.email.send(
     /* TPL_ACCOUNT_VERIFICATION_EMAIL:START */ AccountVerificationEmail /* TPL_ACCOUNT_VERIFICATION_EMAIL:END */,

@@ -6,16 +6,11 @@ import {
 import {
   appModuleProvider,
   appRuntimeConfigProvider,
-  configServiceProvider,
   createPothosPrismaObjectTypeOutputName,
   pothosTypeOutputProvider,
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderTask,
-} from '@baseplate-dev/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
@@ -25,7 +20,6 @@ import { LOCAL_AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './
 
 const descriptorSchema = z.object({
   userAdminRoles: z.array(z.string()).default([]),
-  devWebPorts: z.array(z.number()).default([]),
   emailOtp: z.boolean().default(false),
 });
 
@@ -33,28 +27,10 @@ export const authModuleGenerator = createGenerator({
   name: 'local-auth/core/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ userAdminRoles, devWebPorts, emailOtp }) => ({
+  buildTasks: ({ userAdminRoles, emailOtp }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
-    config: createProviderTask(configServiceProvider, (configService) => {
-      const allowedOrigins = devWebPorts
-        .map((p) => `http://localhost:${String(p)}`)
-        .join(',');
-      configService.configFields.set('ALLOWED_ORIGINS', {
-        validator: tsCodeFragment(
-          "z.string().optional().transform((val) => (val ? val.split(',').map((s) => s.trim()) : []))",
-        ),
-        comment:
-          'Comma-separated list of additional allowed origins for CSRF protection (e.g. https://example.com,https://app.example.com)',
-        ...(allowedOrigins
-          ? {
-              seedValue: allowedOrigins,
-              exampleValue: allowedOrigins,
-            }
-          : {}),
-      });
-    }),
     appModule: createGeneratorTask({
       dependencies: {
         paths: GENERATED_TEMPLATES.paths.provider,

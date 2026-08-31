@@ -3,6 +3,7 @@ export * from './app-module-setup/index.js';
 export * from './app-module/index.js';
 export * from './app-runtime/index.js';
 export * from './app-secret/index.js';
+export * from './app-urls/index.js';
 export * from './axios/index.js';
 export * from './config-service/index.js';
 export * from './error-handler-service/index.js';

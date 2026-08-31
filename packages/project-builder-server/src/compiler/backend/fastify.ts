@@ -3,6 +3,7 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   appModuleGenerator,
+  appUrlsGenerator,
   authorizerUtilsStubGenerator,
   axiosGenerator,
   composeFastifyApplication,
@@ -19,7 +20,11 @@ import {
   readmeGenerator,
   yogaPluginGenerator,
 } from '@baseplate-dev/fastify-generators';
-import { FeatureUtils, ModelUtils } from '@baseplate-dev/project-builder-lib';
+import {
+  FeatureUtils,
+  getAppUrls,
+  ModelUtils,
+} from '@baseplate-dev/project-builder-lib';
 import { safeMergeAll } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
@@ -72,6 +77,7 @@ export function buildFastify(
   return composeFastifyApplication({
     children: safeMergeAll(
       {
+        appUrls: appUrlsGenerator(getAppUrls(projectDefinition)),
         fastifyServer: fastifyServerGenerator({
           defaultPort: projectDefinition.settings.general.portOffset + 1,
         }),

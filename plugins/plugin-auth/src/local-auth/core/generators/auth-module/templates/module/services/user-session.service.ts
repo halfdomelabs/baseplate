@@ -18,9 +18,10 @@ import {
 } from '$userSessionConstants';
 import { verifyRequestOrigin } from '$verifyRequestOrigin';
 import { createSigner } from '%appSecretImports';
+import { getWebOrigins } from '%appUrlsImports';
 import { InvalidSessionError } from '%authContextImports';
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
-import { getConfig, isDevelopment } from '%configServiceImports';
+import { isDevelopment } from '%configServiceImports';
 import { ForbiddenError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
 import { randomBytes } from 'node:crypto';
@@ -184,7 +185,7 @@ export class CookieUserSessionService implements UserSessionService {
       (req.method !== 'GET' ||
         req.headers.upgrade?.toLowerCase() === 'websocket') &&
       req.method !== 'HEAD' &&
-      !verifyRequestOrigin(req, [req.host, ...getConfig().ALLOWED_ORIGINS])
+      !verifyRequestOrigin(req, [req.host, ...getWebOrigins()])
     ) {
       throw new ForbiddenError('Invalid Origin header');
     }

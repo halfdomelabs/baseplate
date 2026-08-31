@@ -9,11 +9,11 @@ import {
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '$constantsPassword';
 import { resetLoginRateLimits } from '$servicesUserPassword';
+import { getWebUrl } from '%appUrlsImports';
 import {
   createAuthVerification,
   validateAuthVerification,
 } from '%authModuleImports';
-import { getConfig } from '%configServiceImports';
 import {
   BadRequestError,
   handleZodRequestValidationError,
@@ -109,7 +109,10 @@ export async function requestPasswordReset({
     });
 
     // Construct reset URL using configured domain
-    const resetLink = `${getConfig().AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
+    const resetLink = getWebUrl(
+      TPL_AUTH_WEB_APP,
+      `/auth/reset-password?token=${encodeURIComponent(token)}`,
+    );
 
     // Send email asynchronously (queue-based)
     await services.email.send(TPL_PASSWORD_RESET_EMAIL, {

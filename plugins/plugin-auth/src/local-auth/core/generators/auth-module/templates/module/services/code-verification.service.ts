@@ -144,15 +144,14 @@ export async function validateCodeVerification({
 
   // Incremented in the database rather than read-modify-written here, so
   // simultaneous guesses each cost a point instead of sharing one.
-  const { attempts } = await prisma.authVerification.update({
+  await prisma.authVerification.updateMany({
     where: { id: record.id },
     data: { attempts: { increment: 1 } },
-    select: { attempts: true },
   });
 
-  if (attempts >= maxAttempts) {
-    await prisma.authVerification.deleteMany({ where: { id: record.id } });
-  }
+  await prisma.authVerification.deleteMany({
+    where: { id: record.id, attempts: { gte: maxAttempts } },
+  });
 
   return null;
 }

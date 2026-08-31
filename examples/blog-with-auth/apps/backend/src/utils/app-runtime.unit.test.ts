@@ -1,4 +1,6 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
+
+import { createAppRuntime } from './app-runtime.js';
 
 /**
  * Construction-invariant acceptance test: `createAppRuntime()` must not
@@ -6,28 +8,31 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
  * obviously-fake endpoint; construction and disposal must still succeed,
  * proving every constructed client (ioredis, pubsub) is passive/lazy-connect
  * rather than eager.
+ *
+ * Stubbed inside `vi.hoisted`, which runs before the import above: modules on
+ * that graph read config at import time.
  */
-const DISCONNECTED_TEST_ENV: Record<string, string> = {
-  ALLOWED_ORIGINS: '',
-  APP_ENVIRONMENT: 'test',
-  // Any 32+ character value from the allowed set; nothing here signs or
-  // verifies anything, it only has to satisfy the config validator.
-  APP_SECRET: 'a'.repeat(32),
-  AUTH_FRONTEND_URL: 'http://localhost:1',
-  DATABASE_URL: 'postgresql://user:pass@localhost:1/db',
-  EMAIL_DEFAULT_FROM: 'noreply@example.com',
-  POSTMARK_SERVER_TOKEN: 'test-postmark-token',
-  REDIS_KEY_PREFIX: 'test:',
-  // Port 1 is a privileged, unlisted port - connecting to it fails fast
-  // without any external infrastructure being reachable.
-  REDIS_URL: 'redis://localhost:1',
-  SERVER_HOST: 'localhost',
-  SERVER_PORT: '1',
-};
+vi.hoisted(() => {
+  const disconnectedEnv: Record<string, string> = {
+    API_URL: 'http://localhost:1',
+    APP_ENVIRONMENT: 'test',
+    // Any 32+ character value from the allowed set; nothing here signs or
+    // verifies anything, it only has to satisfy the config validator.
+    APP_SECRET: 'a'.repeat(32),
+    DATABASE_URL: 'postgresql://user:pass@localhost:1/db',
+    EMAIL_DEFAULT_FROM: 'noreply@example.com',
+    POSTMARK_SERVER_TOKEN: 'test-postmark-token',
+    REDIS_KEY_PREFIX: 'test:',
+    // Port 1 is a privileged, unlisted port - connecting to it fails fast
+    // without any external infrastructure being reachable.
+    REDIS_URL: 'redis://localhost:1',
+    SERVER_HOST: 'localhost',
+    SERVER_PORT: '1',
+    WEB_URL_ADMIN: 'http://localhost:1',
+    WEB_URL_APP: 'http://localhost:1',
+  };
 
-beforeEach(() => {
-  vi.resetModules();
-  for (const [key, value] of Object.entries(DISCONNECTED_TEST_ENV)) {
+  for (const [key, value] of Object.entries(disconnectedEnv)) {
     vi.stubEnv(key, value);
   }
 });
@@ -37,8 +42,6 @@ afterEach(() => {
 });
 
 it('constructs and disposes without external infrastructure', async () => {
-  const { createAppRuntime } = await import('./app-runtime.js');
-
   const runtime = createAppRuntime();
   await expect(runtime.dispose()).resolves.toBeUndefined();
 });

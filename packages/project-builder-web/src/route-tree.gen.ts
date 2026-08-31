@@ -25,6 +25,7 @@ import { Route as SettingsInfrastructureRouteImport } from './routes/settings/in
 import { Route as SettingsMonorepoRouteImport } from './routes/settings/monorepo'
 import { Route as SettingsTemplateExtractorRouteImport } from './routes/settings/template-extractor'
 import { Route as SettingsThemeBuilderRouteImport } from './routes/settings/theme-builder'
+import { Route as SettingsUrlsRouteImport } from './routes/settings/urls'
 import { Route as DataEnumsIndexRouteImport } from './routes/data/enums/index'
 import { Route as DataModelsIndexRouteImport } from './routes/data/models/index'
 import { Route as PackagesAppsKeyRouteRouteImport } from './routes/packages/apps.$key/route'
@@ -125,6 +126,11 @@ const SettingsTemplateExtractorRoute =
 const SettingsThemeBuilderRoute = SettingsThemeBuilderRouteImport.update({
   id: '/theme-builder',
   path: '/theme-builder',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+const SettingsUrlsRoute = SettingsUrlsRouteImport.update({
+  id: '/urls',
+  path: '/urls',
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 const DataEnumsIndexRoute = DataEnumsIndexRouteImport.update({
@@ -246,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
+  '/settings/urls': typeof SettingsUrlsRoute
   '/data/': typeof DataIndexRoute
   '/packages/': typeof PackagesIndexRoute
   '/plugins/': typeof PluginsIndexRoute
@@ -278,6 +285,7 @@ export interface FileRoutesByTo {
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
+  '/settings/urls': typeof SettingsUrlsRoute
   '/data': typeof DataIndexRoute
   '/packages': typeof PackagesIndexRoute
   '/plugins': typeof PluginsIndexRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
+  '/settings/urls': typeof SettingsUrlsRoute
   '/data/': typeof DataIndexRoute
   '/packages/': typeof PackagesIndexRoute
   '/plugins/': typeof PluginsIndexRoute
@@ -352,6 +361,7 @@ export interface FileRouteTypes {
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
+    | '/settings/urls'
     | '/data/'
     | '/packages/'
     | '/plugins/'
@@ -384,6 +394,7 @@ export interface FileRouteTypes {
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
+    | '/settings/urls'
     | '/data'
     | '/packages'
     | '/plugins'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
+    | '/settings/urls'
     | '/data/'
     | '/packages/'
     | '/plugins/'
@@ -563,6 +575,13 @@ declare module '@tanstack/react-router' {
       path: '/theme-builder'
       fullPath: '/settings/theme-builder'
       preLoaderRoute: typeof SettingsThemeBuilderRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/urls': {
+      id: '/settings/urls'
+      path: '/urls'
+      fullPath: '/settings/urls'
+      preLoaderRoute: typeof SettingsUrlsRouteImport
       parentRoute: typeof SettingsRouteRoute
     }
     '/data/enums/': {
@@ -881,6 +900,7 @@ interface SettingsRouteRouteChildren {
   SettingsMonorepoRoute: typeof SettingsMonorepoRoute
   SettingsTemplateExtractorRoute: typeof SettingsTemplateExtractorRoute
   SettingsThemeBuilderRoute: typeof SettingsThemeBuilderRoute
+  SettingsUrlsRoute: typeof SettingsUrlsRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
@@ -890,6 +910,7 @@ const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
   SettingsMonorepoRoute: SettingsMonorepoRoute,
   SettingsTemplateExtractorRoute: SettingsTemplateExtractorRoute,
   SettingsThemeBuilderRoute: SettingsThemeBuilderRoute,
+  SettingsUrlsRoute: SettingsUrlsRoute,
   SettingsIndexRoute: SettingsIndexRoute,
 }
 
