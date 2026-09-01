@@ -2,4 +2,4 @@
 '@baseplate-dev/plugin-auth': patch
 ---
 
-Simultaneous guesses at the same verification code no longer surface a Prisma error when one of them spends the last attempt and discards the code first; the losing caller now gets the same rejection as every other invalid guess.
+Guesses at an emailed verification code are now counted before the code is compared, so a burst of concurrent guesses can no longer exceed the code's attempt budget, and simultaneous guesses no longer surface a Prisma error or discard a code another request is still redeeming. Every validation spends an attempt, including a correct one.

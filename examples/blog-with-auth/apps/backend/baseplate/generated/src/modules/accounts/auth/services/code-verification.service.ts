@@ -101,18 +101,19 @@ export async function createCodeVerification({
 }
 
 /**
- * Validates a short code verification without consuming it, so the caller can
- * gather any further input it needs before committing.
+ * Validates a short code verification, leaving the record in place so the
+ * caller can gather any further input it needs before committing.
  *
  * Security: a short numeric code has far less entropy than a random token, so
  * each code carries its own attempt counter alongside the endpoint rate limits.
- * The record is deleted when the code has expired or the attempt budget is
- * exhausted. Pass the returned record to {@link consumeCodeVerification} to
+ * Every call spends an attempt, including one that matches, and the record is
+ * deleted once the code has expired or a wrong guess has spent the last
+ * attempt. Pass the returned record to {@link consumeCodeVerification} to
  * complete the flow.
  *
- * Both cleanup paths delete by filter rather than by primary key: simultaneous
+ * The cleanup paths delete by filter rather than by primary key: simultaneous
  * callers can each decide the record should go, and only one of them removes a
- * row. A keyed delete would raise on the others instead of returning null.
+ * row.
  */
 export async function validateCodeVerification({
   type,
@@ -138,20 +139,27 @@ export async function validateCodeVerification({
     return null;
   }
 
-  if (safeCompare(record.value, hashCode({ type, identifier, code }))) {
-    return record;
-  }
-
-  // Incremented in the database rather than read-modify-written here, so
-  // simultaneous guesses each cost a point instead of sharing one.
-  await prisma.authVerification.updateMany({
-    where: { id: record.id },
+  // Simultaneous guesses serialize on this statement, so at most `maxAttempts`
+  // of them reach the comparison below.
+  const [claimed] = await prisma.authVerification.updateManyAndReturn({
+    where: { id: record.id, attempts: { lt: maxAttempts } },
     data: { attempts: { increment: 1 } },
   });
 
-  await prisma.authVerification.deleteMany({
-    where: { id: record.id, attempts: { gte: maxAttempts } },
-  });
+  // A spent budget is not this caller's to clean up: the guess that spent it
+  // discards the record below, and a correct guess that spent it may still be
+  // holding the record for {@link consumeCodeVerification}.
+  if (!claimed) {
+    return null;
+  }
+
+  if (safeCompare(claimed.value, hashCode({ type, identifier, code }))) {
+    return claimed;
+  }
+
+  if (claimed.attempts >= maxAttempts) {
+    await prisma.authVerification.deleteMany({ where: { id: record.id } });
+  }
 
   return null;
 }

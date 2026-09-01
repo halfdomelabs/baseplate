@@ -158,6 +158,30 @@ describe('code-verification service', () => {
       ).toBe(0);
     });
 
+    it('lets only the remaining budget through when correct guesses race', async () => {
+      await create('123456');
+
+      // Two of three attempts spent, so exactly one guess may still be
+      // evaluated however many arrive at once.
+      await validate('000000', { maxAttempts: 3 });
+      await validate('000000', { maxAttempts: 3 });
+
+      const results = await Promise.all(
+        Array.from({ length: 4 }, () => validate('123456', { maxAttempts: 3 })),
+      );
+
+      const winners = results.filter((result) => result !== null);
+      expect(winners).toHaveLength(1);
+
+      // The callers that found no attempt left must not discard the record the
+      // winner is still holding.
+      expect(
+        await Promise.all(
+          winners.map((winner) => consumeCodeVerification({ id: winner.id })),
+        ),
+      ).toEqual([true]);
+    });
+
     it('tolerates simultaneous validations of an expired code', async () => {
       await create('123456', { expiresInSec: -1 });
 
