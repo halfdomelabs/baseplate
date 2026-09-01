@@ -128,6 +128,7 @@ const card = createTsTemplateFile({
   name: 'card',
   projectExports: {
     Card: {},
+    CardAction: {},
     CardContent: {},
     CardDescription: {},
     CardFooter: {},
