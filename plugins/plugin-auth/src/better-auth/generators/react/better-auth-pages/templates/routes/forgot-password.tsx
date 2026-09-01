@@ -47,10 +47,7 @@ function ForgotPasswordPage(): React.JSX.Element {
   const onSubmit = (data: FormData): void => {
     setIsSubmitting(true);
     authClient
-      .requestPasswordReset({
-        email: data.email,
-        redirectTo: '/auth/reset-password',
-      })
+      .requestPasswordReset({ email: data.email })
       .then(({ error }) => {
         if (error) {
           setFormError('email', {

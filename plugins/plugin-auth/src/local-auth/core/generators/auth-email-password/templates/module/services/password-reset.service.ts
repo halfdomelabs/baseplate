@@ -9,7 +9,7 @@ import {
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '$constantsPassword';
 import { resetLoginRateLimits } from '$servicesUserPassword';
-import { getWebUrl } from '%appUrlsImports';
+import { getWebAppForUrl, getWebUrl } from '%appUrlsImports';
 import {
   createAuthVerification,
   validateAuthVerification,
@@ -108,9 +108,8 @@ export async function requestPasswordReset({
       expiresInSec: PASSWORD_RESET_TOKEN_EXPIRY_SEC,
     });
 
-    // Construct reset URL using configured domain
     const resetLink = getWebUrl(
-      TPL_AUTH_WEB_APP,
+      getWebAppForUrl(context.reqInfo.headers.origin) ?? TPL_AUTH_WEB_APP,
       `/auth/reset-password?token=${encodeURIComponent(token)}`,
     );
 

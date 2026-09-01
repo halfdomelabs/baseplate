@@ -6,7 +6,7 @@ import type {
 } from '%requestServiceContextImports';
 
 import { EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC } from '$constantsPassword';
-import { getWebUrl } from '%appUrlsImports';
+import { getWebAppForUrl, getWebUrl } from '%appUrlsImports';
 import {
   createAuthVerification,
   validateAuthVerification,
@@ -90,9 +90,8 @@ export async function requestEmailVerification({
     expiresInSec: EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC,
   });
 
-  // Construct verification URL using configured domain
   const verifyLink = getWebUrl(
-    TPL_AUTH_WEB_APP,
+    getWebAppForUrl(context.reqInfo.headers.origin) ?? TPL_AUTH_WEB_APP,
     `/auth/verify-email?token=${encodeURIComponent(token)}`,
   );
 
