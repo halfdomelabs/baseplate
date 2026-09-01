@@ -150,7 +150,7 @@ export const DEFAULT_TYPESCRIPT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
   ],
   esModuleInterop: true,
   module: 'nodenext',
-  moduleResolution: 'node16',
+  moduleResolution: 'nodenext',
   strict: true,
   noUncheckedIndexedAccess: true,
   removeComments: true,

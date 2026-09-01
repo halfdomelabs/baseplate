@@ -152,10 +152,19 @@ function AcceptInvitePage(): React.JSX.Element {
         navigate({ to: '/', replace: true }).catch(logError);
       })
       .catch((err: unknown) => {
-        const errorCode = getApolloErrorCode(err, ['invalid-token'] as const);
+        const errorCode = getApolloErrorCode(err, [
+          'invalid-token',
+          'user-already-has-account',
+        ] as const);
         switch (errorCode) {
           case 'invalid-token': {
             setTokenValid(false);
+            break;
+          }
+          case 'user-already-has-account': {
+            toast.error(
+              'You already have a password set. Please sign in instead.',
+            );
             break;
           }
           case null: {

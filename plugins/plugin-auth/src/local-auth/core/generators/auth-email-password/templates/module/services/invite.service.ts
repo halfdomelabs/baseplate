@@ -174,26 +174,35 @@ export async function acceptInvite({
     throw new BadRequestError('User has no email', 'user-has-no-email');
   }
 
+  // The invite token outlives the check in `inviteUser`, so the user may have
+  // registered in the meantime.
+  const existingAccount = await prisma.userAccount.findUnique({
+    where: {
+      accountId_providerId: {
+        accountId: user.email,
+        providerId: PROVIDER_ID,
+      },
+    },
+  });
+
+  if (existingAccount) {
+    throw new BadRequestError(
+      'User already has a password set',
+      'user-already-has-account',
+    );
+  }
+
   const passwordHash = await createPasswordHash(newPassword);
 
   await prisma.$transaction([
     prisma.authVerification.deleteMany({
       where: { type: INVITE_TYPE, userId: user.id },
     }),
-    prisma.userAccount.upsert({
-      where: {
-        accountId_providerId: {
-          accountId: user.email,
-          providerId: PROVIDER_ID,
-        },
-      },
-      create: {
+    prisma.userAccount.create({
+      data: {
         userId: user.id,
         accountId: user.email,
         providerId: PROVIDER_ID,
-        password: passwordHash,
-      },
-      update: {
         password: passwordHash,
       },
     }),
