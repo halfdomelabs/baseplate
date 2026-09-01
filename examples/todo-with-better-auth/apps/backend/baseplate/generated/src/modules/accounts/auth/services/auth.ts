@@ -7,7 +7,11 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { customSession } from 'better-auth/plugins';
 
 import { deriveKey } from '@src/services/app-secret.js';
-import { getWebOrigins, getWebUrl } from '@src/services/app-urls.js';
+import {
+  getWebAppForUrl,
+  getWebOrigins,
+  getWebUrl,
+} from '@src/services/app-urls.js';
 import { getConfig } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 
@@ -54,9 +58,10 @@ export const buildAuth = ({ email }: AuthServiceDeps) =>
     basePath: '/auth',
     emailAndPassword: {
       enabled: true,
-      async sendResetPassword({ token, user }) {
+      async sendResetPassword({ token, user }, request) {
         const resetLink = getWebUrl(
-          /* TPL_AUTH_WEB_APP:START */ 'web' /* TPL_AUTH_WEB_APP:END */,
+          getWebAppForUrl(request?.headers.get('origin') ?? undefined) ??
+            /* TPL_AUTH_WEB_APP:START */ 'web' /* TPL_AUTH_WEB_APP:END */,
           `/auth/reset-password?token=${token}`,
         );
         await email.send(
@@ -71,9 +76,10 @@ export const buildAuth = ({ email }: AuthServiceDeps) =>
     },
     emailVerification: {
       sendOnSignUp: true,
-      async sendVerificationEmail({ token, user }) {
+      async sendVerificationEmail({ token, user }, request) {
         const verifyLink = getWebUrl(
-          /* TPL_AUTH_WEB_APP:START */ 'web' /* TPL_AUTH_WEB_APP:END */,
+          getWebAppForUrl(request?.headers.get('origin') ?? undefined) ??
+            /* TPL_AUTH_WEB_APP:START */ 'web' /* TPL_AUTH_WEB_APP:END */,
           `/auth/verify-email?token=${token}`,
         );
         await email.send(
