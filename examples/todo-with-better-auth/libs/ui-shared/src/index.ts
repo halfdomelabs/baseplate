@@ -30,6 +30,7 @@ export { Button } from './components/ui/button.js';
 export { Calendar } from './components/ui/calendar.js';
 export {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
