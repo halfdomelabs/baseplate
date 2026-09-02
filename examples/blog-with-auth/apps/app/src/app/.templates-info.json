@@ -9,6 +9,16 @@
     "instanceData": {},
     "template": "app"
   },
+  "route-error-component.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "route-error-component"
+  },
+  "router.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "router"
+  },
   "router.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-router",
     "instanceData": {},
