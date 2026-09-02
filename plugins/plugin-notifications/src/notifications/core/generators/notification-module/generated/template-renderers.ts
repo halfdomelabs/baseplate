@@ -6,6 +6,9 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  appRuntimeImportsProvider,
+  appSecretImportsProvider,
+  appUrlsImportsProvider,
   errorHandlerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
@@ -64,6 +67,16 @@ export interface NotificationsCoreNotificationModuleRenderers {
       >,
     ) => BuilderAction;
   };
+  unsubscribeGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateGroupActionInput<
+          typeof NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.unsubscribeGroup
+        >,
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const notificationsCoreNotificationModuleRenderers =
@@ -73,6 +86,9 @@ const notificationsCoreNotificationModuleRenderers =
 
 const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
   dependencies: {
+    appRuntimeImports: appRuntimeImportsProvider,
+    appSecretImports: appSecretImportsProvider,
+    appUrlsImports: appUrlsImportsProvider,
     emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_PATHS.provider,
@@ -90,6 +106,9 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
       notificationsCoreNotificationModuleRenderers.export(),
   },
   run({
+    appRuntimeImports,
+    appSecretImports,
+    appUrlsImports,
     emailModuleImports,
     errorHandlerServiceImports,
     paths,
@@ -162,6 +181,21 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                   pothosImports,
                   prismaGeneratedImports,
                   prismaImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          unsubscribeGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateGroup({
+                group:
+                  NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.unsubscribeGroup,
+                paths,
+                importMapProviders: {
+                  appRuntimeImports,
+                  appSecretImports,
+                  appUrlsImports,
                 },
                 generatorPaths: paths,
                 ...options,

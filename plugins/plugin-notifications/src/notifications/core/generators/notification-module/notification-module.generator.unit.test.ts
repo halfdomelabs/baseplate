@@ -45,6 +45,22 @@ const PATHS_STUB = {
   >['tasks']['appRuntimeConfig']['run']
 >[0]['paths'];
 
+/** Resolves any path the task looks up, whatever the template key. */
+const ANY_PATH = new Proxy(
+  {},
+  { get: (_target, key) => `@/src/${String(key)}.ts` },
+);
+
+/** Accepts every renderer the build step reaches for, and writes no file. */
+const ANY_RENDERER = new Proxy(
+  {},
+  {
+    get: () => ({
+      render: () => ({ execute: () => Promise.resolve() }),
+    }),
+  },
+);
+
 /** The parts of a construction entry these assertions care about. */
 interface CapturedEntry {
   dependencies: string[];
@@ -257,5 +273,80 @@ describe('notificationModuleGenerator channel wiring', () => {
       'createNotificationRenderer',
     );
     expect(outbox.fragmentContents).not.toContain('createNotificationRenderer');
+  });
+});
+
+/** Records the module-field contributions the main task makes. */
+function createAppModuleStub(): {
+  fields: { group: string; key: string }[];
+  provider: unknown;
+} {
+  const fields: { group: string; key: string }[] = [];
+  return {
+    fields,
+    provider: {
+      moduleImports: { push: () => undefined },
+      moduleFields: {
+        set: (group: string, key: string) => fields.push({ group, key }),
+      },
+    },
+  };
+}
+
+/** Runs the main task and reports which module fields it contributed. */
+async function runMainModuleFields(
+  includeEmailChannel: boolean,
+): Promise<{ group: string; key: string }[]> {
+  const bundle = notificationModuleGenerator({
+    includeEmailChannel,
+    userModelName: 'User',
+    topics: [
+      {
+        key: 'general',
+        label: 'General',
+        defaults: { inApp: { mode: 'immediate' } },
+      },
+    ],
+  });
+  const appModule = createAppModuleStub();
+
+  const runner = createTaskTestRunner(bundle.tasks.main);
+  await runner.run({
+    appModule: appModule.provider as never,
+    renderers: ANY_RENDERER as never,
+    pothosSchema: { registerSchemaFile: () => undefined } as never,
+    yogaPluginConfig: {
+      isSubscriptionEnabled: () => true,
+      publishArgs: new Map(),
+    } as never,
+    notificationObjectType: {
+      getTypeReference: () => ({ fragment: {} }),
+    } as never,
+    prismaOutput: { getPrismaModelFragment: () => ({}) } as never,
+    paths: ANY_PATH as never,
+    transactionalLibConfig: {
+      getTransactionalLibPackageName: () => '@app/transactional',
+    } as never,
+  });
+
+  return appModule.fields;
+}
+
+describe('notificationModuleGenerator unsubscribe wiring', () => {
+  it('registers the unsubscribe route plugin when email is installed', async () => {
+    const fields = await runMainModuleFields(true);
+
+    expect(fields).toContainEqual({
+      group: 'plugins',
+      key: 'notificationUnsubscribePlugin',
+    });
+  });
+
+  it('registers no plugin at all when email is not installed', async () => {
+    // If this disagreed with the template gate, the generated module would
+    // import a file that was never rendered — and no example would catch it.
+    const fields = await runMainModuleFields(false);
+
+    expect(fields.filter(({ group }) => group === 'plugins')).toEqual([]);
   });
 });

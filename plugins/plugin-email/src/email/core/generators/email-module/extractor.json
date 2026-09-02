@@ -60,6 +60,16 @@
       "sourceFile": "module/email.types.ts",
       "variables": {}
     },
+    "in-memory-adapter": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/services/in-memory.adapter.ts",
+      "referencedGeneratorTemplates": ["email-types"],
+      "sourceFile": "module/services/in-memory.adapter.ts",
+      "variables": {}
+    },
     "send-email-queue": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

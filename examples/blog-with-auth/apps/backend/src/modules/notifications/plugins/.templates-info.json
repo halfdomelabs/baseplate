@@ -1,0 +1,7 @@
+{
+  "notification-unsubscribe.plugin.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "plugins-notification-unsubscribe"
+  }
+}

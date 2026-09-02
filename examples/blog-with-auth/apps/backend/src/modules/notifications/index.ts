@@ -1,5 +1,6 @@
 import { defineAppModule } from '@src/utils/app-modules.js';
 
+import { notificationUnsubscribePlugin } from './plugins/notification-unsubscribe.plugin.js';
 import { notificationDeliveryWorker } from './queues/notification-delivery.worker.js';
 import { notificationDigestWorker } from './queues/notification-digest.worker.js';
 import { notificationOutboxSweepWorker } from './queues/notification-outbox-sweep.worker.js';
@@ -20,6 +21,7 @@ export const /* TPL_MODULE_NAME:START */ notificationsModule /* TPL_MODULE_NAME:
     defineAppModule(
       /* TPL_MODULE_CONTENTS:START */ {
         notificationTypes: [GENERIC_NOTIFICATION_TYPE],
+        plugins: [notificationUnsubscribePlugin],
         queues: [
           notificationDeliveryWorker,
           notificationDigestWorker,

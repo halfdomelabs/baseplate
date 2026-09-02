@@ -4,6 +4,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 export interface EmailCoreEmailModulePaths {
   emailService: string;
   emailTypes: string;
+  inMemoryAdapter: string;
   sendEmailQueue: string;
   sendEmailWorker: string;
 }
@@ -23,6 +24,7 @@ const emailCoreEmailModulePathsTask = createGeneratorTask({
         emailCoreEmailModulePaths: {
           emailService: `${moduleRoot}/services/email.service.ts`,
           emailTypes: `${moduleRoot}/email.types.ts`,
+          inMemoryAdapter: `${moduleRoot}/services/in-memory.adapter.ts`,
           sendEmailQueue: `${moduleRoot}/queues/send-email.queue.ts`,
           sendEmailWorker: `${moduleRoot}/queues/send-email.worker.ts`,
         },

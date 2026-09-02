@@ -5,6 +5,7 @@ export interface NotificationsCoreNotificationModulePaths {
   channelsEmailChannel: string;
   channelsTypes: string;
   constantsNotificationTopics: string;
+  pluginsNotificationUnsubscribe: string;
   queuesNotificationDelivery: string;
   queuesNotificationDeliveryWorker: string;
   queuesNotificationDigest: string;
@@ -26,6 +27,7 @@ export interface NotificationsCoreNotificationModulePaths {
   servicesNotificationOutbox: string;
   servicesNotificationRenderer: string;
   servicesNotificationService: string;
+  servicesNotificationUnsubscribe: string;
 }
 
 const notificationsCoreNotificationModulePaths =
@@ -48,6 +50,7 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
           channelsEmailChannel: `${moduleRoot}/channels/email.channel.ts`,
           channelsTypes: `${moduleRoot}/channels/types.ts`,
           constantsNotificationTopics: `${moduleRoot}/constants/notification-topics.ts`,
+          pluginsNotificationUnsubscribe: `${moduleRoot}/plugins/notification-unsubscribe.plugin.ts`,
           queuesNotificationDelivery: `${moduleRoot}/queues/notification-delivery.queue.ts`,
           queuesNotificationDeliveryWorker: `${moduleRoot}/queues/notification-delivery.worker.ts`,
           queuesNotificationDigest: `${moduleRoot}/queues/notification-digest.queue.ts`,
@@ -69,6 +72,7 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
           servicesNotificationOutbox: `${moduleRoot}/services/notification-outbox.ts`,
           servicesNotificationRenderer: `${moduleRoot}/services/notification-renderer.ts`,
           servicesNotificationService: `${moduleRoot}/services/notification.service.ts`,
+          servicesNotificationUnsubscribe: `${moduleRoot}/services/notification-unsubscribe.ts`,
         },
       },
     };

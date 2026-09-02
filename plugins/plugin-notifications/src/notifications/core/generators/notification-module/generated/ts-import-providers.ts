@@ -14,7 +14,9 @@ import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_PATHS } from './template-paths.j
 
 export const notificationModuleImportsSchema = createTsImportMapSchema({
   AnyNotificationType: { isTypeOnly: true },
+  applyUnsubscribeLink: {},
   BatchedNotificationType: { isTypeOnly: true },
+  buildUnsubscribeUrl: {},
   ChannelDelivery: { isTypeOnly: true },
   createEmailChannel: {},
   createNotificationEvents: {},
@@ -51,11 +53,16 @@ export const notificationModuleImportsSchema = createTsImportMapSchema({
   NotificationRoutingTarget: { isTypeOnly: true },
   NotificationTopic: { isTypeOnly: true },
   NotificationTopicKey: { isTypeOnly: true },
+  notificationUnsubscribePlugin: {},
+  parseUnsubscribeLink: {},
   PlainNotificationType: { isTypeOnly: true },
   RENDER_SOURCE_SELECT: {},
   RenderSource: { isTypeOnly: true },
   resolveChannelSetting: {},
   ROUTING_TARGETS: {},
+  UNSUBSCRIBE_PATH: {},
+  UNSUBSCRIBE_TOKEN_PARAM: {},
+  UnsubscribeLink: { isTypeOnly: true },
 });
 
 export type NotificationModuleImportsProvider = TsImportMapProviderFromSchema<
@@ -82,7 +89,9 @@ const notificationsCoreNotificationModuleImportsTask = createGeneratorTask({
           notificationModuleImportsSchema,
           {
             AnyNotificationType: paths.registry,
+            applyUnsubscribeLink: paths.servicesNotificationUnsubscribe,
             BatchedNotificationType: paths.registry,
+            buildUnsubscribeUrl: paths.servicesNotificationUnsubscribe,
             ChannelDelivery: paths.channelsTypes,
             createEmailChannel: paths.channelsEmailChannel,
             createNotificationEvents: paths.servicesNotificationEvents,
@@ -121,11 +130,16 @@ const notificationsCoreNotificationModuleImportsTask = createGeneratorTask({
             NotificationRoutingTarget: paths.channelsTypes,
             NotificationTopic: paths.constantsNotificationTopics,
             NotificationTopicKey: paths.constantsNotificationTopics,
+            notificationUnsubscribePlugin: paths.pluginsNotificationUnsubscribe,
+            parseUnsubscribeLink: paths.servicesNotificationUnsubscribe,
             PlainNotificationType: paths.registry,
             RENDER_SOURCE_SELECT: paths.servicesNotificationRenderer,
             RenderSource: paths.servicesNotificationRenderer,
             resolveChannelSetting: paths.constantsNotificationTopics,
             ROUTING_TARGETS: paths.channelsTypes,
+            UNSUBSCRIBE_PATH: paths.servicesNotificationUnsubscribe,
+            UNSUBSCRIBE_TOKEN_PARAM: paths.servicesNotificationUnsubscribe,
+            UnsubscribeLink: paths.servicesNotificationUnsubscribe,
           },
         ),
       },

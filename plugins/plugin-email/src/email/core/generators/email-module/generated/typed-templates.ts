@@ -52,6 +52,21 @@ const emailTypes = createTsTemplateFile({
   variables: {},
 });
 
+const inMemoryAdapter = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'in-memory-adapter',
+  referencedGeneratorTemplates: { emailTypes: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/in-memory.adapter.ts',
+    ),
+  },
+  variables: {},
+});
+
 const sendEmailQueue = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -91,6 +106,7 @@ const sendEmailWorker = createTsTemplateFile({
 export const mainGroup = {
   emailService,
   emailTypes,
+  inMemoryAdapter,
   sendEmailQueue,
   sendEmailWorker,
 };

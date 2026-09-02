@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "email-service"
   },
+  "in-memory.adapter.ts": {
+    "generator": "@baseplate-dev/plugin-email#email/core/email-module",
+    "instanceData": {},
+    "template": "in-memory-adapter"
+  },
   "postmark.adapter.ts": {
     "generator": "@baseplate-dev/plugin-email#postmark/core/postmark",
     "instanceData": {},
