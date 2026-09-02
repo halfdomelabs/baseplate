@@ -35,8 +35,10 @@
       },
       "referencedGeneratorTemplates": [
         "channels-types",
+        "constants-notification-topics",
         "services-notification-content",
-        "services-notification-renderer"
+        "services-notification-renderer",
+        "services-notification-unsubscribe"
       ],
       "sourceFile": "module/channels/email.channel.ts",
       "variables": {
@@ -127,6 +129,27 @@
       "referencedGeneratorTemplates": ["channels-types"],
       "sourceFile": "module/constants/notification-topics.ts",
       "variables": { "TPL_TOPICS": {} }
+    },
+    "plugins-notification-unsubscribe": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "unsubscribe",
+      "importMapProviders": {
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/plugins/notification-unsubscribe.plugin.ts",
+      "projectExports": {
+        "notificationUnsubscribePlugin": {
+          "isTypeOnly": false,
+          "name": "notificationUnsubscribePlugin"
+        }
+      },
+      "referencedGeneratorTemplates": ["services-notification-unsubscribe"],
+      "sourceFile": "module/plugins/notification-unsubscribe.plugin.ts",
+      "variables": {}
     },
     "queues-notification-delivery": {
       "type": "ts",
@@ -589,6 +612,48 @@
       ],
       "sourceFile": "module/services/notification.service.ts",
       "variables": {}
+    },
+    "services-notification-unsubscribe": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "unsubscribe",
+      "importMapProviders": {
+        "appSecretImportsProvider": {
+          "importName": "appSecretImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-secret/generated/ts-import-providers.ts"
+        },
+        "appUrlsImportsProvider": {
+          "importName": "appUrlsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-urls/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/notification-unsubscribe.ts",
+      "projectExports": {
+        "applyUnsubscribeLink": {
+          "isTypeOnly": false,
+          "name": "applyUnsubscribeLink"
+        },
+        "buildUnsubscribeUrl": {
+          "isTypeOnly": false,
+          "name": "buildUnsubscribeUrl"
+        },
+        "parseUnsubscribeLink": {
+          "isTypeOnly": false,
+          "name": "parseUnsubscribeLink"
+        },
+        "UNSUBSCRIBE_PATH": { "isTypeOnly": false, "name": "UNSUBSCRIBE_PATH" },
+        "UNSUBSCRIBE_TOKEN_PARAM": {
+          "isTypeOnly": false,
+          "name": "UNSUBSCRIBE_TOKEN_PARAM"
+        },
+        "UnsubscribeLink": { "isTypeOnly": true, "name": "UnsubscribeLink" }
+      },
+      "referencedGeneratorTemplates": [
+        "constants-notification-topics",
+        "services-notification-service"
+      ],
+      "sourceFile": "module/services/notification-unsubscribe.ts",
+      "variables": { "TPL_USER_DELEGATE": {} }
     }
   }
 }

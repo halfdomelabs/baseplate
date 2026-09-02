@@ -8,9 +8,18 @@ import type { RenderSource } from '../services/notification-renderer.js';
 
 import { defineNotificationType } from '../registry.js';
 import { createNotificationRenderer } from '../services/notification-renderer.js';
+import { parseUnsubscribeLink } from '../services/notification-unsubscribe.js';
 import { createEmailChannel, notificationEmail } from './email.channel.js';
 
 vi.mock('@src/services/error-logger.js', () => ({ logError: vi.fn() }));
+
+vi.mock('@src/services/config.js', () => ({
+  getConfig: () => ({
+    APP_SECRET: 'test-secret-with-at-least-32-characters',
+    APP_SECRET_PREVIOUS: '',
+    API_URL: 'https://api.example.com',
+  }),
+}));
 
 /** A component stands in for a real template; only identity is asserted. */
 const CommentEmail = Object.assign(() => null, {
@@ -41,6 +50,25 @@ const OVERRIDE_TYPE = defineNotificationType({
   },
 });
 
+/** A type in no topic: unsuppressible by design, so it carries no unsubscribe. */
+const TOPICLESS_TYPE = defineNotificationType({
+  key: 'test.topicless',
+  version: 1,
+  paramsSchema: z.object({ name: z.string() }),
+  channels: ['email'],
+  render: (params) => ({ title: `${params.name} commented` }),
+});
+
+/** A second topic, so a digest can span more than one. */
+const LIKES_TYPE = defineNotificationType({
+  key: 'test.likes',
+  version: 1,
+  topic: 'postLikes',
+  paramsSchema: z.object({ name: z.string() }),
+  channels: ['email'],
+  render: (params) => ({ title: `${params.name} liked your post` }),
+});
+
 function makeRow(type: string, name: string): RenderSource {
   return {
     id: `row-${type}-${name}`,
@@ -63,6 +91,7 @@ interface RecordedEmail {
    * clears the component's own — a distinction the value alone cannot show.
    */
   hasSubjectKey: boolean;
+  headers: Record<string, string> | undefined;
 }
 
 /** An email service that records what was sent rather than sending it. */
@@ -71,12 +100,20 @@ function createRecordingEmail(): EmailService & { sent: RecordedEmail[] } {
   return {
     sent,
     send: vi.fn(
-      (component: unknown, options: { data?: unknown; subject?: string }) => {
+      (
+        component: unknown,
+        options: {
+          data?: unknown;
+          subject?: string;
+          headers?: Record<string, string>;
+        },
+      ) => {
         sent.push({
           component,
           data: options.data,
           subject: options.subject,
           hasSubjectKey: 'subject' in options,
+          headers: options.headers,
         });
         return Promise.resolve('message-id');
       },
@@ -285,5 +322,83 @@ describe('email channel per-type overrides', () => {
     });
 
     expect(email.sent[0]?.subject).toBe('Re: Alice');
+  });
+});
+
+/** The single URL both the header and the body link point at. */
+function unsubscribeUrlOf(sent: RecordedEmail | undefined): string {
+  return (sent?.headers?.['List-Unsubscribe'] ?? '').replaceAll(/^<|>$/g, '');
+}
+
+/** The unsubscribe affordance, which only the channel has the rows to mint. */
+describe('email channel unsubscribe affordance', () => {
+  it('offers one-click unsubscribe for a type inside a topic', async () => {
+    const { channel, email } = createChannel([PLAIN_TYPE]);
+
+    await channel.deliver({
+      recipientId: 'user-1',
+      notification: makeRow('test.plain', 'Alice'),
+      recipient: RECIPIENT,
+    });
+
+    const [sent] = email.sent;
+    // `List-Unsubscribe-Post` is what makes providers POST rather than GET.
+    expect(sent?.headers?.['List-Unsubscribe-Post']).toBe(
+      'List-Unsubscribe=One-Click',
+    );
+    expect(unsubscribeUrlOf(sent)).toContain(
+      'https://api.example.com/notifications/unsubscribe?',
+    );
+  });
+
+  it('offers none at all for a type belonging to no topic', async () => {
+    const { channel, email } = createChannel([TOPICLESS_TYPE]);
+
+    await channel.deliver({
+      recipientId: 'user-1',
+      notification: makeRow('test.topicless', 'Alice'),
+      recipient: RECIPIENT,
+    });
+
+    // A header here would promise something routing will not keep.
+    expect(email.sent[0]?.headers).toBeUndefined();
+  });
+
+  it('gives a bespoke template the same headers as the generic one', async () => {
+    const { channel, email } = createChannel([OVERRIDE_TYPE]);
+
+    await channel.deliver({
+      recipientId: 'user-1',
+      notification: makeRow('test.override', 'Bao'),
+      recipient: RECIPIENT,
+    });
+
+    // The affordance rides entirely on the headers, so a bespoke template gets
+    // it without rendering anything.
+    expect(email.sent[0]?.headers?.['List-Unsubscribe']).toBeDefined();
+    expect(email.sent[0]?.data).toEqual({ name: 'Bao' });
+  });
+
+  it('names every topic a digest spans in its one token', async () => {
+    const { channel, email } = createChannel([PLAIN_TYPE, LIKES_TYPE]);
+
+    await channel.deliverDigest?.({
+      recipientId: 'user-1',
+      notifications: [
+        makeRow('test.plain', 'Alice'),
+        makeRow('test.likes', 'Bao'),
+        makeRow('test.plain', 'Cleo'),
+      ],
+      recipient: RECIPIENT,
+    });
+
+    // A digest spans topics; the token names exactly the ones it contained.
+    const token = new URL(unsubscribeUrlOf(email.sent[0])).searchParams.get(
+      't',
+    );
+    expect(parseUnsubscribeLink(token ?? undefined)).toEqual({
+      userId: 'user-1',
+      topicKeys: ['general', 'postLikes'],
+    });
   });
 });

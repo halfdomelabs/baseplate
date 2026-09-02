@@ -8,6 +8,7 @@ import {
 import { logError } from '@src/services/error-logger.js';
 
 import type { EmailService } from '../../emails/services/email.service.js';
+import type { NotificationTopicKey } from '../constants/notification-topics.js';
 import type { RenderContext } from '../services/notification-content.js';
 import type {
   NotificationRenderer,
@@ -16,6 +17,7 @@ import type {
 import type { NotificationChannel } from './types.js';
 
 import { segmentsToText } from '../services/notification-content.js';
+import { buildUnsubscribeUrl } from '../services/notification-unsubscribe.js';
 
 /**
  * What an email renderer produces: a component paired with its props.
@@ -63,6 +65,44 @@ export function notificationEmail<P extends object>(
 
 /** Default render locale until i18n lands, matching the generic renderer. */
 const DEFAULT_LOCALE = 'en';
+
+/**
+ * The topics a message covers, first-seen order.
+ *
+ * A topic-less type is unsuppressible by design, and a retired renderer's topic
+ * cannot be resolved at all — neither contributes, so neither is offered.
+ */
+function collectTopicKeys(
+  renderer: NotificationRenderer,
+  rows: readonly RenderSource[],
+): NotificationTopicKey[] {
+  const keys = new Set<NotificationTopicKey>();
+  for (const row of rows) {
+    const topic = renderer.getTopic(row.type, row.templateVersion);
+    if (topic.kind === 'topic') keys.add(topic.key);
+  }
+  return [...keys];
+}
+
+/**
+ * One message's unsubscribe headers, or none when no row in it belongs to a
+ * topic.
+ */
+function buildUnsubscribeHeaders(
+  renderer: NotificationRenderer,
+  recipientId: string,
+  rows: readonly RenderSource[],
+): Record<string, string> | undefined {
+  const url = buildUnsubscribeUrl(
+    recipientId,
+    collectTopicKeys(renderer, rows),
+  );
+  if (!url) return undefined;
+  return {
+    'List-Unsubscribe': `<${url}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  };
+}
 
 /**
  * A row's bespoke email, or null to fall back to the generic wrapper.
@@ -114,8 +154,12 @@ export function createEmailChannel(deps: {
 }): NotificationChannel {
   const { email, renderer } = deps;
   return {
-    deliver: async ({ notification, recipient }) => {
+    deliver: async ({ notification, recipient, recipientId }) => {
       if (!recipient.email) return;
+
+      const headers = buildUnsubscribeHeaders(renderer, recipientId, [
+        notification,
+      ]);
 
       // A type may supply its own template for this channel. Null means it did
       // not, or its override could not run — either way the generic wrapper
@@ -125,6 +169,7 @@ export function createEmailChannel(deps: {
         await email.send(custom.component, {
           to: recipient.email,
           data: custom.data,
+          headers,
           // The key is omitted rather than passed as undefined: `send` spreads
           // these options over the rendered subject, and a present-but-undefined
           // `subject` would overwrite the component's own with nothing.
@@ -139,6 +184,7 @@ export function createEmailChannel(deps: {
         /* TPL_NOTIFICATION_EMAIL:START */ NotificationEmail /* TPL_NOTIFICATION_EMAIL:END */,
         {
           to: recipient.email,
+          headers,
           data: {
             subject: segmentsToText(content.title),
             title: content.title,
@@ -148,8 +194,16 @@ export function createEmailChannel(deps: {
         },
       );
     },
-    deliverDigest: async ({ notifications, recipient }) => {
+    deliverDigest: async ({ notifications, recipient, recipientId }) => {
       if (!recipient.email) return;
+
+      // A digest is grouped by recipient and channel, so its token names every
+      // topic it spans and unsubscribing leaves the rest alone.
+      const headers = buildUnsubscribeHeaders(
+        renderer,
+        recipientId,
+        notifications,
+      );
 
       // Deliberately renders through `render` rather than the type's own email
       // override: a bespoke template commits to being a whole email — its own
@@ -170,6 +224,7 @@ export function createEmailChannel(deps: {
         /* TPL_NOTIFICATION_DIGEST_EMAIL:START */ NotificationDigestEmail /* TPL_NOTIFICATION_DIGEST_EMAIL:END */,
         {
           to: recipient.email,
+          headers,
           data: { items },
         },
       );

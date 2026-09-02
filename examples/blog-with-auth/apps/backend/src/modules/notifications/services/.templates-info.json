@@ -24,6 +24,11 @@
     "instanceData": {},
     "template": "services-notification-renderer"
   },
+  "notification-unsubscribe.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-notification-unsubscribe"
+  },
   "notification.service.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},

@@ -1,5 +1,8 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  appRuntimeImportsProvider,
+  appSecretImportsProvider,
+  appUrlsImportsProvider,
   errorHandlerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
@@ -29,8 +32,10 @@ const channelsEmailChannel = createTsTemplateFile({
   },
   referencedGeneratorTemplates: {
     channelsTypes: {},
+    constantsNotificationTopics: {},
     servicesNotificationContent: {},
     servicesNotificationRenderer: {},
+    servicesNotificationUnsubscribe: {},
   },
   source: {
     path: path.join(
@@ -528,9 +533,60 @@ export const schemaGroup = {
   schemaNotificationSubscriptions,
 };
 
+const pluginsNotificationUnsubscribe = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'unsubscribe',
+  importMapProviders: { appRuntimeImports: appRuntimeImportsProvider },
+  name: 'plugins-notification-unsubscribe',
+  projectExports: { notificationUnsubscribePlugin: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { servicesNotificationUnsubscribe: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/plugins/notification-unsubscribe.plugin.ts',
+    ),
+  },
+  variables: {},
+});
+
+const servicesNotificationUnsubscribe = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'unsubscribe',
+  importMapProviders: {
+    appSecretImports: appSecretImportsProvider,
+    appUrlsImports: appUrlsImportsProvider,
+  },
+  name: 'services-notification-unsubscribe',
+  projectExports: {
+    applyUnsubscribeLink: { isTypeOnly: false },
+    buildUnsubscribeUrl: { isTypeOnly: false },
+    parseUnsubscribeLink: { isTypeOnly: false },
+    UNSUBSCRIBE_PATH: { isTypeOnly: false },
+    UNSUBSCRIBE_TOKEN_PARAM: { isTypeOnly: false },
+    UnsubscribeLink: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: {
+    constantsNotificationTopics: {},
+    servicesNotificationService: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/notification-unsubscribe.ts',
+    ),
+  },
+  variables: { TPL_USER_DELEGATE: {} },
+});
+
+export const unsubscribeGroup = {
+  pluginsNotificationUnsubscribe,
+  servicesNotificationUnsubscribe,
+};
+
 export const NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES = {
   channelsEmailChannel,
   mainGroup,
   queuesGroup,
   schemaGroup,
+  unsubscribeGroup,
 };

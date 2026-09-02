@@ -270,6 +270,20 @@ export const notificationModuleGenerator = createGenerator({
           ),
         );
 
+        // Gated on the same flag as the templates behind it, so the module
+        // never imports a file that was not rendered. `email` is not a valid
+        // channel key without the channel anyway.
+        if (includeEmailChannel) {
+          appModule.moduleFields.set(
+            'plugins',
+            'notificationUnsubscribePlugin',
+            TsCodeUtils.importFragment(
+              'notificationUnsubscribePlugin',
+              paths.pluginsNotificationUnsubscribe,
+            ),
+          );
+        }
+
         // Contribute the built-in `generic` type (backing `notifyText`) as a
         // module declaration; the runtime collects it into the per-runtime
         // registry at construction — no import-time side effect.
@@ -368,6 +382,16 @@ export const notificationModuleGenerator = createGenerator({
                   'The notifications email channel requires the transactional email library. Enable the email plugin.',
                 );
               }
+              await builder.apply(
+                renderers.unsubscribeGroup.render({
+                  variables: {
+                    servicesNotificationUnsubscribe: {
+                      TPL_USER_DELEGATE:
+                        prismaOutput.getPrismaModelFragment(userModelName),
+                    },
+                  },
+                }),
+              );
               await builder.apply(
                 renderers.channelsEmailChannel.render({
                   variables: {

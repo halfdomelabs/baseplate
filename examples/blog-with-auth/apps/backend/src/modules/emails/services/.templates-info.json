@@ -1,4 +1,9 @@
 {
+  "capture.adapter.ts": {
+    "generator": "@baseplate-dev/plugin-email#email/core/email-module",
+    "instanceData": {},
+    "template": "capture-adapter"
+  },
   "email.service.ts": {
     "generator": "@baseplate-dev/plugin-email#email/core/email-module",
     "instanceData": {},

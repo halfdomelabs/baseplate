@@ -9,6 +9,21 @@ import path from 'node:path';
 
 import { transactionalLibImportsProvider } from '#src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.js';
 
+const captureAdapter = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'capture-adapter',
+  referencedGeneratorTemplates: { emailTypes: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/capture.adapter.ts',
+    ),
+  },
+  variables: {},
+});
+
 const emailService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -89,6 +104,7 @@ const sendEmailWorker = createTsTemplateFile({
 });
 
 export const mainGroup = {
+  captureAdapter,
   emailService,
   emailTypes,
   sendEmailQueue,

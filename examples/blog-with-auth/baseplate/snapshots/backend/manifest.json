@@ -13,8 +13,12 @@
       { "path": "src/modules/blogs/schema/blog-post-like.mutations.ts" },
       { "path": "src/modules/blogs/services/blog-post-like.int.test.ts" },
       { "path": "src/modules/blogs/services/blog-post-like.service.ts" },
+      { "path": "src/modules/emails/services/email-delivery.unit.test.ts" },
       {
         "path": "src/modules/notifications/channels/email.channel.unit.test.ts"
+      },
+      {
+        "path": "src/modules/notifications/plugins/notification-unsubscribe.plugin.unit.test.ts"
       },
       {
         "path": "src/modules/notifications/schema/notification-feed.e2e.test.ts"
@@ -27,6 +31,9 @@
       },
       {
         "path": "src/modules/notifications/services/notification-renderer.unit.test.ts"
+      },
+      {
+        "path": "src/modules/notifications/services/notification-unsubscribe.unit.test.ts"
       },
       { "path": "src/scripts/seed-demo-post.ts" },
       { "path": "src/scripts/send-test-digest.ts" },
