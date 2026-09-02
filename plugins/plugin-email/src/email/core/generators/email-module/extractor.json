@@ -1,16 +1,6 @@
 {
   "name": "email/core/email-module",
   "templates": {
-    "capture-adapter": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/services/capture.adapter.ts",
-      "referencedGeneratorTemplates": ["email-types"],
-      "sourceFile": "module/services/capture.adapter.ts",
-      "variables": {}
-    },
     "email-service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -68,6 +58,16 @@
         }
       },
       "sourceFile": "module/email.types.ts",
+      "variables": {}
+    },
+    "in-memory-adapter": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/services/in-memory.adapter.ts",
+      "referencedGeneratorTemplates": ["email-types"],
+      "sourceFile": "module/services/in-memory.adapter.ts",
       "variables": {}
     },
     "send-email-queue": {

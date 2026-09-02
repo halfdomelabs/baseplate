@@ -8,12 +8,12 @@ import { createTestServiceContext } from '@src/tests/helpers/service-context.tes
 import type { SendEmailJobData } from '../queues/send-email.queue.js';
 
 import { sendEmailWorker } from '../queues/send-email.worker.js';
+import { createEmailService, createEmailTransport } from './email.service.js';
 import {
-  captureEmailAdapter,
   clearCapturedEmails,
   findLastCapturedEmail,
-} from './capture.adapter.js';
-import { createEmailService, createEmailTransport } from './email.service.js';
+  inMemoryEmailAdapter,
+} from './in-memory.adapter.js';
 
 const RECIPIENT = 'reader@example.com';
 
@@ -58,7 +58,7 @@ async function deliverEnqueued(data: SendEmailJobData): Promise<void> {
   await sendEmailWorker.invoke(
     job,
     createTestServiceContext({
-      services: { emailTransport: createEmailTransport(captureEmailAdapter) },
+      services: { emailTransport: createEmailTransport(inMemoryEmailAdapter) },
     }),
   );
 }

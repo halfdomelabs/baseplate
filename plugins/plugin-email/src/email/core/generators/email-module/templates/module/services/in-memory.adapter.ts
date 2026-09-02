@@ -1,6 +1,8 @@
-import type { EmailAdapter, TransformedEmailMessage } from '../email.types.js';
+// @ts-nocheck
 
-/** A message the capture adapter accepted, with the id it handed back. */
+import type { EmailAdapter, TransformedEmailMessage } from '$emailTypes';
+
+/** A message the adapter accepted, with the id it handed back. */
 export interface CapturedEmail extends TransformedEmailMessage {
   messageId: string;
 }
@@ -14,10 +16,10 @@ const captured: CapturedEmail[] = [];
  * In-process only: the store is module state, so a test driving the app in a
  * separate process sees an empty list.
  */
-export const captureEmailAdapter: EmailAdapter = {
-  name: 'capture',
+export const inMemoryEmailAdapter: EmailAdapter = {
+  name: 'in-memory',
   sendMail: (message: TransformedEmailMessage): Promise<string> => {
-    const messageId = `capture-${String(captured.length + 1)}`;
+    const messageId = `in-memory-${String(captured.length + 1)}`;
     captured.push({ ...message, messageId });
     return Promise.resolve(messageId);
   },
