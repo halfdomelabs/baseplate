@@ -1,6 +1,6 @@
 export const FASTIFY_PACKAGES = {
   // Fastify
-  fastify: '5.11.0',
+  fastify: '5.12.1',
   '@fastify/helmet': '13.1.0',
   'fastify-plugin': '6.0.0',
   nanoid: '6.0.1',
@@ -24,16 +24,16 @@ export const FASTIFY_PACKAGES = {
   '@pothos/core': '4.10.0',
   '@pothos/plugin-simple-objects': '4.1.3',
   '@pothos/plugin-relay': '4.6.2',
-  '@pothos/plugin-prisma': '4.14.2',
+  '@pothos/plugin-prisma': '4.15.0',
   '@pothos/plugin-validation': '4.2.0',
   'graphql-scalars': '1.23.0',
 
   '@graphql-yoga/redis-event-target': '2.0.0',
 
   // Prisma
-  '@prisma/client': '7.9.1',
-  prisma: '7.9.1',
-  '@prisma/adapter-pg': '7.9.1',
+  '@prisma/client': '7.10.0',
+  prisma: '7.10.0',
+  '@prisma/adapter-pg': '7.10.0',
 
   // Utils
   ms: '2.1.3',
