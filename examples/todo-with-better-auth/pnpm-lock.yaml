@@ -112,7 +112,7 @@ importers:
         specifier: 14.6.1
         version: 14.6.1(@testing-library/dom@10.4.1)
       '@types/node':
-        specifier: ^24.13.3
+        specifier: ^24.13.0
         version: 24.13.3
       '@types/react':
         specifier: 19.2.18
@@ -323,7 +323,7 @@ importers:
         specifier: 3.0.1
         version: 3.0.1
       '@types/node':
-        specifier: ^24.13.3
+        specifier: ^24.13.0
         version: 24.13.3
       '@vitest/eslint-plugin':
         specifier: 1.6.23
@@ -471,7 +471,7 @@ importers:
         specifier: 14.6.1
         version: 14.6.1(@testing-library/dom@10.4.1)
       '@types/node':
-        specifier: ^24.13.3
+        specifier: ^24.13.0
         version: 24.13.3
       '@types/react':
         specifier: 19.2.18
@@ -662,7 +662,7 @@ importers:
         specifier: 14.6.1
         version: 14.6.1(@testing-library/dom@10.4.1)
       '@types/node':
-        specifier: ^24.13.3
+        specifier: ^24.13.0
         version: 24.13.3
       '@types/react':
         specifier: 19.2.18
