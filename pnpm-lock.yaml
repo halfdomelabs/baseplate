@@ -338,8 +338,8 @@ importers:
         specifier: workspace:*
         version: link:../utils
       '@prisma/prisma-schema-wasm':
-        specifier: 7.9.0-1.e922089b7d7502aff4249d5da3420f6fa55fc6ad
-        version: 7.9.0-1.e922089b7d7502aff4249d5da3420f6fa55fc6ad
+        specifier: 7.10.0-4.0edf323efd1d98336f3f0a68684b56f689b900d3
+        version: 7.10.0-4.0edf323efd1d98336f3f0a68684b56f689b900d3
       change-case:
         specifier: ^5.4.4
         version: 5.4.4
@@ -4200,8 +4200,8 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  '@prisma/prisma-schema-wasm@7.9.0-1.e922089b7d7502aff4249d5da3420f6fa55fc6ad':
-    resolution: {integrity: sha512-T/rEPnqirWxCvpaaIcZQj+d9PIQzI6M+a24Kd8ciX3+OihLU/SqdefY8NzqVQgJvz/oNX9E2FIzB4nA77I4EFw==}
+  '@prisma/prisma-schema-wasm@7.10.0-4.0edf323efd1d98336f3f0a68684b56f689b900d3':
+    resolution: {integrity: sha512-ijAY8XcHDmBKZaazLCPGzQIASpyZHPNlx2xynI3SaLtQFEeHxyfi+ih0J80aDtWriH11782ccHIx+qDtlLxGhw==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -10835,7 +10835,7 @@ snapshots:
     dependencies:
       playwright: 1.62.1
 
-  '@prisma/prisma-schema-wasm@7.9.0-1.e922089b7d7502aff4249d5da3420f6fa55fc6ad': {}
+  '@prisma/prisma-schema-wasm@7.10.0-4.0edf323efd1d98336f3f0a68684b56f689b900d3': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 
