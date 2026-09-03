@@ -3,8 +3,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface PlaceholderAuthCorePlaceholderAuthHooksPaths {
   useLogOut: string;
-  useRequiredUserId: string;
   useSession: string;
+  useUserIdOrThrow: string;
 }
 
 const placeholderAuthCorePlaceholderAuthHooksPaths =
@@ -25,8 +25,8 @@ const placeholderAuthCorePlaceholderAuthHooksPathsTask = createGeneratorTask({
       providers: {
         placeholderAuthCorePlaceholderAuthHooksPaths: {
           useLogOut: `${srcRoot}/hooks/use-log-out.ts`,
-          useRequiredUserId: `${srcRoot}/hooks/use-user-id-or-throw.ts`,
           useSession: `${srcRoot}/hooks/use-session.ts`,
+          useUserIdOrThrow: `${srcRoot}/hooks/use-user-id-or-throw.ts`,
         },
       },
     };

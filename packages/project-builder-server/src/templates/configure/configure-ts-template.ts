@@ -1,12 +1,15 @@
-import type { TsTemplateMetadata } from '@baseplate-dev/core-generators';
+import type {
+  TsTemplateFileProjectExport,
+  TsTemplateMetadata,
+} from '@baseplate-dev/core-generators';
+
+import { inferExportsFromTsFile } from '@baseplate-dev/core-generators/extractors';
 
 import type { ServiceActionContext } from '#src/actions/types.js';
 
-import type { TsFileExportInfo } from '../utils/infer-exports-from-ts-file.js';
 import type { ConfigureTemplateResult } from './types.js';
 
 import { updateExtractorTemplate } from '../utils/extractor-config.js';
-import { inferExportsFromTsFile } from '../utils/infer-exports-from-ts-file.js';
 import { resolveFilePath } from '../utils/resolve-file-path.js';
 import { resolveGenerator } from '../utils/resolve-generator.js';
 import { updateTemplateMetadata } from '../utils/template-metadata.js';
@@ -44,16 +47,18 @@ export async function configureTsTemplate(
   );
 
   // Validate exports if provided
-  const projectExports: Record<string, TsFileExportInfo> = {};
+  const projectExports: Record<string, TsTemplateFileProjectExport> = {};
   if (projectExportsList.length > 0) {
-    const availableExports = inferExportsFromTsFile(absolutePath);
+    const { exports: availableExports } = inferExportsFromTsFile(absolutePath);
     for (const exportName of projectExportsList) {
       const exportInfo = availableExports.get(exportName);
-      if (exportInfo) {
-        projectExports[exportName] = exportInfo;
-      } else {
+      if (!exportInfo) {
         throw new Error(`Export ${exportName} not found in ${absolutePath}`);
       }
+      projectExports[exportName] = {
+        isTypeOnly: exportInfo.isTypeOnly,
+        exportedAs: exportInfo.isDefault ? 'default' : undefined,
+      };
     }
   }
   // Resolve generator directory

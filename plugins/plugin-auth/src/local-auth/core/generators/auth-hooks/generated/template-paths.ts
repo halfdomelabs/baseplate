@@ -3,8 +3,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface LocalAuthCoreAuthHooksPaths {
   useLogOut: string;
-  useRequiredUserId: string;
   useSession: string;
+  useUserIdOrThrow: string;
 }
 
 const localAuthCoreAuthHooksPaths =
@@ -24,8 +24,8 @@ const localAuthCoreAuthHooksPathsTask = createGeneratorTask({
       providers: {
         localAuthCoreAuthHooksPaths: {
           useLogOut: `${srcRoot}/hooks/use-log-out.ts`,
-          useRequiredUserId: `${srcRoot}/hooks/use-user-id-or-throw.ts`,
           useSession: `${srcRoot}/hooks/use-session.ts`,
+          useUserIdOrThrow: `${srcRoot}/hooks/use-user-id-or-throw.ts`,
         },
       },
     };

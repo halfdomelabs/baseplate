@@ -98,7 +98,6 @@ const servicesPasswordReset = createTsTemplateFile({
   },
   name: 'services-password-reset',
   projectExports: {
-    cleanupExpiredPasswordResetTokens: { isTypeOnly: false },
     completePasswordReset: { isTypeOnly: false },
     requestPasswordReset: { isTypeOnly: false },
     validatePasswordResetToken: { isTypeOnly: false },

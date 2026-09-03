@@ -22,8 +22,8 @@ const betterAuthBetterAuthHooksImportsTask = createGeneratorTask({
           AuthRole: paths.useSession,
           SessionData: paths.useSession,
           useLogOut: paths.useLogOut,
-          useRequiredUserId: paths.useRequiredUserId,
           useSession: paths.useSession,
+          useUserIdOrThrow: paths.useUserIdOrThrow,
         }),
       },
     };

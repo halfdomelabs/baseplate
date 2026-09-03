@@ -29,7 +29,6 @@ const authContextUtils = createTsTemplateFile({
   },
   name: 'auth-context-utils',
   projectExports: {
-    createAnonymousAuthContext: {},
     createAuthContextFromSessionInfo: {},
     createSystemAuthContext: {},
   },

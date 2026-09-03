@@ -35,7 +35,6 @@
       },
       "pathRootRelativePath": "{module-root}/utils/auth-context.utils.ts",
       "projectExports": {
-        "createAnonymousAuthContext": {},
         "createAuthContextFromSessionInfo": {},
         "createSystemAuthContext": {}
       },

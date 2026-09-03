@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+export type AuthRole = string;
+
 export interface SessionData {
   userId: string | undefined;
   isAuthenticated: boolean;

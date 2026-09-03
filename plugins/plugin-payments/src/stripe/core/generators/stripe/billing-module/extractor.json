@@ -17,10 +17,6 @@
       },
       "pathRootRelativePath": "{module-root}/services/billing-config.ts",
       "projectExports": {
-        "getPlanKeyByPriceId": {
-          "isTypeOnly": false,
-          "name": "getPlanKeyByPriceId"
-        },
         "PlanKey": { "isTypeOnly": true, "name": "PlanKey" },
         "SUBSCRIPTION_PLANS": {
           "isTypeOnly": false,
@@ -53,20 +49,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/billing.service.ts",
-      "projectExports": {
-        "getOrCreateBillingAccount": {
-          "isTypeOnly": false,
-          "name": "getOrCreateBillingAccount"
-        },
-        "handleSubscriptionEvent": {
-          "isTypeOnly": false,
-          "name": "handleSubscriptionEvent"
-        },
-        "syncSubscriptionFromStripe": {
-          "isTypeOnly": false,
-          "name": "syncSubscriptionFromStripe"
-        }
-      },
       "referencedGeneratorTemplates": ["billing-config"],
       "sourceFile": "module/services/billing.service.ts",
       "variables": {}

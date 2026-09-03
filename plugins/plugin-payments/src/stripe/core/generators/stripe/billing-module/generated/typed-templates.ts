@@ -18,7 +18,6 @@ const billingConfig = createTsTemplateFile({
   },
   name: 'billing-config',
   projectExports: {
-    getPlanKeyByPriceId: { isTypeOnly: false },
     PlanKey: { isTypeOnly: true },
     SUBSCRIPTION_PLANS: { isTypeOnly: false },
   },
@@ -41,11 +40,6 @@ const billingService = createTsTemplateFile({
     prismaImports: prismaImportsProvider,
   },
   name: 'billing-service',
-  projectExports: {
-    getOrCreateBillingAccount: { isTypeOnly: false },
-    handleSubscriptionEvent: { isTypeOnly: false },
-    syncSubscriptionFromStripe: { isTypeOnly: false },
-  },
   referencedGeneratorTemplates: { billingConfig: {} },
   source: {
     path: path.join(

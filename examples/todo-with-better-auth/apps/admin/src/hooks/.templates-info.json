@@ -4,11 +4,6 @@
     "instanceData": {},
     "template": "use-log-out"
   },
-  "use-required-user-id.ts": {
-    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
-    "instanceData": {},
-    "template": "use-required-user-id"
-  },
   "use-session.ts": {
     "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
     "instanceData": {},
@@ -18,5 +13,10 @@
     "generator": "@baseplate-dev/plugin-storage#react/upload-components",
     "instanceData": {},
     "template": "hooks-use-upload"
+  },
+  "use-user-id-or-throw.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
+    "instanceData": {},
+    "template": "use-user-id-or-throw"
   }
 }

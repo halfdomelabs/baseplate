@@ -32,6 +32,6 @@
   "use-user-id-or-throw.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
     "instanceData": {},
-    "template": "use-required-user-id"
+    "template": "use-user-id-or-throw"
   }
 }
