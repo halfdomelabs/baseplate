@@ -91,7 +91,7 @@ export const reactTailwindGenerator = createGenerator({
                   '@tailwindcss/vite',
                 )}()`,
               );
-              reactBaseConfig.headerFragments.set(
+              reactBaseConfig.headerImportFragments.set(
                 'styles-css-import',
                 tsCodeFragment("import './styles.css'"),
               );

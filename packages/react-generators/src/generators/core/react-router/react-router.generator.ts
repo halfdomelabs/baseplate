@@ -123,7 +123,7 @@ export const reactRouterGenerator = createGenerator({
         reactAppConfig.renderRoot.set(
           tsCodeFragment(
             '<AppRoutes />',
-            tsImportBuilder(['AppRoutes']).from(paths.router),
+            tsImportBuilder(['AppRoutes']).from(paths.appRoutes),
           ),
         );
       },
@@ -166,6 +166,7 @@ export const reactRouterGenerator = createGenerator({
         reactRouterConfigValues: reactRouterConfigValuesProvider,
         renderers: CORE_REACT_ROUTER_GENERATED.renderers.provider,
         reactErrorImports: reactErrorImportsProvider,
+        paths: CORE_REACT_ROUTER_GENERATED.paths.provider,
       },
       run({
         reactRouterConfigValues: {
@@ -178,6 +179,7 @@ export const reactRouterGenerator = createGenerator({
         },
         renderers,
         reactErrorImports,
+        paths,
       }) {
         const fieldMissingInitializer = rootContextFields.filter(
           (field) =>
@@ -201,6 +203,10 @@ export const reactRouterGenerator = createGenerator({
             const routerProvider = TsCodeUtils.importFragment(
               'RouterProvider',
               '@tanstack/react-router',
+            );
+            const routerInstance = TsCodeUtils.importFragment(
+              'router',
+              paths.router,
             );
             const routeProviderInitializers = new Map(
               sortedRootContextFields
@@ -237,7 +243,7 @@ export const reactRouterGenerator = createGenerator({
                 : '';
 
             await builder.apply(
-              renderers.router.render({
+              renderers.routeErrorComponent.render({
                 variables: {
                   TPL_ERROR_COMPONENT_HEADER: TsCodeUtils.mergeFragments(
                     errorComponentHeaderFragments,
@@ -247,6 +253,13 @@ export const reactRouterGenerator = createGenerator({
                     errorComponentBodyFragments,
                     '\n\n',
                   ),
+                },
+              }),
+            );
+
+            await builder.apply(
+              renderers.router.render({
+                variables: {
                   TPL_ADDITIONAL_ROUTER_OPTIONS:
                     rootContextFields.length > 0
                       ? tsTemplate`
@@ -266,6 +279,13 @@ export const reactRouterGenerator = createGenerator({
                     }
                   `
                       : '',
+                },
+              }),
+            );
+
+            await builder.apply(
+              renderers.appRoutes.render({
+                variables: {
                   TPL_COMPONENT_SETUP: TsCodeUtils.mergeFragments(
                     routerSetupFragments,
                     '\n\n',
@@ -275,7 +295,7 @@ export const reactRouterGenerator = createGenerator({
                     '\n\n',
                   ),
                   TPL_ROUTER_CONTEXT: routerContext,
-                  TPL_ROUTER_PROVIDER: tsTemplate`<${routerProvider} router={router} ${
+                  TPL_ROUTER_PROVIDER: tsTemplate`<${routerProvider} router={${routerInstance}} ${
                     routeProviderInitializers.size > 0
                       ? tsTemplate`context={routerContext}`
                       : ''

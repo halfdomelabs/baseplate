@@ -1,13 +1,24 @@
 // @ts-nocheck
 
+import type { AnyRouter } from '@tanstack/react-router';
+
 import { config } from '%reactConfigImports';
-import { router } from '%reactRouterImports';
 import * as Sentry from '@sentry/react';
 
 const SENTRY_ENABLED = !!config.VITE_SENTRY_DSN;
 const TRACE_SAMPLE_RATE = 1;
 
-if (SENTRY_ENABLED) {
+/**
+ * Initializes Sentry with router instrumentation.
+ *
+ * Called from the app entrypoint: this module must not import the router, which
+ * would create a dependency cycle.
+ *
+ * @param router The router instance to instrument.
+ */
+export function initSentry(router: AnyRouter): void {
+  if (!SENTRY_ENABLED) return;
+
   Sentry.init({
     dsn: config.VITE_SENTRY_DSN,
     environment: config.VITE_ENVIRONMENT,

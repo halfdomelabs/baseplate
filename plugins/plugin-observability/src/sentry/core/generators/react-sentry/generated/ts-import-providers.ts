@@ -13,6 +13,7 @@ import {
 import { CORE_REACT_SENTRY_PATHS } from './template-paths.js';
 
 export const reactSentryImportsSchema = createTsImportMapSchema({
+  initSentry: {},
   logBreadcrumbToSentry: {},
   logErrorToSentry: {},
 });
@@ -37,6 +38,7 @@ const coreReactSentryImportsTask = createGeneratorTask({
     return {
       providers: {
         reactSentryImports: createTsImportMap(reactSentryImportsSchema, {
+          initSentry: paths.sentry,
           logBreadcrumbToSentry: paths.sentry,
           logErrorToSentry: paths.sentry,
         }),

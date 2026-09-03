@@ -36,6 +36,9 @@ const [setupTask, reactBaseConfigProvider, reactConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       appFragment: t.scalar<TsCodeFragment>(),
+      /* Module-level imports for the entrypoint, rendered above headerFragments */
+      headerImportFragments: t.map<string, TsCodeFragment>(),
+      /* Statements run at the top of the entrypoint, before the app is rendered */
       headerFragments: t.map<string, TsCodeFragment>(),
       vitePlugins: t.map<string, TsCodeFragment>(),
       viteServerOptions: t.map<string, TsCodeFragment>(),
@@ -134,6 +137,7 @@ export const reactGenerator = createGenerator({
         packageInfo,
         reactConfigValues: {
           appFragment,
+          headerImportFragments,
           headerFragments,
           vitePlugins,
           viteServerOptions,
@@ -172,8 +176,11 @@ export const reactGenerator = createGenerator({
                 destination: paths.main,
                 variables: {
                   TPL_APP: appFragment ?? '<div />',
-                  TPL_HEADER: TsCodeUtils.mergeFragments(
-                    headerFragments,
+                  TPL_HEADER: TsCodeUtils.mergeFragmentsPresorted(
+                    [
+                      TsCodeUtils.mergeFragments(headerImportFragments, '\n'),
+                      TsCodeUtils.mergeFragments(headerFragments, '\n\n'),
+                    ].filter((fragment) => fragment.contents !== ''),
                     '\n\n',
                   ),
                 },

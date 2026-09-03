@@ -2,6 +2,7 @@ import { TsCodeUtils, tsImportBuilder } from '@baseplate-dev/core-generators';
 import {
   reactAppConfigProvider,
   reactRouterConfigProvider,
+  reactRouterImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
@@ -41,9 +42,10 @@ export const reactSessionGenerator = createGenerator({
     reactRouterConfig: createGeneratorTask({
       dependencies: {
         reactRouterConfig: reactRouterConfigProvider,
+        reactRouterImports: reactRouterImportsProvider,
         paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({ reactRouterConfig, paths }) {
+      run({ reactRouterConfig, reactRouterImports, paths }) {
         reactRouterConfig.routerSetupFragments.set(
           'auth-session-router-sync',
           TsCodeUtils.templateWithImports([
@@ -51,6 +53,7 @@ export const reactSessionGenerator = createGenerator({
             tsImportBuilder(['userSessionClient']).from(
               paths.userSessionClient,
             ),
+            reactRouterImports.router.declaration(),
           ])`
           // RouterProvider only copies the context into the router when it renders, so push
           // the session in as soon as it changes. Otherwise a navigation triggered in the

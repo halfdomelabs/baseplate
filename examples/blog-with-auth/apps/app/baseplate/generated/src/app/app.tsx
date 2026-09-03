@@ -4,7 +4,7 @@ import { ConfirmDialog } from '../components/ui/confirm-dialog';
 import { ErrorBoundary } from '../components/ui/error-boundary';
 import { Toaster } from '../components/ui/toaster';
 import { AppApolloProvider } from './app-apollo-provider';
-import { AppRoutes } from './router';
+import { AppRoutes } from './app-routes';
 import { UserSessionProvider } from './user-session-provider';
 
 export function App(): ReactElement {

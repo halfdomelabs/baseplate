@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "app-apollo-provider"
   },
+  "app-routes.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "app-routes"
+  },
   "app.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-app",
     "instanceData": {},
@@ -14,7 +19,12 @@
     "instanceData": {},
     "template": "auth-loaded-gate"
   },
-  "router.tsx": {
+  "route-error-component.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "route-error-component"
+  },
+  "router.ts": {
     "generator": "@baseplate-dev/react-generators#core/react-router",
     "instanceData": {},
     "template": "router"

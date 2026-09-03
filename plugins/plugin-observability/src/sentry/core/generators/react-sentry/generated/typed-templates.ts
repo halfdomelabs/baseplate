@@ -1,18 +1,16 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
-import {
-  reactConfigImportsProvider,
-  reactRouterImportsProvider,
-} from '@baseplate-dev/react-generators';
+import { reactConfigImportsProvider } from '@baseplate-dev/react-generators';
 import path from 'node:path';
 
 const sentry = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    reactConfigImports: reactConfigImportsProvider,
-    reactRouterImports: reactRouterImportsProvider,
-  },
+  importMapProviders: { reactConfigImports: reactConfigImportsProvider },
   name: 'sentry',
-  projectExports: { logBreadcrumbToSentry: {}, logErrorToSentry: {} },
+  projectExports: {
+    initSentry: { isTypeOnly: false },
+    logBreadcrumbToSentry: { isTypeOnly: false },
+    logErrorToSentry: { isTypeOnly: false },
+  },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/services/sentry.ts'),
   },

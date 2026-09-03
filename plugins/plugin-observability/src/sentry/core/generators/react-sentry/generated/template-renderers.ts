@@ -2,10 +2,7 @@ import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-genera
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
-import {
-  reactConfigImportsProvider,
-  reactRouterImportsProvider,
-} from '@baseplate-dev/react-generators';
+import { reactConfigImportsProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { CORE_REACT_SENTRY_PATHS } from './template-paths.js';
@@ -32,11 +29,10 @@ const coreReactSentryRenderersTask = createGeneratorTask({
   dependencies: {
     paths: CORE_REACT_SENTRY_PATHS.provider,
     reactConfigImports: reactConfigImportsProvider,
-    reactRouterImports: reactRouterImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { coreReactSentryRenderers: coreReactSentryRenderers.export() },
-  run({ paths, reactConfigImports, reactRouterImports, typescriptFile }) {
+  run({ paths, reactConfigImports, typescriptFile }) {
     return {
       providers: {
         coreReactSentryRenderers: {
@@ -47,7 +43,6 @@ const coreReactSentryRenderersTask = createGeneratorTask({
                 destination: paths.sentry,
                 importMapProviders: {
                   reactConfigImports,
-                  reactRouterImports,
                 },
                 ...options,
               }),

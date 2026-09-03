@@ -4,8 +4,8 @@ import { ConfirmDialog, Toaster } from '@prisma-crud/ui-shared';
 
 import { ErrorBoundary } from '../components/ui/error-boundary';
 import { AppApolloProvider } from './app-apollo-provider';
+import { AppRoutes } from './app-routes';
 import { AuthLoadedGate } from './auth-loaded-gate';
-import { AppRoutes } from './router';
 
 export function App(): ReactElement {
   return (

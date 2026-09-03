@@ -1,6 +1,22 @@
 {
   "name": "core/react-router",
   "templates": {
+    "app-routes": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/app/app-routes.tsx",
+      "projectExports": {
+        "AppRoutes": { "isTypeOnly": false, "name": "AppRoutes" }
+      },
+      "sourceFile": "src/app/app-routes.tsx",
+      "variables": {
+        "TPL_COMPONENT_BODY": {},
+        "TPL_COMPONENT_SETUP": {},
+        "TPL_ROUTER_CONTEXT": {},
+        "TPL_ROUTER_PROVIDER": {}
+      }
+    },
     "placeholder-index": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -22,6 +38,25 @@
         "TPL_ROOT_ROUTE_OPTIONS": {}
       }
     },
+    "route-error-component": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/app/route-error-component.tsx",
+      "projectExports": {
+        "ErrorComponent": { "isTypeOnly": false, "name": "ErrorComponent" }
+      },
+      "sourceFile": "src/app/route-error-component.tsx",
+      "variables": {
+        "TPL_ERROR_COMPONENT_BODY": {},
+        "TPL_ERROR_COMPONENT_HEADER": {}
+      }
+    },
     "route-tree": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -40,19 +75,11 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/app/router.tsx",
-      "projectExports": { "AppRoutes": {}, "router": {} },
-      "referencedGeneratorTemplates": ["route-tree"],
-      "sourceFile": "src/app/router.tsx",
-      "variables": {
-        "TPL_ADDITIONAL_ROUTER_OPTIONS": {},
-        "TPL_COMPONENT_BODY": {},
-        "TPL_COMPONENT_SETUP": {},
-        "TPL_ERROR_COMPONENT_BODY": {},
-        "TPL_ERROR_COMPONENT_HEADER": {},
-        "TPL_ROUTER_CONTEXT": {},
-        "TPL_ROUTER_PROVIDER": {}
-      }
+      "pathRootRelativePath": "{src-root}/app/router.ts",
+      "projectExports": { "router": { "isTypeOnly": false, "name": "router" } },
+      "referencedGeneratorTemplates": ["route-error-component", "route-tree"],
+      "sourceFile": "src/app/router.ts",
+      "variables": { "TPL_ADDITIONAL_ROUTER_OPTIONS": {} }
     }
   }
 }

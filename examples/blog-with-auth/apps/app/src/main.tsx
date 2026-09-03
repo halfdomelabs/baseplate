@@ -6,9 +6,9 @@ import { router } from './app/router';
 import { initSentry } from './services/sentry';
 
 /* TPL_HEADER:START */
-initSentry(router);
-
 import './styles.css';
+
+initSentry(router);
 /* TPL_HEADER:END */
 
 const rootElement = document.querySelector('#root');

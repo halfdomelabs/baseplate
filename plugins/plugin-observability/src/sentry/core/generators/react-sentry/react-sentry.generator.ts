@@ -11,8 +11,10 @@ import {
 import {
   authIdentifyProvider,
   REACT_PACKAGES,
+  reactBaseConfigProvider,
   reactConfigProvider,
   reactErrorConfigProvider,
+  reactRouterImportsProvider,
 } from '@baseplate-dev/react-generators';
 import {
   createConfigProviderTask,
@@ -65,6 +67,22 @@ export const reactSentryGenerator = createGenerator({
         );
       },
     ),
+    initSentry: createGeneratorTask({
+      dependencies: {
+        reactBaseConfig: reactBaseConfigProvider,
+        reactRouterImports: reactRouterImportsProvider,
+        paths: CORE_REACT_SENTRY_GENERATED.paths.provider,
+      },
+      run({ reactBaseConfig, reactRouterImports, paths }) {
+        reactBaseConfig.headerFragments.set(
+          'sentry-init',
+          TsCodeUtils.templateWithImports([
+            tsImportBuilder(['initSentry']).from(paths.sentry),
+            reactRouterImports.router.declaration(),
+          ])`initSentry(router);`,
+        );
+      },
+    }),
     reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
       reactConfig.configEntries.set('VITE_SENTRY_DSN', {
         comment: 'DSN for Sentry (optional)',
