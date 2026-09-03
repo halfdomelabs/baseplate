@@ -9,14 +9,17 @@
         "reactConfigImportsProvider": {
           "importName": "reactConfigImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-config/generated/ts-import-providers.ts"
-        },
-        "reactRouterImportsProvider": {
-          "importName": "reactRouterImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-router/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{src-root}/services/sentry.ts",
-      "projectExports": { "logBreadcrumbToSentry": {}, "logErrorToSentry": {} },
+      "projectExports": {
+        "initSentry": { "isTypeOnly": false, "name": "initSentry" },
+        "logBreadcrumbToSentry": {
+          "isTypeOnly": false,
+          "name": "logBreadcrumbToSentry"
+        },
+        "logErrorToSentry": { "isTypeOnly": false, "name": "logErrorToSentry" }
+      },
       "sourceFile": "src/services/sentry.ts",
       "variables": { "TPL_SENTRY_SCOPE_ACTIONS": {} }
     }

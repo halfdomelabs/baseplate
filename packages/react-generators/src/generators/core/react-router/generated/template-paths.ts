@@ -4,8 +4,10 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 export interface CoreReactRouterPaths {
+  appRoutes: string;
   placeholderIndex: string;
   rootRoute: string;
+  routeErrorComponent: string;
   router: string;
   routeTree: string;
 }
@@ -27,9 +29,11 @@ const coreReactRouterPathsTask = createGeneratorTask({
     return {
       providers: {
         coreReactRouterPaths: {
+          appRoutes: `${srcRoot}/app/app-routes.tsx`,
           placeholderIndex: `${routesRoot}/index.tsx`,
           rootRoute: `${routesRoot}/__root.tsx`,
-          router: `${srcRoot}/app/router.tsx`,
+          routeErrorComponent: `${srcRoot}/app/route-error-component.tsx`,
+          router: `${srcRoot}/app/router.ts`,
           routeTree: `${srcRoot}/route-tree.gen.ts`,
         },
       },
