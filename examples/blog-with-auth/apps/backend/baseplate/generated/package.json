@@ -52,7 +52,7 @@
     "@sentry/node": "10.63.0",
     "@sentry/profiling-node": "10.63.0",
     "es-toolkit": "1.50.0",
-    "fastify": "5.11.0",
+    "fastify": "5.12.1",
     "fastify-plugin": "6.0.0",
     "graphql": "16.14.0",
     "graphql-scalars": "1.23.0",

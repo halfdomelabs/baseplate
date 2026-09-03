@@ -1,6 +1,6 @@
 export const FASTIFY_PACKAGES = {
   // Fastify
-  fastify: '5.11.0',
+  fastify: '5.12.1',
   '@fastify/helmet': '13.1.0',
   'fastify-plugin': '6.0.0',
   nanoid: '6.0.1',
