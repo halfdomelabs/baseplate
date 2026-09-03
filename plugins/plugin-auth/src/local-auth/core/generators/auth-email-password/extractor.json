@@ -266,10 +266,6 @@
       },
       "pathRootRelativePath": "{module-root}/services/password-reset.service.ts",
       "projectExports": {
-        "cleanupExpiredPasswordResetTokens": {
-          "isTypeOnly": false,
-          "name": "cleanupExpiredPasswordResetTokens"
-        },
         "completePasswordReset": {
           "isTypeOnly": false,
           "name": "completePasswordReset"

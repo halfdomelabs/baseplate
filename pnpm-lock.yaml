@@ -735,9 +735,6 @@ importers:
       pino:
         specifier: ^10.3.1
         version: 10.3.1
-      ts-morph:
-        specifier: ^28.0.0
-        version: 28.0.0
       zod:
         specifier: 'catalog:'
         version: 4.3.6
@@ -6132,6 +6129,7 @@ packages:
   eslint@9.39.5:
     resolution: {integrity: sha512-DgZS62aPLXKlnxILS/AYCoRvHaZeXceIzlXPkkGGzJWSow1aEk0lbTlxUSlyjC8jcaKxAdOnTDz+o1JFSBsyjw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'

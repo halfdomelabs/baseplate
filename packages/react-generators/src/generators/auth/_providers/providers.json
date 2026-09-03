@@ -7,8 +7,8 @@
       "projectExports": {
         "SessionData": { "isTypeOnly": true },
         "useLogOut": {},
-        "useRequiredUserId": {},
         "useSession": {},
+        "useUserIdOrThrow": {},
         "AuthRole": { "isTypeOnly": true }
       }
     }

@@ -16,22 +16,6 @@ const useLogOut = createTsTemplateFile({
   variables: {},
 });
 
-const useRequiredUserId = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'hooks',
-  importMapProviders: {},
-  name: 'use-required-user-id',
-  projectExports: { useRequiredUserId: {} },
-  referencedGeneratorTemplates: { useSession: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/hooks/use-user-id-or-throw.ts',
-    ),
-  },
-  variables: {},
-});
-
 const useSession = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'hooks',
@@ -51,7 +35,23 @@ const useSession = createTsTemplateFile({
   variables: {},
 });
 
-export const hooksGroup = { useLogOut, useRequiredUserId, useSession };
+const useUserIdOrThrow = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks',
+  importMapProviders: {},
+  name: 'use-user-id-or-throw',
+  projectExports: { useUserIdOrThrow: {} },
+  referencedGeneratorTemplates: { useSession: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-user-id-or-throw.ts',
+    ),
+  },
+  variables: {},
+});
+
+export const hooksGroup = { useLogOut, useSession, useUserIdOrThrow };
 
 export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES = {
   hooksGroup,

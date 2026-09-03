@@ -13,12 +13,8 @@ import {
 import { STRIPE_BILLING_MODULE_PATHS } from './template-paths.js';
 
 export const billingModuleImportsSchema = createTsImportMapSchema({
-  getOrCreateBillingAccount: {},
-  getPlanKeyByPriceId: {},
-  handleSubscriptionEvent: {},
   PlanKey: { isTypeOnly: true },
   SUBSCRIPTION_PLANS: {},
-  syncSubscriptionFromStripe: {},
 });
 
 export type BillingModuleImportsProvider = TsImportMapProviderFromSchema<
@@ -41,12 +37,8 @@ const stripeBillingModuleImportsTask = createGeneratorTask({
     return {
       providers: {
         billingModuleImports: createTsImportMap(billingModuleImportsSchema, {
-          getOrCreateBillingAccount: paths.billingService,
-          getPlanKeyByPriceId: paths.billingConfig,
-          handleSubscriptionEvent: paths.billingService,
           PlanKey: paths.billingConfig,
           SUBSCRIPTION_PLANS: paths.billingConfig,
-          syncSubscriptionFromStripe: paths.billingService,
         }),
       },
     };

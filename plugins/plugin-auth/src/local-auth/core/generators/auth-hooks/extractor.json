@@ -33,18 +33,6 @@
       "sourceFile": "src/hooks/use-log-out.ts",
       "variables": {}
     },
-    "use-required-user-id": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
-      "group": "hooks",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/use-user-id-or-throw.ts",
-      "projectExports": { "useRequiredUserId": {} },
-      "referencedGeneratorTemplates": ["use-session"],
-      "sourceFile": "src/hooks/use-user-id-or-throw.ts",
-      "variables": {}
-    },
     "use-session": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -64,6 +52,18 @@
         "useSession": {}
       },
       "sourceFile": "src/hooks/use-session.ts",
+      "variables": {}
+    },
+    "use-user-id-or-throw": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-user-id-or-throw.ts",
+      "projectExports": { "useUserIdOrThrow": {} },
+      "referencedGeneratorTemplates": ["use-session"],
+      "sourceFile": "src/hooks/use-user-id-or-throw.ts",
       "variables": {}
     }
   }

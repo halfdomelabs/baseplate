@@ -1,8 +1,6 @@
-// @ts-nocheck
+import { useSession } from './use-session';
 
-import { useSession } from '$useSession';
-
-export function useRequiredUserId(): string {
+export function useUserIdOrThrow(): string {
   const { userId } = useSession();
   if (!userId) {
     throw new Error('User is not authenticated');

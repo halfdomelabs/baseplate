@@ -3,8 +3,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface BetterAuthBetterAuthHooksPaths {
   useLogOut: string;
-  useRequiredUserId: string;
   useSession: string;
+  useUserIdOrThrow: string;
 }
 
 const betterAuthBetterAuthHooksPaths =
@@ -24,8 +24,8 @@ const betterAuthBetterAuthHooksPathsTask = createGeneratorTask({
       providers: {
         betterAuthBetterAuthHooksPaths: {
           useLogOut: `${srcRoot}/hooks/use-log-out.ts`,
-          useRequiredUserId: `${srcRoot}/hooks/use-required-user-id.ts`,
           useSession: `${srcRoot}/hooks/use-session.ts`,
+          useUserIdOrThrow: `${srcRoot}/hooks/use-user-id-or-throw.ts`,
         },
       },
     };

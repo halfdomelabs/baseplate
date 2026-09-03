@@ -13,6 +13,7 @@ import { deduplicateTemplateFileExtractorSourceFiles } from '#src/renderers/extr
 
 import type { TsTemplateMetadata } from '../templates/types.js';
 import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
+import type { MissingProjectExportsEntry } from './utils/validate-template-project-exports.js';
 
 import { templatePathsPlugin } from '../../extractor/plugins/template-paths/template-paths.plugin.js';
 import { templateRenderersPlugin } from '../../extractor/plugins/template-renderers/template-renderers.plugin.js';
@@ -33,6 +34,10 @@ import { renderTsTemplateFile } from './render-ts-template-file.js';
 import { renderTsTemplateRenderers } from './render-ts-template-renderers.js';
 import { renderTsTypedTemplates } from './render-ts-typed-templates.js';
 import { tsExtractorConfigSchema } from './ts-extractor-config.schema.js';
+import {
+  buildMissingProjectExportsMessage,
+  findMissingProjectExports,
+} from './utils/validate-template-project-exports.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
@@ -131,6 +136,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
     );
 
     const filesByGenerator = groupBy(files, (f) => f.generator);
+    const missingProjectExports: MissingProjectExportsEntry[] = [];
 
     await Promise.all(
       Object.entries(filesByGenerator).map(async ([generatorName, files]) => {
@@ -177,6 +183,19 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
                   const contents = await api.readOutputFile(
                     file.sourceAbsolutePath,
                   );
+                  const missingExports = findMissingProjectExports(
+                    file.metadata.projectExports,
+                    file.sourceAbsolutePath,
+                    contents,
+                  );
+                  if (missingExports.length > 0) {
+                    missingProjectExports.push({
+                      generatorName,
+                      templateName: file.templateName,
+                      sourceAbsolutePath: file.sourceAbsolutePath,
+                      missingExports,
+                    });
+                  }
                   const result = await renderTsTemplateFile(
                     file.sourceAbsolutePath,
                     contents,
@@ -219,6 +238,10 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         }
       }),
     );
+
+    if (missingProjectExports.length > 0) {
+      throw new Error(buildMissingProjectExportsMessage(missingProjectExports));
+    }
   },
   writeGeneratedFiles: async (generatorNames, context, api) => {
     const templatePathsPlugin = context.getPlugin('template-paths');
