@@ -8,6 +8,14 @@
   html,
   body,
   #root {
-    height: 100vh;
+    min-height: 100dvh;
   }
+}
+
+/**
+ * CodeMirror tooltip z-index
+ * Ensures tooltips (autocomplete, linting) appear above dialogs (z-50)
+ */
+.cm-tooltip {
+  z-index: 100 !important;
 }

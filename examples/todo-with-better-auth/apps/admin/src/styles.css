@@ -8,9 +8,15 @@
  * Colors configuration
  */
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (.dark, .dark *, &:where([data-theme=dark], [data-theme=dark] *));
 
 @theme inline {
+  /*
+   * Tailwind's @theme inline auto-generates a --color-* utility namespace from
+   * every ancestor --color-* custom property, including its own built-in
+   * palette. Resetting it here means only the tokens re-declared below (not
+   * Tailwind's default reds/blues/etc.) produce color utilities.
+   */
   --color-*: initial;
 
   --color-background: var(--background);
@@ -55,17 +61,41 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-surface: var(--surface);
-  --color-surface-foreground: var(--surface-foreground);
-  --color-surface-border: var(--surface-border);
-  --color-surface-muted: var(--surface-muted);
-  --color-surface-muted-foreground: var(--surface-muted-foreground);
+  --color-tone: var(--tone);
+  --color-tone-foreground: var(--tone-foreground);
+  --color-tone-border: var(--tone-border);
+  --color-tone-muted-foreground: var(--tone-muted-foreground);
 
   --color-white: #fff;
   --color-black: #000;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/**
+ * Font configuration
+ */
+
+@theme {
+  --font-body:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-heading: var(--font-body);
+  --font-mono: Menlo, Consolas, 'Courier New', monospace;
+}
+
+/**
+ * Colors
+ */
+
 :root {
+  --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.041 264.695);
   --muted: oklch(0.968 0.007 247.896);
@@ -131,101 +161,59 @@ html[data-theme='dark'] {
 }
 
 /**
- * Utility classes for surfaces
+ * Utility classes for tones (status coloring: default/success/warning/error)
  */
 
-@utility surface-default {
-  --surface: var(--background);
-  --surface-foreground: var(--foreground);
-  --surface-border: color-mix(in oklab, var(--foreground) 40%, transparent);
-  --surface-muted: color-mix(in oklab, var(--background) 10%, transparent);
-  --surface-muted-foreground: color-mix(
+@utility tone-default {
+  --tone: var(--background);
+  --tone-foreground: var(--foreground);
+  --tone-border: var(--border);
+  --tone-muted-foreground: color-mix(
     in oklab,
     var(--foreground) 70%,
     var(--background)
   );
 }
 
-@utility surface-success {
-  --surface: var(--success);
-  --surface-foreground: var(--success-foreground);
-  --surface-border: color-mix(
+@utility tone-success {
+  --tone: var(--success);
+  --tone-foreground: var(--success-foreground);
+  --tone-border: color-mix(
     in oklab,
     var(--success-foreground) 40%,
     transparent
   );
-  --surface-muted: color-mix(in oklab, var(--success) 10%, transparent);
-  --surface-muted-foreground: color-mix(
+  --tone-muted-foreground: color-mix(
     in oklab,
     var(--success-foreground) 70%,
     var(--success)
   );
 }
 
-@utility surface-warning {
-  --surface: var(--warning);
-  --surface-foreground: var(--warning-foreground);
-  --surface-border: color-mix(
+@utility tone-warning {
+  --tone: var(--warning);
+  --tone-foreground: var(--warning-foreground);
+  --tone-border: color-mix(
     in oklab,
     var(--warning-foreground) 40%,
     transparent
   );
-  --surface-muted: color-mix(in oklab, var(--warning) 10%, transparent);
-  --surface-muted-foreground: color-mix(
+  --tone-muted-foreground: color-mix(
     in oklab,
     var(--warning-foreground) 70%,
     var(--warning)
   );
 }
 
-@utility surface-error {
-  --surface: var(--error);
-  --surface-foreground: var(--error-foreground);
-  --surface-border: color-mix(
-    in oklab,
-    var(--error-foreground) 40%,
-    transparent
-  );
-  --surface-muted: color-mix(in oklab, var(--error) 10%, transparent);
-  --surface-muted-foreground: color-mix(
+@utility tone-error {
+  --tone: var(--error);
+  --tone-foreground: var(--error-foreground);
+  --tone-border: color-mix(in oklab, var(--error-foreground) 40%, transparent);
+  --tone-muted-foreground: color-mix(
     in oklab,
     var(--error-foreground) 70%,
     var(--error)
   );
-}
-
-/**
- * Typography
- */
-
-@theme {
-  --font-body:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
-  --font-mono: Menlo, Consolas, 'Courier New', monospace;
-}
-
-@layer base {
-  /* Leading is set in plain CSS: `leading-*` utilities also set `--tw-leading`,
-     which text-size utilities read as their line-height, pinning the base value. */
-  h1 {
-    @apply text-3xl font-semibold tracking-tight;
-    line-height: 1;
-  }
-
-  h2 {
-    @apply text-2xl font-semibold tracking-tight;
-    line-height: calc(var(--spacing) * 7);
-  }
-
-  h3 {
-    @apply text-xl font-semibold tracking-tight;
-    line-height: calc(var(--spacing) * 6);
-  }
-
-  p {
-    line-height: calc(var(--spacing) * 6);
-  }
 }
 
 /**
@@ -260,25 +248,9 @@ html[data-theme='dark'] {
   }
 }
 
-/**
- * Base styles for border and background/font colors
+/*
+ * ShadCN utilities
  */
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background font-body text-foreground antialiased;
-    @apply surface-default;
-  }
-
-  html,
-  body,
-  #root {
-    height: 100vh;
-  }
-}
 
 /* Custom variants */
 @custom-variant data-open {
@@ -347,6 +319,64 @@ html[data-theme='dark'] {
 
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/**
+ * Typography
+ */
+
+@layer base {
+  /* Leading is set in plain CSS: `leading-*` utilities also set `--tw-leading`,
+     which text-size utilities read as their line-height, pinning the base value. */
+  h1 {
+    @apply text-3xl font-semibold tracking-tight;
+    line-height: 1;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+    line-height: calc(var(--spacing) * 7);
+  }
+
+  h3 {
+    @apply text-xl font-semibold tracking-tight;
+    line-height: calc(var(--spacing) * 6);
+  }
+
+  p {
+    line-height: calc(var(--spacing) * 6);
+  }
+}
+
+/**
+ * Base styles for border and background/font colors
+ */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background font-body text-foreground antialiased;
+    @apply tone-default;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100dvh;
+  }
+}
+
+/**
+ * shadcn's --pointer convention: interactive elements get a pointer cursor
+ * by default (Tailwind's preflight resets buttons to `cursor: default`).
+ */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
   }
 }
 
