@@ -69,7 +69,7 @@ export const THEME_COLORS = {
     name: 'Card Background',
     description: 'Background color for <Card />',
     lightDefault: { color: 'white' },
-    darkDefault: { baseShade: '950' },
+    darkDefault: { baseShade: '900' },
     groupKey: 'card',
     category: 'surface',
   },
@@ -86,7 +86,7 @@ export const THEME_COLORS = {
     description:
       'Background color for popovers such as <DropdownMenu />, <HoverCard />, <Popover />',
     lightDefault: { color: 'white' },
-    darkDefault: { baseShade: '950' },
+    darkDefault: { baseShade: '900' },
     groupKey: 'popover',
     category: 'surface',
   },
@@ -236,7 +236,7 @@ export const THEME_COLORS = {
   input: {
     name: 'Input Border',
     description:
-      'Border color for inputs such as <Input />, <Select />, <Textarea />',
+      'Border color for inputs such as <Input />, <Select />, <Textarea />. This is the border only — the input fill is derived separately (see --control-background)',
     lightDefault: { baseShade: '200' },
     darkDefault: { baseShade: '800' },
     groupKey: 'border',

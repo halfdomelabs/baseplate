@@ -1,61 +1,53 @@
 /**
- * Utility classes for surfaces
+ * Utility classes for tones (status coloring: default/success/warning/error)
  */
 
-@utility surface-default {
-  --surface: var(--background);
-  --surface-foreground: var(--foreground);
-  --surface-border: color-mix(in oklab, var(--foreground) 40%, transparent);
-  --surface-muted: color-mix(in oklab, var(--background) 10%, transparent);
-  --surface-muted-foreground: color-mix(
+@utility tone-default {
+  --tone: var(--background);
+  --tone-foreground: var(--foreground);
+  --tone-border: var(--border);
+  --tone-muted-foreground: color-mix(
     in oklab,
     var(--foreground) 70%,
     var(--background)
   );
 }
 
-@utility surface-success {
-  --surface: var(--success);
-  --surface-foreground: var(--success-foreground);
-  --surface-border: color-mix(
+@utility tone-success {
+  --tone: var(--success);
+  --tone-foreground: var(--success-foreground);
+  --tone-border: color-mix(
     in oklab,
     var(--success-foreground) 40%,
     transparent
   );
-  --surface-muted: color-mix(in oklab, var(--success) 10%, transparent);
-  --surface-muted-foreground: color-mix(
+  --tone-muted-foreground: color-mix(
     in oklab,
     var(--success-foreground) 70%,
     var(--success)
   );
 }
 
-@utility surface-warning {
-  --surface: var(--warning);
-  --surface-foreground: var(--warning-foreground);
-  --surface-border: color-mix(
+@utility tone-warning {
+  --tone: var(--warning);
+  --tone-foreground: var(--warning-foreground);
+  --tone-border: color-mix(
     in oklab,
     var(--warning-foreground) 40%,
     transparent
   );
-  --surface-muted: color-mix(in oklab, var(--warning) 10%, transparent);
-  --surface-muted-foreground: color-mix(
+  --tone-muted-foreground: color-mix(
     in oklab,
     var(--warning-foreground) 70%,
     var(--warning)
   );
 }
 
-@utility surface-error {
-  --surface: var(--error);
-  --surface-foreground: var(--error-foreground);
-  --surface-border: color-mix(
-    in oklab,
-    var(--error-foreground) 40%,
-    transparent
-  );
-  --surface-muted: color-mix(in oklab, var(--error) 10%, transparent);
-  --surface-muted-foreground: color-mix(
+@utility tone-error {
+  --tone: var(--error);
+  --tone-foreground: var(--error-foreground);
+  --tone-border: color-mix(in oklab, var(--error-foreground) 40%, transparent);
+  --tone-muted-foreground: color-mix(
     in oklab,
     var(--error-foreground) 70%,
     var(--error)

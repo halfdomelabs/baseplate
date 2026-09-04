@@ -21,15 +21,15 @@
 
 :root {
   --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.041 264.695);
+  --foreground: oklch(0.129 0.042 264.695);
   --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.041 257.417);
+  --muted-foreground: oklch(0.554 0.046 257.417);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.041 264.695);
+  --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.041 264.695);
+  --popover-foreground: oklch(0.129 0.042 264.695);
   --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.04 265.755);
+  --accent-foreground: oklch(0.208 0.042 265.755);
   --success: oklch(0.979 0.021 166.113);
   --success-foreground: oklch(0.262 0.051 172.552);
   --warning: oklch(0.987 0.022 95.277);
@@ -54,15 +54,15 @@
 
 .dark,
 html[data-theme='dark'] {
-  --background: oklch(0.129 0.041 264.695);
+  --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.037 260.031);
-  --muted-foreground: oklch(0.711 0.035 256.788);
-  --card: oklch(0.208 0.04 265.755);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --card: oklch(0.208 0.042 265.755);
   --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.04 265.755);
+  --popover: oklch(0.208 0.042 265.755);
   --popover-foreground: oklch(0.984 0.003 247.858);
-  --accent: oklch(0.279 0.037 260.031);
+  --accent: oklch(0.279 0.041 260.031);
   --accent-foreground: oklch(0.984 0.003 247.858);
   --success: oklch(0.262 0.051 172.552);
   --success-foreground: oklch(0.979 0.021 166.113);
@@ -147,14 +147,17 @@ html[data-theme='dark'] {
   }
   body {
     @apply bg-background font-body text-foreground antialiased;
-    @apply surface-default;
+    @apply tone-default;
   }
 }
 
 /**
- * CodeMirror tooltip z-index
- * Ensures tooltips (autocomplete, linting) appear above dialogs (z-50)
+ * shadcn's --pointer convention: interactive elements get a pointer cursor
+ * by default (Tailwind's preflight resets buttons to `cursor: default`).
  */
-.cm-tooltip {
-  z-index: 100 !important;
+@layer base {
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
 }

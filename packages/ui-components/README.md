@@ -215,7 +215,7 @@ The main entry point for consumers that sets up the complete styling foundation:
 - **CSS Variables**: Defines color tokens for light and dark themes using OKLCH color space
 - **Font Setup**: Imports Geist and Geist Mono variable fonts with fallback configurations
 - **Typography**: Establishes base heading and paragraph styles
-- **Global Defaults**: Sets border colors, backgrounds, and text antialiasing
+- **Global Defaults**: Sets border colors, backgrounds, text antialiasing, and a pointer cursor on buttons
 
 ### `theme.css`
 
@@ -223,16 +223,25 @@ Theme configuration file for Tailwind CSS integration:
 
 - **Color Mapping**: Maps CSS variables to Tailwind color utilities
 - **Dark Mode**: Configures dark mode variant with automatic detection
-- **Font Configuration**: Defines font family tokens for body and monospace text
+- **Font Configuration**: Defines font family tokens for body, heading, and monospace text
 - **Animation**: Imports tw-animate-css for animation utilities
 
 ### `utilities.css`
 
 Custom utility classes for advanced styling patterns:
 
-- **Surface Utilities**: `surface-default`, `surface-success`, `surface-warning`, `surface-error` for contextual styling
+- **Tone Utilities**: `tone-default`, `tone-success`, `tone-warning`, `tone-error` for contextual styling
 - **Typography Utilities**: `text-style-lead`, `text-style-large`, `text-style-small`, `text-style-muted`, `text-style-prose` for consistent text styling
 - Uses dynamic color mixing for muted variations and borders
+
+## Theme tokens
+
+The token layer is split across the three files above by concern:
+
+- **Palette** (`base-styles.css`): the raw color variables (`--background`, `--foreground`, `--primary`, `--border`, etc.), grouped in `theme-colors.ts` by category — `surface` (background/card/popover/accent/success/warning/error and their foregrounds), `interactive` (primary/secondary/destructive/link), and `utility` (border/input/ring). Surface-category defaults are generated from the same palette Tailwind ships (`slate` by default); interactive/utility colors are hand-tuned brand colors independent of that palette.
+- **Tailwind mapping** (`theme.css`): `@theme inline` re-exposes each palette variable as a `--color-*` token so Tailwind generates the matching utility classes (`bg-primary`, `text-foreground`, etc). `--color-*: initial` resets Tailwind's own built-in `--color-*` namespace first — deliberately, so only the tokens re-declared here (not Tailwind's default reds/blues/etc.) produce color utilities.
+- **Tone utilities** (`utilities.css`): `tone-default`/`tone-success`/`tone-warning`/`tone-error` each set `--tone`, `--tone-foreground`, `--tone-border`, and `--tone-muted-foreground` to one status color's palette. Apply a tone class alongside `bg-tone`, `text-tone-foreground`, `border-tone-border`, and/or `text-tone-muted-foreground` on the element that should take on that status color — see `Alert`, `Toaster`, or `Badge`'s `success`/`warning` variants.
+- **Local overrides**: a Tailwind arbitrary property (`[--x:value]`) scopes a one-off override to a single element without touching the shared tokens, e.g. `Calendar`'s `[--cell-size:--spacing(8)]`.
 
 ## Part of Baseplate Monorepo
 

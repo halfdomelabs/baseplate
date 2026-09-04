@@ -24,11 +24,11 @@ const Toaster = ({ ...props }: ToasterProps): React.ReactElement => (
       unstyled: true,
       classNames: {
         success:
-          'group-[.toaster]:bg-success group-[.toaster]:text-success-foreground group-[.toaster]:border-success',
+          'group-[.toaster]:tone-success group-[.toaster]:bg-tone group-[.toaster]:text-tone-foreground group-[.toaster]:border-tone-border',
         error:
-          'group-[.toaster]:bg-error group-[.toaster]:text-error-foreground group-[.toaster]:border-error',
+          'group-[.toaster]:tone-error group-[.toaster]:bg-tone group-[.toaster]:text-tone-foreground group-[.toaster]:border-tone-border',
         warning:
-          'group-[.toaster]:bg-warning group-[.toaster]:text-warning-foreground group-[.toaster]:border-warning',
+          'group-[.toaster]:tone-warning group-[.toaster]:bg-tone group-[.toaster]:text-tone-foreground group-[.toaster]:border-tone-border',
         default: 'bg-background text-foreground',
         toast:
           'group toast group-[.toaster]:shadow-lg p-4 rounded-lg flex items-center text-sm gap-1.5 w-(--width)',

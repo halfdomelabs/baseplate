@@ -14,6 +14,12 @@
 @custom-variant dark (.dark, .dark *, &:where([data-theme=dark], [data-theme=dark] *));
 
 @theme inline {
+  /*
+   * Tailwind's @theme inline auto-generates a --color-* utility namespace from
+   * every ancestor --color-* custom property, including its own built-in
+   * palette. Resetting it here means only the tokens re-declared below (not
+   * Tailwind's default reds/blues/etc.) produce color utilities.
+   */
   --color-*: initial;
 
   --color-background: var(--background);
@@ -58,11 +64,10 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-surface: var(--surface);
-  --color-surface-foreground: var(--surface-foreground);
-  --color-surface-border: var(--surface-border);
-  --color-surface-muted: var(--surface-muted);
-  --color-surface-muted-foreground: var(--surface-muted-foreground);
+  --color-tone: var(--tone);
+  --color-tone-foreground: var(--tone-foreground);
+  --color-tone-border: var(--tone-border);
+  --color-tone-muted-foreground: var(--tone-muted-foreground);
 
   --color-white: #fff;
   --color-black: #000;
@@ -82,6 +87,7 @@
 
 @theme {
   --font-body: 'Geist Variable', 'Arial Fallback', 'Trebuchet MS', sans-serif;
+  --font-heading: var(--font-body);
   --font-mono:
     'Geist Mono Variable', 'Adjusted Courier New Fallback', 'Courier New',
     'monospace';
