@@ -54,7 +54,9 @@ export function ModelHeaderBar({
     >
       <div>
         <div className="group flex items-center space-x-2">
-          <h1>{currentModel.name}</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            {currentModel.name}
+          </h1>
           <ModelInfoEditDialog
             modelKey={modelEntityType.keyFromId(model.id)}
             trigger={

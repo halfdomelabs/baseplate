@@ -1,7 +1,12 @@
 import type { ReactElement } from 'react';
 
 import { useReadQuery } from '@apollo/client/react';
-import { Button } from '@prisma-crud/ui-shared';
+import {
+  Button,
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderTitle,
+} from '@prisma-crud/ui-shared';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
@@ -39,24 +44,26 @@ function TodoListListPage(): ReactElement {
 
   return (
     <div className="flex max-w-4xl flex-col space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h1>
+      <PageHeader className="items-center">
+        <PageHeaderTitle>
           {/* TPL_PAGE_TITLE:START */}
           Todo Lists
           {/* TPL_PAGE_TITLE:END */}
-        </h1>
-        {/* TPL_CREATE_BUTTON:START */}
+        </PageHeaderTitle>
+        <PageHeaderActions>
+          {/* TPL_CREATE_BUTTON:START */}
 
-        <div className="block">
-          <Link to="/admin/todos/todo-list/new">
-            <Button>
-              <MdAdd />
-              Create Todo List
-            </Button>
-          </Link>
-        </div>
-        {/* TPL_CREATE_BUTTON:END */}
-      </div>
+          <div className="block">
+            <Link to="/admin/todos/todo-list/new">
+              <Button>
+                <MdAdd />
+                Create Todo List
+              </Button>
+            </Link>
+          </div>
+          {/* TPL_CREATE_BUTTON:END */}
+        </PageHeaderActions>
+      </PageHeader>
       {/* TPL_TABLE_COMPONENT:START */}
       <TodoListTable items={data.todoLists} />
       {/* TPL_TABLE_COMPONENT:END */}

@@ -7,6 +7,9 @@ import { cn } from '#src/utils/cn.js';
 /**
  * A composable empty state component.
  *
+ * ShadCN changes:
+ * - Description links use the shared `inline-link` treatment
+ *
  * https://ui.shadcn.com/docs/components/base/empty
  */
 function Empty({
@@ -93,7 +96,7 @@ function EmptyDescription({
     <div
       data-slot="empty-description"
       className={cn(
-        'text-sm/relaxed text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary',
+        'text-sm/relaxed text-muted-foreground [&>a]:inline-link',
         className,
       )}
       {...props}

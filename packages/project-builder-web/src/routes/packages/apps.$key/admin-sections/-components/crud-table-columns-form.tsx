@@ -7,6 +7,7 @@ import type React from 'react';
 
 import {
   Button,
+  EmptyDescription,
   RecordView,
   RecordViewActions,
   RecordViewItem,
@@ -129,9 +130,9 @@ function CrudTableColumnsForm({
   return (
     <div className={clsx('space-y-4', className)}>
       {fields.length === 0 ? (
-        <p className="pt-4 text-style-muted">
+        <EmptyDescription className="pt-4">
           No columns configured. Add columns to display data in your table.
-        </p>
+        </EmptyDescription>
       ) : (
         <div className="flex w-full flex-col gap-2">
           <SortableList listItems={columnListItems} sortItems={move} />

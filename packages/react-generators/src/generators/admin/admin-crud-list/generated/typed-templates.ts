@@ -6,7 +6,9 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 
 const listPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'index.tsx', kind: 'instance' },
-  importMapProviders: {},
+  importMapProviders: {
+    reactComponentsImports: reactComponentsImportsProvider,
+  },
   name: 'list-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/index.tsx'),

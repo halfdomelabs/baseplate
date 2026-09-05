@@ -5,6 +5,7 @@ import type { Control, UseFormSetValue } from 'react-hook-form';
 import { modelEnumValueEntityType } from '@baseplate-dev/project-builder-lib';
 import {
   Button,
+  EmptyDescription,
   InputFieldController,
   SectionListSection,
   SectionListSectionContent,
@@ -91,9 +92,9 @@ export function EnumValuesSection({
       </SectionListSectionHeader>
       <SectionListSectionContent className="space-y-4">
         {valueFields.length === 0 ? (
-          <p className="pt-4 text-style-muted">
+          <EmptyDescription className="pt-4">
             Add some values to get started
-          </p>
+          </EmptyDescription>
         ) : (
           <SortableList listItems={valueListItems} sortItems={sortValues} />
         )}

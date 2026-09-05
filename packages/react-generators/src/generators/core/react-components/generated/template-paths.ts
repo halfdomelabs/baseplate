@@ -41,6 +41,7 @@ export interface CoreReactComponentsPaths {
   navigationMenu: string;
   notFoundCard: string;
   numberField: string;
+  pageHeader: string;
   popover: string;
   radioField: string;
   radioGroup: string;
@@ -122,6 +123,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           navigationMenu: `${componentsRoot}/ui/navigation-menu.tsx`,
           notFoundCard: `${componentsRoot}/ui/not-found-card.tsx`,
           numberField: `${componentsRoot}/ui/number-field.tsx`,
+          pageHeader: `${componentsRoot}/ui/page-header.tsx`,
           popover: `${componentsRoot}/ui/popover.tsx`,
           radioField: `${componentsRoot}/ui/radio-field.tsx`,
           radioGroup: `${componentsRoot}/ui/radio-group.tsx`,

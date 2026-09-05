@@ -21,6 +21,9 @@ import {
   EmptyDescription,
   EmptyHeader,
   EmptyTitle,
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderTitle,
 } from '@baseplate-dev/ui-components';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
@@ -105,15 +108,17 @@ function Index(): React.JSX.Element {
       <div className="mx-auto max-w-4xl space-y-6 p-6">
         {/* Welcome header */}
         <div className="space-y-2">
-          <h1>Welcome to Baseplate</h1>
-          {projectName && (
-            <p className="text-lg font-medium text-muted-foreground">
-              {projectName}
-            </p>
-          )}
-          <p className="text-muted-foreground">
-            Configure your project, then sync to generate code.
-          </p>
+          <PageHeader>
+            <PageHeaderTitle>Welcome to Baseplate</PageHeaderTitle>
+            {projectName && (
+              <PageHeaderDescription className="text-lg font-medium">
+                {projectName}
+              </PageHeaderDescription>
+            )}
+            <PageHeaderDescription>
+              Configure your project, then sync to generate code.
+            </PageHeaderDescription>
+          </PageHeader>
           <div className="flex gap-3 pt-1">
             <a
               href="https://docs.baseplate.dev"

@@ -12,6 +12,9 @@ import {
 } from '@baseplate-dev/project-builder-lib/web';
 import {
   FormActionBar,
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderTitle,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -72,12 +75,14 @@ function UrlSettingsPage(): React.JSX.Element {
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
         <div className="sticky top-0 border-b bg-background py-6">
-          <h1>URL Configuration</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Each app&apos;s public URL is set on that app&apos;s own page, and
-            defaults to its development server. Every web app&apos;s origin is
-            trusted for CORS and CSRF checks.
-          </p>
+          <PageHeader>
+            <PageHeaderTitle>URL Configuration</PageHeaderTitle>
+            <PageHeaderDescription>
+              Each app&apos;s public URL is set on that app&apos;s own page, and
+              defaults to its development server. Every web app&apos;s origin is
+              trusted for CORS and CSRF checks.
+            </PageHeaderDescription>
+          </PageHeader>
         </div>
         <SectionList>
           <SectionListSection>

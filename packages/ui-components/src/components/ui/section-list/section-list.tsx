@@ -52,7 +52,11 @@ function SectionListSectionTitle({
   className,
   children,
 }: SectionTitleProps): React.ReactElement {
-  return <h3 className={className}>{children}</h3>;
+  return (
+    <h3 className={cn('text-xl font-semibold tracking-tight', className)}>
+      {children}
+    </h3>
+  );
 }
 
 interface SectionDescriptionProps {

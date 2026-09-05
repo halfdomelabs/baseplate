@@ -175,6 +175,12 @@ export {
   NumberFieldController,
 } from './components/ui/number-field.js';
 export {
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderDescription,
+  PageHeaderTitle,
+} from './components/ui/page-header.js';
+export {
   Popover,
   PopoverContent,
   PopoverTrigger,

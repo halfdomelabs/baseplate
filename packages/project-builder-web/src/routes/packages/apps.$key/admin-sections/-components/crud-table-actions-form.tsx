@@ -7,6 +7,7 @@ import type { Control } from 'react-hook-form';
 
 import {
   Button,
+  EmptyDescription,
   RecordView,
   RecordViewActions,
   RecordViewItem,
@@ -131,9 +132,9 @@ function CrudTableActionsForm({
   return (
     <div className={clsx('space-y-4', className)}>
       {fields.length === 0 ? (
-        <p className="pt-4 text-style-muted">
+        <EmptyDescription className="pt-4">
           No actions configured. Add actions to enable row operations.
-        </p>
+        </EmptyDescription>
       ) : (
         <div className="flex w-full flex-col gap-2">
           <SortableList listItems={actionListItems} sortItems={move} />

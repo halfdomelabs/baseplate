@@ -19,6 +19,16 @@ const stylesCss = createTextTemplateFile({
   },
 });
 
-export const mainGroup = { stylesCss };
+const typesetCss = createTextTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  name: 'typeset-css',
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/typeset.css'),
+  },
+  variables: {},
+});
+
+export const mainGroup = { stylesCss, typesetCss };
 
 export const CORE_REACT_TAILWIND_TEMPLATES = { mainGroup };

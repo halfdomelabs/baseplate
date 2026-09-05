@@ -15,6 +15,7 @@ import {
   Button,
   CheckboxFieldController,
   InputFieldController,
+  SectionTitle,
   SelectFieldController,
   Table,
   TableBody,
@@ -157,7 +158,7 @@ function AdminCrudEmbeddedForm({
       />
       {type === 'list' && (
         <>
-          <h2>Table</h2>
+          <SectionTitle>Table</SectionTitle>
           <CrudTableColumnsForm
             lens={
               // not sure why but the typings don't work as expected
@@ -169,7 +170,7 @@ function AdminCrudEmbeddedForm({
           />
         </>
       )}
-      <h2>Form</h2>
+      <SectionTitle>Form</SectionTitle>
       <CrudFormFieldsForm
         formProps={
           formProps as unknown as UseFormReturn<AdminCrudFormConfigInput>

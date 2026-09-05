@@ -2,6 +2,7 @@
 
 import type { ReactElement } from 'react';
 
+import { PageHeader, PageHeaderTitle } from '%reactComponentsImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
@@ -40,7 +41,9 @@ function TPL_COMPONENT_NAME(): ReactElement {
 
   return (
     <div className="space-y-4">
-      <h1 className="flex space-x-2">{crumb}</h1>
+      <PageHeader>
+        <PageHeaderTitle className="flex space-x-2">{crumb}</PageHeaderTitle>
+      </PageHeader>
       <TPL_EDIT_FORM />
     </div>
   );

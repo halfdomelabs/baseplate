@@ -8,6 +8,7 @@ import type { UseFormReturn } from 'react-hook-form';
 
 import {
   Button,
+  EmptyDescription,
   RecordView,
   RecordViewActions,
   RecordViewItem,
@@ -130,9 +131,9 @@ function CrudFormFieldsForm({
   return (
     <div className={clsx('space-y-4', className)}>
       {fields.length === 0 ? (
-        <p className="pt-4 text-style-muted">
+        <EmptyDescription className="pt-4">
           No fields configured. Add fields to create your form.
-        </p>
+        </EmptyDescription>
       ) : (
         <div className="flex w-full flex-col gap-2">
           <SortableList listItems={fieldListItems} sortItems={move} />

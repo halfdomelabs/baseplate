@@ -20,6 +20,10 @@ import {
   DropdownMenuTrigger,
   FormActionBar,
   InputFieldController,
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderDescription,
+  PageHeaderTitle,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -153,35 +157,39 @@ function EditAdminSectionPage(): React.JSX.Element {
 
   return (
     <div key={section.id}>
-      <div className="flex items-center justify-between border-b p-4">
-        <div>
-          <h2>{section.name}</h2>
-          <p className="text-sm text-muted-foreground">{app.name}</p>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
-            <HiDotsVertical aria-label="More Actions" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                variant="destructive"
-                disabled={isSavingDefinition}
-                onClick={() => {
-                  requestConfirm({
-                    title: 'Delete Section',
-                    content: `Are you sure you want to delete "${section.name}"? This action will permanently remove the admin section from your application.`,
-                    buttonConfirmText: 'Delete',
-                    buttonConfirmVariant: 'destructive',
-                    onConfirm: handleDelete,
-                  });
-                }}
+      <div className="border-b p-4">
+        <PageHeader>
+          <PageHeaderTitle className="text-2xl">{section.name}</PageHeaderTitle>
+          <PageHeaderDescription>{app.name}</PageHeaderDescription>
+          <PageHeaderActions className="self-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={<Button variant="ghost" size="icon" />}
               >
-                Delete Section
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <HiDotsVertical aria-label="More Actions" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    disabled={isSavingDefinition}
+                    onClick={() => {
+                      requestConfirm({
+                        title: 'Delete Section',
+                        content: `Are you sure you want to delete "${section.name}"? This action will permanently remove the admin section from your application.`,
+                        buttonConfirmText: 'Delete',
+                        buttonConfirmVariant: 'destructive',
+                        onConfirm: handleDelete,
+                      });
+                    }}
+                  >
+                    Delete Section
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </PageHeaderActions>
+        </PageHeader>
       </div>
       <form onSubmit={onSubmit} className="w-full max-w-7xl space-y-4 p-4">
         <SectionList>

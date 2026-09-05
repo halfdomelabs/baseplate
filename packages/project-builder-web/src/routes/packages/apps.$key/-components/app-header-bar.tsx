@@ -9,6 +9,9 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
 import { useNavigate } from '@tanstack/react-router';
@@ -44,33 +47,41 @@ export function AppHeaderBar({ app }: AppHeaderBarProps): React.ReactElement {
   }
 
   return (
-    <div className="flex items-center justify-between border-b p-4">
-      <div className="flex items-center gap-3">
-        <h2>{packageScope ? `@${packageScope}/${app.name}` : app.name}</h2>
-        <Badge variant="secondary">{app.type}</Badge>
-      </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
-          <HiDotsVertical aria-label="More Actions" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              variant="destructive"
-              disabled={isSavingDefinition}
-              onClick={() => {
-                requestConfirm({
-                  title: 'Unlink App',
-                  content: `Are you sure you want to unlink ${app.name}? The app will be removed from Baseplate but generated files will remain on disk.`,
-                  onConfirm: handleUnlink,
-                });
-              }}
+    <div className="border-b p-4">
+      <PageHeader className="items-center">
+        <div className="flex items-center gap-3">
+          <PageHeaderTitle className="text-2xl">
+            {packageScope ? `@${packageScope}/${app.name}` : app.name}
+          </PageHeaderTitle>
+          <Badge variant="secondary">{app.type}</Badge>
+        </div>
+        <PageHeaderActions>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={<Button variant="ghost" size="icon" />}
             >
-              Unlink App
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              <HiDotsVertical aria-label="More Actions" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  variant="destructive"
+                  disabled={isSavingDefinition}
+                  onClick={() => {
+                    requestConfirm({
+                      title: 'Unlink App',
+                      content: `Are you sure you want to unlink ${app.name}? The app will be removed from Baseplate but generated files will remain on disk.`,
+                      onConfirm: handleUnlink,
+                    });
+                  }}
+                >
+                  Unlink App
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </PageHeaderActions>
+      </PageHeader>
     </div>
   );
 }

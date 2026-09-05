@@ -22,7 +22,9 @@ export function AppSidebar(): React.ReactElement {
   return (
     <Sidebar>
       <SidebarHeader className="border-b p-4">
-        <h2>Admin Dashboard</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Admin Dashboard
+        </h2>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

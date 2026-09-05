@@ -54,35 +54,22 @@
   );
 }
 
-/**
- * Utility classes for typography
- */
+/* Mirrors typeset's `a` rule so links outside rendered content match links inside it.
+   Keep the two in sync — typeset.css stays self-contained, so it cannot share these. */
+@utility inline-link {
+  color: var(--link);
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
 
-@utility text-style-lead {
-  @apply text-xl leading-6 font-medium text-muted-foreground;
-}
+  &:hover {
+    text-decoration-color: currentColor;
+  }
 
-@utility text-style-large {
-  @apply text-lg leading-6 font-semibold;
-}
-
-@utility text-style-small {
-  @apply text-sm leading-none font-medium;
-}
-
-@utility text-style-muted {
-  @apply text-sm leading-5 text-muted-foreground;
-}
-
-@utility text-style-prose {
-  @apply text-base leading-6;
-
-  & a {
-    @apply font-medium text-link;
-
-    &:hover {
-      @apply underline;
-    }
+  &:focus-visible {
+    outline: 2px solid var(--ring, currentColor);
+    outline-offset: 2px;
+    border-radius: 0.125em;
   }
 }
 

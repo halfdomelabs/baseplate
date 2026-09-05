@@ -13,6 +13,8 @@ import {
   AlertTitle,
   CheckboxFieldController,
   FormActionBar,
+  PageHeader,
+  PageHeaderTitle,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -80,7 +82,9 @@ function TemplateExtractorSettingsPage(): React.JSX.Element {
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
         <div className="sticky top-0 border-b bg-background py-6">
-          <h1>Template Extractor</h1>
+          <PageHeader>
+            <PageHeaderTitle>Template Extractor</PageHeaderTitle>
+          </PageHeader>
         </div>
         <SectionList>
           <SectionListSection>

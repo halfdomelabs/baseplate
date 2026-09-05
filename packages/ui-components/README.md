@@ -199,6 +199,7 @@ The package includes several CSS files that work together to provide theming and
 @import '@baseplate-dev/ui-components/base-styles.css';
 @import '@baseplate-dev/ui-components/theme.css';
 @import '@baseplate-dev/ui-components/utilities.css';
+@import '@baseplate-dev/ui-components/typeset.css';
 ```
 
 **For Plugins (Theme Only):**
@@ -214,7 +215,6 @@ The main entry point for consumers that sets up the complete styling foundation:
 
 - **CSS Variables**: Defines color tokens for light and dark themes using OKLCH color space
 - **Font Setup**: Imports Geist and Geist Mono variable fonts with fallback configurations
-- **Typography**: Establishes base heading and paragraph styles
 - **Global Defaults**: Sets border colors, backgrounds, text antialiasing, and a pointer cursor on buttons
 
 ### `theme.css`
@@ -231,12 +231,45 @@ Theme configuration file for Tailwind CSS integration:
 Custom utility classes for advanced styling patterns:
 
 - **Tone Utilities**: `tone-default`, `tone-success`, `tone-warning`, `tone-error` for contextual styling
-- **Typography Utilities**: `text-style-lead`, `text-style-large`, `text-style-small`, `text-style-muted`, `text-style-prose` for consistent text styling
+- **Inline Link Utility**: `inline-link` — an interactive text treatment embedded in surrounding copy: persistent underline, `--link` color, visible keyboard focus. The same treatment `typeset` gives links inside rendered content.
 - Uses dynamic color mixing for muted variations and borders
+
+### `typeset.css`
+
+Typography for rendered content — markdown, HTML, help text, AI chat output.
+A port of [shadcn/typeset](https://ui.shadcn.com/docs/typeset) reading
+Baseplate's palette tokens directly. There are no base `h1`–`h3`/`p` rules: a
+bare heading is unstyled, and typography is opted into.
+
+Wrap rendered content in `typeset`; style UI chrome with plain utilities:
+
+```tsx
+<div className="typeset">{renderedMarkdown}</div>
+```
+
+- **Container-relative**: sized in `em`, so the same markup renders correctly in
+  a `text-sm` card and on a full-width page with no per-context variant.
+- **Rhythm variables**: `--typeset-size` (base size, `1em`), `--typeset-leading`
+  (line height, `1.75`), and `--typeset-flow` (space between blocks, `1.25em`).
+  Override per container with an arbitrary property:
+  `<article className="typeset [--typeset-flow:1.75em]">`.
+- **`not-typeset` / `data-not-typeset`**: keeps a component and everything inside
+  it out of typeset. Use it for interactive components embedded in content.
+- **`typeset-scroll`**: wrap a wide table (or any wide block) to scroll it
+  horizontally instead of letting it compress.
+- **Layering**: the file declares its own `@layer components`, so text utilities
+  always win over it. Importers just `@import` it — do not add `layer(...)`.
+- **Streaming-safe**: no `:last-child` or `:has()`, and spacing is
+  `margin-block-start` only, so appending content never restyles what is already
+  rendered.
+
+Typeset must be imported into the same stylesheet as `theme.css`: Tailwind prunes
+theme variables that nothing references, and typeset is the only consumer of
+`--font-heading`.
 
 ## Theme tokens
 
-The token layer is split across the three files above by concern:
+The token layer is split across the four files above by concern:
 
 - **Palette** (`base-styles.css`): the raw color variables (`--background`, `--foreground`, `--primary`, `--border`, etc.), grouped in `theme-colors.ts` by category — `surface` (background/card/popover/accent/success/warning/error and their foregrounds), `interactive` (primary/secondary/destructive/link), and `utility` (border/input/ring). Surface-category defaults are generated from the same palette Tailwind ships (`slate` by default); interactive/utility colors are hand-tuned brand colors independent of that palette.
 - **Tailwind mapping** (`theme.css`): `@theme inline` re-exposes each palette variable as a `--color-*` token so Tailwind generates the matching utility classes (`bg-primary`, `text-foreground`, etc). `--color-*: initial` resets Tailwind's own built-in `--color-*` namespace first — deliberately, so only the tokens re-declared here (not Tailwind's default reds/blues/etc.) produce color utilities.

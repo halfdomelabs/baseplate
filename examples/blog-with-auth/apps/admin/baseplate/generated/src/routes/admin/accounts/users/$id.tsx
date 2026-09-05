@@ -4,6 +4,7 @@ import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
+import { PageHeader, PageHeaderTitle } from '@src/components/ui/page-header';
 import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
@@ -95,7 +96,9 @@ function UserEditPage(): ReactElement {
 
   return (
     <div className="space-y-4">
-      <h1 className="flex space-x-2">{crumb}</h1>
+      <PageHeader>
+        <PageHeaderTitle className="flex space-x-2">{crumb}</PageHeaderTitle>
+      </PageHeader>
       {/* TPL_EDIT_FORM:START */}
       <UserEditForm submitData={submitData} defaultValues={data.user} />
       {/* TPL_EDIT_FORM:END */}

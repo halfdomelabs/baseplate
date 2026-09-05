@@ -1,6 +1,5 @@
 import type React from 'react';
 
-import { Button } from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { NewEnumDialog } from './-components/new-enum-dialog.js';
@@ -11,7 +10,7 @@ export const Route = createFileRoute('/data/enums/')({
 
 function EnumsListPage(): React.JSX.Element {
   return (
-    <div className="max-w-4xl space-y-4 p-4 text-style-prose">
+    <div className="typeset max-w-4xl p-4">
       <h1>Enums</h1>
       <p>
         Enums are a way to define a set of named values. They can be used to
@@ -23,9 +22,9 @@ function EnumsListPage(): React.JSX.Element {
         Choose an enum to edit from the sidebar or{' '}
         <NewEnumDialog
           trigger={
-            <Button variant="link" size="none">
+            <button type="button" className="inline-link">
               create a new enum
-            </Button>
+            </button>
           }
         />
         .

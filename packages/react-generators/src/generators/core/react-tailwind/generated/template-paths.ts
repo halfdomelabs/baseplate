@@ -3,6 +3,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreReactTailwindPaths {
   stylesCss: string;
+  typesetCss: string;
 }
 
 const coreReactTailwindPaths = createProviderType<CoreReactTailwindPaths>(
@@ -17,7 +18,10 @@ const coreReactTailwindPathsTask = createGeneratorTask({
 
     return {
       providers: {
-        coreReactTailwindPaths: { stylesCss: `${srcRoot}/styles.css` },
+        coreReactTailwindPaths: {
+          stylesCss: `${srcRoot}/styles.css`,
+          typesetCss: `${srcRoot}/typeset.css`,
+        },
       },
     };
   },

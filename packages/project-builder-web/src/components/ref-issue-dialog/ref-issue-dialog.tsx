@@ -88,11 +88,12 @@ export function RefIssueDialog(): React.JSX.Element {
                 <TableRow key={issuePath}>
                   <TableCell>
                     {referenceParent ? (
-                      <div className="text-style-prose">
+                      <div>
                         <div>
                           {navOptions ? (
                             <Link
                               {...navOptions}
+                              className="inline-link"
                               onClick={() => {
                                 setDialogOptions(undefined);
                               }}

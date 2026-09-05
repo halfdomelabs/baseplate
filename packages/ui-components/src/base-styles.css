@@ -111,33 +111,6 @@ html[data-theme='dark'] {
 }
 
 /**
- * Typography
- */
-
-@layer base {
-  /* Leading is set in plain CSS: `leading-*` utilities also set `--tw-leading`,
-     which text-size utilities read as their line-height, pinning the base value. */
-  h1 {
-    @apply text-3xl font-semibold tracking-tight;
-    line-height: 1;
-  }
-
-  h2 {
-    @apply text-2xl font-semibold tracking-tight;
-    line-height: calc(var(--spacing) * 7);
-  }
-
-  h3 {
-    @apply text-xl font-semibold tracking-tight;
-    line-height: calc(var(--spacing) * 6);
-  }
-
-  p {
-    line-height: calc(var(--spacing) * 6);
-  }
-}
-
-/**
  * Base styles for border and background/font colors
  */
 

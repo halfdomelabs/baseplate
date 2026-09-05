@@ -9,6 +9,10 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
         "reactErrorImportsProvider": {
           "importName": "reactErrorImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
@@ -69,6 +73,10 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
         "reactErrorImportsProvider": {
           "importName": "reactErrorImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"

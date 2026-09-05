@@ -19,6 +19,14 @@
           "description": "Tailwind @source directives for scanning imported library source files"
         }
       }
+    },
+    "typeset-css": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "pathRootRelativePath": "{src-root}/typeset.css",
+      "sourceFile": "src/typeset.css",
+      "variables": {}
     }
   }
 }

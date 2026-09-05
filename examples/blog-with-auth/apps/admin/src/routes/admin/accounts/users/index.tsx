@@ -5,6 +5,11 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@src/components/ui/button';
+import {
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderTitle,
+} from '@src/components/ui/page-header';
 import { graphql } from '@src/gql';
 
 import { UserTable } from './-components/user-table';
@@ -39,24 +44,26 @@ function UserListPage(): ReactElement {
 
   return (
     <div className="flex max-w-4xl flex-col space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h1>
+      <PageHeader className="items-center">
+        <PageHeaderTitle>
           {/* TPL_PAGE_TITLE:START */}
           Users
           {/* TPL_PAGE_TITLE:END */}
-        </h1>
-        {/* TPL_CREATE_BUTTON:START */}
+        </PageHeaderTitle>
+        <PageHeaderActions>
+          {/* TPL_CREATE_BUTTON:START */}
 
-        <div className="block">
-          <Link to="/admin/accounts/users/new">
-            <Button>
-              <MdAdd />
-              Create User
-            </Button>
-          </Link>
-        </div>
-        {/* TPL_CREATE_BUTTON:END */}
-      </div>
+          <div className="block">
+            <Link to="/admin/accounts/users/new">
+              <Button>
+                <MdAdd />
+                Create User
+              </Button>
+            </Link>
+          </div>
+          {/* TPL_CREATE_BUTTON:END */}
+        </PageHeaderActions>
+      </PageHeader>
       {/* TPL_TABLE_COMPONENT:START */}
       <UserTable items={data.users} />
       {/* TPL_TABLE_COMPONENT:END */}

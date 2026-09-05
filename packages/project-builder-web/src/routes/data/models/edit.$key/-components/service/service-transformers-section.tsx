@@ -194,7 +194,7 @@ export function ServiceTransformersSection({
                   >
                     <div className="flex flex-col gap-1">
                       <div>{transformer.label}</div>
-                      <div className="text-style-muted">
+                      <div className="text-sm text-muted-foreground">
                         {transformer.description}
                       </div>
                     </div>

@@ -45,7 +45,9 @@ function ErrorDisplay({
         <div>
           <MdOutlineErrorOutline className="size-20 text-muted-foreground" />
         </div>
-        <h1>{header ?? strings.errorDisplayDefaultHeader}</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          {header ?? strings.errorDisplayDefaultHeader}
+        </h1>
         <p>
           {typeof error === 'string' || React.isValidElement(error)
             ? error

@@ -11,12 +11,19 @@ import {
   Badge,
   Button,
   Card,
+  CardTitle,
   Empty,
   EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
+  PageHeader,
+  PageHeaderTitle,
+  Section,
+  SectionDescription,
+  SectionHeader,
+  SectionTitle,
 } from '@baseplate-dev/ui-components';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
@@ -57,12 +64,16 @@ function PackagesListPage(): React.JSX.Element {
 
   return (
     <div className="space-y-6 p-4">
-      {/* Apps Section */}
-      <section className="space-y-4">
-        <h1>Apps</h1>
-        <p className="text-muted-foreground">
-          These are the apps that are defined in your project.
-        </p>
+      <PageHeader>
+        <PageHeaderTitle>Packages</PageHeaderTitle>
+      </PageHeader>
+      <Section>
+        <SectionHeader>
+          <SectionTitle>Apps</SectionTitle>
+          <SectionDescription>
+            These are the apps that are defined in your project.
+          </SectionDescription>
+        </SectionHeader>
         {sortedApps.length > 0 ? (
           <div className="mt-4 flex max-w-xl flex-col gap-4">
             {sortedApps.map((app) => {
@@ -78,7 +89,12 @@ function PackagesListPage(): React.JSX.Element {
                 >
                   <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">
                     <div className="flex items-center justify-between">
-                      <h3>{app.name}</h3>
+                      <CardTitle
+                        render={<h3 />}
+                        className="text-xl tracking-tight"
+                      >
+                        {app.name}
+                      </CardTitle>
                       <Badge variant="secondary">{app.type}</Badge>
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -92,14 +108,15 @@ function PackagesListPage(): React.JSX.Element {
         ) : (
           <p className="mt-4 text-sm text-muted-foreground">No apps yet.</p>
         )}
-      </section>
+      </Section>
 
-      {/* Libraries Section */}
-      <section className="space-y-4">
-        <h2>Libraries</h2>
-        <p className="text-muted-foreground">
-          Library packages that can be shared across apps.
-        </p>
+      <Section>
+        <SectionHeader>
+          <SectionTitle>Libraries</SectionTitle>
+          <SectionDescription>
+            Library packages that can be shared across apps.
+          </SectionDescription>
+        </SectionHeader>
         {sortedLibraries.length > 0 ? (
           <div className="mt-4 flex max-w-xl flex-col gap-4">
             {sortedLibraries.map((lib) => {
@@ -115,7 +132,12 @@ function PackagesListPage(): React.JSX.Element {
                 >
                   <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">
                     <div className="flex items-center justify-between">
-                      <h3>{lib.name}</h3>
+                      <CardTitle
+                        render={<h3 />}
+                        className="text-xl tracking-tight"
+                      >
+                        {lib.name}
+                      </CardTitle>
                       <Badge variant="secondary">{lib.type}</Badge>
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -131,7 +153,7 @@ function PackagesListPage(): React.JSX.Element {
             No libraries yet.
           </p>
         )}
-      </section>
+      </Section>
     </div>
   );
 }

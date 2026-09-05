@@ -1,0 +1,42 @@
+import { Meta, Story } from '@storybook/addon-docs/blocks';
+
+import * as TypesetStories from './typeset.stories.tsx';
+
+<Meta of={TypesetStories} />
+
+# Typeset
+
+Rendered content — markdown, HTML, help text, AI chat output — gets the
+`typeset` class. UI chrome uses plain Tailwind utilities. Repeated roles become
+components.
+
+`typeset` is a port of [shadcn/typeset](https://ui.shadcn.com/docs/typeset)
+reading Baseplate's own palette tokens. It sizes in `em`, so the same markup
+follows whatever font size its container sets, and it lives in
+`@layer components`, so any text utility you add still wins.
+
+```tsx
+<div className="typeset">{renderedMarkdown}</div>
+```
+
+Three variables control the rhythm. Override them per container:
+
+```tsx
+<article className="typeset [--typeset-flow:1.75em]">…</article>
+```
+
+- `--typeset-size` — base text size, `1em` by default
+- `--typeset-leading` — line height, `1.75` by default
+- `--typeset-flow` — space between blocks, `1.25em` by default
+
+Add `not-typeset` (or `data-not-typeset`) to keep a component and everything
+inside it out of typeset. Wrap a wide table in `typeset-scroll` to scroll it
+horizontally instead of letting it compress.
+
+---
+
+<Story of={TypesetStories.Page} />
+
+<Story of={TypesetStories.InCard} />
+
+<Story of={TypesetStories.Overrides} />

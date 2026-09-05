@@ -674,6 +674,22 @@
       "sourceFile": "components/ui/number-field.tsx",
       "variables": {}
     },
+    "page-header": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/page-header.tsx",
+      "projectExports": {
+        "PageHeader": { "isTypeOnly": false },
+        "PageHeaderActions": { "isTypeOnly": false },
+        "PageHeaderDescription": { "isTypeOnly": false },
+        "PageHeaderTitle": { "isTypeOnly": false }
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/page-header.tsx",
+      "variables": {}
+    },
     "popover": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

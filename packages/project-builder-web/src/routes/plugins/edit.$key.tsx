@@ -17,6 +17,9 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
@@ -187,28 +190,30 @@ function PluginConfigPage(): React.JSX.Element {
   return (
     <div className="relative flex h-full flex-1 flex-col gap-4 overflow-hidden">
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
-        <div className="flex max-w-6xl items-center justify-between">
-          <h1>{pluginMetadata.displayName} Plugin</h1>
+        <PageHeader className="max-w-6xl items-center">
+          <PageHeaderTitle>{pluginMetadata.displayName} Plugin</PageHeaderTitle>
           {pluginDefinition && (
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button variant="ghost" size="icon" />}
-              >
-                <HiDotsVertical aria-label="More Actions" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuGroup>
-                  <DropdownMenuItem
-                    disabled={isSavingDefinition}
-                    onClick={onDisablePlugin}
-                  >
-                    Disable Plugin
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <PageHeaderActions>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={<Button variant="ghost" size="icon" />}
+                >
+                  <HiDotsVertical aria-label="More Actions" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      disabled={isSavingDefinition}
+                      onClick={onDisablePlugin}
+                    >
+                      Disable Plugin
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </PageHeaderActions>
           )}
-        </div>
+        </PageHeader>
         <Container
           definition={pluginDefinition}
           metadata={pluginMetadata}
@@ -230,7 +235,9 @@ function UnmetDependenciesView({
 
   return (
     <div className="flex h-full flex-1 flex-col gap-4 overflow-y-auto p-4">
-      <h1>{pluginMetadata.displayName} Plugin</h1>
+      <PageHeader>
+        <PageHeaderTitle>{pluginMetadata.displayName} Plugin</PageHeaderTitle>
+      </PageHeader>
       <div className="flex max-w-lg flex-col gap-3">
         <p className="text-sm text-muted-foreground">
           {pluginMetadata.displayName} requires the following plugins to be

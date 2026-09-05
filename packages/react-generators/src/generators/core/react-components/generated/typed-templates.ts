@@ -707,6 +707,27 @@ const numberField = createTsTemplateFile({
   variables: {},
 });
 
+const pageHeader = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'page-header',
+  projectExports: {
+    PageHeader: { isTypeOnly: false },
+    PageHeaderActions: { isTypeOnly: false },
+    PageHeaderDescription: { isTypeOnly: false },
+    PageHeaderTitle: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/page-header.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const popover = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -1119,6 +1140,7 @@ export const componentsGroup = {
   navigationMenu,
   notFoundCard,
   numberField,
+  pageHeader,
   popover,
   radioField,
   radioGroup,

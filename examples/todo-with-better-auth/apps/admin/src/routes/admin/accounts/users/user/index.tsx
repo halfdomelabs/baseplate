@@ -1,6 +1,11 @@
 import type { ReactElement } from 'react';
 
 import { useReadQuery } from '@apollo/client/react';
+import {
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderTitle,
+} from '@prisma-crud/ui-shared';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { graphql } from '@src/gql';
@@ -37,16 +42,18 @@ function UserListPage(): ReactElement {
 
   return (
     <div className="flex max-w-4xl flex-col space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h1>
+      <PageHeader className="items-center">
+        <PageHeaderTitle>
           {/* TPL_PAGE_TITLE:START */}
           Users
           {/* TPL_PAGE_TITLE:END */}
-        </h1>
-        {/* TPL_CREATE_BUTTON:START */}
+        </PageHeaderTitle>
+        <PageHeaderActions>
+          {/* TPL_CREATE_BUTTON:START */}
 
-        {/* TPL_CREATE_BUTTON:END */}
-      </div>
+          {/* TPL_CREATE_BUTTON:END */}
+        </PageHeaderActions>
+      </PageHeader>
       {/* TPL_TABLE_COMPONENT:START */}
       <UserTable items={data.users} />
       {/* TPL_TABLE_COMPONENT:END */}

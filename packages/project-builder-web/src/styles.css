@@ -3,6 +3,7 @@
 @import '@baseplate-dev/ui-components/base-styles.css';
 @import '@baseplate-dev/ui-components/theme.css';
 @import '@baseplate-dev/ui-components/utilities.css';
+@import '@baseplate-dev/ui-components/typeset.css';
 
 @layer base {
   html,
