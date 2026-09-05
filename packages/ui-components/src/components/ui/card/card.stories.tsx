@@ -14,7 +14,9 @@ const meta = {
   title: 'components/Card',
   component: Card,
   tags: ['autodocs'],
-  argTypes: {},
+  argTypes: {
+    size: { control: 'inline-radio', options: ['default', 'sm'] },
+  },
 } satisfies Meta<typeof Card>;
 
 export default meta;
@@ -42,6 +44,41 @@ export const Default: Story = {
           </Button>
           <Button type="button">Primary</Button>
         </CardFooter>
+      </>
+    ),
+  },
+};
+
+/** `size="sm"` tightens `--card-spacing`, which drives every slot's padding. */
+export const Small: Story = {
+  args: {
+    size: 'sm',
+    children: (
+      <>
+        <CardHeader>
+          <CardTitle>Compact card</CardTitle>
+          <CardDescription>Denser padding and a smaller title</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Useful in sidebars and list rows.</p>
+        </CardContent>
+      </>
+    ),
+  },
+};
+
+/** A card with no footer keeps its bottom padding; the footer removes it. */
+export const WithoutFooter: Story = {
+  args: {
+    children: (
+      <>
+        <CardHeader>
+          <CardTitle>No footer</CardTitle>
+          <CardDescription>Padding stays symmetric</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Compare the bottom edge against the default story.</p>
+        </CardContent>
       </>
     ),
   },

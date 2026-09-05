@@ -10,6 +10,7 @@
       "pathRootRelativePath": "{components-root}/ui/alert.tsx",
       "projectExports": {
         "Alert": {},
+        "AlertAction": {},
         "AlertDescription": {},
         "AlertTitle": {}
       },

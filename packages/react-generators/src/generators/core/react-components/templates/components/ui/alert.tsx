@@ -7,7 +7,7 @@ import { cn } from '$cn';
 import { cva } from 'class-variance-authority';
 
 const alertVariants = cva(
-  'relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border border-tone-border bg-tone px-4 py-3 text-sm text-tone-foreground has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
+  "group/alert relative grid w-full gap-0.5 rounded-lg border border-tone-border bg-tone px-2.5 py-2 text-left text-sm text-tone-foreground has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -29,8 +29,8 @@ const alertVariants = cva(
  * ShadCN changes:
  * - Variants are the `tone-*` utilities (default/error/success/warning) rather
  *   than upstream's card-background default/destructive pair, so an alert
- *   carries a full status palette its children inherit. Upstream's newer
- *   `AlertAction` slot is not adopted.
+ *   carries a full status palette its children inherit
+ * - Links use the shared `inline-link` treatment
  *
  * https://ui.shadcn.com/docs/components/alert
  */
@@ -58,7 +58,7 @@ function AlertTitle({
     <div
       data-slot="alert-title"
       className={cn(
-        'col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight',
+        'font-medium group-has-[>svg]/alert:col-start-2 [&_a]:inline-link',
         className,
       )}
       {...props}
@@ -74,7 +74,7 @@ function AlertDescription({
     <div
       data-slot="alert-description"
       className={cn(
-        'col-start-2 grid justify-items-start gap-1 text-sm text-tone-muted-foreground [&_p]:leading-relaxed',
+        'text-sm text-balance text-tone-muted-foreground md:text-pretty [&_a]:inline-link [&_p:not(:last-child)]:mb-4',
         className,
       )}
       {...props}
@@ -82,4 +82,21 @@ function AlertDescription({
   );
 }
 
-export { Alert, AlertDescription, AlertTitle };
+/**
+ * Corner region for an alert's dismiss or retry control. `Alert` reserves the
+ * right padding for it only when one is present.
+ */
+function AlertAction({
+  className,
+  ...props
+}: React.ComponentProps<'div'>): React.ReactElement {
+  return (
+    <div
+      data-slot="alert-action"
+      className={cn('absolute top-2 right-2', className)}
+      {...props}
+    />
+  );
+}
+
+export { Alert, AlertAction, AlertDescription, AlertTitle };

@@ -6,7 +6,12 @@ const alert = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'alert',
-  projectExports: { Alert: {}, AlertDescription: {}, AlertTitle: {} },
+  projectExports: {
+    Alert: {},
+    AlertAction: {},
+    AlertDescription: {},
+    AlertTitle: {},
+  },
   referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(
