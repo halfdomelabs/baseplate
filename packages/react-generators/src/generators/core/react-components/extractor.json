@@ -750,6 +750,23 @@
       "sourceFile": "components/ui/scroll-area.tsx",
       "variables": {}
     },
+    "section": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/section.tsx",
+      "projectExports": {
+        "Section": { "isTypeOnly": false },
+        "SectionActions": { "isTypeOnly": false },
+        "SectionDescription": { "isTypeOnly": false },
+        "SectionHeader": { "isTypeOnly": false },
+        "SectionTitle": { "isTypeOnly": false }
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/section.tsx",
+      "variables": {}
+    },
     "select": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

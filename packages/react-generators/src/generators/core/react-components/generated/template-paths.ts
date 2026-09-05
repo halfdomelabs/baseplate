@@ -46,6 +46,7 @@ export interface CoreReactComponentsPaths {
   radioField: string;
   radioGroup: string;
   scrollArea: string;
+  section: string;
   select: string;
   selectField: string;
   separator: string;
@@ -128,6 +129,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           radioField: `${componentsRoot}/ui/radio-field.tsx`,
           radioGroup: `${componentsRoot}/ui/radio-group.tsx`,
           scrollArea: `${componentsRoot}/ui/scroll-area.tsx`,
+          section: `${componentsRoot}/ui/section.tsx`,
           select: `${componentsRoot}/ui/select.tsx`,
           selectField: `${componentsRoot}/ui/select-field.tsx`,
           separator: `${componentsRoot}/ui/separator.tsx`,

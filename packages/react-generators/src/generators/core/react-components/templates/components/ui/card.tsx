@@ -3,9 +3,14 @@
 import type * as React from 'react';
 
 import { cn } from '$cn';
+import { mergeProps } from '@base-ui/react/merge-props';
+import { useRender } from '@base-ui/react/use-render';
 
 /**
  * Displays a card with header, content, and footer.
+ *
+ * ShadCN changes:
+ * - CardTitle accepts `render` so consumers can pick the heading element
  *
  * https://ui.shadcn.com/docs/components/card
  */
@@ -43,15 +48,18 @@ function CardHeader({
 
 function CardTitle({
   className,
+  render,
   ...props
-}: React.ComponentProps<'div'>): React.ReactElement {
-  return (
-    <div
-      data-slot="card-title"
-      className={cn('leading-none font-semibold', className)}
-      {...props}
-    />
-  );
+}: useRender.ComponentProps<'div'>): React.ReactElement {
+  return useRender({
+    defaultTagName: 'div',
+    props: mergeProps<'div'>(
+      { className: cn('leading-none font-semibold', className) },
+      props,
+    ),
+    render,
+    state: { slot: 'card-title' },
+  });
 }
 
 function CardDescription({

@@ -799,6 +799,28 @@ const scrollArea = createTsTemplateFile({
   variables: {},
 });
 
+const section = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'section',
+  projectExports: {
+    Section: { isTypeOnly: false },
+    SectionActions: { isTypeOnly: false },
+    SectionDescription: { isTypeOnly: false },
+    SectionHeader: { isTypeOnly: false },
+    SectionTitle: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/section.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const select = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -1145,6 +1167,7 @@ export const componentsGroup = {
   radioField,
   radioGroup,
   scrollArea,
+  section,
   select,
   selectField,
   separator,

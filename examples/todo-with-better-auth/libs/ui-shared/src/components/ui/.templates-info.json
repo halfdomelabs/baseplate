@@ -189,6 +189,11 @@
     "instanceData": {},
     "template": "scroll-area"
   },
+  "section.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "section"
+  },
   "select-field.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},

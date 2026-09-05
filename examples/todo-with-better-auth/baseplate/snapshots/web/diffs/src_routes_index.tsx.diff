@@ -2,19 +2,21 @@ Index: src/routes/index.tsx
 ===================================================================
 --- src/routes/index.tsx
 +++ src/routes/index.tsx
-@@ -1,6 +1,7 @@
- import type { ReactElement } from 'react';
- 
-+import { Widget } from '@prisma-crud/ui-shared';
+@@ -3,8 +3,9 @@
+ import {
+   PageHeader,
+   PageHeaderDescription,
+   PageHeaderTitle,
++  Widget,
+ } from '@prisma-crud/ui-shared';
  import { createFileRoute } from '@tanstack/react-router';
  
  export const Route = createFileRoute('/')({
-   component: HomePage,
-@@ -10,7 +11,8 @@
-   return (
-     <div className="flex flex-col gap-4">
-       <h1 className="text-3xl font-semibold tracking-tight">Hello World</h1>
-       <p>This is the home page of a generated app.</p>
+@@ -19,7 +20,8 @@
+         <PageHeaderDescription>
+           This is the home page of a generated app.
+         </PageHeaderDescription>
+       </PageHeader>
 +      <Widget label="Imported from ui-shared" />
      </div>
    );

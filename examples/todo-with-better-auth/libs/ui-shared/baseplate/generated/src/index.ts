@@ -191,6 +191,13 @@ export {
 } from './components/ui/radio-field.js';
 export { ScrollArea } from './components/ui/scroll-area.js';
 export {
+  Section,
+  SectionActions,
+  SectionDescription,
+  SectionHeader,
+  SectionTitle,
+} from './components/ui/section.js';
+export {
   SelectField,
   SelectFieldController,
 } from './components/ui/select-field.js';

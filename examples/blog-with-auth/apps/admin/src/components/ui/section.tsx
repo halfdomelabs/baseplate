@@ -1,24 +1,36 @@
-// @ts-nocheck
-
 import type React from 'react';
 
-import { cn } from '$cn';
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
 
+import { cn } from '@src/utils/cn';
+
 /**
- * The title and description block at the top of a page.
+ * A titled group of content within a page.
  *
- * Layout chrome around it — sticky positioning, borders, page padding — stays
- * at the call site.
+ * Slots mirror `Card`: a header holding the title, an optional description and
+ * optional actions, followed by the section's content as children.
  *
- * Title and description stack in the first grid column; actions sit alongside
- * them and the second column only exists when actions are present.
- *
- * The title defaults to `h1`; pass `render` to pick the level that fits the
+ * The title defaults to `h2`; pass `render` to pick the level that fits the
  * surrounding document.
  */
-function PageHeader({
+function Section({
+  className,
+  render,
+  ...props
+}: useRender.ComponentProps<'section'>): React.ReactElement {
+  return useRender({
+    defaultTagName: 'section',
+    props: mergeProps<'section'>(
+      { className: cn('space-y-4', className) },
+      props,
+    ),
+    render,
+    state: { slot: 'section' },
+  });
+}
+
+function SectionHeader({
   className,
   render,
   ...props
@@ -29,42 +41,42 @@ function PageHeader({
       {
         className: cn(
           'grid auto-rows-min items-start gap-x-4',
-          'has-data-[slot=page-header-actions]:grid-cols-[1fr_auto]',
+          'has-data-[slot=section-actions]:grid-cols-[1fr_auto]',
           // Row gap only when there is a second row to separate, so a
           // title-only header is not padded by a phantom empty row.
-          'has-data-[slot=page-header-description]:gap-y-2',
+          'has-data-[slot=section-description]:gap-y-2',
           className,
         ),
       },
       props,
     ),
     render,
-    state: { slot: 'page-header' },
+    state: { slot: 'section-header' },
   });
 }
 
-function PageHeaderTitle({
+function SectionTitle({
   className,
   render,
   ...props
-}: useRender.ComponentProps<'h1'>): React.ReactElement {
+}: useRender.ComponentProps<'h2'>): React.ReactElement {
   return useRender({
-    defaultTagName: 'h1',
-    props: mergeProps<'h1'>(
+    defaultTagName: 'h2',
+    props: mergeProps<'h2'>(
       {
         className: cn(
-          'min-w-0 text-3xl font-semibold tracking-tight',
+          'min-w-0 text-2xl font-semibold tracking-tight',
           className,
         ),
       },
       props,
     ),
     render,
-    state: { slot: 'page-header-title' },
+    state: { slot: 'section-title' },
   });
 }
 
-function PageHeaderDescription({
+function SectionDescription({
   className,
   render,
   ...props
@@ -82,11 +94,11 @@ function PageHeaderDescription({
       props,
     ),
     render,
-    state: { slot: 'page-header-description' },
+    state: { slot: 'section-description' },
   });
 }
 
-function PageHeaderActions({
+function SectionActions({
   className,
   render,
   ...props
@@ -103,13 +115,14 @@ function PageHeaderActions({
       props,
     ),
     render,
-    state: { slot: 'page-header-actions' },
+    state: { slot: 'section-actions' },
   });
 }
 
 export {
-  PageHeader,
-  PageHeaderActions,
-  PageHeaderDescription,
-  PageHeaderTitle,
+  Section,
+  SectionActions,
+  SectionDescription,
+  SectionHeader,
+  SectionTitle,
 };

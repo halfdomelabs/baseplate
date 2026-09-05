@@ -21,7 +21,9 @@ const appRoutes = createTsTemplateFile({
 
 const placeholderIndex = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: {
+    reactComponentsImports: reactComponentsImportsProvider,
+  },
   name: 'placeholder-index',
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/index.tsx'),
