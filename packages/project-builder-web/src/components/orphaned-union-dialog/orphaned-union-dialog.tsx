@@ -83,11 +83,12 @@ export function OrphanedUnionDialog(): React.JSX.Element {
                 <TableRow key={itemPath}>
                   <TableCell>
                     {matchedEntity ? (
-                      <div className="text-style-prose">
+                      <div>
                         <div>
                           {navOptions ? (
                             <Link
                               {...navOptions}
+                              className="inline-link"
                               onClick={() => {
                                 setDialogOptions(undefined);
                               }}

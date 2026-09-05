@@ -21,6 +21,11 @@
     },
     "template": "styles-css"
   },
+  "typeset.css": {
+    "generator": "@baseplate-dev/react-generators#core/react-tailwind",
+    "instanceData": { "variables": {} },
+    "template": "typeset-css"
+  },
   "vite-env.d.ts": {
     "generator": "@baseplate-dev/react-generators#core/react",
     "instanceData": { "variables": {} },

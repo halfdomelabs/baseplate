@@ -54,7 +54,9 @@ export function ModelHeaderBar({
     >
       <div>
         <div className="group flex items-center space-x-2">
-          <h1>{currentModel.name}</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            {currentModel.name}
+          </h1>
           <ModelInfoEditDialog
             modelKey={modelEntityType.keyFromId(model.id)}
             trigger={
@@ -63,7 +65,7 @@ export function ModelHeaderBar({
                 size="icon-sm"
                 type="button"
                 aria-label="Edit model info"
-                className="invisible group-hover:visible"
+                className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
               >
                 <MdEdit className="size-4" />
               </Button>

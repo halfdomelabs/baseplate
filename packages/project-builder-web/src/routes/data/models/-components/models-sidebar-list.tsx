@@ -4,6 +4,7 @@ import { modelEntityType } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
+  EmptyDescription,
   InputField,
   NavigationMenu,
   NavigationMenuItemWithLink,
@@ -89,9 +90,9 @@ export function ModelsSidebarList({
         }}
       >
         {sortedModels.length === 0 && filterQuery && (
-          <div className="py-4 text-center text-style-muted">
+          <EmptyDescription className="py-4 text-center">
             No models found
-          </div>
+          </EmptyDescription>
         )}
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>

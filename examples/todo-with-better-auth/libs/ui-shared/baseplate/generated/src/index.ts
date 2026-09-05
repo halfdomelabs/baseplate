@@ -175,6 +175,12 @@ export {
   NumberFieldController,
 } from './components/ui/number-field.js';
 export {
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderDescription,
+  PageHeaderTitle,
+} from './components/ui/page-header.js';
+export {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -184,6 +190,13 @@ export {
   RadioFieldController,
 } from './components/ui/radio-field.js';
 export { ScrollArea } from './components/ui/scroll-area.js';
+export {
+  Section,
+  SectionActions,
+  SectionDescription,
+  SectionHeader,
+  SectionTitle,
+} from './components/ui/section.js';
 export {
   SelectField,
   SelectFieldController,

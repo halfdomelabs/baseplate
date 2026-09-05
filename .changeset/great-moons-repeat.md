@@ -3,4 +3,4 @@
 '@baseplate-dev/ui-components': patch
 ---
 
-Text size utilities now control line-height on headings and paragraphs, so a `<h1 class="text-2xl">` or `<p class="text-sm">` renders at the leading its size specifies instead of the base element's. Generated card components now also export `CardAction`, making the header's title/action two-column layout usable.
+Rendered markdown and HTML now get their typography from a `typeset` class that sizes to its container, replacing the global `h1`-`h3`/`p` rules and the `text-style-*` utilities, so headings outside `typeset` need their own text utilities. New `PageHeader` and `Section` components cover page and section titles with overridable heading levels, an `inline-link` utility gives links in ordinary copy the same styling `typeset` gives links inside it, and generated card components now also export `CardAction`.

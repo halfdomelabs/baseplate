@@ -9,6 +9,9 @@ import {
 import {
   FormActionBar,
   InputFieldController,
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderTitle,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -59,10 +62,12 @@ function MonorepoSettingsPage(): React.JSX.Element {
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
         <div className="sticky top-0 border-b bg-background py-6">
-          <h1>Monorepo Configuration</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Configure the folder structure for your monorepo packages.
-          </p>
+          <PageHeader>
+            <PageHeaderTitle>Monorepo Configuration</PageHeaderTitle>
+            <PageHeaderDescription>
+              Configure the folder structure for your monorepo packages.
+            </PageHeaderDescription>
+          </PageHeader>
         </div>
         <SectionList>
           <SectionListSection>

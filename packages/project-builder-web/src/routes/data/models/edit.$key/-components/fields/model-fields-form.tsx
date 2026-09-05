@@ -6,6 +6,7 @@ import type {
   UseFormSetValue,
 } from 'react-hook-form';
 
+import { EmptyDescription } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 import { useFieldArray } from 'react-hook-form';
 
@@ -55,7 +56,9 @@ export function ModelFieldsForm({
   return (
     <div className={clsx('space-y-4', className)}>
       {fieldFields.length === 0 ? (
-        <p className="pt-4 text-style-muted">Add some fields to get started</p>
+        <EmptyDescription className="pt-4">
+          Add some fields to get started
+        </EmptyDescription>
       ) : (
         <div className="flex w-full flex-col gap-2 bg-white">
           <div

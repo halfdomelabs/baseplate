@@ -139,11 +139,12 @@ export function DefinitionWarningDialog(): React.JSX.Element {
                   <TableRow>
                     <TableCell>
                       {closestEntity ? (
-                        <div className="text-style-prose">
+                        <div>
                           <div>
                             {navOptions ? (
                               <Link
                                 {...navOptions}
+                                className="inline-link"
                                 onClick={() => {
                                   setDialogOptions(undefined);
                                 }}

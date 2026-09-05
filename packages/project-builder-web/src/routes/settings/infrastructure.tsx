@@ -8,6 +8,9 @@ import {
 } from '@baseplate-dev/project-builder-lib/web';
 import {
   FormActionBar,
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderTitle,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -60,12 +63,14 @@ function InfrastructureSettingsPage(): React.JSX.Element {
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
         <div className="sticky top-0 border-b bg-background py-6">
-          <h1>Infrastructure Configuration</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Configure optional infrastructure services for your project. These
-            services are shared across all backend applications. PostgreSQL is
-            always enabled and requires no configuration.
-          </p>
+          <PageHeader>
+            <PageHeaderTitle>Infrastructure Configuration</PageHeaderTitle>
+            <PageHeaderDescription>
+              Configure optional infrastructure services for your project. These
+              services are shared across all backend applications. PostgreSQL is
+              always enabled and requires no configuration.
+            </PageHeaderDescription>
+          </PageHeader>
         </div>
         <SectionList>
           <SectionListSection>

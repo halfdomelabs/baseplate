@@ -50,6 +50,7 @@ export function generateReactEslintConfig(options) {
       rules: {
         // Disable for Base UI's render prop pattern where content is injected via useRender
         'jsx-a11y/anchor-has-content': 'off',
+        'jsx-a11y/heading-has-content': 'off',
       },
     },
 

@@ -17,6 +17,11 @@ import {
 import { ErrorableLoader } from '@src/components/ui/errorable-loader';
 import { Label } from '@src/components/ui/label';
 import {
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderTitle,
+} from '@src/components/ui/page-header';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -155,14 +160,14 @@ function NotificationPreferencesPage(): ReactElement {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1>Notification Preferences</h1>
-        <p className="text-sm text-muted-foreground">
+      <PageHeader>
+        <PageHeaderTitle>Notification Preferences</PageHeaderTitle>
+        <PageHeaderDescription>
           Choose how you are notified. Topics with no choice of your own use the
           default this project ships with. Some notifications — security alerts,
           for instance — belong to no topic and are always sent.
-        </p>
-      </div>
+        </PageHeaderDescription>
+      </PageHeader>
 
       {data.notificationPreferences.map((topic) => (
         <Card key={topic.key}>

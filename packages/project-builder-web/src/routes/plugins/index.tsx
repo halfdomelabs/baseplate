@@ -8,6 +8,13 @@ import {
   EmptyHeader,
   EmptyTitle,
   ErrorableLoader,
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderTitle,
+  Section,
+  SectionDescription,
+  SectionHeader,
+  SectionTitle,
 } from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
@@ -102,39 +109,48 @@ function PluginsHomePage(): React.JSX.Element {
 
   return (
     <div className="max-w-2xl space-y-4 p-4">
-      <h1>Manage Plugins</h1>
-      <p>
-        Plugins are a way to extend the functionality of your project, such as
-        adding authentication. You can enable, disable, and manage plugins from
-        this page.
-      </p>
-      <p>
-        To add additional plugins, you can install them to your root package
-        with <strong>pnpm</strong>.
-      </p>
+      <PageHeader>
+        <PageHeaderTitle>Manage Plugins</PageHeaderTitle>
+        <PageHeaderDescription>
+          Plugins are a way to extend the functionality of your project, such as
+          adding authentication. You can enable, disable, and manage plugins
+          from this page. To add additional plugins, install them to your root
+          package with <strong>pnpm</strong>.
+        </PageHeaderDescription>
+      </PageHeader>
       {installedPlugins.length === 0 ? null : (
-        <>
-          <h3>Active Plugins ({installedPlugins.length})</h3>
+        <Section>
+          <SectionHeader>
+            <SectionTitle>
+              Active Plugins ({installedPlugins.length})
+            </SectionTitle>
+          </SectionHeader>
           {installedPlugins.map((plugin) => (
             <PluginCard key={plugin.key} plugin={plugin} isActive />
           ))}
-        </>
+        </Section>
       )}
       {uninstalledPlugins.length === 0 ? null : (
-        <>
-          <h3>Available Plugins ({uninstalledPlugins.length})</h3>
+        <Section>
+          <SectionHeader>
+            <SectionTitle>
+              Available Plugins ({uninstalledPlugins.length})
+            </SectionTitle>
+          </SectionHeader>
           {uninstalledPlugins.map((plugin) => (
             <PluginCard key={plugin.key} plugin={plugin} isActive={false} />
           ))}
-        </>
+        </Section>
       )}
       {managedPluginsByManager.size === 0 ? null : (
-        <>
-          <h3>Managed Plugins</h3>
-          <p className="text-sm text-muted-foreground">
-            These plugins are managed by their parent plugins and cannot be
-            configured directly.
-          </p>
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Managed Plugins</SectionTitle>
+            <SectionDescription>
+              These plugins are managed by their parent plugins and cannot be
+              configured directly.
+            </SectionDescription>
+          </SectionHeader>
           {[...managedPluginsByManager.entries()].map(
             ([managerName, managedPlugins]) => {
               // Find the manager plugin to get its display name
@@ -168,7 +184,7 @@ function PluginsHomePage(): React.JSX.Element {
               );
             },
           )}
-        </>
+        </Section>
       )}
     </div>
   );

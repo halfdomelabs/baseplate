@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 
 import { useMutation, useReadQuery } from '@apollo/client/react';
+import { PageHeader, PageHeaderTitle } from '@prisma-crud/ui-shared';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
@@ -103,7 +104,9 @@ function TodoListEditPage(): ReactElement {
 
   return (
     <div className="space-y-4">
-      <h1 className="flex space-x-2">{crumb}</h1>
+      <PageHeader>
+        <PageHeaderTitle className="flex space-x-2">{crumb}</PageHeaderTitle>
+      </PageHeader>
       {/* TPL_EDIT_FORM:START */}
       <TodoListEditForm
         submitData={submitData}

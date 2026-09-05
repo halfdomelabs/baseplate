@@ -4,7 +4,6 @@ import {
   tsImportBuilder,
   tsTemplate,
   tsTemplateWithImports,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
@@ -53,7 +52,6 @@ export const adminCrudListGenerator = createGenerator({
     renderers: ADMIN_ADMIN_CRUD_LIST_GENERATED.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
         reactRoutes: reactRoutesProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         renderers: ADMIN_ADMIN_CRUD_LIST_GENERATED.renderers.provider,
@@ -63,13 +61,7 @@ export const adminCrudListGenerator = createGenerator({
         adminCrudActionContainer: adminCrudActionContainerProvider.export(),
         adminCrudColumnContainer: adminCrudColumnContainerProvider.export(),
       },
-      run({
-        typescriptFile,
-        reactRoutes,
-        reactComponentsImports,
-        renderers,
-        graphqlImports,
-      }) {
+      run({ reactRoutes, reactComponentsImports, renderers, graphqlImports }) {
         const modelNameVariants = getModelNameVariants(modelName);
         const routePrefix = reactRoutes.getRoutePrefix();
         const routeFilePath = reactRoutes.getRouteFilePath();
@@ -268,9 +260,8 @@ export const adminCrudListGenerator = createGenerator({
             };
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
+              renderers.listPage.render({
                 id: `list-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.listPage,
                 destination: listPagePath,
                 variables: {
                   TPL_COMPONENT_NAME: listPageComponentName,
@@ -287,6 +278,7 @@ export const adminCrudListGenerator = createGenerator({
                     ? tsCodeFragment('')
                     : tsCodeFragment(
                         `
+            <PageHeaderActions>
             <div className="block">
             <Link to="${routePrefix}/new">
               <Button>
@@ -294,13 +286,15 @@ export const adminCrudListGenerator = createGenerator({
                 Create ${titleizeCamel(modelName)}
               </Button>
             </Link>
-          </div>`,
+          </div>
+          </PageHeaderActions>`,
                         [
                           tsImportBuilder(['Link']).from(
                             '@tanstack/react-router',
                           ),
                           tsImportBuilder(['MdAdd']).from('react-icons/md'),
                           reactComponentsImports.Button.declaration(),
+                          reactComponentsImports.PageHeaderActions.declaration(),
                         ],
                       ),
                   TPL_TABLE_COMPONENT: TsCodeUtils.mergeFragmentsAsJsxElement(

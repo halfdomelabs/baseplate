@@ -20,7 +20,7 @@ export function ProjectSyncStatus({
   }
 
   return (
-    <div className={clsx('text-style-muted', className)}>
+    <div className={clsx('text-sm text-muted-foreground', className)}>
       Last Sync: <TimeAgo date={completedAt} formatter={timeAgoFormatter} />
     </div>
   );

@@ -15,6 +15,9 @@ import {
 import {
   Button,
   FormActionBar,
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderTitle,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -109,21 +112,22 @@ function ThemeBuilderPage(): React.JSX.Element {
       onSubmit={onSubmit}
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
-        <div className="sticky top-0 z-10 space-y-2 border-b bg-background py-6">
-          <h1>Theme Builder</h1>
-          <p className="max-w-3xl text-muted-foreground">
-            The theme of the UI is based off color variables used with{' '}
-            <a
-              href="https://ui.shadcn.com/docs/theming"
-              target="_blank"
-              rel="noreferrer"
-              className="underline"
-            >
-              the Shadn UI component library
-            </a>
-            . We generate the color variables based off the Tailwind color
-            palette structure but you can customize them as you wish.
-          </p>
+        <div className="sticky top-0 z-10 border-b bg-background py-6">
+          <PageHeader>
+            <PageHeaderTitle>Theme Builder</PageHeaderTitle>
+            <PageHeaderDescription>
+              The theme of the UI is based off color variables used with{' '}
+              <a
+                href="https://ui.shadcn.com/docs/theming"
+                target="_blank"
+                rel="noreferrer"
+              >
+                the Shadn UI component library
+              </a>
+              . We generate the color variables based off the Tailwind color
+              palette structure but you can customize them as you wish.
+            </PageHeaderDescription>
+          </PageHeader>
         </div>
         <div className="pt-4">
           <SectionList>

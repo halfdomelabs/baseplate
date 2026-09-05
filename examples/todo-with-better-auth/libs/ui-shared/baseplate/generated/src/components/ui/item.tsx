@@ -51,6 +51,9 @@ const itemMediaVariants = cva(
  * A versatile flex container for displaying content with media, title,
  * description, and actions.
  *
+ * ShadCN changes:
+ * - Description links use the shared `inline-link` treatment
+ *
  * https://ui.shadcn.com/docs/components/base/item
  */
 function Item({
@@ -115,7 +118,7 @@ function ItemDescription({
     <p
       data-slot="item-description"
       className={cn(
-        'line-clamp-2 text-left text-sm leading-normal font-normal text-muted-foreground group-data-[size=xs]/item:text-xs [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary',
+        'line-clamp-2 text-left text-sm leading-normal font-normal text-muted-foreground group-data-[size=xs]/item:text-xs [&>a]:inline-link',
         className,
       )}
       {...props}

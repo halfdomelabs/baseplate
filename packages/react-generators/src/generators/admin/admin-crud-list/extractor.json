@@ -8,7 +8,12 @@
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
       "sourceFile": "index.tsx",
       "variables": {
         "TPL_COMPONENT_NAME": { "type": "replacement" },

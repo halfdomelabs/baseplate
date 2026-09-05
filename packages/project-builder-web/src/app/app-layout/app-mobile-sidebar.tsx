@@ -41,7 +41,7 @@ export function AppMobileSidebar(): React.JSX.Element {
     <nav className="grid gap-6 text-lg font-medium">
       <div className="flex items-center space-x-2">
         <img src="/images/logo.png" alt="logo" className="size-12" />
-        <h3>Baseplate</h3>
+        <span className="text-xl font-semibold tracking-tight">Baseplate</span>
       </div>
       <div>
         <SidebarNavigationLink

@@ -21,7 +21,12 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-router",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{routes-root}/index.tsx",
       "sourceFile": "routes/index.tsx",
       "variables": {}

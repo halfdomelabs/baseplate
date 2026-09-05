@@ -10,6 +10,9 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  PageHeader,
+  PageHeaderActions,
+  PageHeaderTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
 import {
@@ -74,36 +77,40 @@ function EditPackagePage(): React.JSX.Element {
       key={pkg.id}
     >
       <div className="max-w-7xl space-y-4 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2>{packageScope ? `@${packageScope}/${pkg.name}` : pkg.name}</h2>
+        <PageHeader className="items-center">
+          <div className="col-start-1 flex items-center gap-3">
+            <PageHeaderTitle className="text-2xl">
+              {packageScope ? `@${packageScope}/${pkg.name}` : pkg.name}
+            </PageHeaderTitle>
             <Badge variant="secondary">{pkg.type}</Badge>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={<Button variant="ghost" size="icon" />}
-            >
-              <HiDotsVertical aria-label="More Actions" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  variant="destructive"
-                  disabled={isSavingDefinition}
-                  onClick={() => {
-                    requestConfirm({
-                      title: 'Unlink Library',
-                      content: `Are you sure you want to unlink ${pkg.name}? The library will be removed from Baseplate but generated files will remain on disk.`,
-                      onConfirm: handleUnlink,
-                    });
-                  }}
-                >
-                  Unlink Library
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+          <PageHeaderActions>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={<Button variant="ghost" size="icon" />}
+              >
+                <HiDotsVertical aria-label="More Actions" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    disabled={isSavingDefinition}
+                    onClick={() => {
+                      requestConfirm({
+                        title: 'Unlink Library',
+                        content: `Are you sure you want to unlink ${pkg.name}? The library will be removed from Baseplate but generated files will remain on disk.`,
+                        onConfirm: handleUnlink,
+                      });
+                    }}
+                  >
+                    Unlink Library
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </PageHeaderActions>
+        </PageHeader>
       </div>
       <div
         className="mb-(--action-bar-height) flex flex-1 overflow-y-auto"

@@ -45,19 +45,25 @@ export function EnumHeaderBar({
   return (
     <div className={clsx('flex items-center justify-between', className)}>
       <div>
-        <EnumInfoEditDialog
-          enumKey={modelEnumEntityType.keyFromId(enumDefinition.id)}
-          trigger={
-            <button
-              className="group flex items-center space-x-2 hover:cursor-pointer"
-              type="button"
-              title="Edit Enum Info"
-            >
-              <h1>{enumDefinition.name}</h1>
-              <MdEdit className="invisible size-4 group-hover:visible" />
-            </button>
-          }
-        />
+        <div className="group flex items-center space-x-2">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            {enumDefinition.name}
+          </h1>
+          <EnumInfoEditDialog
+            enumKey={modelEnumEntityType.keyFromId(enumDefinition.id)}
+            trigger={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                type="button"
+                aria-label="Edit enum info"
+                className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+              >
+                <MdEdit className="size-4" />
+              </Button>
+            }
+          />
+        </div>
         {enumDefinition.featureRef && (
           <div className="text-xs text-muted-foreground">
             {

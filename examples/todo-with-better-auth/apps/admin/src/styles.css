@@ -2,6 +2,8 @@
 
 @import 'tw-animate-css';
 
+@import './typeset.css';
+
 @source '../../../libs/ui-shared/src';
 
 /**
@@ -216,35 +218,21 @@ html[data-theme='dark'] {
   );
 }
 
-/**
- * Utility classes for typography
- */
+/* Mirrors typeset's `a` rule; keep the two in sync. */
+@utility inline-link {
+  color: var(--link);
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
 
-@utility text-style-lead {
-  @apply text-xl leading-6 font-medium text-muted-foreground;
-}
+  &:hover {
+    text-decoration-color: currentColor;
+  }
 
-@utility text-style-large {
-  @apply text-lg leading-6 font-semibold;
-}
-
-@utility text-style-small {
-  @apply text-sm leading-none font-medium;
-}
-
-@utility text-style-muted {
-  @apply text-sm leading-5 text-muted-foreground;
-}
-
-@utility text-style-prose {
-  @apply text-base leading-6;
-
-  & a {
-    @apply font-medium text-link;
-
-    &:hover {
-      @apply underline;
-    }
+  &:focus-visible {
+    outline: 2px solid var(--ring, currentColor);
+    outline-offset: 2px;
+    border-radius: 0.125em;
   }
 }
 
@@ -319,33 +307,6 @@ html[data-theme='dark'] {
 
   &::-webkit-scrollbar {
     display: none;
-  }
-}
-
-/**
- * Typography
- */
-
-@layer base {
-  /* Leading is set in plain CSS: `leading-*` utilities also set `--tw-leading`,
-     which text-size utilities read as their line-height, pinning the base value. */
-  h1 {
-    @apply text-3xl font-semibold tracking-tight;
-    line-height: 1;
-  }
-
-  h2 {
-    @apply text-2xl font-semibold tracking-tight;
-    line-height: calc(var(--spacing) * 7);
-  }
-
-  h3 {
-    @apply text-xl font-semibold tracking-tight;
-    line-height: calc(var(--spacing) * 6);
-  }
-
-  p {
-    line-height: calc(var(--spacing) * 6);
   }
 }
 

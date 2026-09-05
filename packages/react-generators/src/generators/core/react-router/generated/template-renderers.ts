@@ -100,6 +100,9 @@ const coreReactRouterRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: CORE_REACT_ROUTER_TEMPLATES.placeholderIndex,
                 destination: paths.placeholderIndex,
+                importMapProviders: {
+                  reactComponentsImports,
+                },
                 ...options,
               }),
           },

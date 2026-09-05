@@ -164,6 +164,11 @@
     "instanceData": {},
     "template": "number-field"
   },
+  "page-header.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "page-header"
+  },
   "popover.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
@@ -183,6 +188,11 @@
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "scroll-area"
+  },
+  "section.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "section"
   },
   "select-field.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",

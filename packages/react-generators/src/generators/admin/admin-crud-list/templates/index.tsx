@@ -2,6 +2,7 @@
 
 import type { ReactElement } from 'react';
 
+import { PageHeader, PageHeaderTitle } from '%reactComponentsImports';
 import { createFileRoute } from '@tanstack/react-router';
 
 TPL_ITEMS_QUERY;
@@ -16,12 +17,12 @@ function TPL_COMPONENT_NAME(): ReactElement {
 
   return (
     <div className="flex max-w-4xl flex-col space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h1>
+      <PageHeader className="items-center">
+        <PageHeaderTitle>
           <TPL_PAGE_TITLE />
-        </h1>
+        </PageHeaderTitle>
         <TPL_CREATE_BUTTON />
-      </div>
+      </PageHeader>
       <TPL_TABLE_COMPONENT />
     </div>
   );
