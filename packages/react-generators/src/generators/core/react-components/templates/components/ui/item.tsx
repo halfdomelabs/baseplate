@@ -119,7 +119,7 @@ function ItemDescription({
     <p
       data-slot="item-description"
       className={cn(
-        '[&>a]:inline-link line-clamp-2 text-left text-sm leading-normal font-normal text-muted-foreground group-data-[size=xs]/item:text-xs',
+        'line-clamp-2 text-left text-sm leading-normal font-normal text-muted-foreground group-data-[size=xs]/item:text-xs [&>a]:inline-link',
         className,
       )}
       {...props}

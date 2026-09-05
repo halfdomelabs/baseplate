@@ -218,8 +218,7 @@ html[data-theme='dark'] {
   );
 }
 
-/* Mirrors typeset's `a` rule so links outside rendered content match links inside it.
-   Keep the two in sync — typeset.css stays self-contained, so it cannot share these. */
+/* Mirrors typeset's `a` rule; keep the two in sync. */
 @utility inline-link {
   color: var(--link);
   font-weight: 500;

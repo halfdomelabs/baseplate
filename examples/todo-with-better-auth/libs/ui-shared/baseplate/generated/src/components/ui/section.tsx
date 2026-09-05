@@ -8,11 +8,12 @@ import { cn } from '../../utils/cn.js';
 /**
  * A titled group of content within a page.
  *
- * Slots mirror `Card`: a header holding the title, an optional description and
- * optional actions, followed by the section's content as children.
+ * Slots mirror `Card`, with the section's content as children. Title and
+ * description occupy the first grid column, so any other child of the header
+ * must place itself in column one. Actions sit alongside them, dropping below in
+ * a narrow header.
  *
- * The title defaults to `h2`; pass `render` to pick the level that fits the
- * surrounding document.
+ * The title defaults to `h2`; pass `render` to choose the heading level.
  */
 function Section({
   className,
@@ -40,10 +41,8 @@ function SectionHeader({
     props: mergeProps<'div'>(
       {
         className: cn(
-          'grid auto-rows-min items-start gap-x-4',
+          '@container/section-header grid auto-rows-min items-start gap-x-4',
           'has-data-[slot=section-actions]:grid-cols-[1fr_auto]',
-          // Row gap only when there is a second row to separate, so a
-          // title-only header is not padded by a phantom empty row.
           'has-data-[slot=section-description]:gap-y-2',
           className,
         ),
@@ -65,7 +64,7 @@ function SectionTitle({
     props: mergeProps<'h2'>(
       {
         className: cn(
-          'min-w-0 text-2xl font-semibold tracking-tight',
+          'col-start-1 min-w-0 text-2xl font-semibold tracking-tight',
           className,
         ),
       },
@@ -86,7 +85,7 @@ function SectionDescription({
     props: mergeProps<'p'>(
       {
         className: cn(
-          'max-w-3xl min-w-0 text-sm text-muted-foreground',
+          'col-start-1 max-w-3xl min-w-0 text-sm text-muted-foreground',
           '[&>a]:inline-link',
           className,
         ),
@@ -109,6 +108,7 @@ function SectionActions({
       {
         className: cn(
           'col-start-2 row-span-2 row-start-1 flex shrink-0 items-center gap-2 self-start justify-self-end',
+          '@max-sm/section-header:col-start-1 @max-sm/section-header:row-auto @max-sm/section-header:mt-2 @max-sm/section-header:justify-self-start',
           className,
         ),
       },

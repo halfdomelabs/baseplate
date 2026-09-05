@@ -97,7 +97,7 @@ function EmptyDescription({
     <div
       data-slot="empty-description"
       className={cn(
-        '[&>a]:inline-link text-sm/relaxed text-muted-foreground',
+        'text-sm/relaxed text-muted-foreground [&>a]:inline-link',
         className,
       )}
       {...props}

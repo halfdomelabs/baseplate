@@ -8,14 +8,12 @@ import { cn } from '@src/utils/cn';
 /**
  * The title and description block at the top of a page.
  *
- * Layout chrome around it — sticky positioning, borders, page padding — stays
- * at the call site.
+ * Layout chrome — sticky positioning, borders, page padding — stays at the call
+ * site. Title and description occupy the first grid column, so any other child
+ * must place itself in column one. Actions sit alongside them, dropping below in
+ * a narrow header.
  *
- * Title and description stack in the first grid column; actions sit alongside
- * them and the second column only exists when actions are present.
- *
- * The title defaults to `h1`; pass `render` to pick the level that fits the
- * surrounding document.
+ * The title defaults to `h1`; pass `render` to choose the heading level.
  */
 function PageHeader({
   className,
@@ -27,10 +25,8 @@ function PageHeader({
     props: mergeProps<'div'>(
       {
         className: cn(
-          'grid auto-rows-min items-start gap-x-4',
+          '@container/page-header grid auto-rows-min items-start gap-x-4',
           'has-data-[slot=page-header-actions]:grid-cols-[1fr_auto]',
-          // Row gap only when there is a second row to separate, so a
-          // title-only header is not padded by a phantom empty row.
           'has-data-[slot=page-header-description]:gap-y-2',
           className,
         ),
@@ -52,7 +48,7 @@ function PageHeaderTitle({
     props: mergeProps<'h1'>(
       {
         className: cn(
-          'min-w-0 text-3xl font-semibold tracking-tight',
+          'col-start-1 min-w-0 text-3xl font-semibold tracking-tight',
           className,
         ),
       },
@@ -73,7 +69,7 @@ function PageHeaderDescription({
     props: mergeProps<'p'>(
       {
         className: cn(
-          'max-w-3xl min-w-0 text-sm text-muted-foreground',
+          'col-start-1 max-w-3xl min-w-0 text-sm text-muted-foreground',
           '[&>a]:inline-link',
           className,
         ),
@@ -96,6 +92,7 @@ function PageHeaderActions({
       {
         className: cn(
           'col-start-2 row-span-2 row-start-1 flex shrink-0 items-center gap-2 self-start justify-self-end',
+          '@max-sm/page-header:col-start-1 @max-sm/page-header:row-auto @max-sm/page-header:mt-2 @max-sm/page-header:justify-self-start',
           className,
         ),
       },

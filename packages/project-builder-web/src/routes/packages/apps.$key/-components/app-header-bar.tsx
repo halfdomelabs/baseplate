@@ -49,7 +49,7 @@ export function AppHeaderBar({ app }: AppHeaderBarProps): React.ReactElement {
   return (
     <div className="border-b p-4">
       <PageHeader className="items-center">
-        <div className="flex items-center gap-3">
+        <div className="col-start-1 flex items-center gap-3">
           <PageHeaderTitle className="text-2xl">
             {packageScope ? `@${packageScope}/${app.name}` : app.name}
           </PageHeaderTitle>

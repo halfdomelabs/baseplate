@@ -78,7 +78,7 @@ function EditPackagePage(): React.JSX.Element {
     >
       <div className="max-w-7xl space-y-4 p-4">
         <PageHeader className="items-center">
-          <div className="flex items-center gap-3">
+          <div className="col-start-1 flex items-center gap-3">
             <PageHeaderTitle className="text-2xl">
               {packageScope ? `@${packageScope}/${pkg.name}` : pkg.name}
             </PageHeaderTitle>
