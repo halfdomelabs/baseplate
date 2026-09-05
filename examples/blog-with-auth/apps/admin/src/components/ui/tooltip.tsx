@@ -6,11 +6,6 @@ import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip';
 
 import { cn } from '@src/utils/cn';
 
-/**
- * A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
- *
- * https://ui.shadcn.com/docs/components/tooltip
- */
 function TooltipProvider({
   delay = 0,
   ...props
@@ -24,6 +19,11 @@ function TooltipProvider({
   );
 }
 
+/**
+ * A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+ *
+ * https://ui.shadcn.com/docs/components/tooltip
+ */
 function Tooltip({
   ...props
 }: TooltipPrimitive.Root.Props): React.ReactElement {

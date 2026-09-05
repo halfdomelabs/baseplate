@@ -56,7 +56,10 @@ packages/ui-components/src/components/ui/<component-name>/
     * https://ui.shadcn.com/docs/components/base/table
     */
    ```
-6. **Styling/functionality differences**: If you deviate from the shadcn default, document it in a comment inline.
+6. **Styling/functionality differences**: If you deviate from the shadcn default, document it in the component's JSDoc under a `ShadCN changes:` heading, one bullet per deviation. A deviation with no bullet is indistinguishable from drift the next time the component is swept against upstream. Where a component diverges structurally rather than line by line (`input-otp`, `sidebar`, `button-group`), one bullet naming the divergence is enough.
+
+   These deviations are library-wide and need no per-component bullet: the JSDoc block itself, `: React.ReactElement` return types, alphabetically sorted exports (a lint rule), `react-icons/md` instead of `lucide-react`, and `interface` over `type`.
+
 7. **Imports from other ui-components**: Use the component's folder-relative path, e.g.:
    ```typescript
    import { Button } from '../button/button.js';
@@ -66,7 +69,10 @@ packages/ui-components/src/components/ui/<component-name>/
    import { useConfirmDialog } from '#src/hooks/use-confirm-dialog.js';
    ```
 9. **New npm dependencies**: If the component requires a new package not already in `packages/ui-components/package.json`, add it with `pnpm --filter @baseplate-dev/ui-components add <package>`.
-10. **Empty values in field controllers**: A `*FieldController` built on `useControllerMerged` must normalize `value` to the empty representation of its type — `null` for nullable scalars, `[]` for lists, `false` for booleans — never leaving it `undefined`, e.g. `value={field.value ?? null}`. See the Empty-Value Convention section in `packages/ui-components/README.md`.
+10. **Colours come from tokens**: never a literal (`bg-white`, `bg-black/10`, hex, `hsl()`). Status colours use the `tone-*` utilities. A control's fill is `bg-control-background`, which flips with the surface underneath it; something that must punch back through a control-coloured fill uses `bg-panel-background`. Never define a repeated style as an `@apply` class — repeated styles stay inline utilities, and a repeated _role_ becomes a component.
+11. **Logical utilities**: prefer `ms-`/`me-`/`ps-`/`pe-`/`start-`/`end-`/`text-start` in new code. Do not mass-convert existing components; if RTL ever becomes a project-definition option it should be a `code-morph` transform at generation time, following shadcn's `migrate rtl`, not a rewrite of the library.
+12. **Interactive controls take a `size` prop**, defaulted through `useControlSize()` rather than hardcoded heights. (Lands with ENG-1306; until then, follow the existing `size` variants on `Button` and `Select`.)
+13. **Empty values in field controllers**: A `*FieldController` built on `useControllerMerged` must normalize `value` to the empty representation of its type — `null` for nullable scalars, `[]` for lists, `false` for booleans — never leaving it `undefined`, e.g. `value={field.value ?? null}`. See the Empty-Value Convention section in `packages/ui-components/README.md`.
 
 ### Story file pattern
 
@@ -118,6 +124,20 @@ describe('ComponentName', () => {
 });
 ```
 
+### Keep the twin in sync
+
+`packages/react-generators` ships a copy of most of these components as generator
+templates, and `component-twins.unit.test.ts` fails if the two drift. You never
+edit the template directly — Phase 4 regenerates it from the example app — but
+after any change to a shared component run:
+
+```bash
+pnpm --filter @baseplate-dev/react-generators test component-twins
+```
+
+A twin that must differ goes in that test's `DEVIATIONS` list with the reason.
+The list rejects entries that have stopped differing, so it cannot go stale.
+
 ### Register the export
 
 Add to `packages/ui-components/src/components/ui/index.ts` (keep alphabetically sorted):
@@ -142,11 +162,14 @@ After creating the ui-components files, **stop and present**:
 
 ## Phase 4: Generator Integration
 
-### 4a. Add to the blog-with-auth admin example
+### 4a. Add to the blog-with-auth example apps
 
-The example lives at `examples/blog-with-auth/apps/admin/`.
+Apply the change to **both** `apps/admin` and `apps/app` before extracting from
+either. They share templates, so extracting from one after editing only the
+other reverts the other's changes. The same holds for any file every web app
+carries, `src/styles.css` among them.
 
-Create `examples/blog-with-auth/apps/admin/src/components/ui/<component-name>.tsx` with these adaptations from the ui-components version:
+Create `examples/blog-with-auth/apps/<app>/src/components/ui/<component-name>.tsx` in each app, with these adaptations from the ui-components version:
 
 1. **Single file** at `components/ui/<component-name>.tsx` (no sub-folder)
 2. **cn import**: `import { cn } from '@src/utils/cn';` (the example project's path alias)
@@ -223,6 +246,9 @@ Add <ComponentName> component
 | Generator extractor config  | `packages/react-generators/src/generators/core/react-components/extractor.json`                    |
 | Example template (table)    | `packages/react-generators/src/generators/core/react-components/templates/components/ui/table.tsx` |
 | Modify generated code skill | `.claude/skills/modify-generated-code/SKILL.md`                                                    |
+| Twin-drift test             | `packages/react-generators/src/generators/core/react-components/component-twins.unit.test.ts`      |
+| Design token layer          | `packages/ui-components/src/theme.css`, `packages/ui-components/src/base-styles.css`               |
+| Generated-app token twin    | `packages/react-generators/src/generators/core/react-tailwind/templates/src/styles.css`            |
 
 ---
 

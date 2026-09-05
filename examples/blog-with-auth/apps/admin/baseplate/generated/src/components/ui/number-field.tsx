@@ -1,5 +1,6 @@
 'use client';
 
+import type { VariantProps } from 'class-variance-authority';
 import type * as React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
@@ -22,7 +23,8 @@ export interface NumberFieldProps
       NumberFieldPrimitive.Root.Props,
       'onValueChange' | 'value' | 'className' | 'render'
     >,
-    FormFieldProps {
+    FormFieldProps,
+    VariantProps<typeof inputVariants> {
   onChange?: (value: number | null) => void;
   value?: number | null;
   className?: string;
@@ -42,6 +44,8 @@ function NumberField({
   onChange,
   value,
   className,
+  height,
+  background,
   ...props
 }: NumberFieldProps): React.ReactElement {
   const id = useId();
@@ -72,7 +76,7 @@ function NumberField({
           </NumberFieldPrimitive.Decrement>
           <NumberFieldPrimitive.Input
             data-slot="input"
-            className={cn(inputVariants(), 'flex-1')}
+            className={cn(inputVariants({ height, background }), 'flex-1')}
             aria-invalid={!!error}
           />
           <NumberFieldPrimitive.Increment

@@ -12,6 +12,11 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
 /**
  * A toaster component that displays toast notifications.
  *
+ * ShadCN changes:
+ * - Status toasts use the `tone-*` utilities rather than sonner's own colour
+ *   set. Not swept against upstream, since ENG-1310 replaces sonner with Base
+ *   UI Toast behind this facade.
+ *
  * Adapted from https://ui.shadcn.com/docs/components/sonner
  */
 const Toaster = ({ ...props }: ToasterProps): React.ReactElement => (

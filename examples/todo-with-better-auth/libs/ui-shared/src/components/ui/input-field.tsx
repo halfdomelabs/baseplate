@@ -12,6 +12,7 @@ import { useId } from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 import type { FormFieldProps } from '../../types/form.js';
+import type { InputProps } from './input.js';
 
 import { cn } from '../../utils/cn.js';
 import { mergeRefs } from '../../utils/merge-refs.js';
@@ -24,9 +25,7 @@ import {
 import { Input } from './input.js';
 
 export interface InputFieldProps
-  extends
-    Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
-    FormFieldProps {
+  extends Omit<InputProps, 'onChange' | 'value'>, FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;

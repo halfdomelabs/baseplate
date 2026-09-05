@@ -125,6 +125,36 @@ html[data-theme='dark'] {
 }
 
 /**
+ * Control and panel surfaces.
+ *
+ * `--input` is a control's *border* (see `border-input`); `--control-background`
+ * is its *fill*, and flips with the surface underneath. `--panel-background` is
+ * the inverse — the colour of the panel a control sits on, for elements that
+ * must punch back through a control-coloured fill.
+ *
+ * Keyed on the painted utility rather than a `data-slot`, so a panel drawn by
+ * hand participates the same way `<Card />` does. Unlayered, matching the
+ * palette above: a declaration in `@layer base` loses to any unlayered `:root`
+ * override a consuming app writes.
+ */
+:root {
+  --control-background: var(--card);
+  --panel-background: var(--background);
+}
+.bg-background {
+  --control-background: var(--card);
+  --panel-background: var(--background);
+}
+.bg-card {
+  --control-background: var(--background);
+  --panel-background: var(--card);
+}
+.bg-popover {
+  --control-background: var(--background);
+  --panel-background: var(--popover);
+}
+
+/**
  * shadcn's --pointer convention: interactive elements get a pointer cursor
  * by default (Tailwind's preflight resets buttons to `cursor: default`).
  */

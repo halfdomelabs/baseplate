@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { InputProps } from '$input';
 import type { FormFieldProps } from '$typesForm';
 import type React from 'react';
 import type {
@@ -24,9 +25,7 @@ import { useId } from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 export interface InputFieldProps
-  extends
-    Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
-    FormFieldProps {
+  extends Omit<InputProps, 'onChange' | 'value'>, FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;

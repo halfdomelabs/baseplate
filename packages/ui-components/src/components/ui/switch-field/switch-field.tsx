@@ -17,6 +17,9 @@ import {
 } from '../field/field.js';
 import { Switch } from '../switch/switch.js';
 
+/**
+ * Field with label and error states that wraps a Switch component.
+ */
 export interface SwitchFieldProps
   extends
     Omit<

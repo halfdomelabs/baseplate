@@ -38,6 +38,8 @@ const badgeVariants = cva(
  *
  * ShadCN changes:
  * - Added [button&]:hover styles so badges rendered as buttons get hover effects.
+ * - Added success and warning variants built on the `tone-*` utilities
+ * - Hover colours come from the `*-hover` palette tokens rather than an opacity step
  *
  * https://ui.shadcn.com/docs/components/badge
  */

@@ -10,7 +10,10 @@ import { Slider as SliderPrimitive } from '@base-ui/react/slider';
 /**
  * An input where the user selects a value from within a given range.
  *
- *  - Fixed single value support
+ * ShadCN changes:
+ *  - Fixed single value support, so an uncontrolled slider renders one thumb
+ *    rather than upstream's two
+ *  - The thumb is `bg-card` rather than a literal white
  *
  * https://ui.shadcn.com/docs/components/base/slider
  *

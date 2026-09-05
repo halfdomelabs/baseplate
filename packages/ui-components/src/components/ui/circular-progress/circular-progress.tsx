@@ -1,12 +1,12 @@
 import { cn } from '#src/utils/cn.js';
 
 interface CircularProgressProps {
-  max: number;
-  value: number;
-  min: number;
-  gaugePrimaryColor: string;
-  gaugeSecondaryColor: string;
-  size?: 'sm' | 'md' | 'lg';
+  max?: number;
+  value?: number;
+  min?: number;
+  gaugePrimaryColor?: string;
+  gaugeSecondaryColor?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
 }
 
@@ -16,15 +16,19 @@ interface CircularProgressProps {
  * https://magicui.design/docs/components/animated-circular-progress-bar
  */
 export function CircularProgress({
-  max,
-  min,
-  value,
-  gaugePrimaryColor,
-  gaugeSecondaryColor,
+  max = 100,
+  min = 0,
+  value = 0,
+  gaugePrimaryColor = 'var(--primary)',
+  gaugeSecondaryColor = 'var(--muted)',
   size = 'md',
   className,
 }: CircularProgressProps): React.ReactElement {
   const sizeConfig = {
+    xs: {
+      containerSize: 'size-8',
+      textSize: 'text-xs',
+    },
     sm: {
       containerSize: 'size-12',
       textSize: 'text-sm',

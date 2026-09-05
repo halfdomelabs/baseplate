@@ -26,6 +26,12 @@ const alertVariants = cva(
 /**
  * Displays a callout for user attention.
  *
+ * ShadCN changes:
+ * - Variants are the `tone-*` utilities (default/error/success/warning) rather
+ *   than upstream's card-background default/destructive pair, so an alert
+ *   carries a full status palette its children inherit. Upstream's newer
+ *   `AlertAction` slot is not adopted.
+ *
  * https://ui.shadcn.com/docs/components/alert
  */
 function Alert({

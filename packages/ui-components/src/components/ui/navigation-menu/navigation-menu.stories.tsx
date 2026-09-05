@@ -18,7 +18,6 @@ import {
 /**
  * Adapted from https://github.com/shadcn-ui/ui/blob/main/apps/v4/components/navigation-menu-demo.tsx
  */
-
 const meta = {
   title: 'components/NavigationMenu',
   component: NavigationMenu,

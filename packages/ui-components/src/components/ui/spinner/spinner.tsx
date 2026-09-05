@@ -5,6 +5,10 @@ import { cn } from '#src/utils/index.js';
 /**
  * A spinner component that indicates a loading state.
  *
+ * ShadCN changes:
+ * - Drawn with a bordered div rather than a spinning icon, so it needs no icon
+ *   dependency and takes its colour from `currentColor`
+ *
  * @param props - Standard div element props, including optional `className` for custom styling.
  * @returns A rotating circular spinner element with `role="status"`.
  */

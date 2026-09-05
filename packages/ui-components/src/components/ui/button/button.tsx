@@ -18,6 +18,10 @@ export interface ButtonProps
  * - Added linkDestructive variant
  * - Added ability to set no size to the button
  * - Added ability to set justify to the button
+ * - Variants live in `#src/styles/button.js` so NumberField and Calendar can
+ *   render a button without importing the component
+ * - The destructive variant stays a solid fill; ghostDestructive and
+ *   linkDestructive cover the tinted cases upstream folded into it
  *
  * https://ui.shadcn.com/docs/components/button
  */
@@ -27,10 +31,7 @@ function Button({
   size,
   justify,
   ...props
-}: ButtonPrimitive.Props &
-  VariantProps<typeof buttonVariants> & {
-    render?: ButtonPrimitive.Props['render'];
-  }): React.ReactElement {
+}: ButtonProps): React.ReactElement {
   return (
     <ButtonPrimitive
       data-slot="button"

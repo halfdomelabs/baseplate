@@ -5,6 +5,10 @@ import { cn } from '#src/utils/cn.js';
 /**
  * Displays a list of buttons aligned next to one another.
  * Styles all direct Button children with appropriate group styling.
+ *
+ * ShadCN changes:
+ * - Predates upstream's ButtonGroup and keeps its own API: no `orientation`
+ *   variant, no ButtonGroupText/ButtonGroupSeparator.
  */
 export function ButtonGroup({
   className,

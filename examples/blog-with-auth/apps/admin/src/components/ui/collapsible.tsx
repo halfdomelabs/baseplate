@@ -3,7 +3,7 @@ import { Collapsible as CollapsiblePrimitive } from '@base-ui/react/collapsible'
 /**
  * An interactive component which expands/collapses a panel.
  *
- * https://base-ui.com/react/components/collapsible
+ * https://ui.shadcn.com/docs/components/collapsible
  */
 function Collapsible({
   ...props
