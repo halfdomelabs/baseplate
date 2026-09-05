@@ -53,6 +53,7 @@ const itemMediaVariants = cva(
  *
  * ShadCN changes:
  * - Description links use the shared `inline-link` treatment
+ * - Exports `itemVariants` and `itemMediaVariants` for composed layouts
  *
  * https://ui.shadcn.com/docs/components/base/item
  */

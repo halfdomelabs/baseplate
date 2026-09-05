@@ -13,6 +13,7 @@ import { cn } from '#src/utils/index.js';
  * ShadCN changes:
  * - Changed `w-(--anchor-width)` to `min-w-(--anchor-width)` in DropdownMenuContent so the
  *   popup can grow wider than the trigger when content needs more space.
+ * - Radio items keep a filled dot indicator where upstream switched to a check.
  *
  * https://ui.shadcn.com/docs/components/dropdown-menu
  */

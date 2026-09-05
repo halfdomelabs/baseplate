@@ -10,6 +10,8 @@ import { cva } from 'class-variance-authority';
  *
  * ShadCN changes:
  * - Description links use the shared `inline-link` treatment
+ * - Sized for a full-page empty state: larger title, larger media, extra padding
+ *   from the `md` breakpoint up
  *
  * https://ui.shadcn.com/docs/components/base/empty
  */
@@ -21,7 +23,7 @@ function Empty({
     <div
       data-slot="empty"
       className={cn(
-        'flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg border-dashed p-6 text-center text-balance md:p-12',
+        'flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-xl border-dashed p-6 text-center text-balance md:p-12',
         className,
       )}
       {...props}

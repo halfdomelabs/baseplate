@@ -7,6 +7,9 @@ import { cn } from '$cn';
 import { buttonVariants } from '$stylesButton';
 import { Button as ButtonPrimitive } from '@base-ui/react/button';
 
+export interface ButtonProps
+  extends ButtonPrimitive.Props, VariantProps<typeof buttonVariants> {}
+
 /**
  * Displays a button or a component that looks like a button.
  *
@@ -16,12 +19,13 @@ import { Button as ButtonPrimitive } from '@base-ui/react/button';
  * - Added linkDestructive variant
  * - Added ability to set no size to the button
  * - Added ability to set justify to the button
+ * - Variants live in `#src/styles/button.js` so NumberField and Calendar can
+ *   render a button without importing the component
+ * - The destructive variant stays a solid fill; ghostDestructive and
+ *   linkDestructive cover the tinted cases upstream folded into it
  *
  * https://ui.shadcn.com/docs/components/button
  */
-export interface ButtonProps
-  extends ButtonPrimitive.Props, VariantProps<typeof buttonVariants> {}
-
 function Button({
   className,
   variant,

@@ -29,15 +29,6 @@ import {
   TooltipTrigger,
 } from './tooltip';
 
-/**
- * Sidebar component from ShadCN
- *
- * https://ui.shadcn.com/docs/components/sidebar
- *
- * - Added functionality to dismiss when button is clicked (https://github.com/shadcn-ui/ui/issues/5561)
- * - Added aria-[current=page] support alongside data-[active=true] for active state styling
- */
-
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = '16rem';
@@ -171,6 +162,18 @@ function SidebarProvider({
   );
 }
 
+/**
+ * Sidebar component from ShadCN
+ *
+ * https://ui.shadcn.com/docs/components/sidebar
+ *
+ * ShadCN changes:
+ * - Added functionality to dismiss when button is clicked (https://github.com/shadcn-ui/ui/issues/5561)
+ * - Added aria-[current=page] support alongside data-[active=true] for active state styling
+ * - Draws from the `card`/`accent`/`ring` tokens instead of upstream's separate
+ *   `--sidebar-*` palette, which projects would otherwise have to theme twice,
+ *   and uses `ring-1 ring-border` where upstream fakes a border with a shadow
+ */
 function Sidebar({
   side = 'left',
   variant = 'sidebar',

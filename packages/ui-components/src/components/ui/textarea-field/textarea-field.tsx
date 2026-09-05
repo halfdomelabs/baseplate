@@ -23,6 +23,9 @@ import {
 } from '../field/field.js';
 import { Textarea } from '../textarea/textarea.js';
 
+/**
+ * Field with label and error states that wraps a Textarea component.
+ */
 export interface TextareaFieldProps
   extends
     Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'>,

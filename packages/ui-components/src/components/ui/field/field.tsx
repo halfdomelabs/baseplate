@@ -10,15 +10,6 @@ import { cn } from '#src/utils/index.js';
 import { Label } from '../label/label.js';
 import { Separator } from '../separator/separator.js';
 
-/**
- * Field layout components for form fields with orientation support.
- *
- * ShadCN changes:
- * - Description links use the shared `inline-link` treatment
- *
- * https://ui.shadcn.com/docs/components/field
- */
-
 function FieldSet({
   className,
   ...props
@@ -89,6 +80,16 @@ const fieldVariants = cva(
   },
 );
 
+/**
+ * Field layout components for form fields with orientation support.
+ *
+ * ShadCN changes:
+ * - Description links use the shared `inline-link` treatment
+ * - FieldSeparator's label paints `bg-panel-background` so it punches through
+ *   whatever surface the field group sits on
+ *
+ * https://ui.shadcn.com/docs/components/field
+ */
 function Field({
   className,
   orientation = 'vertical',
@@ -130,7 +131,7 @@ function FieldLabel({
     <Label
       data-slot="field-label"
       className={cn(
-        'group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:border-primary/30 has-data-checked:bg-primary/5 has-[>[data-slot=field]]:rounded-lg has-[>[data-slot=field]]:border *:data-[slot=field]:p-2.5 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10',
+        'group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:border-primary/30 has-data-checked:bg-primary/5 has-[>[data-slot=field]]:rounded-lg has-[>[data-slot=field]]:border has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50 has-[>[data-slot=field]]:has-[:focus-visible]:border-ring has-[>[data-slot=field]]:has-[:focus-visible]:ring-3 has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50 *:data-[slot=field]:p-2.5 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10',
         'has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col',
         className,
       )}
@@ -193,7 +194,7 @@ function FieldSeparator({
       <Separator className="absolute inset-0 top-1/2" />
       {children && (
         <span
-          className="relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
+          className="relative mx-auto block w-fit bg-panel-background px-2 text-muted-foreground"
           data-slot="field-separator-content"
         >
           {children}

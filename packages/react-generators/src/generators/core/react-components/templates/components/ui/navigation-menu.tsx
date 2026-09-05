@@ -21,15 +21,18 @@ function NavigationMenu({
   className,
   children,
   align = 'start',
+  orientation,
   ...props
 }: NavigationMenuPrimitive.Root.Props &
   Pick<NavigationMenuPrimitive.Positioner.Props, 'align'>): React.ReactElement {
   return (
     <NavigationMenuPrimitive.Root
       data-slot="navigation-menu"
+      data-orientation={orientation}
+      orientation={orientation}
       className={cn(
         'group/navigation-menu relative flex max-w-max flex-1 items-center justify-center',
-        'aria-[orientation=vertical]:max-w-none aria-[orientation=vertical]:items-start aria-[orientation=vertical]:justify-start [&[aria-orientation="vertical"]>*]:w-full',
+        'data-[orientation=vertical]:max-w-none data-[orientation=vertical]:items-start data-[orientation=vertical]:justify-start [&[data-orientation=vertical]>*]:w-full',
         className,
       )}
       {...props}
@@ -51,7 +54,7 @@ function NavigationMenuList({
       data-slot="navigation-menu-list"
       className={cn(
         'group flex flex-1 list-none items-center justify-center gap-1',
-        'aria-[orientation=vertical]:flex-col aria-[orientation=vertical]:items-stretch',
+        'group-data-[orientation=vertical]/navigation-menu:flex-col group-data-[orientation=vertical]/navigation-menu:items-stretch',
         className,
       )}
       {...props}
@@ -75,13 +78,16 @@ function NavigationMenuItem({
 }
 
 const navigationMenuTriggerStyle = cva(
-  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-[color,box-shadow] outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-popup-open:bg-accent/50 data-popup-open:text-accent-foreground data-popup-open:hover:bg-accent data-popup-open:focus:bg-accent data-open:bg-accent/50 data-open:text-accent-foreground data-open:hover:bg-accent data-open:focus:bg-accent',
+  'group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center rounded-lg text-sm font-medium transition-all outline-none hover:bg-muted focus:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-popup-open:bg-muted/50 data-popup-open:hover:bg-muted data-open:bg-muted/50 data-open:hover:bg-muted data-open:focus:bg-muted',
   {
     variants: {
       size: {
-        default: 'px-4 py-2',
+        default: 'px-2.5 py-1.5',
         skinny: 'p-2',
       },
+    },
+    defaultVariants: {
+      size: 'default',
     },
   },
 );
@@ -89,18 +95,19 @@ const navigationMenuTriggerStyle = cva(
 function NavigationMenuTrigger({
   className,
   children,
+  size,
   ...props
 }: NavigationMenuPrimitive.Trigger.Props &
   VariantProps<typeof navigationMenuTriggerStyle>): React.ReactElement {
   return (
     <NavigationMenuPrimitive.Trigger
       data-slot="navigation-menu-trigger"
-      className={cn(navigationMenuTriggerStyle(), 'group', className)}
+      className={cn(navigationMenuTriggerStyle({ size }), 'group', className)}
       {...props}
     >
       {children}{' '}
       <MdExpandMore
-        className="relative top-px ml-1 size-3 transition duration-300 group-data-popup-open:rotate-180 group-data-open:rotate-180"
+        className="relative top-px ml-1 size-3 transition duration-300 group-data-popup-open/navigation-menu-trigger:rotate-180 group-data-open/navigation-menu-trigger:rotate-180"
         aria-hidden="true"
       />
     </NavigationMenuPrimitive.Trigger>
@@ -160,7 +167,7 @@ function NavigationMenuLink({
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
       className={cn(
-        "flex flex-col gap-1 rounded-sm p-2 text-sm font-medium transition-all outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 data-active:bg-accent/50 data-active:text-accent-foreground data-active:hover:bg-accent data-active:focus:bg-accent [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
+        "flex flex-col gap-1 rounded-lg p-2 text-sm font-medium transition-all outline-none hover:bg-muted focus:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 data-active:bg-accent/50 data-active:text-accent-foreground data-active:hover:bg-accent data-active:focus:bg-accent [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         className,
       )}
       {...props}

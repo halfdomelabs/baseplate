@@ -11,7 +11,6 @@ import { cn } from '#src/utils/index.js';
  *
  * https://ui.shadcn.com/docs/components/popover
  */
-
 function Popover({
   ...props
 }: PopoverPrimitive.Root.Props): React.ReactElement {

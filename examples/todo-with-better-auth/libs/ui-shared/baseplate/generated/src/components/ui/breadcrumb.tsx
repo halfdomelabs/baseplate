@@ -6,6 +6,11 @@ import { MdChevronRight, MdMoreHoriz } from 'react-icons/md';
 
 import { cn } from '../../utils/cn.js';
 
+/**
+ * Displays a breadcrumb navigation.
+ *
+ * https://ui.shadcn.com/docs/components/breadcrumb
+ */
 function Breadcrumb({
   className,
   ...props

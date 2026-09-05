@@ -1006,6 +1006,9 @@ importers:
       '@baseplate-dev/tools':
         specifier: workspace:*
         version: link:../tools
+      '@baseplate-dev/ui-components':
+        specifier: workspace:*
+        version: link:../ui-components
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3

@@ -31,6 +31,9 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
 
+  --color-control-background: var(--control-background);
+  --color-panel-background: var(--panel-background);
+
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 

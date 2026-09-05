@@ -7,6 +7,11 @@ import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
 import { MdChevronRight, MdMoreHoriz } from 'react-icons/md';
 
+/**
+ * Displays a breadcrumb navigation.
+ *
+ * https://ui.shadcn.com/docs/components/breadcrumb
+ */
 function Breadcrumb({
   className,
   ...props

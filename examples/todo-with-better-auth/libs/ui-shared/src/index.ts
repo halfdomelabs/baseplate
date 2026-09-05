@@ -1,4 +1,9 @@
-export { Alert, AlertDescription, AlertTitle } from './components/ui/alert.js';
+export {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from './components/ui/alert.js';
 export {
   Autocomplete,
   AutocompleteClear,

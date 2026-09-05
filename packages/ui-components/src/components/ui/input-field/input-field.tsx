@@ -15,6 +15,8 @@ import type { FormFieldProps } from '#src/types/form.js';
 
 import { cn, mergeRefs } from '#src/utils/index.js';
 
+import type { InputProps } from '../input/input.js';
+
 import {
   Field,
   FieldDescription,
@@ -24,9 +26,7 @@ import {
 import { Input } from '../input/input.js';
 
 export interface InputFieldProps
-  extends
-    Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
-    FormFieldProps {
+  extends Omit<InputProps, 'onChange' | 'value'>, FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;

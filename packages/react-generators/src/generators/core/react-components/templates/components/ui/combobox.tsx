@@ -18,8 +18,11 @@ import { MdCheck, MdClose, MdUnfoldMore } from 'react-icons/md';
  * An autocomplete input that allows users to filter and select from a list of options.
  *
  * ShadCN changes:
- * - ComboboxList shows native scrollbar instead of no-scrollbar for better discoverability
  * - ComboboxChip renders as muted gray text and hides its remove button when disabled
+ * - Added ComboboxStatus for async loading and error states
+ * - Chips and input use `text-base md:text-sm`, which stops iOS zooming on focus
+ * - Fills with `bg-control-background` so the control contrasts with the
+ *   surface it sits on rather than always matching the page.
  *
  * https://ui.shadcn.com/docs/components/combobox
  */
@@ -144,7 +147,7 @@ function ComboboxList({
     <ComboboxPrimitive.List
       data-slot="combobox-list"
       className={cn(
-        'max-h-[min(calc(--spacing(72)---spacing(9)),calc(var(--available-height)---spacing(9)))] scroll-py-1 overflow-y-auto overscroll-contain p-1 data-empty:p-0',
+        'no-scrollbar max-h-[min(calc(--spacing(72)---spacing(9)),calc(var(--available-height)---spacing(9)))] scroll-py-1 overflow-y-auto overscroll-contain p-1 data-empty:p-0',
         className,
       )}
       {...props}
@@ -266,7 +269,7 @@ function ComboboxChips({
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
       className={cn(
-        'flex min-h-8 flex-wrap items-center gap-1 rounded-lg border border-input bg-transparent bg-clip-padding px-2.5 py-1 text-sm transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1 dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40',
+        'flex min-h-8 flex-wrap items-center gap-1 rounded-lg border border-input bg-control-background bg-clip-padding px-2.5 py-1 text-base transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1 md:text-sm dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40',
         className,
       )}
       {...props}
@@ -287,15 +290,12 @@ function ComboboxChip({
       data-slot="combobox-chip"
       className={cn(
         'group/combobox-chip flex h-[calc(--spacing(5.25))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground not-data-disabled:has-data-[slot=combobox-chip-remove]:pr-0',
-        // When the combobox is disabled, base-ui marks the chip with data-disabled.
-        // Render it as inert muted text (with the remove button hidden) rather than an interactive badge.
         'data-disabled:cursor-not-allowed data-disabled:text-muted-foreground',
         className,
       )}
       {...props}
     >
       {children}
-      {/* Hide the remove button when disabled so chips read as plain labels. */}
       {showRemove && (
         <ComboboxPrimitive.ChipRemove
           render={<Button variant="ghost" size="icon-xs" />}
@@ -316,7 +316,10 @@ function ComboboxChipsInput({
   return (
     <ComboboxPrimitive.Input
       data-slot="combobox-chip-input"
-      className={cn('min-w-16 flex-1 outline-none', className)}
+      className={cn(
+        'min-w-16 flex-1 text-base outline-none md:text-sm',
+        className,
+      )}
       {...props}
     />
   );

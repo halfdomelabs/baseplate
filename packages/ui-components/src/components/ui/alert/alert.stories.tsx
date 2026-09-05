@@ -5,7 +5,8 @@ import type { IconElement } from '#src/types/react.js';
 
 import { STORYBOOK_ICON_SELECT } from '#src/stories/button-icons.js';
 
-import { Alert, AlertDescription, AlertTitle } from './alert.js';
+import { Button } from '../button/button.js';
+import { Alert, AlertAction, AlertDescription, AlertTitle } from './alert.js';
 
 const variants = ['default', 'error', 'success', 'warning'] as const;
 
@@ -77,4 +78,21 @@ export const Warning: Story = {
 export const Error: Story = {
   args: { children: null, variant: 'error' },
   render: (args) => <AlertContainer {...args} />,
+};
+
+export const WithAction: Story = {
+  args: { children: null, variant: 'warning' },
+  render: (args) => (
+    <Alert variant={args.variant}>
+      <AlertTitle>Unsaved changes</AlertTitle>
+      <AlertDescription>
+        Your edits are not written to the project definition yet.
+      </AlertDescription>
+      <AlertAction>
+        <Button size="xs" variant="ghost">
+          Save
+        </Button>
+      </AlertAction>
+    </Alert>
+  ),
 };

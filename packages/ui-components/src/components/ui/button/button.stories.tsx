@@ -17,8 +17,14 @@ const meta = {
         'destructive',
         'outline',
         'ghost',
+        'ghostDestructive',
         'link',
+        'linkDestructive',
       ],
+    },
+    size: {
+      control: 'select',
+      options: ['default', 'xs', 'sm', 'lg', 'none'],
     },
     children: {
       control: 'text',
@@ -79,4 +85,68 @@ export const IconOnly: Story = {
     children: <STORYBOOK_ICON_SELECT.mapping.Settings />,
     'aria-label': 'Settings',
   },
+};
+
+export const Destructive: Story = {
+  args: {
+    variant: 'destructive',
+    children: 'Delete',
+  },
+};
+
+export const Outline: Story = {
+  args: {
+    variant: 'outline',
+  },
+};
+
+export const Link: Story = {
+  args: {
+    variant: 'link',
+    children: 'Read the docs',
+  },
+};
+
+/** The three destructive treatments, from strongest affordance to weakest. */
+export const DestructiveVariants: Story = {
+  args: { children: null },
+  render: () => (
+    <div className="flex items-center gap-2">
+      <Button variant="destructive">Delete</Button>
+      <Button variant="ghostDestructive">Delete</Button>
+      <Button variant="linkDestructive">Delete</Button>
+    </div>
+  ),
+};
+
+export const Sizes: Story = {
+  args: { children: null },
+  render: () => (
+    <div className="flex items-center gap-2">
+      <Button size="xs">Extra small</Button>
+      <Button size="sm">Small</Button>
+      <Button size="default">Default</Button>
+      <Button size="lg">Large</Button>
+    </div>
+  ),
+};
+
+export const IconSizes: Story = {
+  args: { children: null },
+  render: () => (
+    <div className="flex items-center gap-2">
+      <Button size="icon-xs" aria-label="Settings">
+        <STORYBOOK_ICON_SELECT.mapping.Settings />
+      </Button>
+      <Button size="icon-sm" aria-label="Settings">
+        <STORYBOOK_ICON_SELECT.mapping.Settings />
+      </Button>
+      <Button size="icon" aria-label="Settings">
+        <STORYBOOK_ICON_SELECT.mapping.Settings />
+      </Button>
+      <Button size="icon-lg" aria-label="Settings">
+        <STORYBOOK_ICON_SELECT.mapping.Settings />
+      </Button>
+    </div>
+  ),
 };

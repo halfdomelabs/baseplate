@@ -32,6 +32,38 @@ const ToasterPortal = (): React.JSX.Element | null => {
   return createPortal(<Toaster />, document.body);
 };
 
+/**
+ * A palette whose page, card and popover colours are deliberately far apart.
+ *
+ * The default palette resolves `--background` and `--card` to nearly the same
+ * colour, which hides every bug in the control and panel tokens: a control that
+ * forgot `bg-control-background` looks identical to one that has it.
+ *
+ * Applied to the document element rather than a wrapper, because dialogs,
+ * popovers and toasts portal out of the story and would otherwise keep the
+ * default palette — they are the components the stress palette exists to check.
+ */
+const SPLIT_PALETTE: Record<string, string> = {
+  '--background': 'oklch(0.94 0.005 265)',
+  '--card': 'oklch(1 0 0)',
+  '--popover': 'oklch(0.99 0.004 265)',
+};
+
+const usePaletteStress = (palette: string): void => {
+  useEffect(() => {
+    if (palette !== 'split') return;
+    const { style } = document.documentElement;
+    for (const [name, value] of Object.entries(SPLIT_PALETTE)) {
+      style.setProperty(name, value);
+    }
+    return () => {
+      for (const name of Object.keys(SPLIT_PALETTE)) {
+        style.removeProperty(name);
+      }
+    };
+  }, [palette]);
+};
+
 // Keep track of the current theme
 
 let currentTheme: 'light' | 'dark' | undefined;
@@ -75,6 +107,17 @@ const preview: Preview = {
         ],
       },
     },
+    palette: {
+      name: 'Palette',
+      defaultValue: 'default',
+      toolbar: {
+        icon: 'contrast',
+        items: [
+          { value: 'default', title: 'Default palette' },
+          { value: 'split', title: 'Palette stress (grey page, white card)' },
+        ],
+      },
+    },
   },
   decorators: [
     withThemeByClassName<ReactRenderer>({
@@ -84,12 +127,15 @@ const preview: Preview = {
       },
       defaultTheme: 'light',
     }),
-    (Story: React.ComponentType) => (
-      <>
-        <Story />
-        <ToasterPortal />
-      </>
-    ),
+    (Story: React.ComponentType, context) => {
+      usePaletteStress(context.globals.palette as string);
+      return (
+        <>
+          <Story />
+          <ToasterPortal />
+        </>
+      );
+    },
   ],
   parameters: {
     controls: {
