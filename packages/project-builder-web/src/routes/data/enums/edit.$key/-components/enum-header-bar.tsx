@@ -57,7 +57,7 @@ export function EnumHeaderBar({
                 size="icon-sm"
                 type="button"
                 aria-label="Edit enum info"
-                className="invisible group-hover:visible"
+                className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
               >
                 <MdEdit className="size-4" />
               </Button>

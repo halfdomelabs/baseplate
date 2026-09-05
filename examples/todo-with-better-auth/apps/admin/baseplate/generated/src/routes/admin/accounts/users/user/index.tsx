@@ -1,11 +1,7 @@
 import type { ReactElement } from 'react';
 
 import { useReadQuery } from '@apollo/client/react';
-import {
-  PageHeader,
-  PageHeaderActions,
-  PageHeaderTitle,
-} from '@prisma-crud/ui-shared';
+import { PageHeader, PageHeaderTitle } from '@prisma-crud/ui-shared';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { graphql } from '@src/gql';
@@ -48,11 +44,9 @@ function UserListPage(): ReactElement {
           Users
           {/* TPL_PAGE_TITLE:END */}
         </PageHeaderTitle>
-        <PageHeaderActions>
-          {/* TPL_CREATE_BUTTON:START */}
+        {/* TPL_CREATE_BUTTON:START */}
 
-          {/* TPL_CREATE_BUTTON:END */}
-        </PageHeaderActions>
+        {/* TPL_CREATE_BUTTON:END */}
       </PageHeader>
       {/* TPL_TABLE_COMPONENT:START */}
       <UserTable items={data.users} />

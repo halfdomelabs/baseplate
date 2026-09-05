@@ -65,7 +65,7 @@ export function ModelHeaderBar({
                 size="icon-sm"
                 type="button"
                 aria-label="Edit model info"
-                className="invisible group-hover:visible"
+                className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
               >
                 <MdEdit className="size-4" />
               </Button>

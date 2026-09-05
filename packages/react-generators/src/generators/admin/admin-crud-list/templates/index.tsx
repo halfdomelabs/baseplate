@@ -2,11 +2,7 @@
 
 import type { ReactElement } from 'react';
 
-import {
-  PageHeader,
-  PageHeaderActions,
-  PageHeaderTitle,
-} from '%reactComponentsImports';
+import { PageHeader, PageHeaderTitle } from '%reactComponentsImports';
 import { createFileRoute } from '@tanstack/react-router';
 
 TPL_ITEMS_QUERY;
@@ -25,9 +21,7 @@ function TPL_COMPONENT_NAME(): ReactElement {
         <PageHeaderTitle>
           <TPL_PAGE_TITLE />
         </PageHeaderTitle>
-        <PageHeaderActions>
-          <TPL_CREATE_BUTTON />
-        </PageHeaderActions>
+        <TPL_CREATE_BUTTON />
       </PageHeader>
       <TPL_TABLE_COMPONENT />
     </div>

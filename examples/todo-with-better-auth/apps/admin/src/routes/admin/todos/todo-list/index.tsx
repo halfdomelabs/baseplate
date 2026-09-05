@@ -50,9 +50,9 @@ function TodoListListPage(): ReactElement {
           Todo Lists
           {/* TPL_PAGE_TITLE:END */}
         </PageHeaderTitle>
-        <PageHeaderActions>
-          {/* TPL_CREATE_BUTTON:START */}
+        {/* TPL_CREATE_BUTTON:START */}
 
+        <PageHeaderActions>
           <div className="block">
             <Link to="/admin/todos/todo-list/new">
               <Button>
@@ -61,8 +61,8 @@ function TodoListListPage(): ReactElement {
               </Button>
             </Link>
           </div>
-          {/* TPL_CREATE_BUTTON:END */}
         </PageHeaderActions>
+        {/* TPL_CREATE_BUTTON:END */}
       </PageHeader>
       {/* TPL_TABLE_COMPONENT:START */}
       <TodoListTable items={data.todoLists} />

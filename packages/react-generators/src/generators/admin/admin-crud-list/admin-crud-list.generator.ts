@@ -278,6 +278,7 @@ export const adminCrudListGenerator = createGenerator({
                     ? tsCodeFragment('')
                     : tsCodeFragment(
                         `
+            <PageHeaderActions>
             <div className="block">
             <Link to="${routePrefix}/new">
               <Button>
@@ -285,13 +286,15 @@ export const adminCrudListGenerator = createGenerator({
                 Create ${titleizeCamel(modelName)}
               </Button>
             </Link>
-          </div>`,
+          </div>
+          </PageHeaderActions>`,
                         [
                           tsImportBuilder(['Link']).from(
                             '@tanstack/react-router',
                           ),
                           tsImportBuilder(['MdAdd']).from('react-icons/md'),
                           reactComponentsImports.Button.declaration(),
+                          reactComponentsImports.PageHeaderActions.declaration(),
                         ],
                       ),
                   TPL_TABLE_COMPONENT: TsCodeUtils.mergeFragmentsAsJsxElement(

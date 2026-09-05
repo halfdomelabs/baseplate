@@ -50,9 +50,9 @@ function UserListPage(): ReactElement {
           Users
           {/* TPL_PAGE_TITLE:END */}
         </PageHeaderTitle>
-        <PageHeaderActions>
-          {/* TPL_CREATE_BUTTON:START */}
+        {/* TPL_CREATE_BUTTON:START */}
 
+        <PageHeaderActions>
           <div className="block">
             <Link to="/admin/accounts/users/new">
               <Button>
@@ -61,8 +61,8 @@ function UserListPage(): ReactElement {
               </Button>
             </Link>
           </div>
-          {/* TPL_CREATE_BUTTON:END */}
         </PageHeaderActions>
+        {/* TPL_CREATE_BUTTON:END */}
       </PageHeader>
       {/* TPL_TABLE_COMPONENT:START */}
       <UserTable items={data.users} />
