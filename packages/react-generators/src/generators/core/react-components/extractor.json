@@ -989,7 +989,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/textarea.tsx",
       "projectExports": { "Textarea": {} },
-      "referencedGeneratorTemplates": ["cn"],
+      "referencedGeneratorTemplates": ["cn", "styles-input"],
       "sourceFile": "components/ui/textarea.tsx",
       "variables": {}
     },

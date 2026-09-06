@@ -77,7 +77,7 @@ function InputOtpSlot({
     <OTPFieldPrimitive.Input
       data-slot="input-otp-slot"
       className={cn(
-        'relative border-y border-r border-input bg-control-background text-center text-sm transition-all outline-none group-data-[size=default]/input-otp:size-8 group-data-[size=sm]/input-otp:size-7 group-data-[size=xl]/input-otp:size-11 group-data-[size=xl]/input-otp:text-base first:rounded-l-lg first:border-l last:rounded-r-lg focus-visible:z-10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed aria-invalid:border-destructive focus-visible:aria-invalid:border-destructive focus-visible:aria-invalid:ring-destructive/20 dark:bg-input/30 dark:focus-visible:aria-invalid:ring-destructive/40',
+        'relative size-8 border-y border-r border-input bg-control-background text-center text-sm transition-all outline-none group-data-[size=sm]/input-otp:size-7 group-data-[size=xl]/input-otp:size-11 group-data-[size=xl]/input-otp:text-base first:rounded-l-lg first:border-l last:rounded-r-lg focus-visible:z-10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed aria-invalid:border-destructive focus-visible:aria-invalid:border-destructive focus-visible:aria-invalid:ring-destructive/20 dark:bg-input/30 dark:focus-visible:aria-invalid:ring-destructive/40',
         className,
       )}
       {...props}

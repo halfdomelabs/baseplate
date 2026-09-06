@@ -38,9 +38,6 @@ export interface NumberFieldProps
  * Numeric input backed by Base UI's NumberField, which keeps in-progress text
  * (`-`, `1.`) separate from the numeric value and emits `null` when cleared.
  *
- * The steppers are siblings of the input rather than embedded in it, so they
- * track the control height rather than the 36px embedded-action exception.
- *
  * https://base-ui.com/react/components/number-field
  */
 function NumberField({

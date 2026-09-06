@@ -73,7 +73,7 @@ function DatePickerField({
         render={
           <Button
             variant="outline"
-            size={size === 'default' ? 'default' : size}
+            size={size}
             data-empty={!dateValue}
             disabled={disabled}
             id={id}

@@ -41,9 +41,9 @@ const OPTIONS = ['One', 'Two', 'Three'];
 const SELECT_OPTIONS = OPTIONS.map((label) => ({ label, value: label }));
 
 /**
- * Every control that carries a `size`, at each supported value. Cells are
- * addressable as `[data-control][data-tier]` so a browser pass can measure
- * heights and embedded-action targets without depending on internal markup.
+ * One row per control, one cell per size. Cells carry
+ * `[data-control][data-tier]` so a measurement pass can address them without
+ * depending on internal markup.
  */
 function Row({
   label,

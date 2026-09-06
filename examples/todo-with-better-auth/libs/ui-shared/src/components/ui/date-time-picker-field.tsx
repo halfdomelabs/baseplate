@@ -131,7 +131,7 @@ function DateTimePickerField({
         render={
           <Button
             variant="outline"
-            size={size === 'default' ? 'default' : size}
+            size={size}
             data-empty={!dateTimeValue}
             disabled={disabled}
             id={id}

@@ -1,6 +1,7 @@
 'use client';
 
 import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
+import { cva } from 'class-variance-authority';
 import * as React from 'react';
 import { MdCheck, MdClose, MdUnfoldMore } from 'react-icons/md';
 
@@ -270,6 +271,25 @@ function ComboboxSeparator({
   );
 }
 
+// Padding is a plain class so the `has-…:px-1` chip inset still overrides it.
+const comboboxChipsVariants = cva(
+  'group/combobox-chips flex flex-wrap items-center gap-1 rounded-lg border border-input bg-control-background bg-clip-padding py-1 transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1 dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40',
+  {
+    variants: {
+      // `text-base md:text-sm` stops iOS zooming the page on focus; `xl` is
+      // already at 16px so it does not need the small-screen bump.
+      size: {
+        sm: 'min-h-7 px-2 text-base md:text-sm',
+        default: 'min-h-8 px-2.5 text-base md:text-sm',
+        xl: 'min-h-11 px-4 text-base',
+      },
+    },
+    defaultVariants: {
+      size: 'default',
+    },
+  },
+);
+
 function ComboboxChips({
   className,
   size = 'default',
@@ -282,10 +302,7 @@ function ComboboxChips({
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
       data-size={size}
-      className={cn(
-        'group/combobox-chips flex flex-wrap items-center gap-1 rounded-lg border border-input bg-control-background bg-clip-padding py-1 text-base transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1 data-[size=default]:min-h-8 data-[size=default]:px-2.5 data-[size=sm]:min-h-7 data-[size=sm]:px-2 data-[size=xl]:min-h-11 data-[size=xl]:px-4 data-[size=default]:md:text-sm data-[size=sm]:md:text-sm dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40',
-        className,
-      )}
+      className={cn(comboboxChipsVariants({ size }), className)}
       {...props}
     />
   );

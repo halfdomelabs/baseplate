@@ -1070,7 +1070,7 @@ const textarea = createTsTemplateFile({
   importMapProviders: {},
   name: 'textarea',
   projectExports: { Textarea: {} },
-  referencedGeneratorTemplates: { cn: {} },
+  referencedGeneratorTemplates: { cn: {}, stylesInput: {} },
   source: {
     path: path.join(
       import.meta.dirname,
