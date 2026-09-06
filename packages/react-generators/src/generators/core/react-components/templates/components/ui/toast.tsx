@@ -10,11 +10,8 @@ import { Toast as ToastPrimitive } from '@base-ui/react/toast';
 import { MdClose } from 'react-icons/md';
 
 /**
- * The manager backing the exported `toast` helpers.
- *
- * Module-level rather than context-bound so `toast.*` works outside React —
- * Apollo links, route loaders, plain hooks. `Toaster` passes it to
- * `Toast.Provider`, which is what connects those calls to the rendered viewport.
+ * The manager backing the exported `toast` helpers. A renderer other than
+ * `Toaster` must pass it to `ToastProvider`, or `toast.*` calls reach nothing.
  */
 const toastManager = ToastPrimitive.createToastManager();
 
@@ -163,8 +160,6 @@ function ToastList(): React.ReactElement[] {
     <Toast key={toastItem.id} toast={toastItem}>
       <ToastContent>
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          {/* The title only leads something when there is a description under
-              it; on its own it is the whole message. */}
           <ToastTitle className={cn(!toastItem.description && 'font-normal')} />
           <ToastDescription />
         </div>
