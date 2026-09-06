@@ -1,5 +1,18 @@
 # @baseplate-dev/plugin-ai
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1031](https://github.com/halfdomelabs/baseplate/pull/1031) [`616d2f5`](https://github.com/halfdomelabs/baseplate/commit/616d2f5cb41a91e01b1689309a56d5b2525037dc) Thanks [@kingston](https://github.com/kingston)! - Authorization expressions can now compare an optional field against `null` (e.g. `model.engagementEffectiveAt !== null`), including as an `exists()`/`all()` condition value, so presence-gated rules no longer have to be hand-written. Comparing a required field, or a `json` field, against `null` is flagged as a warning.
+
+- Updated dependencies [[`fc4a2b1`](https://github.com/halfdomelabs/baseplate/commit/fc4a2b1a65271daf2b7f9ba1b4d898ea22c406ab), [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35), [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35), [`57e356a`](https://github.com/halfdomelabs/baseplate/commit/57e356ad50d7eac9bb58f66b4d04a11efd74d7f2), [`0a595f4`](https://github.com/halfdomelabs/baseplate/commit/0a595f4b730660b4ce777474316f8090c07f7415), [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de), [`2671e93`](https://github.com/halfdomelabs/baseplate/commit/2671e9352cd5c7cdd2803a4f5475a6342b79d5f8), [`daef666`](https://github.com/halfdomelabs/baseplate/commit/daef666c5710453aa3a5777976e8ba4e70025135), [`616d2f5`](https://github.com/halfdomelabs/baseplate/commit/616d2f5cb41a91e01b1689309a56d5b2525037dc), [`00800a2`](https://github.com/halfdomelabs/baseplate/commit/00800a222acd086f1885d24588804cdca115fb5f), [`2299376`](https://github.com/halfdomelabs/baseplate/commit/229937646555f840597afe238470112d84592c78), [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84)]:
+  - @baseplate-dev/ui-components@0.6.19
+  - @baseplate-dev/project-builder-lib@0.6.19
+  - @baseplate-dev/core-generators@0.6.19
+  - @baseplate-dev/sync@0.6.19
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes

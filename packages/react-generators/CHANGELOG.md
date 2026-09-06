@@ -1,5 +1,32 @@
 # @baseplate-dev/react-generators
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1039](https://github.com/halfdomelabs/baseplate/pull/1039) [`fc4a2b1`](https://github.com/halfdomelabs/baseplate/commit/fc4a2b1a65271daf2b7f9ba1b4d898ea22c406ab) Thanks [@kingston](https://github.com/kingston)! - Rendered markdown and HTML now get their typography from a `typeset` class that sizes to its container, replacing the global `h1`-`h3`/`p` rules and the `text-style-*` utilities, so headings outside `typeset` need their own text utilities. New `PageHeader` and `Section` components cover page and section titles with overridable heading levels, an `inline-link` utility gives links in ordinary copy the same styling `typeset` gives links inside it, and generated card components now also export `CardAction`.
+
+- [#1044](https://github.com/halfdomelabs/baseplate/pull/1044) [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35) Thanks [@kingston](https://github.com/kingston)! - Generated apps now define `--radius` and its full size scale, so components like `InputGroup` that depend on it render with the correct corner radius instead of square corners. Fixed the `dark` variant matcher to also activate on a bare `.dark` class, ported the `Sidebar`/`Badge`/`Alert` tone and pointer-cursor fixes from `ui-components`, and switched the root layout from a fixed `100vh` to `min-height: 100dvh`.
+
+- [#1048](https://github.com/halfdomelabs/baseplate/pull/1048) [`00800a2`](https://github.com/halfdomelabs/baseplate/commit/00800a222acd086f1885d24588804cdca115fb5f) Thanks [@kingston](https://github.com/kingston)! - Generated apps no longer depend on sonner: toasts come from a Base UI `toast.tsx` component that the app owns, which stacks, swipes to dismiss, announces errors assertively, and sits bottom-right instead of top-center. Code that imported `toast` from `'sonner'` should import it from the generated components instead (`@/components/ui/toast`, or the shared component library in library mode).
+
+- [#1046](https://github.com/halfdomelabs/baseplate/pull/1046) [`57e356a`](https://github.com/halfdomelabs/baseplate/commit/57e356ad50d7eac9bb58f66b4d04a11efd74d7f2) Thanks [@kingston](https://github.com/kingston)! - Generated components are now caught up with current shadcn Base UI, so inputs, cards, calendars, radio groups and dialogs pick up upstream's refreshed sizing, radii and range styling, and controls fill with a new `--control-background` token that flips with the surface beneath them instead of always matching the page. `Alert` gains an `AlertAction` slot for a dismiss or retry control, and `ButtonGroup` gains a vertical orientation plus `ButtonGroupText` and `ButtonGroupSeparator`, matching upstream; it now squares off only children that set a `data-slot`, so a plain wrapper between buttons keeps its own corners. Components that deliberately differ from shadcn now say so inline.
+
+- [#1042](https://github.com/halfdomelabs/baseplate/pull/1042) [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de) Thanks [@kingston](https://github.com/kingston)! - The auth hook that returns the signed-in user id is now consistently `useUserIdOrThrow` in `use-user-id-or-throw.ts` across Better Auth, local auth and placeholder auth, following Prisma's `OrThrow` naming; Better Auth apps should rename their imports of `useRequiredUserId`. Import maps for auth context, password reset and Stripe billing no longer offer symbols that the generated files stopped exporting.
+
+- [#1028](https://github.com/halfdomelabs/baseplate/pull/1028) [`94d84c1`](https://github.com/halfdomelabs/baseplate/commit/94d84c1ce807fe7fa55eb1f6f01515a6fea137f6) Thanks [@kingston](https://github.com/kingston)! - Signing in, signing out, and session changes from another tab no longer unmount the app, so the previous screen no longer flashes before the new one and page state survives the transition.
+
+- [#1041](https://github.com/halfdomelabs/baseplate/pull/1041) [`5fe4f0a`](https://github.com/halfdomelabs/baseplate/commit/5fe4f0a16e41bf7f18985856380b428ab26181a3) Thanks [@kingston](https://github.com/kingston)! - Editing a component, hook, or service in a generated web app now updates the page in place instead of rebuilding the router and remounting the whole app, so your route, scroll position, and open subscriptions survive a save. Sentry is now initialised from `main.tsx` via `initSentry(router)` rather than importing the router itself.
+
+- [#1047](https://github.com/halfdomelabs/baseplate/pull/1047) [`2299376`](https://github.com/halfdomelabs/baseplate/commit/229937646555f840597afe238470112d84592c78) Thanks [@kingston](https://github.com/kingston)! - Text-entry and button-like controls (`Input`, `Textarea`, `InputGroup`, `InputOtp`, `NumberField`, `Combobox`, `Autocomplete`, `Select`) now accept an optional `size` of `sm`, `default` or `xl`, and `Button` gains `xl` and `icon-xl`. `xl` renders single-line controls at 44px with larger text; omitting `size` leaves every control looking exactly as it does today.
+
+- [#1030](https://github.com/halfdomelabs/baseplate/pull/1030) [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84) Thanks [@kingston](https://github.com/kingston)! - Template extraction now resolves imports of a generated sibling package back to the import provider that owns them, and skips files the project has snapshotted as diverged, so apps sourcing their UI components from a shared library can have their templates extracted. The generated email service and notification email channel no longer carry `/* TPL_* */` marker comments.
+
+- Updated dependencies [[`0a595f4`](https://github.com/halfdomelabs/baseplate/commit/0a595f4b730660b4ce777474316f8090c07f7415), [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de), [`daef666`](https://github.com/halfdomelabs/baseplate/commit/daef666c5710453aa3a5777976e8ba4e70025135), [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84)]:
+  - @baseplate-dev/core-generators@0.6.19
+  - @baseplate-dev/sync@0.6.19
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1033](https://github.com/halfdomelabs/baseplate/pull/1033) [`4805d5a`](https://github.com/halfdomelabs/baseplate/commit/4805d5a2eb09c415c9a304d8169cf0aaa32734da) Thanks [@kingston](https://github.com/kingston)! - Generated backends now derive signing keys per purpose from a single `APP_SECRET`, so features needing signed tokens no longer each provision a secret of their own, and secrets retired into `APP_SECRET_PREVIOUS` keep verifying so rotating does not invalidate values already issued. `APP_SECRET` is required: set it in every deployed environment before upgrading, or the app will fail to start.
+
+- [#1036](https://github.com/halfdomelabs/baseplate/pull/1036) [`0a595f4`](https://github.com/halfdomelabs/baseplate/commit/0a595f4b730660b4ce777474316f8090c07f7415) Thanks [@kingston](https://github.com/kingston)! - Generated tsconfigs now set `moduleResolution` to `nodenext` to match their `module` setting.
+
+- [#1035](https://github.com/halfdomelabs/baseplate/pull/1035) [`2671e93`](https://github.com/halfdomelabs/baseplate/commit/2671e9352cd5c7cdd2803a4f5475a6342b79d5f8) Thanks [@kingston](https://github.com/kingston)! - Each app now carries its own public URL, and the backend reads them through `getApiUrl`, `getWebUrl` and `getWebOrigins`, so anything minting an absolute link names the client it means rather than declaring a URL setting of its own. `ALLOWED_ORIGINS` and `AUTH_FRONTEND_URL` are gone: set `API_URL` and a `WEB_URL_<APP>` per web app before upgrading, or the app will fail to start, plus `ADDITIONAL_WEB_ORIGINS` for any trusted origin that is not an app in the project.
+
+- [#1032](https://github.com/halfdomelabs/baseplate/pull/1032) [`daef666`](https://github.com/halfdomelabs/baseplate/commit/daef666c5710453aa3a5777976e8ba4e70025135) Thanks [@kingston](https://github.com/kingston)! - Database-backed test suites now create each worker's database once per run instead of checking for it before every test file, and raise the default test timeout to 15s so tests are not failed by a contended CI database.
+
+- [#1042](https://github.com/halfdomelabs/baseplate/pull/1042) [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de) Thanks [@kingston](https://github.com/kingston)! - The auth hook that returns the signed-in user id is now consistently `useUserIdOrThrow` in `use-user-id-or-throw.ts` across Better Auth, local auth and placeholder auth, following Prisma's `OrThrow` naming; Better Auth apps should rename their imports of `useRequiredUserId`. Import maps for auth context, password reset and Stripe billing no longer offer symbols that the generated files stopped exporting.
+
+- [#1043](https://github.com/halfdomelabs/baseplate/pull/1043) [`840dcb3`](https://github.com/halfdomelabs/baseplate/commit/840dcb37c0f10e7a1126dcc3d78550cb045c3f25) Thanks [@kingston](https://github.com/kingston)! - The generated backend now uses fastify 5.12.1 and Prisma 7.10.0, which carry security fixes for request schema validation, proxy header handling, and Prisma Studio's local server binding.
+
+- Updated dependencies [[`0a595f4`](https://github.com/halfdomelabs/baseplate/commit/0a595f4b730660b4ce777474316f8090c07f7415), [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de), [`daef666`](https://github.com/halfdomelabs/baseplate/commit/daef666c5710453aa3a5777976e8ba4e70025135), [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84)]:
+  - @baseplate-dev/core-generators@0.6.19
+  - @baseplate-dev/sync@0.6.19
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes

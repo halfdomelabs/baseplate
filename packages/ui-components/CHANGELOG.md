@@ -1,5 +1,22 @@
 # @baseplate-dev/ui-components
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1039](https://github.com/halfdomelabs/baseplate/pull/1039) [`fc4a2b1`](https://github.com/halfdomelabs/baseplate/commit/fc4a2b1a65271daf2b7f9ba1b4d898ea22c406ab) Thanks [@kingston](https://github.com/kingston)! - Rendered markdown and HTML now get their typography from a `typeset` class that sizes to its container, replacing the global `h1`-`h3`/`p` rules and the `text-style-*` utilities, so headings outside `typeset` need their own text utilities. New `PageHeader` and `Section` components cover page and section titles with overridable heading levels, an `inline-link` utility gives links in ordinary copy the same styling `typeset` gives links inside it, and generated card components now also export `CardAction`.
+
+- [#1044](https://github.com/halfdomelabs/baseplate/pull/1044) [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35) Thanks [@kingston](https://github.com/kingston)! - Fixed a shadow rule on `Sidebar`'s outline button variant that silently no-opped against oklch tokens, renamed the `surface-*` status-color utilities to `tone-*` (freeing "surface" for background/card/popover), added `tone-success`/`tone-warning` variants to `Badge`, and gave buttons a pointer cursor by default. `Alert`'s border now tints with its variant instead of always rendering the default border color. Removed remaining literal `bg-white`/`bg-black` colors from `Slider`, `ColorPickerField`, `Dialog`, and `Sheet`.
+
+- [#1046](https://github.com/halfdomelabs/baseplate/pull/1046) [`57e356a`](https://github.com/halfdomelabs/baseplate/commit/57e356ad50d7eac9bb58f66b4d04a11efd74d7f2) Thanks [@kingston](https://github.com/kingston)! - Generated components are now caught up with current shadcn Base UI, so inputs, cards, calendars, radio groups and dialogs pick up upstream's refreshed sizing, radii and range styling, and controls fill with a new `--control-background` token that flips with the surface beneath them instead of always matching the page. `Alert` gains an `AlertAction` slot for a dismiss or retry control, and `ButtonGroup` gains a vertical orientation plus `ButtonGroupText` and `ButtonGroupSeparator`, matching upstream; it now squares off only children that set a `data-slot`, so a plain wrapper between buttons keeps its own corners. Components that deliberately differ from shadcn now say so inline.
+
+- [#1048](https://github.com/halfdomelabs/baseplate/pull/1048) [`00800a2`](https://github.com/halfdomelabs/baseplate/commit/00800a222acd086f1885d24588804cdca115fb5f) Thanks [@kingston](https://github.com/kingston)! - Toasts are now built on Base UI instead of sonner: they stack bottom-right, swipe to dismiss and announce errors assertively. The `toast` facade takes the message first with optional `description`, `actionProps`, `priority`, `timeout` and `id`, and `Toaster` now takes Base UI provider props, so sonner options such as `position`, `closeButton` and `action` no longer apply.
+
+- [#1047](https://github.com/halfdomelabs/baseplate/pull/1047) [`2299376`](https://github.com/halfdomelabs/baseplate/commit/229937646555f840597afe238470112d84592c78) Thanks [@kingston](https://github.com/kingston)! - Text-entry and button-like controls (`Input`, `Textarea`, `InputGroup`, `InputOtp`, `NumberField`, `Combobox`, `Autocomplete`, `Select`) now accept an optional `size` of `sm`, `default` or `xl`, and `Button` gains `xl` and `icon-xl`. `xl` renders single-line controls at 44px with larger text; omitting `size` leaves every control looking exactly as it does today.
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes
