@@ -1,9 +1,8 @@
 import type { ReactElement } from 'react';
 
 import { useMutation, useReadQuery } from '@apollo/client/react';
-import { PageHeader, PageHeaderTitle } from '@prisma-crud/ui-shared';
+import { PageHeader, PageHeaderTitle, toast } from '@prisma-crud/ui-shared';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner';
 
 import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';

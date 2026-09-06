@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 
 import { ConfirmDialog } from '../components/ui/confirm-dialog';
 import { ErrorBoundary } from '../components/ui/error-boundary';
-import { Toaster } from '../components/ui/toaster';
+import { Toaster } from '../components/ui/toast';
 import { AppApolloProvider } from './app-apollo-provider';
 import { AppRoutes } from './app-routes';
 import { UserSessionProvider } from './user-session-provider';

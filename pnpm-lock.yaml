@@ -1248,9 +1248,6 @@ importers:
       react-icons:
         specifier: ^5.7.0
         version: 5.7.0(react@19.2.8)
-      sonner:
-        specifier: ^2.0.7
-        version: 2.0.7(react-dom@19.2.8)(react@19.2.8)
       tailwind-merge:
         specifier: ^3.6.0
         version: 3.6.0
@@ -8083,12 +8080,6 @@ packages:
 
   sonic-boom@4.2.1:
     resolution: {integrity: sha512-w6AxtubXa2wTXAUsZMMWERrsIRAdrK0Sc+FUytWvYAhBJLyuI4llrMIC1DtlNSdI99EI86KZum2MMq3EAZlF9Q==}
-
-  sonner@2.0.7:
-    resolution: {integrity: sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
   sort-keys@6.0.1:
     resolution: {integrity: sha512-w7xWRu8U9MneKNna8ptG194jp9PLtbd/Rl6gwrmbK4yUeKbE66a64rHgl0iKTBBDr/hpanx7zMGP1Qo8MRkc/w==}
@@ -14924,11 +14915,6 @@ snapshots:
   sonic-boom@4.2.1:
     dependencies:
       atomic-sleep: 1.0.0
-
-  sonner@2.0.7(react-dom@19.2.8)(react@19.2.8):
-    dependencies:
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
 
   sort-keys@6.0.1:
     dependencies:

@@ -62,7 +62,7 @@ export interface CoreReactComponentsPaths {
   table: string;
   textarea: string;
   textareaField: string;
-  toaster: string;
+  toast: string;
   tooltip: string;
   typesForm: string;
   typesIcon: string;
@@ -145,7 +145,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           table: `${componentsRoot}/ui/table.tsx`,
           textarea: `${componentsRoot}/ui/textarea.tsx`,
           textareaField: `${componentsRoot}/ui/textarea-field.tsx`,
-          toaster: `${componentsRoot}/ui/toaster.tsx`,
+          toast: `${componentsRoot}/ui/toast.tsx`,
           tooltip: `${componentsRoot}/ui/tooltip.tsx`,
           typesForm: `${srcRoot}/types/form.ts`,
           typesIcon: `${srcRoot}/types/icon.ts`,

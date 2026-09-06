@@ -4,7 +4,6 @@ import { useMutation } from '@apollo/client/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import type { FragmentType } from '@src/gql';
@@ -19,6 +18,7 @@ import {
   DialogTitle,
 } from '@src/components/ui/dialog';
 import { InputFieldController } from '@src/components/ui/input-field';
+import { toast } from '@src/components/ui/toast';
 import { graphql, readFragment } from '@src/gql';
 
 const PASSWORD_MIN_LENGTH = 8;

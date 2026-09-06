@@ -1,9 +1,8 @@
 import type { ReactElement } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, InputFieldController } from '@prisma-crud/ui-shared';
+import { Button, InputFieldController, toast } from '@prisma-crud/ui-shared';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 import type { EmbeddedObjectFormProps } from '@src/components/admin/embedded-object-input';
 

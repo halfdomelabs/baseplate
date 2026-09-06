@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
   InputFieldController,
+  toast,
 } from '%reactComponentsImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { userSessionClient } from '%reactSessionImports';
@@ -22,7 +23,6 @@ import {
   useNavigate,
 } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 export const Route = createFileRoute('/auth_/register')({

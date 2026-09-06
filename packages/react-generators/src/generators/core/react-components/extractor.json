@@ -1005,16 +1005,31 @@
       "sourceFile": "components/ui/textarea-field.tsx",
       "variables": {}
     },
-    "toaster": {
+    "toast": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{components-root}/ui/toaster.tsx",
-      "projectExports": { "Toaster": {} },
-      "referencedGeneratorTemplates": ["styles-button"],
-      "sourceFile": "components/ui/toaster.tsx",
+      "pathRootRelativePath": "{components-root}/ui/toast.tsx",
+      "projectExports": {
+        "Toast": { "isTypeOnly": false },
+        "toast": { "isTypeOnly": false },
+        "ToastAction": { "isTypeOnly": false },
+        "ToastClose": { "isTypeOnly": false },
+        "ToastContent": { "isTypeOnly": false },
+        "ToastDescription": { "isTypeOnly": false },
+        "Toaster": { "isTypeOnly": false },
+        "toastManager": { "isTypeOnly": false },
+        "ToastOptions": { "isTypeOnly": true },
+        "ToastPortal": { "isTypeOnly": false },
+        "ToastProvider": { "isTypeOnly": false },
+        "ToastTitle": { "isTypeOnly": false },
+        "ToastType": { "isTypeOnly": true },
+        "ToastUpdateOptions": { "isTypeOnly": true },
+        "ToastViewport": { "isTypeOnly": false }
+      },
+      "referencedGeneratorTemplates": ["button", "cn"],
+      "sourceFile": "components/ui/toast.tsx",
       "variables": {}
     },
     "tooltip": {

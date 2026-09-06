@@ -2,11 +2,10 @@
 
 import type { ReactElement } from 'react';
 
-import { Button } from '%reactComponentsImports';
+import { Button, toast } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 TPL_TABLE_COMPONENT;
 

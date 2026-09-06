@@ -1,7 +1,6 @@
 import { useMutation } from '@apollo/client/react';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@src/components/ui/button';
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/components/ui/card';
+import { toast } from '@src/components/ui/toast';
 import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';

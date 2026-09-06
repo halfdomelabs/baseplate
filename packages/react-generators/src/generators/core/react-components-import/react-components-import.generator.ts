@@ -46,14 +46,12 @@ export const reactComponentsImportGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ packageName, relativeSourceGlob }) => ({
     // These are imported directly by app-side generated templates (admin-crud
-    // forms, auth pages, `toast()` calls, sidebar/notification icons), not
-    // just re-exported through `reactComponentsImportsProvider`, so the app
-    // still needs them even though the components themselves live in the
-    // library.
+    // forms, auth pages, sidebar/notification icons), not just re-exported
+    // through `reactComponentsImportsProvider`, so the app still needs them
+    // even though the components themselves live in the library.
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
         'react-hook-form',
-        'sonner',
         '@hookform/resolvers',
         'react-icons',
       ]),

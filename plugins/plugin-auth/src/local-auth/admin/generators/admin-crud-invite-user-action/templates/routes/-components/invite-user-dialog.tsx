@@ -13,10 +13,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  toast,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
-import { toast } from 'sonner';
 
 export const inviteUserDialogUserFragment = graphql(`
   fragment InviteUserDialog_user on User {

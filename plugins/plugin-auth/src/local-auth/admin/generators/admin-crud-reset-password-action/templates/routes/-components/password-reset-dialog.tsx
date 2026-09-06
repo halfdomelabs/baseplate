@@ -13,12 +13,12 @@ import {
   DialogHeader,
   DialogTitle,
   InputFieldController,
+  toast,
 } from '%reactComponentsImports';
 import { useMutation } from '@apollo/client/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 const PASSWORD_MIN_LENGTH = 8;

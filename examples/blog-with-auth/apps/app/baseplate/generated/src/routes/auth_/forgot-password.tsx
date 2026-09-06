@@ -3,7 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@src/components/ui/button';
@@ -15,6 +14,7 @@ import {
   CardTitle,
 } from '@src/components/ui/card';
 import { InputFieldController } from '@src/components/ui/input-field';
+import { toast } from '@src/components/ui/toast';
 import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 

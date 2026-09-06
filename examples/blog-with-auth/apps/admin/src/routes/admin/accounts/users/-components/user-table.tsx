@@ -12,7 +12,6 @@ import {
   MdMoreVert,
   MdSecurity,
 } from 'react-icons/md';
-import { toast } from 'sonner';
 
 import type { FragmentType } from '@src/gql';
 
@@ -33,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
+import { toast } from '@src/components/ui/toast';
 import { graphql, readFragment } from '@src/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';

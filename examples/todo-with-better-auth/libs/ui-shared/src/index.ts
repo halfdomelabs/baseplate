@@ -267,7 +267,25 @@ export {
   TextareaFieldController,
 } from './components/ui/textarea-field.js';
 export { Textarea } from './components/ui/textarea.js';
-export { Toaster } from './components/ui/toaster.js';
+export {
+  Toast,
+  toast,
+  ToastAction,
+  ToastClose,
+  ToastContent,
+  ToastDescription,
+  Toaster,
+  toastManager,
+  ToastPortal,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from './components/ui/toast.js';
+export type {
+  ToastOptions,
+  ToastType,
+  ToastUpdateOptions,
+} from './components/ui/toast.js';
 export {
   Tooltip,
   TooltipContent,

@@ -94,7 +94,7 @@
   "@baseplate-dev/react-generators#core/react-components:table": "src/components/ui/table.tsx",
   "@baseplate-dev/react-generators#core/react-components:textarea": "src/components/ui/textarea.tsx",
   "@baseplate-dev/react-generators#core/react-components:textarea-field": "src/components/ui/textarea-field.tsx",
-  "@baseplate-dev/react-generators#core/react-components:toaster": "src/components/ui/toaster.tsx",
+  "@baseplate-dev/react-generators#core/react-components:toast": "src/components/ui/toast.tsx",
   "@baseplate-dev/react-generators#core/react-components:tooltip": "src/components/ui/tooltip.tsx",
   "@baseplate-dev/react-generators#core/react-components:types-form": "src/types/form.ts",
   "@baseplate-dev/react-generators#core/react-components:types-icon": "src/types/icon.ts",

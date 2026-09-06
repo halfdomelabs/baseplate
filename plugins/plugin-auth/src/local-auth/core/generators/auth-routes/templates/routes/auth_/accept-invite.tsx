@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
   InputFieldController,
+  toast,
 } from '%reactComponentsImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { userSessionClient } from '%reactSessionImports';
@@ -24,7 +25,6 @@ import {
 } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 export const Route = createFileRoute('/auth_/accept-invite')({
