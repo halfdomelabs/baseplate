@@ -26,6 +26,7 @@ export interface ComboboxFieldProps<OptionType>
   extends SelectOptionProps<OptionType>, FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
+  size?: 'sm' | 'default' | 'xl';
   placeholder?: string;
   value?: string | null;
   onChange?: (value: string | null) => void;
@@ -52,6 +53,7 @@ function ComboboxField<OptionType>({
   className,
   noResultsText,
   disabled,
+  size = 'default',
 }: ComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
   const id = useId();
@@ -79,8 +81,8 @@ function ComboboxField<OptionType>({
         itemToStringValue={(option) => getOptionValue(option) ?? ''}
         autoHighlight
       >
-        <ComboboxInput id={id} placeholder={placeholder} />
-        <ComboboxContent>
+        <ComboboxInput id={id} size={size} placeholder={placeholder} />
+        <ComboboxContent size={size}>
           <ComboboxEmpty>{noResultsText ?? 'No results found'}</ComboboxEmpty>
           <ComboboxList>
             {(option: OptionType) => {

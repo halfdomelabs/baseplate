@@ -15,22 +15,26 @@ const meta = {
   title: 'components/InputGroup',
   component: InputGroup,
   tags: ['autodocs'],
+  argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'default', 'xl'] },
+  },
+  args: { size: 'default' },
 } satisfies Meta<typeof InputGroup>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => (
-    <InputGroup className="w-80">
+  render: (args) => (
+    <InputGroup className="w-80" {...args}>
       <InputGroupInput placeholder="Enter text..." />
     </InputGroup>
   ),
 };
 
 export const WithIconStart: Story = {
-  render: () => (
-    <InputGroup className="w-80">
+  render: (args) => (
+    <InputGroup className="w-80" {...args}>
       <InputGroupAddon align="inline-start">
         <InputGroupText>
           <MdSearch />
@@ -42,8 +46,8 @@ export const WithIconStart: Story = {
 };
 
 export const WithIconEnd: Story = {
-  render: () => (
-    <InputGroup className="w-80">
+  render: (args) => (
+    <InputGroup className="w-80" {...args}>
       <InputGroupInput placeholder="Enter email..." />
       <InputGroupAddon align="inline-end">
         <InputGroupText>
@@ -55,8 +59,8 @@ export const WithIconEnd: Story = {
 };
 
 export const WithTextAddon: Story = {
-  render: () => (
-    <InputGroup className="w-80">
+  render: (args) => (
+    <InputGroup className="w-80" {...args}>
       <InputGroupAddon align="inline-start">
         <InputGroupText>https://</InputGroupText>
       </InputGroupAddon>
@@ -66,8 +70,8 @@ export const WithTextAddon: Story = {
 };
 
 export const WithButtonEnd: Story = {
-  render: () => (
-    <InputGroup className="w-80">
+  render: (args) => (
+    <InputGroup className="w-80" {...args}>
       <InputGroupAddon align="inline-start">
         <InputGroupText>
           <MdLink />
@@ -84,8 +88,8 @@ export const WithButtonEnd: Story = {
 };
 
 export const WithBothAddons: Story = {
-  render: () => (
-    <InputGroup className="w-80">
+  render: (args) => (
+    <InputGroup className="w-80" {...args}>
       <InputGroupAddon align="inline-start">
         <InputGroupText>$</InputGroupText>
       </InputGroupAddon>
@@ -98,16 +102,16 @@ export const WithBothAddons: Story = {
 };
 
 export const WithTextarea: Story = {
-  render: () => (
-    <InputGroup className="w-80">
+  render: (args) => (
+    <InputGroup className="w-80" {...args}>
       <InputGroupTextarea placeholder="Enter a message..." rows={3} />
     </InputGroup>
   ),
 };
 
 export const Disabled: Story = {
-  render: () => (
-    <InputGroup className="w-80">
+  render: (args) => (
+    <InputGroup className="w-80" {...args}>
       <InputGroupAddon align="inline-start">
         <InputGroupText>
           <MdSearch />
@@ -115,5 +119,28 @@ export const Disabled: Story = {
       </InputGroupAddon>
       <InputGroupInput placeholder="Disabled input" disabled />
     </InputGroup>
+  ),
+};
+
+/** The group owns sizing; its input and embedded actions follow through CSS. */
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      {(['sm', 'default', 'xl'] as const).map((size) => (
+        <InputGroup key={size} size={size} className="w-80">
+          <InputGroupAddon align="inline-start">
+            <InputGroupText>
+              <MdSearch />
+            </InputGroupText>
+          </InputGroupAddon>
+          <InputGroupInput placeholder={`Search (${size})`} />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton size="icon-xs" aria-label="Open link">
+              <MdLink />
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      ))}
+    </div>
   ),
 };

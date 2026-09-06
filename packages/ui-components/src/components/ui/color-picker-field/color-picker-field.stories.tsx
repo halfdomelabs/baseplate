@@ -9,6 +9,7 @@ const meta = {
   component: ColorPickerField,
   tags: ['autodocs'],
   argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'default', 'xl'] },
     placeholder: { control: 'text' },
     disabled: { control: 'boolean' },
   },

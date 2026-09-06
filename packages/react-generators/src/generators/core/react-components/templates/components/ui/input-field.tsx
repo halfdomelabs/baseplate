@@ -39,6 +39,7 @@ function InputField({
   onChange,
   register,
   className,
+  size,
   ref,
   ...props
 }: InputFieldProps): React.ReactElement {
@@ -52,6 +53,7 @@ function InputField({
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Input
         id={id}
+        size={size}
         disabled={disabled}
         onChange={
           onChange &&

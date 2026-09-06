@@ -33,6 +33,7 @@ export interface DatePickerFieldProps extends FormFieldProps {
     'mode' | 'selected' | 'onSelect'
   >;
   ref?: React.Ref<HTMLButtonElement>;
+  size?: 'sm' | 'default' | 'xl';
 }
 
 /**
@@ -50,6 +51,7 @@ function DatePickerField({
   description,
   dateFormat = 'PPP',
   calendarProps,
+  size = 'default',
   ref,
 }: DatePickerFieldProps): React.ReactElement {
   const addWrapper = label ?? error ?? description;
@@ -76,6 +78,7 @@ function DatePickerField({
         render={
           <Button
             variant="outline"
+            size={size === 'default' ? 'default' : size}
             data-empty={!dateValue}
             disabled={disabled}
             id={id}

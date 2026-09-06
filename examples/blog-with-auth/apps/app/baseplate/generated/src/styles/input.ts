@@ -4,16 +4,26 @@ import { cn } from '../utils/cn';
 
 export const inputVariants = cva(
   cn(
-    'flex w-full min-w-0 rounded-lg px-2.5 py-1 text-base transition-colors outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 md:text-sm dark:disabled:bg-input/80',
+    'flex w-full min-w-0 rounded-lg py-1 transition-colors outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 dark:disabled:bg-input/80',
     'border border-input',
     'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
     'aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
   ),
   {
     variants: {
+      // `text-base md:text-sm` stops iOS zooming the page on focus; `xl` is
+      // already at 16px so it does not need the small-screen bump.
+      size: {
+        sm: 'px-2 text-base md:text-sm',
+        default: 'px-2.5 text-base md:text-sm',
+        // Baseplate addition: the 44px touch tier for consumer apps.
+        xl: 'px-4 text-base',
+      },
+      // Heights are set by `size` through `compoundVariants`; this axis only
+      // picks whether the control is clamped to that height or grows past it.
       height: {
-        default: 'h-8',
-        flexible: 'min-h-8',
+        default: '',
+        flexible: '',
       },
       // `transparent` is for inputs whose parent paints the fill; leaving the
       // dark-mode tint out of it avoids compositing two fills over one area.
@@ -22,7 +32,16 @@ export const inputVariants = cva(
         transparent: 'bg-transparent',
       },
     },
+    compoundVariants: [
+      { size: 'sm', height: 'default', class: 'h-7' },
+      { size: 'sm', height: 'flexible', class: 'min-h-7' },
+      { size: 'default', height: 'default', class: 'h-8' },
+      { size: 'default', height: 'flexible', class: 'min-h-8' },
+      { size: 'xl', height: 'default', class: 'h-11' },
+      { size: 'xl', height: 'flexible', class: 'min-h-11' },
+    ],
     defaultVariants: {
+      size: 'default',
       height: 'default',
       background: 'default',
     },

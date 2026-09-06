@@ -14,6 +14,7 @@ const meta = {
   component: DateTimePickerField,
   tags: ['autodocs'],
   argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'default', 'xl'] },
     disabled: {
       control: 'boolean',
     },

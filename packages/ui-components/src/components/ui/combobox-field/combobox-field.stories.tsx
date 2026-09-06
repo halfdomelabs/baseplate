@@ -9,6 +9,7 @@ const meta: Meta<typeof ComboboxField> = {
   component: ComboboxField,
   tags: ['autodocs'],
   argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'default', 'xl'] },
     label: { control: { type: 'text' } },
     placeholder: { control: { type: 'text' } },
     error: { control: { type: 'text' } },

@@ -21,6 +21,10 @@ import { Spinner } from './spinner.js';
  * Unlike Combobox, Autocomplete does not enforce selection — the input
  * accepts any value, and suggestions are optional aids.
  *
+ * Added a `size` scale mirroring Combobox: `AutocompleteInput` owns its
+ * `InputGroup` and passes `size` down, while `AutocompleteContent` publishes
+ * its own as `data-size` for the items to read.
+ *
  * https://base-ui.com/react/components/autocomplete
  */
 const Autocomplete = AutocompletePrimitive.Root;
@@ -73,14 +77,17 @@ function AutocompleteInput({
   showTrigger = false,
   showClear = false,
   showSpinner = false,
+  size = 'default',
   ...props
-}: AutocompletePrimitive.Input.Props & {
+}: // `size` shadows the DOM attribute of the same name on <input />.
+Omit<AutocompletePrimitive.Input.Props, 'size'> & {
   showTrigger?: boolean;
   showClear?: boolean;
   showSpinner?: boolean;
+  size?: 'sm' | 'default' | 'xl';
 }): React.ReactElement {
   return (
-    <InputGroup className={cn('w-auto', className)}>
+    <InputGroup size={size} className={cn('w-auto', className)}>
       <AutocompletePrimitive.Input
         render={<InputGroupInput disabled={disabled} />}
         {...props}
@@ -121,12 +128,13 @@ function AutocompleteContent({
   align = 'start',
   alignOffset = 0,
   anchor,
+  size = 'default',
   ...props
 }: AutocompletePrimitive.Popup.Props &
   Pick<
     AutocompletePrimitive.Positioner.Props,
     'side' | 'align' | 'sideOffset' | 'alignOffset' | 'anchor'
-  >): React.ReactElement {
+  > & { size?: 'sm' | 'default' | 'xl' }): React.ReactElement {
   return (
     <AutocompletePrimitive.Portal>
       <AutocompletePrimitive.Positioner
@@ -139,8 +147,9 @@ function AutocompleteContent({
       >
         <AutocompletePrimitive.Popup
           data-slot="autocomplete-content"
+          data-size={size}
           className={cn(
-            'group/autocomplete-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:shadow-none data-open:animate-in data-open:fade-in-0',
+            'group/autocomplete-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:shadow-none data-[size=xl]:*:data-[slot=input-group]:h-11 data-open:animate-in data-open:fade-in-0',
             className,
           )}
           {...props}
@@ -175,7 +184,7 @@ function AutocompleteItem({
     <AutocompletePrimitive.Item
       data-slot="autocomplete-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-md px-1.5 py-1 text-sm outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex w-full cursor-default items-center gap-2 rounded-md px-1.5 py-1 text-sm outline-hidden select-none group-data-[size=xl]/autocomplete-content:min-h-11 group-data-[size=xl]/autocomplete-content:py-2 group-data-[size=xl]/autocomplete-content:text-base data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}

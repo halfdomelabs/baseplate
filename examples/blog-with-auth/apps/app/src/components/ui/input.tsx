@@ -5,9 +5,9 @@ import { inputVariants } from '@src/styles/input';
 import { cn } from '@src/utils/cn';
 
 export interface InputProps
-  // `height` shadows the image-input DOM attribute of the same name.
+  // `size` and `height` shadow DOM attributes of the same name on <input />.
   extends
-    Omit<React.ComponentPropsWithRef<'input'>, 'height'>,
+    Omit<React.ComponentPropsWithRef<'input'>, 'height' | 'size'>,
     VariantProps<typeof inputVariants> {}
 
 /**
@@ -15,7 +15,10 @@ export interface InputProps
  *
  * ShadCN changes:
  * - Classes live in the shared `inputVariants`, which NumberField and
- *   ColorPickerField also render, and are exposed as `height`/`background` props
+ *   ColorPickerField also render, and are exposed as `size`/`height`/`background`
+ *   props
+ * - `size` adds an `xl` tier sized for touch; the DOM `size` attribute is
+ *   omitted in its favour
  * - Renders a plain <input /> rather than Base UI's Input primitive
  * - Fills with `bg-control-background` so the control contrasts with the
  *   surface it sits on rather than always matching the page.
@@ -25,6 +28,7 @@ export interface InputProps
 function Input({
   className,
   type,
+  size,
   height,
   background,
   ...props
@@ -33,7 +37,7 @@ function Input({
     <input
       type={type}
       data-slot="input"
-      className={cn(inputVariants({ height, background }), className)}
+      className={cn(inputVariants({ size, height, background }), className)}
       {...props}
     />
   );

@@ -33,6 +33,7 @@ export interface TextareaFieldProps
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;
+  size?: 'sm' | 'default' | 'xl';
 }
 
 function TextareaField({
@@ -42,6 +43,7 @@ function TextareaField({
   disabled,
   onChange,
   register,
+  size = 'default',
   ...props
 }: TextareaFieldProps): React.ReactElement {
   const id = useId();
@@ -53,6 +55,7 @@ function TextareaField({
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Textarea
         id={id}
+        size={size}
         disabled={disabled}
         onChange={
           onChange &&

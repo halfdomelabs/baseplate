@@ -7,6 +7,7 @@ const meta = {
   component: InputOtpField,
   tags: ['autodocs'],
   argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'default', 'xl'] },
     label: { control: { type: 'text' } },
     error: { control: { type: 'text' } },
     description: { control: { type: 'text' } },

@@ -27,6 +27,7 @@ export interface ColorPickerFieldProps extends FormFieldProps {
   formatColorName?: (value: string) => string;
   value?: string;
   hideText?: boolean;
+  size?: 'sm' | 'default' | 'xl';
   /**
    * Parse a color string into a hex color.
    * @param color - The color string to parse.
@@ -59,6 +60,7 @@ function ColorPickerField({
   formatColorName,
   parseColor,
   serializeColor,
+  size = 'default',
   ref,
 }: ColorPickerFieldProps): React.ReactElement {
   const addWrapper = label ?? error ?? description;
@@ -83,7 +85,10 @@ function ColorPickerField({
             justify: 'start',
           }),
           className,
-          'flex h-8 items-center gap-2 px-2',
+          'flex items-center gap-2',
+          size === 'sm' && 'h-7 px-2',
+          size === 'default' && 'h-8 px-2',
+          size === 'xl' && 'h-11 gap-3 px-4 text-base',
           hideText ? 'justify-center' : undefined,
           disabled ? 'opacity-75' : undefined,
         )}
@@ -93,7 +98,10 @@ function ColorPickerField({
       >
         {hexValue && (
           <div
-            className="h-4 w-6 rounded-sm border border-border"
+            className={cn(
+              'rounded-sm border border-border',
+              size === 'xl' ? 'h-6 w-9' : 'h-4 w-6',
+            )}
             style={{
               backgroundColor: hexValue,
             }}
@@ -113,7 +121,7 @@ function ColorPickerField({
         className="w-auto space-y-2 rounded-md border border-border bg-card p-4"
       >
         <HexColorInput
-          className={cn(inputVariants(), 'p-2')}
+          className={cn(inputVariants({ size }), 'p-2')}
           prefixed
           color={hexValue ?? ''}
           onChange={handleChange}

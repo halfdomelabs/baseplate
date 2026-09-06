@@ -92,3 +92,33 @@ export const Disabled: Story = {
     </div>
   ),
 };
+
+/**
+ * `size` goes on the input and the content, which are siblings under the root.
+ * Popup options follow the content; the clear button follows the input group.
+ */
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex w-80 flex-col gap-4">
+      {(['sm', 'default', 'xl'] as const).map((size) => (
+        <Combobox key={size} items={fruits}>
+          <ComboboxInput
+            size={size}
+            showClear
+            placeholder={`Fruit (${size})`}
+          />
+          <ComboboxContent size={size}>
+            <ComboboxEmpty>No results found.</ComboboxEmpty>
+            <ComboboxList>
+              {(item: string) => (
+                <ComboboxItem key={item} value={item}>
+                  {item}
+                </ComboboxItem>
+              )}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
+      ))}
+    </div>
+  ),
+};

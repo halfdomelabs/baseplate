@@ -159,3 +159,30 @@ export const SmallSize: Story = {
     </Select>
   ),
 };
+
+/**
+ * Trigger and content are siblings under the root, so both take `size`;
+ * popup options follow the content.
+ */
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      {(['sm', 'default', 'xl'] as const).map((size) => (
+        <Select key={size} items={fruits}>
+          <SelectTrigger className="w-80" size={size}>
+            <SelectValue placeholder={`Select a fruit (${size})`} />
+          </SelectTrigger>
+          <SelectContent size={size}>
+            <SelectGroup>
+              {fruits.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      ))}
+    </div>
+  ),
+};

@@ -272,3 +272,26 @@ export const Grouped: Story = {
     </div>
   ),
 };
+
+/** `size` goes on the input and the content, mirroring Combobox. */
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex w-80 flex-col gap-4">
+      {(['sm', 'default', 'xl'] as const).map((size) => (
+        <Autocomplete key={size} items={languages}>
+          <AutocompleteInput size={size} placeholder={`Language (${size})`} />
+          <AutocompleteContent size={size}>
+            <AutocompleteEmpty>No results found.</AutocompleteEmpty>
+            <AutocompleteList>
+              {(item: string) => (
+                <AutocompleteItem key={item} value={item}>
+                  {item}
+                </AutocompleteItem>
+              )}
+            </AutocompleteList>
+          </AutocompleteContent>
+        </Autocomplete>
+      ))}
+    </div>
+  ),
+};

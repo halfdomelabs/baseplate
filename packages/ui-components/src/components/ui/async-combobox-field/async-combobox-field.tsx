@@ -50,6 +50,7 @@ export interface AsyncComboboxFieldProps<OptionType>
   placeholder?: string;
   value?: string | null;
   onChange?: (value: string | null) => void;
+  size?: 'sm' | 'default' | 'xl';
 }
 
 interface SearchState<OptionType> {
@@ -128,6 +129,7 @@ function AsyncComboboxField<OptionType>({
   minSearchLength = 0,
   initialOptions = [],
   disabled,
+  size = 'default',
 }: AsyncComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
   const [{ options, isLoading, loadError, hasSearched }, dispatch] = useReducer(
@@ -313,8 +315,8 @@ function AsyncComboboxField<OptionType>({
         itemToStringValue={(option: OptionType) => getOptionValue(option) ?? ''}
         filter={null}
       >
-        <ComboboxInput id={id} placeholder={placeholder} />
-        <ComboboxContent>
+        <ComboboxInput id={id} size={size} placeholder={placeholder} />
+        <ComboboxContent size={size}>
           {isLoading ? (
             <ComboboxStatus className="flex items-center justify-center p-4 text-sm text-muted-foreground">
               {loadingText ?? comboboxLoading}
