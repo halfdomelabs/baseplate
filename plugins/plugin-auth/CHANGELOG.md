@@ -1,5 +1,39 @@
 # @baseplate-dev/plugin-auth
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1035](https://github.com/halfdomelabs/baseplate/pull/1035) [`2671e93`](https://github.com/halfdomelabs/baseplate/commit/2671e9352cd5c7cdd2803a4f5475a6342b79d5f8) Thanks [@kingston](https://github.com/kingston)! - Guesses at an emailed verification code are now counted before the code is compared, so a burst of concurrent guesses can no longer exceed the code's attempt budget, and simultaneous guesses no longer surface a Prisma error or discard a code another request is still redeeming. Every validation spends an attempt, including a correct one.
+
+- [#1048](https://github.com/halfdomelabs/baseplate/pull/1048) [`00800a2`](https://github.com/halfdomelabs/baseplate/commit/00800a222acd086f1885d24588804cdca115fb5f) Thanks [@kingston](https://github.com/kingston)! - Generated apps no longer depend on sonner: toasts come from a Base UI `toast.tsx` component that the app owns, which stacks, swipes to dismiss, announces errors assertively, and sits bottom-right instead of top-center. Code that imported `toast` from `'sonner'` should import it from the generated components instead (`@/components/ui/toast`, or the shared component library in library mode).
+
+- [#1034](https://github.com/halfdomelabs/baseplate/pull/1034) [`902e8ae`](https://github.com/halfdomelabs/baseplate/commit/902e8ae08b9e33f7a8275fb0728ae7e77ed138d1) Thanks [@kingston](https://github.com/kingston)! - Auth now derives its signing keys from `APP_SECRET` instead of `AUTH_SECRET` and `BETTER_AUTH_SECRET`, which are no longer read and can be dropped from your environment. Upgrading signs existing users out and invalidates outstanding one-time codes.
+
+- [#1038](https://github.com/halfdomelabs/baseplate/pull/1038) [`74ae3ed`](https://github.com/halfdomelabs/baseplate/commit/74ae3ed92144aeeb60aad7b826d98cb90053214c) Thanks [@kingston](https://github.com/kingston)! - Password reset and email verification links now point back to the app the request came from, so a reset started on the admin console emails an admin console link instead of always linking to the project's default web app; a request from an unrecognised origin still falls back to that default. Invite links are unchanged.
+
+- [#1035](https://github.com/halfdomelabs/baseplate/pull/1035) [`2671e93`](https://github.com/halfdomelabs/baseplate/commit/2671e9352cd5c7cdd2803a4f5475a6342b79d5f8) Thanks [@kingston](https://github.com/kingston)! - Each app now carries its own public URL, and the backend reads them through `getApiUrl`, `getWebUrl` and `getWebOrigins`, so anything minting an absolute link names the client it means rather than declaring a URL setting of its own. `ALLOWED_ORIGINS` and `AUTH_FRONTEND_URL` are gone: set `API_URL` and a `WEB_URL_<APP>` per web app before upgrading, or the app will fail to start, plus `ADDITIONAL_WEB_ORIGINS` for any trusted origin that is not an app in the project.
+
+- [#1042](https://github.com/halfdomelabs/baseplate/pull/1042) [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de) Thanks [@kingston](https://github.com/kingston)! - The auth hook that returns the signed-in user id is now consistently `useUserIdOrThrow` in `use-user-id-or-throw.ts` across Better Auth, local auth and placeholder auth, following Prisma's `OrThrow` naming; Better Auth apps should rename their imports of `useRequiredUserId`. Import maps for auth context, password reset and Stripe billing no longer offer symbols that the generated files stopped exporting.
+
+- [#1036](https://github.com/halfdomelabs/baseplate/pull/1036) [`0a595f4`](https://github.com/halfdomelabs/baseplate/commit/0a595f4b730660b4ce777474316f8090c07f7415) Thanks [@kingston](https://github.com/kingston)! - Accepting an invite no longer replaces the password of an account that registered after the invite was sent; the accept-invite page now tells that user to sign in instead.
+
+- [#1028](https://github.com/halfdomelabs/baseplate/pull/1028) [`94d84c1`](https://github.com/halfdomelabs/baseplate/commit/94d84c1ce807fe7fa55eb1f6f01515a6fea137f6) Thanks [@kingston](https://github.com/kingston)! - Signing in, signing out, and session changes from another tab no longer unmount the app, so the previous screen no longer flashes before the new one and page state survives the transition.
+
+- [#1041](https://github.com/halfdomelabs/baseplate/pull/1041) [`5fe4f0a`](https://github.com/halfdomelabs/baseplate/commit/5fe4f0a16e41bf7f18985856380b428ab26181a3) Thanks [@kingston](https://github.com/kingston)! - Editing a component, hook, or service in a generated web app now updates the page in place instead of rebuilding the router and remounting the whole app, so your route, scroll position, and open subscriptions survive a save. Sentry is now initialised from `main.tsx` via `initSentry(router)` rather than importing the router itself.
+
+- Updated dependencies [[`4805d5a`](https://github.com/halfdomelabs/baseplate/commit/4805d5a2eb09c415c9a304d8169cf0aaa32734da), [`fc4a2b1`](https://github.com/halfdomelabs/baseplate/commit/fc4a2b1a65271daf2b7f9ba1b4d898ea22c406ab), [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35), [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35), [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35), [`00800a2`](https://github.com/halfdomelabs/baseplate/commit/00800a222acd086f1885d24588804cdca115fb5f), [`57e356a`](https://github.com/halfdomelabs/baseplate/commit/57e356ad50d7eac9bb58f66b4d04a11efd74d7f2), [`0a595f4`](https://github.com/halfdomelabs/baseplate/commit/0a595f4b730660b4ce777474316f8090c07f7415), [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de), [`2671e93`](https://github.com/halfdomelabs/baseplate/commit/2671e9352cd5c7cdd2803a4f5475a6342b79d5f8), [`daef666`](https://github.com/halfdomelabs/baseplate/commit/daef666c5710453aa3a5777976e8ba4e70025135), [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de), [`840dcb3`](https://github.com/halfdomelabs/baseplate/commit/840dcb37c0f10e7a1126dcc3d78550cb045c3f25), [`616d2f5`](https://github.com/halfdomelabs/baseplate/commit/616d2f5cb41a91e01b1689309a56d5b2525037dc), [`94d84c1`](https://github.com/halfdomelabs/baseplate/commit/94d84c1ce807fe7fa55eb1f6f01515a6fea137f6), [`00800a2`](https://github.com/halfdomelabs/baseplate/commit/00800a222acd086f1885d24588804cdca115fb5f), [`6a5a1bf`](https://github.com/halfdomelabs/baseplate/commit/6a5a1bfe71e75e2bce938a89d9c2860f8a9ee213), [`5fe4f0a`](https://github.com/halfdomelabs/baseplate/commit/5fe4f0a16e41bf7f18985856380b428ab26181a3), [`2299376`](https://github.com/halfdomelabs/baseplate/commit/229937646555f840597afe238470112d84592c78), [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84)]:
+  - @baseplate-dev/fastify-generators@0.6.19
+  - @baseplate-dev/react-generators@0.6.19
+  - @baseplate-dev/ui-components@0.6.19
+  - @baseplate-dev/project-builder-lib@0.6.19
+  - @baseplate-dev/core-generators@0.6.19
+  - @baseplate-dev/plugin-email@0.6.19
+  - @baseplate-dev/sync@0.6.19
+  - @baseplate-dev/plugin-queue@0.6.19
+  - @baseplate-dev/plugin-rate-limit@0.6.19
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes

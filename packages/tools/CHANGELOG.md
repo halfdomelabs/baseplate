@@ -1,5 +1,7 @@
 # @baseplate-dev/tools
 
+## 0.6.19
+
 ## 0.6.18
 
 ### Patch Changes

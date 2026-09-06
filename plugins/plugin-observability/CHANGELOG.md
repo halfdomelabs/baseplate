@@ -1,5 +1,20 @@
 # @baseplate-dev/plugin-observability
 
+## 0.6.19
+
+### Patch Changes
+
+- [#1041](https://github.com/halfdomelabs/baseplate/pull/1041) [`5fe4f0a`](https://github.com/halfdomelabs/baseplate/commit/5fe4f0a16e41bf7f18985856380b428ab26181a3) Thanks [@kingston](https://github.com/kingston)! - Editing a component, hook, or service in a generated web app now updates the page in place instead of rebuilding the router and remounting the whole app, so your route, scroll position, and open subscriptions survive a save. Sentry is now initialised from `main.tsx` via `initSentry(router)` rather than importing the router itself.
+
+- Updated dependencies [[`4805d5a`](https://github.com/halfdomelabs/baseplate/commit/4805d5a2eb09c415c9a304d8169cf0aaa32734da), [`fc4a2b1`](https://github.com/halfdomelabs/baseplate/commit/fc4a2b1a65271daf2b7f9ba1b4d898ea22c406ab), [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35), [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35), [`9e622b6`](https://github.com/halfdomelabs/baseplate/commit/9e622b67fbe22137759aea0c3dac40ac73b99b35), [`00800a2`](https://github.com/halfdomelabs/baseplate/commit/00800a222acd086f1885d24588804cdca115fb5f), [`57e356a`](https://github.com/halfdomelabs/baseplate/commit/57e356ad50d7eac9bb58f66b4d04a11efd74d7f2), [`0a595f4`](https://github.com/halfdomelabs/baseplate/commit/0a595f4b730660b4ce777474316f8090c07f7415), [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de), [`2671e93`](https://github.com/halfdomelabs/baseplate/commit/2671e9352cd5c7cdd2803a4f5475a6342b79d5f8), [`daef666`](https://github.com/halfdomelabs/baseplate/commit/daef666c5710453aa3a5777976e8ba4e70025135), [`9c2117d`](https://github.com/halfdomelabs/baseplate/commit/9c2117d377d51a769fe8b9519045493cbe0cf3de), [`840dcb3`](https://github.com/halfdomelabs/baseplate/commit/840dcb37c0f10e7a1126dcc3d78550cb045c3f25), [`616d2f5`](https://github.com/halfdomelabs/baseplate/commit/616d2f5cb41a91e01b1689309a56d5b2525037dc), [`94d84c1`](https://github.com/halfdomelabs/baseplate/commit/94d84c1ce807fe7fa55eb1f6f01515a6fea137f6), [`00800a2`](https://github.com/halfdomelabs/baseplate/commit/00800a222acd086f1885d24588804cdca115fb5f), [`5fe4f0a`](https://github.com/halfdomelabs/baseplate/commit/5fe4f0a16e41bf7f18985856380b428ab26181a3), [`2299376`](https://github.com/halfdomelabs/baseplate/commit/229937646555f840597afe238470112d84592c78), [`e5c3315`](https://github.com/halfdomelabs/baseplate/commit/e5c3315615780e85914cf9ce3a95d325572d0f84)]:
+  - @baseplate-dev/fastify-generators@0.6.19
+  - @baseplate-dev/react-generators@0.6.19
+  - @baseplate-dev/ui-components@0.6.19
+  - @baseplate-dev/project-builder-lib@0.6.19
+  - @baseplate-dev/core-generators@0.6.19
+  - @baseplate-dev/sync@0.6.19
+  - @baseplate-dev/utils@0.6.19
+
 ## 0.6.18
 
 ### Patch Changes
