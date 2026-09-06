@@ -217,8 +217,8 @@ export function ProjectDefinitionProvider({
             toast.warning(
               `Saved with ${warnings.length} ${warnings.length === 1 ? 'warning' : 'warnings'}`,
               {
-                action: {
-                  label: 'View',
+                actionProps: {
+                  children: 'View',
                   onClick: () => {
                     useDefinitionWarningDialogState
                       .getState()

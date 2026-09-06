@@ -29,7 +29,6 @@ export const REACT_PACKAGES = {
   'react-error-boundary': '6.1.2',
   '@base-ui/react': '1.6.0',
   'class-variance-authority': '0.7.1',
-  sonner: '2.0.7',
 
   // Date Picker
   'react-day-picker': '10.0.1',

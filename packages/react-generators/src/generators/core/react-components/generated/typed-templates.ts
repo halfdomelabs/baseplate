@@ -1096,17 +1096,33 @@ const textareaField = createTsTemplateFile({
   variables: {},
 });
 
-const toaster = createTsTemplateFile({
+const toast = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'toaster',
-  projectExports: { Toaster: {} },
-  referencedGeneratorTemplates: { stylesButton: {} },
+  name: 'toast',
+  projectExports: {
+    Toast: { isTypeOnly: false },
+    toast: { isTypeOnly: false },
+    ToastAction: { isTypeOnly: false },
+    ToastClose: { isTypeOnly: false },
+    ToastContent: { isTypeOnly: false },
+    ToastDescription: { isTypeOnly: false },
+    Toaster: { isTypeOnly: false },
+    toastManager: { isTypeOnly: false },
+    ToastOptions: { isTypeOnly: true },
+    ToastPortal: { isTypeOnly: false },
+    ToastProvider: { isTypeOnly: false },
+    ToastTitle: { isTypeOnly: false },
+    ToastType: { isTypeOnly: true },
+    ToastUpdateOptions: { isTypeOnly: true },
+    ToastViewport: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { button: {}, cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/ui/toaster.tsx',
+      '../templates/components/ui/toast.tsx',
     ),
   },
   variables: {},
@@ -1186,7 +1202,7 @@ export const componentsGroup = {
   table,
   textarea,
   textareaField,
-  toaster,
+  toast,
   tooltip,
 };
 

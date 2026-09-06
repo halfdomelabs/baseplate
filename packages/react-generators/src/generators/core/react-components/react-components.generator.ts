@@ -47,7 +47,6 @@ const APP_PACKAGES = [
   'react-icons',
   'zustand',
   'class-variance-authority',
-  'sonner',
   'react-day-picker',
   'date-fns',
   // consumed by the `cn` helper this generator renders; in import mode the

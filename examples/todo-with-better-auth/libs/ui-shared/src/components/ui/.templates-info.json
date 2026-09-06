@@ -259,10 +259,10 @@
     "instanceData": {},
     "template": "textarea"
   },
-  "toaster.tsx": {
+  "toast.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
-    "template": "toaster"
+    "template": "toast"
   },
   "tooltip.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",

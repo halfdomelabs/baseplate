@@ -8,7 +8,6 @@ import {
 } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@src/components/ui/button';
@@ -21,6 +20,7 @@ import {
 } from '@src/components/ui/card';
 import { InputFieldController } from '@src/components/ui/input-field';
 import { InputOtpFieldController } from '@src/components/ui/input-otp';
+import { toast } from '@src/components/ui/toast';
 import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';

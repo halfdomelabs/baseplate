@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   graphqlImportsProvider,
+  reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
 import path from 'node:path';
@@ -12,6 +13,7 @@ const useLogOut = createTsTemplateFile({
   group: 'hooks',
   importMapProviders: {
     graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
     reactSessionImports: reactSessionImportsProvider,
   },

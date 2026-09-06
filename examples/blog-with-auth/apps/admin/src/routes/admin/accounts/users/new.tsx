@@ -2,9 +2,9 @@ import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner';
 
 import { PageHeader, PageHeaderTitle } from '@src/components/ui/page-header';
+import { toast } from '@src/components/ui/toast';
 import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';

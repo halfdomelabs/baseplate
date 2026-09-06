@@ -84,6 +84,18 @@ export function generateTypescriptEslintConfig(options = {}) {
           'error',
           { allowObjectPatternsAsParameters: true },
         ],
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: 'sonner',
+                message:
+                  'Toasts come from the `toast` facade in @baseplate-dev/ui-components; sonner is no longer a dependency.',
+              },
+            ],
+          },
+        ],
       },
     },
 

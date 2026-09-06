@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client/react';
 import { useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner';
 
+import { toast } from '../components/ui/toast';
 import { graphql } from '../gql';
 import { logAndFormatError } from '../services/error-formatter';
 import { logError } from '../services/error-logger';

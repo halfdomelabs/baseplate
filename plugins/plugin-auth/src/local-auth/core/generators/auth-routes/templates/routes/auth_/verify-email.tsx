@@ -9,12 +9,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  toast,
 } from '%reactComponentsImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 export const Route = createFileRoute('/auth_/verify-email')({

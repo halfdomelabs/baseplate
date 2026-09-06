@@ -10,7 +10,7 @@ import { GLOBALS_UPDATED } from 'storybook/internal/core-events';
 import { addons } from 'storybook/preview-api';
 import { themes } from 'storybook/theming';
 
-import { Toaster } from '../src/components/ui/toaster/toaster.js';
+import { Toaster } from '../src/components/ui/toast/toast.js';
 
 import '../src/styles.css';
 

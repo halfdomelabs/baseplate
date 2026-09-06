@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   graphqlImportsProvider,
+  reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -35,6 +36,7 @@ const localAuthCoreAuthHooksRenderersTask = createGeneratorTask({
   dependencies: {
     graphqlImports: graphqlImportsProvider,
     paths: LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS.provider,
+    reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
     reactSessionImports: reactSessionImportsProvider,
     typescriptFile: typescriptFileProvider,
@@ -45,6 +47,7 @@ const localAuthCoreAuthHooksRenderersTask = createGeneratorTask({
   run({
     graphqlImports,
     paths,
+    reactComponentsImports,
     reactErrorImports,
     reactSessionImports,
     typescriptFile,
@@ -59,6 +62,7 @@ const localAuthCoreAuthHooksRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   graphqlImports,
+                  reactComponentsImports,
                   reactErrorImports,
                   reactSessionImports,
                 },

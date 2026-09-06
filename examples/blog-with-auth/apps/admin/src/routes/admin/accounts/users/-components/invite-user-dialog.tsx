@@ -1,7 +1,6 @@
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
-import { toast } from 'sonner';
 
 import type { FragmentType } from '@src/gql';
 
@@ -14,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@src/components/ui/dialog';
+import { toast } from '@src/components/ui/toast';
 import { graphql, readFragment } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { getApolloErrorCode } from '@src/utils/apollo-error';

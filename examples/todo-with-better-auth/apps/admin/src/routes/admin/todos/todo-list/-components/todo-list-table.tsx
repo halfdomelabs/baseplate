@@ -16,11 +16,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  toast,
   useConfirmDialog,
 } from '@prisma-crud/ui-shared';
 import { Link } from '@tanstack/react-router';
 import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
-import { toast } from 'sonner';
 
 import type { FragmentType } from '@src/gql';
 

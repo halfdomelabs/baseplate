@@ -2,7 +2,6 @@ import type { ReactElement } from 'react';
 
 import { useMutation, useQuery } from '@apollo/client/react';
 import { createFileRoute } from '@tanstack/react-router';
-import { toast } from 'sonner';
 
 import type { NotificationChannel, NotificationMode } from '@src/gql/graphql';
 
@@ -28,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/components/ui/select';
+import { toast } from '@src/components/ui/toast';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 import {

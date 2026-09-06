@@ -61,5 +61,5 @@ export * from './table/table.js';
 export * from './tabs/tabs.js';
 export * from './textarea-field/textarea-field.js';
 export * from './textarea/textarea.js';
-export * from './toaster/toaster.js';
+export * from './toast/toast.js';
 export * from './tooltip/tooltip.js';

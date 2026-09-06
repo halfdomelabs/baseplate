@@ -121,7 +121,7 @@ export const adminCrudDeleteActionGenerator = createGenerator({
           [
             tsImportBuilder(['useMutation']).from('@apollo/client/react'),
             reactComponentsImports.useConfirmDialog.declaration(),
-            tsImportBuilder(['toast']).from('sonner'),
+            reactComponentsImports.toast.declaration(),
             reactErrorImports.logAndFormatError.declaration(),
           ],
           {

@@ -11,10 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
   MultiComboboxFieldController,
+  toast,
 } from '@prisma-crud/ui-shared';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import type { FragmentType } from '@src/gql';

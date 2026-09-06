@@ -2,11 +2,10 @@
 
 import type { ReactElement } from 'react';
 
-import { PageHeader, PageHeaderTitle } from '%reactComponentsImports';
+import { PageHeader, PageHeaderTitle, toast } from '%reactComponentsImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner';
 
 TPL_EDIT_QUERY;
 
