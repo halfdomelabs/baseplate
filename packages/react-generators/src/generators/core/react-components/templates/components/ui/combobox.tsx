@@ -11,6 +11,7 @@ import {
   InputGroupInput,
 } from '$inputGroup';
 import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
+import { cva } from 'class-variance-authority';
 import * as React from 'react';
 import { MdCheck, MdClose, MdUnfoldMore } from 'react-icons/md';
 
@@ -21,6 +22,11 @@ import { MdCheck, MdClose, MdUnfoldMore } from 'react-icons/md';
  * - ComboboxChip renders as muted gray text and hides its remove button when disabled
  * - Added ComboboxStatus for async loading and error states
  * - Chips and input use `text-base md:text-sm`, which stops iOS zooming on focus
+ * - Added a `size` scale. `ComboboxInput` owns its `InputGroup` and passes
+ *   `size` down; `ComboboxContent` and `ComboboxChips` publish theirs as
+ *   `data-size` for their caller-supplied children to read. Input, content and
+ *   chips are siblings under the root, so a wrapper resizing the whole control
+ *   passes `size` to each
  * - Fills with `bg-control-background` so the control contrasts with the
  *   surface it sits on rather than always matching the page.
  *
@@ -73,13 +79,16 @@ function ComboboxInput({
   disabled = false,
   showTrigger = true,
   showClear = false,
+  size = 'default',
   ...props
-}: ComboboxPrimitive.Input.Props & {
+}: // `size` shadows the DOM attribute of the same name on <input />.
+Omit<ComboboxPrimitive.Input.Props, 'size'> & {
   showTrigger?: boolean;
   showClear?: boolean;
+  size?: 'sm' | 'default' | 'xl';
 }): React.ReactElement {
   return (
-    <InputGroup className={cn('w-auto', className)}>
+    <InputGroup size={size} className={cn('w-auto', className)}>
       <ComboboxPrimitive.Input
         render={<InputGroupInput disabled={disabled} />}
         {...props}
@@ -109,12 +118,13 @@ function ComboboxContent({
   align = 'start',
   alignOffset = 0,
   anchor,
+  size = 'default',
   ...props
 }: ComboboxPrimitive.Popup.Props &
   Pick<
     ComboboxPrimitive.Positioner.Props,
     'side' | 'align' | 'sideOffset' | 'alignOffset' | 'anchor'
-  >): React.ReactElement {
+  > & { size?: 'sm' | 'default' | 'xl' }): React.ReactElement {
   return (
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Positioner
@@ -128,8 +138,9 @@ function ComboboxContent({
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"
           data-chips={!!anchor}
+          data-size={size}
           className={cn(
-            'group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[chips=true]:min-w-(--anchor-width) data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:shadow-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+            'group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[chips=true]:min-w-(--anchor-width) data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:shadow-none data-[size=xl]:*:data-[slot=input-group]:h-11 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
             className,
           )}
           {...props}
@@ -164,7 +175,7 @@ function ComboboxItem({
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex w-full cursor-default items-center gap-2 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none group-data-[size=xl]/combobox-content:min-h-11 group-data-[size=xl]/combobox-content:py-2 group-data-[size=xl]/combobox-content:text-base data-highlighted:bg-accent data-highlighted:text-accent-foreground not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -260,18 +271,38 @@ function ComboboxSeparator({
   );
 }
 
+// Padding is a plain class so the `has-…:px-1` chip inset still overrides it.
+const comboboxChipsVariants = cva(
+  'group/combobox-chips flex flex-wrap items-center gap-1 rounded-lg border border-input bg-control-background bg-clip-padding py-1 transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1 dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40',
+  {
+    variants: {
+      // `text-base md:text-sm` stops iOS zooming the page on focus; `xl` is
+      // already at 16px so it does not need the small-screen bump.
+      size: {
+        sm: 'min-h-7 px-2 text-base md:text-sm',
+        default: 'min-h-8 px-2.5 text-base md:text-sm',
+        xl: 'min-h-11 px-4 text-base',
+      },
+    },
+    defaultVariants: {
+      size: 'default',
+    },
+  },
+);
+
 function ComboboxChips({
   className,
+  size = 'default',
   ...props
 }: React.ComponentPropsWithRef<typeof ComboboxPrimitive.Chips> &
-  ComboboxPrimitive.Chips.Props): React.ReactElement {
+  ComboboxPrimitive.Chips.Props & {
+    size?: 'sm' | 'default' | 'xl';
+  }): React.ReactElement {
   return (
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
-      className={cn(
-        'flex min-h-8 flex-wrap items-center gap-1 rounded-lg border border-input bg-control-background bg-clip-padding px-2.5 py-1 text-base transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1 md:text-sm dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40',
-        className,
-      )}
+      data-size={size}
+      className={cn(comboboxChipsVariants({ size }), className)}
       {...props}
     />
   );
@@ -289,7 +320,7 @@ function ComboboxChip({
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
       className={cn(
-        'group/combobox-chip flex h-[calc(--spacing(5.25))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground not-data-disabled:has-data-[slot=combobox-chip-remove]:pr-0',
+        'group/combobox-chip flex h-[calc(--spacing(5.25))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground group-data-[size=sm]/combobox-chips:h-4.5 group-data-[size=xl]/combobox-chips:h-7 group-data-[size=xl]/combobox-chips:px-2 group-data-[size=xl]/combobox-chips:text-sm not-data-disabled:has-data-[slot=combobox-chip-remove]:pr-0',
         'data-disabled:cursor-not-allowed data-disabled:text-muted-foreground',
         className,
       )}
@@ -299,7 +330,7 @@ function ComboboxChip({
       {showRemove && (
         <ComboboxPrimitive.ChipRemove
           render={<Button variant="ghost" size="icon-xs" />}
-          className="-ml-1 opacity-50 group-data-disabled/combobox-chip:hidden hover:opacity-100"
+          className="-ml-1 opacity-50 group-data-[size=xl]/combobox-chips:size-5 group-data-disabled/combobox-chip:hidden hover:opacity-100"
           data-slot="combobox-chip-remove"
         >
           <MdClose className="pointer-events-none" />
@@ -317,7 +348,7 @@ function ComboboxChipsInput({
     <ComboboxPrimitive.Input
       data-slot="combobox-chip-input"
       className={cn(
-        'min-w-16 flex-1 text-base outline-none md:text-sm',
+        'min-w-16 flex-1 text-base outline-none md:text-sm group-data-[size=xl]/combobox-chips:md:text-base',
         className,
       )}
       {...props}

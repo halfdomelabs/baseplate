@@ -13,6 +13,7 @@ const meta = {
   component: DatePickerField,
   tags: ['autodocs'],
   argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'default', 'xl'] },
     disabled: {
       control: 'boolean',
     },

@@ -7,6 +7,7 @@ const meta = {
   component: Input,
   tags: ['autodocs'],
   argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'default', 'xl'] },
     className: { control: { type: 'text' } },
     placeholder: { control: { type: 'text' } },
     height: { control: 'inline-radio', options: ['default', 'flexible'] },

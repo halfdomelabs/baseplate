@@ -44,11 +44,19 @@ function NumberField({
   onChange,
   value,
   className,
+  size,
   height,
   background,
   ...props
 }: NumberFieldProps): React.ReactElement {
   const id = useId();
+  // `VariantProps` admits null, and the steppers index by the resolved value.
+  const stepperSize = {
+    sm: 'icon-sm',
+    default: 'icon',
+    xl: 'icon-xl',
+  } as const;
+  const resolvedSize = size ?? 'default';
 
   return (
     <Field
@@ -67,7 +75,10 @@ function NumberField({
         <NumberFieldPrimitive.Group className="flex items-center gap-1.5">
           <NumberFieldPrimitive.Decrement
             className={cn(
-              buttonVariants({ variant: 'outline', size: 'icon' }),
+              buttonVariants({
+                variant: 'outline',
+                size: stepperSize[resolvedSize],
+              }),
               'shrink-0',
             )}
             aria-label="Decrease"
@@ -76,12 +87,18 @@ function NumberField({
           </NumberFieldPrimitive.Decrement>
           <NumberFieldPrimitive.Input
             data-slot="input"
-            className={cn(inputVariants({ height, background }), 'flex-1')}
+            className={cn(
+              inputVariants({ size, height, background }),
+              'flex-1',
+            )}
             aria-invalid={!!error}
           />
           <NumberFieldPrimitive.Increment
             className={cn(
-              buttonVariants({ variant: 'outline', size: 'icon' }),
+              buttonVariants({
+                variant: 'outline',
+                size: stepperSize[resolvedSize],
+              }),
               'shrink-0',
             )}
             aria-label="Increase"

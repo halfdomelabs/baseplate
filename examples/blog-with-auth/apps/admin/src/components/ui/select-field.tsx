@@ -26,6 +26,7 @@ import {
 export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>, FormFieldProps {
   className?: string;
+  size?: 'sm' | 'default' | 'xl';
 }
 
 function SelectField<OptionType>({
@@ -41,6 +42,7 @@ function SelectField<OptionType>({
   getOptionValue = (val) => (val as { value: string }).value,
   className,
   onChange,
+  size = 'default',
   ...props
 }: SelectFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
@@ -60,12 +62,12 @@ function SelectField<OptionType>({
         disabled={disabled}
         {...props}
       >
-        <SelectTrigger id={triggerId} aria-invalid={!!error}>
+        <SelectTrigger id={triggerId} size={size} aria-invalid={!!error}>
           <SelectValue placeholder={placeholder}>
             {selectedOption ? getOptionLabel(selectedOption) : null}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent size={size}>
           <SelectGroup>
             {options.map((option) => {
               const val = getOptionValue(option);

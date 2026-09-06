@@ -7,6 +7,7 @@ const meta = {
   component: Textarea,
   tags: ['autodocs'],
   argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'default', 'xl'] },
     className: { control: { type: 'text' } },
     placeholder: { control: { type: 'text' } },
   },

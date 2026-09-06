@@ -25,6 +25,9 @@ import {
  * - Built on Base UI's OTPField rather than the `input-otp` package, so slots are
  *   real inputs instead of index-addressed divs and the component takes no
  *   `containerClassName`
+ * - Added a `size` scale on the root; slots read it through
+ *   `group-data-[size=…]/input-otp`, since the root renders caller-supplied
+ *   children
  * - Fills with `bg-control-background` so the control contrasts with the
  *   surface it sits on rather than always matching the page.
  *
@@ -32,12 +35,19 @@ import {
  */
 function InputOtp({
   className,
+  size = 'default',
   ...props
-}: OTPFieldPrimitive.Root.Props): React.ReactElement {
+}: OTPFieldPrimitive.Root.Props & {
+  size?: 'sm' | 'default' | 'xl';
+}): React.ReactElement {
   return (
     <OTPFieldPrimitive.Root
       data-slot="input-otp"
-      className={cn('flex items-center data-disabled:opacity-50', className)}
+      data-size={size}
+      className={cn(
+        'group/input-otp flex items-center data-disabled:opacity-50',
+        className,
+      )}
       {...props}
     />
   );
@@ -67,7 +77,7 @@ function InputOtpSlot({
     <OTPFieldPrimitive.Input
       data-slot="input-otp-slot"
       className={cn(
-        'relative size-8 border-y border-r border-input bg-control-background text-center text-sm transition-all outline-none first:rounded-l-lg first:border-l last:rounded-r-lg focus-visible:z-10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed aria-invalid:border-destructive focus-visible:aria-invalid:border-destructive focus-visible:aria-invalid:ring-destructive/20 dark:bg-input/30 dark:focus-visible:aria-invalid:ring-destructive/40',
+        'relative size-8 border-y border-r border-input bg-control-background text-center text-sm transition-all outline-none group-data-[size=sm]/input-otp:size-7 group-data-[size=xl]/input-otp:size-11 group-data-[size=xl]/input-otp:text-base first:rounded-l-lg first:border-l last:rounded-r-lg focus-visible:z-10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed aria-invalid:border-destructive focus-visible:aria-invalid:border-destructive focus-visible:aria-invalid:ring-destructive/20 dark:bg-input/30 dark:focus-visible:aria-invalid:ring-destructive/40',
         className,
       )}
       {...props}
@@ -104,6 +114,7 @@ export interface InputOtpFieldProps
   length?: number;
   /** Renders a separator between two evenly-sized groups of slots. */
   showSeparator?: boolean;
+  size?: 'sm' | 'default' | 'xl';
 }
 
 function InputOtpField({
@@ -116,6 +127,7 @@ function InputOtpField({
   className,
   length = 6,
   showSeparator = false,
+  size = 'default',
   ...props
 }: InputOtpFieldProps): React.ReactElement {
   const id = React.useId();
@@ -142,6 +154,7 @@ function InputOtpField({
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <InputOtp
         id={id}
+        size={size}
         length={length}
         disabled={disabled}
         value={value}

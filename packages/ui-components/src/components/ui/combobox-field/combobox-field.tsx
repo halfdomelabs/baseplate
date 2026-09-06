@@ -38,6 +38,7 @@ export interface ComboboxFieldProps<OptionType>
   onChange?: (value: string | null) => void;
   inputValue?: string;
   onInputValueChange?: (value: string) => void;
+  size?: 'sm' | 'default' | 'xl';
 }
 
 /**
@@ -59,6 +60,7 @@ function ComboboxField<OptionType>({
   className,
   noResultsText,
   disabled,
+  size = 'default',
 }: ComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
   const { comboboxNoResults } = useComponentStrings();
@@ -87,8 +89,8 @@ function ComboboxField<OptionType>({
         itemToStringValue={(option) => getOptionValue(option) ?? ''}
         autoHighlight
       >
-        <ComboboxInput id={id} placeholder={placeholder} />
-        <ComboboxContent>
+        <ComboboxInput id={id} size={size} placeholder={placeholder} />
+        <ComboboxContent size={size}>
           <ComboboxEmpty>{noResultsText ?? comboboxNoResults}</ComboboxEmpty>
           <ComboboxList>
             {(option: OptionType) => {

@@ -30,6 +30,7 @@ export interface DateTimePickerFieldProps extends FormFieldProps {
     'mode' | 'selected' | 'onSelect'
   >;
   ref?: React.Ref<HTMLButtonElement>;
+  size?: 'sm' | 'default' | 'xl';
 }
 
 /**
@@ -48,6 +49,7 @@ function DateTimePickerField({
   dateTimeFormat = 'PPP pp',
   showSeconds = false,
   calendarProps,
+  size = 'default',
   ref,
 }: DateTimePickerFieldProps): React.ReactElement {
   const addWrapper = label ?? error ?? description;
@@ -130,6 +132,7 @@ function DateTimePickerField({
         render={
           <Button
             variant="outline"
+            size={size}
             data-empty={!dateTimeValue}
             disabled={disabled}
             id={id}
@@ -161,6 +164,7 @@ function DateTimePickerField({
             <div className="text-sm font-medium">Time</div>
             <Input
               type="time"
+              size={size}
               step={showSeconds ? 1 : 60}
               value={formatTimeValue(dateTimeValue)}
               onChange={(e) => {

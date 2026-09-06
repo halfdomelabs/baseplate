@@ -31,6 +31,7 @@ export interface MultiComboboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>, FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
+  size?: 'sm' | 'default' | 'xl';
 }
 
 /**
@@ -50,6 +51,7 @@ function MultiComboboxField<OptionType>({
   className,
   noResultsText,
   disabled,
+  size = 'default',
 }: MultiComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
   const id = useId();
@@ -79,7 +81,7 @@ function MultiComboboxField<OptionType>({
         itemToStringLabel={getOptionLabel}
         itemToStringValue={getOptionValue}
       >
-        <ComboboxChips ref={chipsRef}>
+        <ComboboxChips ref={chipsRef} size={size}>
           <ComboboxValue>
             {(values: OptionType[]) => (
               <Fragment>
@@ -99,7 +101,7 @@ function MultiComboboxField<OptionType>({
             )}
           </ComboboxValue>
         </ComboboxChips>
-        <ComboboxContent anchor={chipsRef}>
+        <ComboboxContent anchor={chipsRef} size={size}>
           <ComboboxEmpty>{noResultsText ?? 'No results found'}</ComboboxEmpty>
           <ComboboxList>
             {(option: OptionType) => {
