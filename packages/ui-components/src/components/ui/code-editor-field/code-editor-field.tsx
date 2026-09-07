@@ -10,13 +10,14 @@ import type {
 } from 'react-hook-form';
 
 import { javascript } from '@codemirror/lang-javascript';
-import { tooltips } from '@codemirror/view';
+import { EditorView, tooltips } from '@codemirror/view';
 import CodeMirror from '@uiw/react-codemirror';
 import { useMemo } from 'react';
 
 import type { FormFieldProps } from '#src/types/form.js';
 
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
+import { useFieldIds } from '#src/hooks/use-field-ids.js';
 
 import {
   Field,
@@ -24,6 +25,8 @@ import {
   FieldError,
   FieldLabel,
 } from '../field/field.js';
+
+const NO_EXTENSIONS: Extension[] = [];
 
 export interface CodeEditorFieldProps
   extends
@@ -46,13 +49,21 @@ function CodeEditorField({
   onChange,
   value = '',
   language = 'javascript',
-  extensions = [],
+  extensions = NO_EXTENSIONS,
   height = '120px',
   placeholder,
   readOnly = false,
   className,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: CodeEditorFieldProps): React.ReactElement {
+  const { labelId, describedBy, descriptionProps, errorProps } = useFieldIds({
+    'aria-describedby': ariaDescribedBy,
+    description,
+    error,
+  });
+  const labelledBy = label ? labelId : undefined;
+
   // Get the language extension
   const languageExtension = useMemo(() => {
     if (language === 'javascript' || language === 'typescript') {
@@ -63,18 +74,25 @@ function CodeEditorField({
 
   // Combine language extension with custom extensions
   // Use tooltips with parent: document.body to ensure tooltips escape dialog containers
+  // ARIA goes on the editable `.cm-content` element rather than the wrapper,
+  // so it has to be applied as an extension.
   const allExtensions = useMemo(
     () => [
       languageExtension,
       tooltips({ parent: document.body }),
+      EditorView.contentAttributes.of({
+        ...(labelledBy ? { 'aria-labelledby': labelledBy } : {}),
+        ...(describedBy ? { 'aria-describedby': describedBy } : {}),
+        'aria-invalid': String(!!error),
+      }),
       ...extensions,
     ],
-    [languageExtension, extensions],
+    [languageExtension, extensions, labelledBy, describedBy, error],
   );
 
   return (
     <Field data-invalid={!!error} data-disabled={disabled ?? undefined}>
-      {label && <FieldLabel>{label}</FieldLabel>}
+      {label && <FieldLabel id={labelId}>{label}</FieldLabel>}
       <div className={className} {...props}>
         <CodeMirror
           value={value}
@@ -94,8 +112,10 @@ function CodeEditorField({
           }}
         />
       </div>
-      {description && <FieldDescription>{description}</FieldDescription>}
-      <FieldError>{error}</FieldError>
+      {description && (
+        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      )}
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }

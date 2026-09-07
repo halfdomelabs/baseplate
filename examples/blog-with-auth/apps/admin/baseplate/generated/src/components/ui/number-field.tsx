@@ -5,12 +5,12 @@ import type * as React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { NumberField as NumberFieldPrimitive } from '@base-ui/react/number-field';
-import { useId } from 'react';
 import { MdAdd, MdRemove } from 'react-icons/md';
 
 import type { FormFieldProps } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/use-controller-merged';
+import { useFieldIds } from '@src/hooks/use-field-ids';
 import { buttonVariants } from '@src/styles/button';
 import { inputVariants } from '@src/styles/input';
 import { cn } from '@src/utils/cn';
@@ -47,9 +47,17 @@ function NumberField({
   size,
   height,
   background,
+  id,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: NumberFieldProps): React.ReactElement {
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   // `VariantProps` admits null, and the steppers index by the resolved value.
   const stepperSize = {
     sm: 'icon-sm',
@@ -64,9 +72,10 @@ function NumberField({
       data-disabled={disabled ?? undefined}
       className={cn('gap-1.5', className)}
     >
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
+      {/* Base UI routes Root's id to the input, so the label resolves through it. */}
       <NumberFieldPrimitive.Root
-        id={id}
+        id={controlProps.id}
         value={value ?? null}
         onValueChange={(newValue) => onChange?.(newValue)}
         disabled={disabled}
@@ -92,6 +101,7 @@ function NumberField({
               'flex-1',
             )}
             aria-invalid={!!error}
+            aria-describedby={controlProps['aria-describedby']}
           />
           <NumberFieldPrimitive.Increment
             className={cn(
@@ -107,8 +117,8 @@ function NumberField({
           </NumberFieldPrimitive.Increment>
         </NumberFieldPrimitive.Group>
       </NumberFieldPrimitive.Root>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }

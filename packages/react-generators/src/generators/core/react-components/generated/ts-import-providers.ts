@@ -256,6 +256,7 @@ export const reactComponentsImportsSchema = createTsImportMapSchema({
   useConfirmDialogState: {},
   useControlledState: {},
   useControllerMerged: {},
+  useFieldIds: {},
   useIsMobile: {},
   useSidebar: {},
 });
@@ -525,6 +526,7 @@ const coreReactComponentsImportsTask = createGeneratorTask({
             useConfirmDialogState: paths.useConfirmDialog,
             useControlledState: paths.hooksUseControlledState,
             useControllerMerged: paths.hooksUseControllerMerged,
+            useFieldIds: paths.hooksUseFieldIds,
             useIsMobile: paths.useMobile,
             useSidebar: paths.sidebar,
           },

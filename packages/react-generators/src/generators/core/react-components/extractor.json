@@ -179,6 +179,7 @@
         "checkbox",
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "types-form"
       ],
       "sourceFile": "components/ui/checkbox-field.tsx",
@@ -251,6 +252,7 @@
         "combobox",
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "types-form"
       ],
       "sourceFile": "components/ui/combobox-field.tsx",
@@ -289,6 +291,7 @@
         "cn",
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "popover",
         "types-form"
       ],
@@ -312,6 +315,7 @@
         "cn",
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "input",
         "popover",
         "types-form"
@@ -460,6 +464,16 @@
       "sourceFile": "src/hooks/use-controller-merged.ts",
       "variables": {}
     },
+    "hooks-use-field-ids": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-field-ids.ts",
+      "projectExports": { "useFieldIds": { "isTypeOnly": false } },
+      "sourceFile": "src/hooks/use-field-ids.ts",
+      "variables": {}
+    },
     "input": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -483,6 +497,7 @@
       "referencedGeneratorTemplates": [
         "cn",
         "field",
+        "hooks-use-field-ids",
         "input",
         "merge-refs",
         "types-form"
@@ -612,6 +627,7 @@
         "combobox",
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "types-form"
       ],
       "sourceFile": "components/ui/multi-combobox-field.tsx",
@@ -668,6 +684,7 @@
         "cn",
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "styles-button",
         "styles-input",
         "types-form"
@@ -723,6 +740,7 @@
       "referencedGeneratorTemplates": [
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "radio-group",
         "types-form"
       ],
@@ -791,6 +809,7 @@
       "referencedGeneratorTemplates": [
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "select",
         "types-form"
       ],
@@ -954,6 +973,7 @@
       "referencedGeneratorTemplates": [
         "field",
         "hooks-use-controller-merged",
+        "hooks-use-field-ids",
         "switch-component",
         "types-form"
       ],
@@ -1001,7 +1021,12 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/textarea-field.tsx",
       "projectExports": { "TextareaField": {}, "TextareaFieldController": {} },
-      "referencedGeneratorTemplates": ["field", "textarea", "types-form"],
+      "referencedGeneratorTemplates": [
+        "field",
+        "hooks-use-field-ids",
+        "textarea",
+        "types-form"
+      ],
       "sourceFile": "components/ui/textarea-field.tsx",
       "variables": {}
     },

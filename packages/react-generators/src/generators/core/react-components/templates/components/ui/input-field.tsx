@@ -19,9 +19,9 @@ import {
   FieldError as FieldErrorDisplay,
   FieldLabel,
 } from '$field';
+import { useFieldIds } from '$hooksUseFieldIds';
 import { Input } from '$input';
 import { mergeRefs } from '$mergeRefs';
-import { useId } from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 export interface InputFieldProps
@@ -41,18 +41,26 @@ function InputField({
   className,
   size,
   ref,
+  id,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: InputFieldProps): React.ReactElement {
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   return (
     <Field
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
       className={cn('gap-1.5', className)}
     >
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
       <Input
-        id={id}
+        {...controlProps}
         size={size}
         disabled={disabled}
         onChange={
@@ -66,8 +74,8 @@ function InputField({
         {...props}
         {...register}
       />
-      <FieldDescription>{description}</FieldDescription>
-      <FieldErrorDisplay>{error}</FieldErrorDisplay>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldErrorDisplay {...errorProps}>{error}</FieldErrorDisplay>
     </Field>
   );
 }

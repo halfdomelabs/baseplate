@@ -32,6 +32,16 @@ function TestForm({
 }
 
 describe('NumberField', () => {
+  it('describes the labelled input, which Base UI resolves from Root', () => {
+    renderWithProviders(
+      <NumberField label="Qty" description="How many" error="Required" />,
+    );
+
+    expect(screen.getByLabelText('Qty')).toHaveAccessibleDescription(
+      'How many Required',
+    );
+  });
+
   it('emits null when the input is cleared', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

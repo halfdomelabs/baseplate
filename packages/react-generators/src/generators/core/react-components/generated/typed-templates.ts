@@ -173,6 +173,7 @@ const checkboxField = createTsTemplateFile({
     checkbox: {},
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     typesForm: {},
   },
   source: {
@@ -245,6 +246,7 @@ const comboboxField = createTsTemplateFile({
     combobox: {},
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     typesForm: {},
   },
   source: {
@@ -288,6 +290,7 @@ const datePickerField = createTsTemplateFile({
     cn: {},
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     popover: {},
     typesForm: {},
   },
@@ -315,6 +318,7 @@ const dateTimePickerField = createTsTemplateFile({
     cn: {},
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     input: {},
     popover: {},
     typesForm: {},
@@ -497,6 +501,7 @@ const inputField = createTsTemplateFile({
   referencedGeneratorTemplates: {
     cn: {},
     field: {},
+    hooksUseFieldIds: {},
     input: {},
     mergeRefs: {},
     typesForm: {},
@@ -633,6 +638,7 @@ const multiComboboxField = createTsTemplateFile({
     combobox: {},
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     typesForm: {},
   },
   source: {
@@ -699,6 +705,7 @@ const numberField = createTsTemplateFile({
     cn: {},
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     stylesButton: {},
     stylesInput: {},
     typesForm: {},
@@ -761,6 +768,7 @@ const radioField = createTsTemplateFile({
   referencedGeneratorTemplates: {
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     radioGroup: {},
     typesForm: {},
   },
@@ -851,6 +859,7 @@ const selectField = createTsTemplateFile({
   referencedGeneratorTemplates: {
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     select: {},
     typesForm: {},
   },
@@ -1027,6 +1036,7 @@ const switchField = createTsTemplateFile({
   referencedGeneratorTemplates: {
     field: {},
     hooksUseControllerMerged: {},
+    hooksUseFieldIds: {},
     switchComponent: {},
     typesForm: {},
   },
@@ -1086,7 +1096,12 @@ const textareaField = createTsTemplateFile({
   importMapProviders: {},
   name: 'textarea-field',
   projectExports: { TextareaField: {}, TextareaFieldController: {} },
-  referencedGeneratorTemplates: { field: {}, textarea: {}, typesForm: {} },
+  referencedGeneratorTemplates: {
+    field: {},
+    hooksUseFieldIds: {},
+    textarea: {},
+    typesForm: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -1237,6 +1252,21 @@ const hooksUseControllerMerged = createTsTemplateFile({
   variables: {},
 });
 
+const hooksUseFieldIds = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks',
+  importMapProviders: {},
+  name: 'hooks-use-field-ids',
+  projectExports: { useFieldIds: { isTypeOnly: false } },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-field-ids.ts',
+    ),
+  },
+  variables: {},
+});
+
 const useConfirmDialog = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'hooks',
@@ -1275,6 +1305,7 @@ const useMobile = createTsTemplateFile({
 export const hooksGroup = {
   hooksUseControlledState,
   hooksUseControllerMerged,
+  hooksUseFieldIds,
   useConfirmDialog,
   useMobile,
 };

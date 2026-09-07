@@ -2,12 +2,12 @@
 
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { useId } from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 
 import type { FormFieldProps } from '#src/types/form.js';
 
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
+import { useFieldIds } from '#src/hooks/use-field-ids.js';
 import { buttonVariants, inputVariants } from '#src/styles/index.js';
 import { cn } from '#src/utils/index.js';
 
@@ -62,10 +62,18 @@ function ColorPickerField({
   serializeColor,
   size = 'default',
   ref,
+  id,
+  'aria-describedby': ariaDescribedBy,
 }: ColorPickerFieldProps): React.ReactElement {
   const addWrapper = label ?? error ?? description;
 
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
 
   const hexValue = value ? (parseColor?.(value) ?? value) : undefined;
 
@@ -92,7 +100,8 @@ function ColorPickerField({
           hideText ? 'justify-center' : undefined,
           disabled ? 'opacity-75' : undefined,
         )}
-        id={id}
+        {...controlProps}
+        aria-invalid={!!error}
         ref={ref}
         disabled={disabled}
       >
@@ -138,10 +147,10 @@ function ColorPickerField({
         data-disabled={disabled ?? undefined}
         className={cn('gap-2', wrapperClassName)}
       >
-        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <FieldLabel {...labelProps}>{label}</FieldLabel>
         {inputComponent}
-        <FieldDescription>{description}</FieldDescription>
-        <FieldError>{error}</FieldError>
+        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+        <FieldError {...errorProps}>{error}</FieldError>
       </Field>
     );
   }

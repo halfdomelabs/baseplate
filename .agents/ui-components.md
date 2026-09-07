@@ -32,7 +32,6 @@ All form components have both standalone and React Hook Form controller variants
 - **Color Picker / Color Picker Field** - Color selection with palette
 - **Date Picker Field** - Date selection with calendar popup
 - **Date Time Picker Field** - Combined date and time selection
-- **Form Item** - Wrapper for form fields with label, description, error
 - **Form Action Bar** - Consistent form action buttons (Save, Cancel, etc.)
 
 ### Layout Components

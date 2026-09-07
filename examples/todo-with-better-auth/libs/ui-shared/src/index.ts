@@ -299,6 +299,7 @@ export {
 export type { UseConfirmDialogRequestOptions } from './hooks/use-confirm-dialog.js';
 export { useControlledState } from './hooks/use-controlled-state.js';
 export { useControllerMerged } from './hooks/use-controller-merged.js';
+export { useFieldIds } from './hooks/use-field-ids.js';
 export { useIsMobile } from './hooks/use-mobile.js';
 export { buttonVariants } from './styles/button.js';
 export { inputVariants } from './styles/input.js';

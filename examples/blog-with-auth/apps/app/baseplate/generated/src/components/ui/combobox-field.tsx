@@ -3,8 +3,6 @@
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { useId } from 'react';
-
 import type {
   AddOptionRequiredFields,
   FormFieldProps,
@@ -12,6 +10,7 @@ import type {
 } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/use-controller-merged';
+import { useFieldIds } from '@src/hooks/use-field-ids';
 
 import {
   Combobox,
@@ -55,9 +54,17 @@ function ComboboxField<OptionType>({
   noResultsText,
   disabled,
   size = 'default',
+  id,
+  'aria-describedby': ariaDescribedBy,
 }: ComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
 
   const selectedOption =
     options.find((o) => getOptionValue(o) === value) ?? null;
@@ -68,7 +75,7 @@ function ComboboxField<OptionType>({
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
       <Combobox
         value={selectedOption}
         onValueChange={(option) => {
@@ -82,7 +89,12 @@ function ComboboxField<OptionType>({
         itemToStringValue={(option) => getOptionValue(option) ?? ''}
         autoHighlight
       >
-        <ComboboxInput id={id} size={size} placeholder={placeholder} />
+        <ComboboxInput
+          {...controlProps}
+          size={size}
+          placeholder={placeholder}
+          aria-invalid={!!error}
+        />
         <ComboboxContent size={size}>
           <ComboboxEmpty>{noResultsText ?? 'No results found'}</ComboboxEmpty>
           <ComboboxList>
@@ -100,8 +112,8 @@ function ComboboxField<OptionType>({
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }

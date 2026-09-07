@@ -24,7 +24,8 @@ import {
 } from '$combobox';
 import { Field, FieldDescription, FieldError, FieldLabel } from '$field';
 import { useControllerMerged } from '$hooksUseControllerMerged';
-import { Fragment, useId, useMemo } from 'react';
+import { useFieldIds } from '$hooksUseFieldIds';
+import { Fragment, useMemo } from 'react';
 
 export interface MultiComboboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>, FormFieldProps {
@@ -51,9 +52,17 @@ function MultiComboboxField<OptionType>({
   noResultsText,
   disabled,
   size = 'default',
+  id,
+  'aria-describedby': ariaDescribedBy,
 }: MultiComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   const chipsRef = useComboboxAnchor();
 
   const selectedOptions = useMemo(
@@ -67,7 +76,7 @@ function MultiComboboxField<OptionType>({
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
       <Combobox
         multiple
         autoHighlight
@@ -93,8 +102,9 @@ function MultiComboboxField<OptionType>({
                   );
                 })}
                 <ComboboxChipsInput
-                  id={id}
+                  {...controlProps}
                   placeholder={values.length > 0 ? '' : placeholder}
+                  aria-invalid={!!error}
                 />
               </Fragment>
             )}
@@ -119,8 +129,8 @@ function MultiComboboxField<OptionType>({
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }

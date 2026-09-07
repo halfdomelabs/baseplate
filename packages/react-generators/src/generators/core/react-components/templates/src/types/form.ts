@@ -5,6 +5,10 @@ export interface FormFieldProps {
   error?: React.ReactNode;
   description?: React.ReactNode;
   disabled?: boolean;
+  /** Id for the field's control. A generated id is used when omitted. */
+  id?: string;
+  /** Extra ids describing the control, kept ahead of the generated ones. */
+  'aria-describedby'?: string;
 }
 
 type SelectOptionLabelRenderer<OptionType> = (

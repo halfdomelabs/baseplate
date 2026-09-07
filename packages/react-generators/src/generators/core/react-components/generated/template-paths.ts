@@ -29,6 +29,7 @@ export interface CoreReactComponentsPaths {
   field: string;
   hooksUseControlledState: string;
   hooksUseControllerMerged: string;
+  hooksUseFieldIds: string;
   input: string;
   inputField: string;
   inputGroup: string;
@@ -112,6 +113,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           field: `${componentsRoot}/ui/field.tsx`,
           hooksUseControlledState: `${srcRoot}/hooks/use-controlled-state.ts`,
           hooksUseControllerMerged: `${srcRoot}/hooks/use-controller-merged.ts`,
+          hooksUseFieldIds: `${srcRoot}/hooks/use-field-ids.ts`,
           input: `${componentsRoot}/ui/input.tsx`,
           inputField: `${componentsRoot}/ui/input-field.tsx`,
           inputGroup: `${componentsRoot}/ui/input-group.tsx`,
