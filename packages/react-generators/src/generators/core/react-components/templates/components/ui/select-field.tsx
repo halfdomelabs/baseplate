@@ -12,6 +12,7 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { Field, FieldDescription, FieldError, FieldLabel } from '$field';
 import { useControllerMerged } from '$hooksUseControllerMerged';
+import { useFieldIds } from '$hooksUseFieldIds';
 import {
   Select,
   SelectContent,
@@ -20,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '$select';
-import { useId } from 'react';
 
 export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>, FormFieldProps {
@@ -42,10 +42,18 @@ function SelectField<OptionType>({
   className,
   onChange,
   size = 'default',
+  id,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: SelectFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
-  const triggerId = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
   return (
@@ -54,14 +62,14 @@ function SelectField<OptionType>({
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      <FieldLabel htmlFor={triggerId}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
       <Select
         value={value}
         onValueChange={(val) => onChange?.(val)}
         disabled={disabled}
         {...props}
       >
-        <SelectTrigger id={triggerId} size={size} aria-invalid={!!error}>
+        <SelectTrigger {...controlProps} size={size} aria-invalid={!!error}>
           <SelectValue placeholder={placeholder}>
             {selectedOption ? getOptionLabel(selectedOption) : null}
           </SelectValue>
@@ -82,8 +90,8 @@ function SelectField<OptionType>({
           </SelectGroup>
         </SelectContent>
       </Select>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }

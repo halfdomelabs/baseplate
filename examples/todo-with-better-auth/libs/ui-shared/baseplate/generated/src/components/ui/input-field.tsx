@@ -8,12 +8,12 @@ import type {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 
-import { useId } from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 import type { FormFieldProps } from '../../types/form.js';
 import type { InputProps } from './input.js';
 
+import { useFieldIds } from '../../hooks/use-field-ids.js';
 import { cn } from '../../utils/cn.js';
 import { mergeRefs } from '../../utils/merge-refs.js';
 import {
@@ -41,18 +41,26 @@ function InputField({
   className,
   size,
   ref,
+  id,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: InputFieldProps): React.ReactElement {
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   return (
     <Field
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
       className={cn('gap-1.5', className)}
     >
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
       <Input
-        id={id}
+        {...controlProps}
         size={size}
         disabled={disabled}
         onChange={
@@ -66,8 +74,8 @@ function InputField({
         {...props}
         {...register}
       />
-      <FieldDescription>{description}</FieldDescription>
-      <FieldErrorDisplay>{error}</FieldErrorDisplay>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldErrorDisplay {...errorProps}>{error}</FieldErrorDisplay>
     </Field>
   );
 }

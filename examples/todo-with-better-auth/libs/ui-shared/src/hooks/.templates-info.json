@@ -14,6 +14,11 @@
     "instanceData": {},
     "template": "hooks-use-controller-merged"
   },
+  "use-field-ids.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "hooks-use-field-ids"
+  },
   "use-mobile.ts": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},

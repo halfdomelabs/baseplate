@@ -3,3 +3,5 @@ export { useControlledState } from './use-controlled-state.js';
 export { useControllerMerged } from './use-controller-merged.js';
 export { useDebounce } from './use-debounce.js';
 export { useEventCallback } from './use-event-callback.js';
+export { useFieldIds } from './use-field-ids.js';
+export type { UseFieldIdsOptions, UseFieldIdsResult } from './use-field-ids.js';

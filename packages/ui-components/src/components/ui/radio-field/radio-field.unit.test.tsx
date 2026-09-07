@@ -33,6 +33,14 @@ describe('RadioField', () => {
     }
   });
 
+  it('names and describes the radio group itself', () => {
+    renderRadioField({ value: null, description: 'Pick exactly one' });
+
+    expect(
+      screen.getByRole('radiogroup', { name: 'Pick' }),
+    ).toHaveAccessibleDescription('Pick exactly one');
+  });
+
   it('checks only the option matching the value', () => {
     renderRadioField({ value: '2' });
 

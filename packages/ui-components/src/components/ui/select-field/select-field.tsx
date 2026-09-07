@@ -3,8 +3,6 @@
 import type * as React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { useId } from 'react';
-
 import type {
   AddOptionRequiredFields,
   FormFieldProps,
@@ -12,6 +10,7 @@ import type {
 } from '#src/types/form.js';
 
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
+import { useFieldIds } from '#src/hooks/use-field-ids.js';
 
 import {
   Field,
@@ -48,10 +47,18 @@ function SelectField<OptionType>({
   className,
   onChange,
   size = 'default',
+  id,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: SelectFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
-  const triggerId = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
   return (
@@ -60,14 +67,14 @@ function SelectField<OptionType>({
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      <FieldLabel htmlFor={triggerId}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
       <Select
         value={value}
         onValueChange={(val) => onChange?.(val)}
         disabled={disabled}
         {...props}
       >
-        <SelectTrigger id={triggerId} size={size} aria-invalid={!!error}>
+        <SelectTrigger {...controlProps} size={size} aria-invalid={!!error}>
           <SelectValue placeholder={placeholder}>
             {selectedOption ? getOptionLabel(selectedOption) : null}
           </SelectValue>
@@ -88,8 +95,8 @@ function SelectField<OptionType>({
           </SelectGroup>
         </SelectContent>
       </Select>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }

@@ -10,10 +10,11 @@ import { Calendar } from '$calendar';
 import { cn } from '$cn';
 import { Field, FieldDescription, FieldError, FieldLabel } from '$field';
 import { useControllerMerged } from '$hooksUseControllerMerged';
+import { useFieldIds } from '$hooksUseFieldIds';
 import { Input } from '$input';
 import { Popover, PopoverContent, PopoverTrigger } from '$popover';
 import { format, parseISO, set } from 'date-fns';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { MdSchedule } from 'react-icons/md';
 
 export interface DateTimePickerFieldProps extends FormFieldProps {
@@ -50,9 +51,17 @@ function DateTimePickerField({
   calendarProps,
   size = 'default',
   ref,
+  id,
+  'aria-describedby': ariaDescribedBy,
 }: DateTimePickerFieldProps): React.ReactElement {
   const addWrapper = label ?? error ?? description;
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   const [open, setOpen] = useState(false);
 
   // Parse string value to Date for internal operations
@@ -134,7 +143,8 @@ function DateTimePickerField({
             size={size}
             data-empty={!dateTimeValue}
             disabled={disabled}
-            id={id}
+            {...controlProps}
+            aria-invalid={!!error}
             ref={ref}
             className={cn(
               'w-[280px] justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
@@ -184,10 +194,10 @@ function DateTimePickerField({
         data-disabled={disabled ?? undefined}
         className={cn('gap-2', wrapperClassName)}
       >
-        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <FieldLabel {...labelProps}>{label}</FieldLabel>
         {inputComponent}
-        <FieldDescription>{description}</FieldDescription>
-        <FieldError>{error}</FieldError>
+        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+        <FieldError {...errorProps}>{error}</FieldError>
       </Field>
     );
   }

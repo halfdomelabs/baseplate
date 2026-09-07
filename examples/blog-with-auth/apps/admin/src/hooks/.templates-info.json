@@ -14,6 +14,11 @@
     "instanceData": {},
     "template": "hooks-use-controller-merged"
   },
+  "use-field-ids.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "hooks-use-field-ids"
+  },
   "use-log-out.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
     "instanceData": {},

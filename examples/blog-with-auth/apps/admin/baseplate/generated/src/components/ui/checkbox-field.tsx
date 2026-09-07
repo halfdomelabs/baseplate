@@ -1,13 +1,13 @@
 'use client';
 
+import type * as React from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
-
-import * as React from 'react';
 
 import type { FormFieldProps } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/use-controller-merged';
+import { useFieldIds } from '@src/hooks/use-field-ids';
 
 import { Checkbox } from './checkbox';
 import {
@@ -40,9 +40,17 @@ function CheckboxField({
   onChange,
   value,
   className,
+  id,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: CheckboxFieldProps): React.ReactElement {
-  const id = React.useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
 
   return (
     <Field
@@ -53,7 +61,7 @@ function CheckboxField({
     >
       <Checkbox
         {...props}
-        id={id}
+        {...controlProps}
         disabled={disabled}
         aria-invalid={!!error}
         onCheckedChange={(checked) => {
@@ -65,11 +73,11 @@ function CheckboxField({
         render={<button />}
       />
       <FieldContent>
-        <FieldLabel htmlFor={id} className="cursor-pointer">
+        <FieldLabel {...labelProps} className="cursor-pointer">
           {label}
         </FieldLabel>
-        <FieldDescription>{description}</FieldDescription>
-        <FieldError>{error}</FieldError>
+        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+        <FieldError {...errorProps}>{error}</FieldError>
       </FieldContent>
     </Field>
   );

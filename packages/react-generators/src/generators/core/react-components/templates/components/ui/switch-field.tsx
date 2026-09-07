@@ -3,6 +3,7 @@
 'use client';
 
 import type { FormFieldProps } from '$typesForm';
+import type * as React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import {
@@ -13,8 +14,8 @@ import {
   FieldLabel,
 } from '$field';
 import { useControllerMerged } from '$hooksUseControllerMerged';
+import { useFieldIds } from '$hooksUseFieldIds';
 import { Switch } from '$switchComponent';
-import * as React from 'react';
 
 /**
  * Field with label and error states that wraps a Switch component.
@@ -29,7 +30,6 @@ export interface SwitchFieldProps
   onChange?: (value: boolean) => void;
   value?: boolean;
   className?: string;
-  id?: string;
 }
 
 function SwitchField({
@@ -41,9 +41,16 @@ function SwitchField({
   value,
   className,
   id,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: SwitchFieldProps): React.ReactElement {
-  const switchId = React.useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
 
   return (
     <Field
@@ -51,11 +58,10 @@ function SwitchField({
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
       className={className}
-      id={id}
     >
       <Switch
         {...props}
-        id={switchId}
+        {...controlProps}
         disabled={disabled}
         onCheckedChange={(checked) => onChange?.(checked)}
         checked={value}
@@ -65,9 +71,9 @@ function SwitchField({
         render={<button />}
       />
       <FieldContent>
-        <FieldLabel htmlFor={switchId}>{label}</FieldLabel>
-        <FieldDescription>{description}</FieldDescription>
-        <FieldError>{error}</FieldError>
+        <FieldLabel {...labelProps}>{label}</FieldLabel>
+        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+        <FieldError {...errorProps}>{error}</FieldError>
       </FieldContent>
     </Field>
   );

@@ -52,7 +52,6 @@ All form components are available in both standalone and React Hook Form integra
 - **Color Picker/Color Picker Field** - Color selection with palette
 - **Date Picker Field** - Date selection with calendar
 - **Date Time Picker Field** - Combined date and time selection
-- **Form Item** - Form field wrapper with label/error display
 - **Form Action Bar** - Consistent form action buttons
 
 #### Empty-Value Convention

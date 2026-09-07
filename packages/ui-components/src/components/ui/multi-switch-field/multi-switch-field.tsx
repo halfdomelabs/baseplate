@@ -11,6 +11,7 @@ import type {
 } from '#src/types/form.js';
 
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
+import { useFieldIds } from '#src/hooks/use-field-ids.js';
 import { cn } from '#src/utils/cn.js';
 import { genericForwardRef } from '#src/utils/generic-forward-ref.js';
 
@@ -46,9 +47,18 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
     getOptionValue = (val) => (val as { value: string }).value,
     className,
     disabled,
+    id,
+    'aria-describedby': ariaDescribedBy,
   }: MultiSwitchFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLDivElement>,
 ): React.JSX.Element {
+  const { fieldId, labelId, describedBy, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   const selectedOptions = value
     ?.map((val) => options.find((option) => getOptionValue(option) === val))
     .filter(notEmpty);
@@ -62,8 +72,11 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
       className={cn('gap-3', className)}
+      id={fieldId}
+      aria-labelledby={label ? labelId : undefined}
+      aria-describedby={describedBy}
     >
-      <FieldLabel>{label}</FieldLabel>
+      <FieldLabel id={labelId}>{label}</FieldLabel>
       <div className="flex flex-wrap gap-4" ref={ref}>
         {options.map((option) => {
           const optionValue = getOptionValue(option);
@@ -96,8 +109,8 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
           );
         })}
       </div>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 });

@@ -10,9 +10,10 @@ import { Calendar } from '$calendar';
 import { cn } from '$cn';
 import { Field, FieldDescription, FieldError, FieldLabel } from '$field';
 import { useControllerMerged } from '$hooksUseControllerMerged';
+import { useFieldIds } from '$hooksUseFieldIds';
 import { Popover, PopoverContent, PopoverTrigger } from '$popover';
 import { format, parseISO } from 'date-fns';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { MdCalendarMonth } from 'react-icons/md';
 
 export interface DatePickerFieldProps extends FormFieldProps {
@@ -47,9 +48,17 @@ function DatePickerField({
   calendarProps,
   size = 'default',
   ref,
+  id,
+  'aria-describedby': ariaDescribedBy,
 }: DatePickerFieldProps): React.ReactElement {
   const addWrapper = label ?? error ?? description;
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   const [open, setOpen] = useState(false);
 
   // Parse string value to Date for Calendar component
@@ -75,7 +84,8 @@ function DatePickerField({
             size={size}
             data-empty={!dateValue}
             disabled={disabled}
-            id={id}
+            {...controlProps}
+            aria-invalid={!!error}
             ref={ref}
             className={cn(
               'w-[280px] justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
@@ -106,10 +116,10 @@ function DatePickerField({
         data-disabled={disabled ?? undefined}
         className={cn('gap-2', wrapperClassName)}
       >
-        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <FieldLabel {...labelProps}>{label}</FieldLabel>
         {inputComponent}
-        <FieldDescription>{description}</FieldDescription>
-        <FieldError>{error}</FieldError>
+        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+        <FieldError {...errorProps}>{error}</FieldError>
       </Field>
     );
   }

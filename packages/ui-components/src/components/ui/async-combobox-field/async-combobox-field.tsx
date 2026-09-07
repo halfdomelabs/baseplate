@@ -3,7 +3,7 @@
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { useEffect, useId, useMemo, useReducer, useRef, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import type {
   AddOptionRequiredFields,
@@ -14,6 +14,7 @@ import type {
 import { useComponentStrings } from '#src/contexts/component-strings.js';
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 import { useEventCallback } from '#src/hooks/use-event-callback.js';
+import { useFieldIds } from '#src/hooks/use-field-ids.js';
 
 import {
   Combobox,
@@ -130,6 +131,8 @@ function AsyncComboboxField<OptionType>({
   initialOptions = [],
   disabled,
   size = 'default',
+  id,
+  'aria-describedby': ariaDescribedBy,
 }: AsyncComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
   const [{ options, isLoading, loadError, hasSearched }, dispatch] = useReducer(
@@ -149,7 +152,13 @@ function AsyncComboboxField<OptionType>({
   const { comboboxNoResults, comboboxTypeToSearch, comboboxLoading } =
     useComponentStrings();
 
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
 
   // Stable callbacks that always reference the latest closure
   const stableLoadOptions = useEventCallback(loadOptions);
@@ -286,7 +295,7 @@ function AsyncComboboxField<OptionType>({
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
       <Combobox
         value={selectedOption}
         onValueChange={(option) => {
@@ -315,7 +324,12 @@ function AsyncComboboxField<OptionType>({
         itemToStringValue={(option: OptionType) => getOptionValue(option) ?? ''}
         filter={null}
       >
-        <ComboboxInput id={id} size={size} placeholder={placeholder} />
+        <ComboboxInput
+          {...controlProps}
+          size={size}
+          placeholder={placeholder}
+          aria-invalid={!!error}
+        />
         <ComboboxContent size={size}>
           {isLoading ? (
             <ComboboxStatus className="flex items-center justify-center p-4 text-sm text-muted-foreground">
@@ -353,8 +367,8 @@ function AsyncComboboxField<OptionType>({
           )}
         </ComboboxContent>
       </Combobox>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }

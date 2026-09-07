@@ -25,7 +25,6 @@ export * from './error-display/error-display.js';
 export * from './errorable-loader/errorable-loader.js';
 export * from './field/field.js';
 export * from './form-action-bar/form-action-bar.js';
-export * from './form-item/form-item.js';
 export * from './input-field/input-field.js';
 export * from './input-group/input-group.js';
 export * from './input-otp/input-otp.js';

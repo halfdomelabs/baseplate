@@ -83,6 +83,7 @@
   "@baseplate-dev/react-generators#core/react-components:field": "src/components/ui/field.tsx",
   "@baseplate-dev/react-generators#core/react-components:hooks-use-controlled-state": "src/hooks/use-controlled-state.ts",
   "@baseplate-dev/react-generators#core/react-components:hooks-use-controller-merged": "src/hooks/use-controller-merged.ts",
+  "@baseplate-dev/react-generators#core/react-components:hooks-use-field-ids": "src/hooks/use-field-ids.ts",
   "@baseplate-dev/react-generators#core/react-components:input": "src/components/ui/input.tsx",
   "@baseplate-dev/react-generators#core/react-components:input-field": "src/components/ui/input-field.tsx",
   "@baseplate-dev/react-generators#core/react-components:input-group": "src/components/ui/input-group.tsx",

@@ -12,6 +12,7 @@ import type {
 } from '#src/types/form.js';
 
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
+import { useFieldIds } from '#src/hooks/use-field-ids.js';
 
 import {
   Field,
@@ -40,10 +41,16 @@ function RadioField<OptionType>({
   getOptionValue = (val) => (val as { value: string }).value,
   className,
   onChange,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: RadioFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
   const groupId = useId();
+  const { labelId, describedBy, descriptionProps, errorProps } = useFieldIds({
+    'aria-describedby': ariaDescribedBy,
+    description,
+    error,
+  });
 
   return (
     <FieldSet
@@ -51,12 +58,19 @@ function RadioField<OptionType>({
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      {label && <FieldLegend variant="label">{label}</FieldLegend>}
+      {label && (
+        <FieldLegend variant="label" id={labelId}>
+          {label}
+        </FieldLegend>
+      )}
       <RadioGroup
         value={value}
         onValueChange={(val) => onChange?.(val as string | null)}
         disabled={disabled}
         aria-invalid={!!error}
+        // The fieldset's legend names the fieldset, not the nested radiogroup.
+        aria-labelledby={label ? labelId : undefined}
+        aria-describedby={describedBy}
         {...props}
       >
         {options.map((option, index) => {
@@ -79,8 +93,8 @@ function RadioField<OptionType>({
           );
         })}
       </RadioGroup>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </FieldSet>
   );
 }

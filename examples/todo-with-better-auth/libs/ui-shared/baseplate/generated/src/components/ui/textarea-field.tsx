@@ -10,11 +10,11 @@ import type {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 
-import { useId } from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 import type { FormFieldProps } from '../../types/form.js';
 
+import { useFieldIds } from '../../hooks/use-field-ids.js';
 import {
   Field,
   FieldDescription,
@@ -44,17 +44,25 @@ function TextareaField({
   onChange,
   register,
   size = 'default',
+  id,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: TextareaFieldProps): React.ReactElement {
-  const id = useId();
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({
+      id,
+      'aria-describedby': ariaDescribedBy,
+      description,
+      error,
+    });
   return (
     <Field
       data-invalid={!!error || undefined}
       data-disabled={disabled ?? undefined}
     >
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel {...labelProps}>{label}</FieldLabel>
       <Textarea
-        id={id}
+        {...controlProps}
         size={size}
         disabled={disabled}
         onChange={
@@ -67,8 +75,8 @@ function TextareaField({
         {...props}
         {...register}
       />
-      <FieldDescription>{description}</FieldDescription>
-      <FieldErrorDisplay>{error}</FieldErrorDisplay>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldErrorDisplay {...errorProps}>{error}</FieldErrorDisplay>
     </Field>
   );
 }
