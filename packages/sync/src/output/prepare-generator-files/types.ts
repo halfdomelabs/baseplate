@@ -75,6 +75,11 @@ export interface GeneratorOutputFileWriterContext {
    * Options for overwriting files.
    */
   readonly overwriteOptions?: OverwriteOptions;
+  /**
+   * Declared formatter inputs mirrored for this formatting operation, keyed by
+   * output-relative path.
+   */
+  readonly materializedFormatterInputs?: ReadonlyMap<string, string>;
 }
 
 /**

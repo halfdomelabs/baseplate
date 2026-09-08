@@ -67,10 +67,12 @@ export async function formatOutputFileContents(
     outputDirectory,
     formatters,
     logger,
+    materializedFormatterInputs,
   }: {
     outputDirectory: string;
     formatters: GeneratorOutputFormatter[];
     logger: Logger;
+    materializedFormatterInputs?: ReadonlyMap<string, string>;
   },
 ): Promise<Buffer | string> {
   const { options, contents } = data;
@@ -101,7 +103,10 @@ export async function formatOutputFileContents(
 
   try {
     const filePath = path.join(outputDirectory, relativePath);
-    return await formatter.format(contents, filePath, logger);
+    return await formatter.format(contents, filePath, logger, {
+      materializedFormatterInputs,
+      outputDirectory,
+    });
   } catch (error) {
     throw new FormatterError(error, contents, relativePath);
   }
@@ -206,14 +211,16 @@ async function mergeStringContents({
       });
 
   if (mergeResult) {
-    // do not format if there is a conflict
-    const formattedMergeResult = mergeResult.hasConflict
-      ? mergeResult.mergedText
-      : await formatOutputFileContents(
-          relativePath,
-          { ...data, contents: mergeResult.mergedText },
-          context,
-        );
+    // do not format if there is a conflict, and skip a merge that absorbed no
+    // user changes since `currentGeneratedText` is already formatted
+    const formattedMergeResult =
+      mergeResult.hasConflict || mergeResult.mergedText === currentGeneratedText
+        ? mergeResult.mergedText
+        : await formatOutputFileContents(
+            relativePath,
+            { ...data, contents: mergeResult.mergedText },
+            context,
+          );
     return {
       relativePath,
       previousRelativePath,

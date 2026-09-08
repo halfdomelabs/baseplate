@@ -282,4 +282,164 @@ describe('writeGeneratorOutput', () => {
       'no formatting content',
     );
   });
+  it("should format against this sync's formatter inputs, not the working tree", async () => {
+    vol.fromJSON({
+      [`${outputDirectory}/src/styles.css`]: 'stale sheet',
+      [`${outputDirectory}/src/component.tsx`]: 'component',
+    });
+
+    const sheetsSeen: string[] = [];
+    let mirroredPathSeen: string | undefined;
+
+    const output: GeneratorOutput = {
+      files: new Map([
+        ['src/styles.css', { id: 'styles', contents: 'fresh sheet' }],
+        ['src/component.tsx', { id: 'component', contents: 'component' }],
+      ]),
+      globalFormatters: [
+        {
+          name: 'stylesheet-aware',
+          fileExtensions: ['.tsx', '.css'],
+          materializedFormatterInputs: ['src/styles.css'],
+          format: (contents, fullPath, _logger, formatOptions) => {
+            const mirrored =
+              formatOptions?.materializedFormatterInputs?.get('src/styles.css');
+            if (mirrored && fullPath.endsWith('component.tsx')) {
+              mirroredPathSeen = mirrored;
+              sheetsSeen.push(String(vol.readFileSync(mirrored, 'utf8')));
+            }
+            return contents;
+          },
+        },
+      ],
+      postWriteCommands: [],
+    };
+
+    await writeGeneratorOutput(output, outputDirectory, { logger });
+
+    // The stylesheet this sync produces, not the one still on disk.
+    expect(sheetsSeen).toEqual(['fresh sheet']);
+    // The mirror is scoped to the operation and must not outlive it.
+    expect(mirroredPathSeen).toBeDefined();
+    expect(vol.existsSync(mirroredPathSeen ?? '')).toBe(false);
+  });
+
+  it('should mirror an input reached only by another input', async () => {
+    vol.fromJSON({});
+
+    const mirrored: string[] = [];
+
+    const output: GeneratorOutput = {
+      files: new Map([
+        ['src/styles.css', { id: 'styles', contents: "@import './a.css';" }],
+        ['src/a.css', { id: 'a', contents: 'imported' }],
+      ]),
+      globalFormatters: [
+        {
+          name: 'stylesheet-aware',
+          fileExtensions: ['.css'],
+          materializedFormatterInputs: ['src/styles.css', 'src/a.css'],
+          format: (contents, _fullPath, _logger, formatOptions) => {
+            for (const [
+              key,
+              value,
+            ] of formatOptions?.materializedFormatterInputs ?? []) {
+              mirrored.push(
+                `${key}=${String(vol.readFileSync(value, 'utf8'))}`,
+              );
+            }
+            return contents;
+          },
+        },
+      ],
+      postWriteCommands: [],
+    };
+
+    await writeGeneratorOutput(output, outputDirectory, { logger });
+
+    // A relative import only resolves from the mirror if it is mirrored too.
+    expect(new Set(mirrored)).toEqual(
+      new Set(["src/styles.css=@import './a.css';", 'src/a.css=imported']),
+    );
+  });
+
+  it('should run a post-write command gated on a formatter input the sync creates', async () => {
+    mockedExecuteCommand.mockResolvedValue({
+      failed: false,
+      exitCode: 0,
+      output: 'success',
+    });
+    // A fresh project: nothing on disk, so nothing can be resolved and the
+    // in-memory format is degraded. The heal depends on the gate firing for a
+    // file this sync creates rather than modifies.
+    vol.fromJSON({});
+
+    const output: GeneratorOutput = {
+      files: new Map([['src/styles.css', { id: 'styles', contents: 'sheet' }]]),
+      globalFormatters: [],
+      postWriteCommands: [
+        {
+          command: 'prettier --write .',
+          options: { onlyIfChanged: ['.prettierrc', 'src/styles.css'] },
+        },
+      ],
+    };
+
+    await writeGeneratorOutput(output, outputDirectory, { logger });
+
+    expect(mockedExecuteCommand.mock.calls[0]?.[0]).toBe('prettier --write .');
+  });
+
+  it('should re-run formatting after an install triggered by the same sync', async () => {
+    mockedExecuteCommand.mockResolvedValue({
+      failed: false,
+      exitCode: 0,
+      output: 'success',
+    });
+    vol.fromJSON({
+      [`${outputDirectory}/package.json`]: '{"name":"app"}',
+    });
+
+    const output: GeneratorOutput = {
+      files: new Map([
+        ['package.json', { id: 'pkg', contents: '{"name":"app","x":1}' }],
+      ]),
+      globalFormatters: [],
+      postWriteCommands: [
+        {
+          command: 'prettier --write .',
+          options: {
+            priority: 'FORMATTING',
+            onlyIfChanged: ['.prettierrc', 'package.json'],
+          },
+        },
+        {
+          command: 'pnpm install',
+          options: {
+            priority: 'DEPENDENCIES',
+            onlyIfChanged: ['package.json'],
+          },
+        },
+      ],
+    };
+
+    await writeGeneratorOutput(output, outputDirectory, {
+      logger,
+      // An upgrade sync: the working file matches the payload, so the
+      // dependency change merges cleanly instead of conflicting.
+      previousGeneratedPayload: {
+        fileReader: createCodebaseReaderFromMemory(
+          new Map([['package.json', Buffer.from('{"name":"app"}')]]),
+        ),
+        fileIdToRelativePathMap: new Map([['pkg', 'package.json']]),
+      },
+    });
+
+    // The in-memory format may have used the prettier version being replaced,
+    // so the heal has to run, and has to run after the install.
+    expect(mockedExecuteCommand.mock.calls.map((call) => call[0])).toEqual([
+      'pnpm install',
+      'prettier --write .',
+    ]);
+  });
 });

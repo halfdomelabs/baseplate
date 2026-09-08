@@ -4,7 +4,7 @@ import type { Logger } from '#src/utils/evented-logger.js';
 
 import { CancelledSyncError } from '#src/errors.js';
 
-import type { GeneratorOutput } from './generator-task-output.js';
+import type { FileData, GeneratorOutput } from './generator-task-output.js';
 import type { FailedCommandInfo } from './post-write-commands/index.js';
 import type {
   GeneratorOutputFileWriterContext,
@@ -14,6 +14,7 @@ import type {
 
 import { cleanDeletedFiles } from './clean-deleted-files.js';
 import { createCodebaseFileReaderFromDirectory } from './codebase-file-reader.js';
+import { createFormatterInputSession } from './formatter-inputs/index.js';
 import {
   filterPostWriteCommands,
   runPostWriteCommands,
@@ -25,6 +26,15 @@ import {
   PrepareGeneratorFilesError,
 } from './prepare-generator-files/index.js';
 import { writeGeneratorFiles } from './write-generator-file/index.js';
+
+/** Reads a file's generated contents, when they are text. */
+function readGeneratedText(
+  files: Map<string, FileData>,
+  relativePath: string,
+): string | undefined {
+  const contents = files.get(relativePath)?.contents;
+  return typeof contents === 'string' ? contents : undefined;
+}
 
 /**
  * Options for writing the generator output
@@ -141,10 +151,29 @@ export async function writeGeneratorOutput(
       overwriteOptions,
     };
 
-    const { files, fileIdToRelativePathMap } = await prepareGeneratorFiles({
-      files: output.files,
-      context: fileWriterContext,
+    // Formatters that read files from disk must see this sync's contents, not
+    // the working tree's previous version, so their declared inputs are mirrored
+    // for the duration of the prepare.
+    const formatterInputSession = await createFormatterInputSession({
+      formatters: output.globalFormatters,
+      outputDirectory,
+      readGeneratedContents: (relativePath) =>
+        Promise.resolve(readGeneratedText(output.files, relativePath)),
     });
+
+    let prepared;
+    try {
+      prepared = await prepareGeneratorFiles({
+        files: output.files,
+        context: {
+          ...fileWriterContext,
+          materializedFormatterInputs: formatterInputSession?.inputs,
+        },
+      });
+    } finally {
+      await formatterInputSession?.cleanup();
+    }
+    const { files, fileIdToRelativePathMap } = prepared;
 
     if (abortSignal?.aborted) throw new CancelledSyncError();
 

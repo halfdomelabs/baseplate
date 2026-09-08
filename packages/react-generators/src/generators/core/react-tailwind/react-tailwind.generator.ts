@@ -74,6 +74,18 @@ export const reactTailwindGenerator = createGenerator({
         tailwindFunctions: ['clsx', 'cn', 'cva'],
         tailwindStylesheet: './src/styles.css',
       });
+      // The plugin learns the project's utilities by reading the stylesheet from
+      // disk, which during a sync still holds the previous version. Both files
+      // are mirrored so the stylesheet's `@import './typeset.css'` still
+      // resolves from the mirror; a new cross-package import would need adding
+      // here too.
+      prettier.addMaterializedFormatterInput({
+        path: 'src/styles.css',
+        buildOptions: (materializedPath) => ({
+          tailwindStylesheet: materializedPath,
+        }),
+      });
+      prettier.addMaterializedFormatterInput({ path: 'src/typeset.css' });
     }),
     eslint: createProviderTask(eslintConfigProvider, (eslintConfig) => {
       eslintConfig.tailwind.set(true);

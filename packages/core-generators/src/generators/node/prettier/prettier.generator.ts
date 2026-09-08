@@ -57,11 +57,38 @@ const DEFAULT_PLUGINS: PrettierPluginConfig[] = [
   },
 ];
 
+/**
+ * A generated file a prettier plugin reads from disk while formatting.
+ */
+export interface PrettierMaterializedFormatterInput {
+  /**
+   * Output-relative path of the file.
+   */
+  path: string;
+  /**
+   * Builds the prettier options that point the plugin at the mirrored copy.
+   *
+   * Omitted for a file that is only reached through another input's relative
+   * import, which needs mirroring but is named by no option.
+   */
+  buildOptions?: (materializedPath: string) => Record<string, unknown>;
+}
+
 export interface PrettierProvider {
   getConfig(): NonOverwriteableMap<PrettierConfig>;
   addPlugin: (plugin: PrettierPluginConfig) => void;
   addExtraOptions: (options: Record<string, unknown>) => void;
   addPrettierIgnore(path: string): void;
+  /**
+   * Declares a generated file a plugin reads from disk, so the sync engine
+   * mirrors it and formatting sees this sync's version rather than the working
+   * tree's.
+   *
+   * @param input The file and how to point the plugin at its mirrored copy.
+   */
+  addMaterializedFormatterInput(
+    input: PrettierMaterializedFormatterInput,
+  ): void;
 }
 
 export const prettierProvider =
@@ -94,16 +121,15 @@ interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;
 }
 
-function resolveModule(name: string, fullPath: string): string | undefined {
-  const basedir = path.dirname(fullPath);
+function resolveModule(name: string, basedir: string): string | undefined {
   return resolveFrom.silent(basedir, name);
 }
 
 async function resolveModuleWithVersion(
   name: string,
-  fullPath: string,
+  basedir: string,
 ): Promise<{ modulePath: string; version: string | undefined } | undefined> {
-  const result = resolveModule(name, fullPath);
+  const result = resolveModule(name, basedir);
   if (!result) {
     return undefined;
   }
@@ -139,6 +165,8 @@ export const prettierGenerator = createGenerator({
           semi: descriptor.semi,
         });
         const plugins = [...DEFAULT_PLUGINS];
+        const materializedFormatterInputs: PrettierMaterializedFormatterInput[] =
+          [];
         const prettierIgnore: string[] = [
           '/coverage',
           '/dist',
@@ -164,6 +192,9 @@ export const prettierGenerator = createGenerator({
               addExtraOptions(options) {
                 prettierConfig.merge(options);
               },
+              addMaterializedFormatterInput(input) {
+                materializedFormatterInputs.push(input);
+              },
             },
           },
           build: (builder) => {
@@ -180,6 +211,7 @@ export const prettierGenerator = createGenerator({
               input: string,
               fullPath: string,
               logger,
+              formatOptions,
             ) => {
               if (
                 !PARSEABLE_EXTENSIONS.has(path.extname(fullPath)) &&
@@ -187,10 +219,16 @@ export const prettierGenerator = createGenerator({
               ) {
                 return input;
               }
+              // Anchored on the project root rather than the file being
+              // formatted, whose directory depends on which file the
+              // concurrency limiter scheduled first.
+              const resolveBaseDir =
+                formatOptions?.outputDirectory ?? path.dirname(fullPath);
+
               prettierModulePromise ??= (async () => {
                 const result = await resolveModuleWithVersion(
                   'prettier',
-                  fullPath,
+                  resolveBaseDir,
                 );
                 if (!result) {
                   logger.info(
@@ -218,7 +256,7 @@ export const prettierGenerator = createGenerator({
                   plugins.map(async (plugin) => {
                     const resolvedModule = await resolveModuleWithVersion(
                       plugin.name,
-                      fullPath,
+                      resolveBaseDir,
                     );
 
                     if (!resolvedModule) {
@@ -245,7 +283,27 @@ export const prettierGenerator = createGenerator({
                 };
               })();
 
-              const config = await prettierConfigPromise;
+              const baseConfig = await prettierConfigPromise;
+              // Applied per call rather than folded into the memoized config,
+              // which is shared across formatting operations with different
+              // mirror paths.
+              const materializedOverrides: Record<string, unknown> = {};
+              for (const materializedFormatterInput of materializedFormatterInputs) {
+                const materializedPath =
+                  formatOptions?.materializedFormatterInputs?.get(
+                    materializedFormatterInput.path,
+                  );
+                if (
+                  materializedPath &&
+                  materializedFormatterInput.buildOptions
+                ) {
+                  Object.assign(
+                    materializedOverrides,
+                    materializedFormatterInput.buildOptions(materializedPath),
+                  );
+                }
+              }
+              const config = { ...baseConfig, ...materializedOverrides };
 
               try {
                 return await prettierModule.format(input, {
@@ -274,11 +332,27 @@ export const prettierGenerator = createGenerator({
               format: formatFunction,
               fileExtensions: [...PARSEABLE_EXTENSIONS],
               fileNames: [...PARSEABLE_FILE_NAMES],
+              materializedFormatterInputs: materializedFormatterInputs.map(
+                (input) => input.path,
+              ),
             });
 
+            // Formatting happens in memory before anything is written or
+            // installed, so a sync that changes a file a plugin reads, the
+            // config, or the toolchain itself can only reach the right answer by
+            // re-running prettier against the finished working tree.
+            //
+            // `package.json` mirrors the `pnpm install` trigger at
+            // DEPENDENCIES: whenever a sync reinstalls dependencies, the
+            // prettier and plugin versions used in memory may be the ones being
+            // replaced, so the result is re-formatted with what was installed.
             builder.addPostWriteCommand('prettier --write .', {
               priority: POST_WRITE_COMMAND_PRIORITY.FORMATTING,
-              onlyIfChanged: ['.prettierrc'],
+              onlyIfChanged: [
+                '.prettierrc',
+                'package.json',
+                ...materializedFormatterInputs.map((input) => input.path),
+              ],
             });
 
             node.packages.addDevPackages({
