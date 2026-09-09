@@ -4,6 +4,8 @@ import { parseISO } from 'date-fns';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { createFieldStates } from '#src/stories/field-states.js';
+
 import {
   DateTimePickerField,
   DateTimePickerFieldController,
@@ -40,152 +42,74 @@ const meta = {
     showSeconds: false,
     disabled: false,
   },
+  render: function DateTimePickerFieldStory(args) {
+    const [dateTime, setDateTime] = useState<string | null | undefined>(
+      args.value,
+    );
+    return (
+      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
+    );
+  },
 } satisfies Meta<typeof DateTimePickerField>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: {},
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>();
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
-};
+const PRESET = '2024-01-15T14:30:00.000Z';
 
-export const WithLabel: Story = {
-  args: {
-    label: 'Meeting Date & Time',
-  },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>();
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
-};
+const states = createFieldStates({
+  label: 'Appointment',
+  description: 'Select the date and time for your appointment.',
+  error: 'Please select a valid date and time.',
+});
 
-export const WithDescription: Story = {
-  args: {
-    label: 'Appointment',
-    description: 'Select the date and time for your appointment',
-  },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>();
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
+export const Default: Story = { args: states.Default };
+export const WithLabel: Story = { args: states.WithLabel };
+export const WithDescription: Story = { args: states.WithDescription };
+export const DescriptionWithoutLabel: Story = {
+  args: states.DescriptionWithoutLabel,
 };
+export const WithError: Story = { args: states.WithError };
+export const ErrorOnly: Story = { args: states.ErrorOnly };
+export const Disabled: Story = { args: { ...states.Disabled, value: PRESET } };
 
-export const WithError: Story = {
-  args: {
-    label: 'Event Schedule',
-    error: 'Please select a valid date and time',
-  },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>();
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    label: 'Disabled DateTime',
-    disabled: true,
-  },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>(
-      '2024-01-15T14:30:00.000Z',
-    );
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
+export const Preselected: Story = {
+  args: { label: 'Preselected date and time', value: PRESET },
 };
 
 export const WithSeconds: Story = {
   args: {
-    label: 'Precise Timing',
+    label: 'Precise timing',
     showSeconds: true,
     dateTimeFormat: 'PPP pp:ss',
-  },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>();
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
   },
 };
 
 export const WithCustomFormat: Story = {
-  args: {
-    label: 'Custom Format',
-    dateTimeFormat: 'MM/dd/yyyy HH:mm',
-  },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>();
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
+  args: { label: 'Custom format', dateTimeFormat: 'MM/dd/yyyy HH:mm' },
 };
 
 export const WithCustomPlaceholder: Story = {
-  args: {
-    label: 'Event Start',
-    placeholder: 'When does the event start?',
-  },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>();
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
+  args: { label: 'Event start', placeholder: 'When does the event start?' },
 };
 
 export const WithCalendarProps: Story = {
   args: {
-    label: 'Future Meetings Only',
+    label: 'Future meetings only',
     calendarProps: {
       captionLayout: 'dropdown',
       showOutsideDays: false,
       disabled: { before: new Date() },
     },
   },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>();
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
-};
-
-export const Preselected: Story = {
-  args: {
-    label: 'Preselected DateTime',
-    description: 'This field has a default value',
-  },
-  render: (args) => {
-    const [dateTime, setDateTime] = useState<string | null>(
-      '2024-01-15T14:30:00.000Z',
-    );
-    return (
-      <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
-    );
-  },
 };
 
 export const WithFormController: Story = {
   args: {
-    label: 'Controlled DateTime',
-    description: 'This example uses react-hook-form integration',
+    label: 'Controlled date and time',
+    description: 'This example uses react-hook-form integration.',
   },
-  render: (args) => {
+  render: function DateTimePickerFieldControllerStory(args) {
     const { control, watch } = useForm<{ dateTime: string | undefined }>({
       defaultValues: { dateTime: undefined },
     });
@@ -209,10 +133,10 @@ export const WithFormController: Story = {
 
 export const WithFormValidation: Story = {
   args: {
-    label: 'Required DateTime',
-    description: 'This field is required',
+    label: 'Required date and time',
+    description: 'This field is required.',
   },
-  render: (args) => {
+  render: function DateTimePickerFieldValidationStory(args) {
     const {
       control,
       formState: { errors },
@@ -253,7 +177,7 @@ export const WithFormValidation: Story = {
 
 export const MultipleFields: Story = {
   args: {},
-  render: () => {
+  render: function DateTimePickerMultipleFieldsStory() {
     const [startTime, setStartTime] = useState<string | null>();
     const [endTime, setEndTime] = useState<string | null>();
 
@@ -268,7 +192,7 @@ export const MultipleFields: Story = {
     return (
       <div className="space-y-4">
         <DateTimePickerField
-          label="Event Start"
+          label="Event start"
           value={startTime}
           onChange={setStartTime}
           calendarProps={{
@@ -276,7 +200,7 @@ export const MultipleFields: Story = {
           }}
         />
         <DateTimePickerField
-          label="Event End"
+          label="Event end"
           value={endTime}
           onChange={setEndTime}
           calendarProps={{
@@ -298,13 +222,13 @@ export const MultipleFields: Story = {
 export const TimeOnlyMode: Story = {
   name: 'Focus on Time Selection',
   args: {
-    label: 'Time Selection Focus',
-    description: 'Pre-set to today, focus on time selection',
+    label: 'Time selection focus',
+    description: 'Pre-set to today, focus on time selection.',
   },
-  render: (args) => {
+  render: function DateTimePickerTimeOnlyStory(args) {
     const [dateTime, setDateTime] = useState<string | null>(() => {
       const today = new Date();
-      today.setHours(9, 0, 0, 0); // 9:00 AM
+      today.setHours(9, 0, 0, 0);
       return today.toISOString();
     });
 
@@ -313,7 +237,7 @@ export const TimeOnlyMode: Story = {
         {...args}
         value={dateTime}
         onChange={setDateTime}
-        showSeconds={true}
+        showSeconds
       />
     );
   },

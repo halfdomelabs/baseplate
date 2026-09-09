@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { useState } from 'react';
 
+import { createFieldStates } from '#src/stories/field-states.js';
+
 import { AsyncComboboxField } from './async-combobox-field.js';
 
 interface MockUser {
@@ -60,6 +62,14 @@ const meta: Meta<typeof AsyncComboboxField> = {
     debounceMs: { control: { type: 'number', min: 0, max: 2000, step: 100 } },
     minSearchLength: { control: { type: 'number', min: 0, max: 5, step: 1 } },
   },
+  args: {
+    loadOptions: createMockLoadOptions(800),
+    getOptionLabel: (user) => (user as MockUser).name,
+    getOptionValue: (user) => (user as MockUser).id,
+    placeholder: 'Search users...',
+    className: 'w-96',
+    debounceMs: 300,
+  },
   decorators: [
     (Story, ctx) => {
       const [value, setValue] = useState(ctx.args.value);
@@ -85,35 +95,31 @@ const meta: Meta<typeof AsyncComboboxField> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: {
-    loadOptions: createMockLoadOptions(800),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 300,
-  },
-};
+const states = createFieldStates({
+  label: 'Select a user',
+  description: 'Start typing to search for users.',
+  error: 'Please select a user.',
+});
 
-export const Labelled: Story = {
+export const Default: Story = { args: states.Default };
+export const WithLabel: Story = { args: states.WithLabel };
+export const WithDescription: Story = { args: states.WithDescription };
+export const DescriptionWithoutLabel: Story = {
+  args: states.DescriptionWithoutLabel,
+};
+export const WithError: Story = { args: states.WithError };
+export const ErrorOnly: Story = { args: states.ErrorOnly };
+export const Disabled: Story = {
   args: {
-    loadOptions: createMockLoadOptions(800),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
-    label: 'Select a user',
-    description: 'Start typing to search for users',
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 300,
+    ...states.Disabled,
+    initialOptions: [MOCK_USERS[4]],
+    value: '5',
   },
 };
 
 export const WithCustomLabels: Story = {
   args: {
-    loadOptions: createMockLoadOptions(800),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
+    label: 'Select a user',
     renderItemLabel: (user, { selected }) => (
       <div className="flex flex-col">
         <span className={`font-medium ${selected ? 'text-primary' : ''}`}>
@@ -124,23 +130,15 @@ export const WithCustomLabels: Story = {
         </span>
       </div>
     ),
-    label: 'Select a user',
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 300,
   },
 };
 
 export const FastLoading: Story = {
   args: {
     loadOptions: createMockLoadOptions(200),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
     label: 'Fast loading',
-    description: 'This example has a 200ms delay',
-    placeholder: 'Search users...',
+    description: 'This example has a 200ms delay.',
     loadingText: 'Loading quickly...',
-    className: 'w-96',
     debounceMs: 100,
   },
 };
@@ -148,55 +146,36 @@ export const FastLoading: Story = {
 export const SlowLoading: Story = {
   args: {
     loadOptions: createMockLoadOptions(2000),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
     label: 'Slow loading',
-    description: 'This example has a 2 second delay',
-    placeholder: 'Search users...',
+    description: 'This example has a 2 second delay.',
     loadingText: 'Please wait, loading...',
-    className: 'w-96',
     debounceMs: 500,
   },
 };
 
-export const WithError: Story = {
+export const LoadFailure: Story = {
   args: {
     loadOptions: createMockLoadOptions(800, true),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
-    label: 'Error example',
-    description: 'This will always fail to load options',
-    placeholder: 'Search users...',
+    label: 'Load failure',
+    description: 'This will always fail to load options.',
     errorText: 'Unable to load users. Please try again.',
-    className: 'w-96',
-    debounceMs: 300,
   },
 };
 
 export const MinSearchLength: Story = {
   args: {
-    loadOptions: createMockLoadOptions(600),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
     label: 'Minimum search length',
-    description: 'You must type at least 2 characters to search',
+    description: 'You must type at least 2 characters to search.',
     placeholder: 'Type at least 2 characters...',
-    className: 'w-96',
-    debounceMs: 300,
     minSearchLength: 2,
   },
 };
 
 export const WithInitialOptions: Story = {
   args: {
-    loadOptions: createMockLoadOptions(800),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
     label: 'With initial options',
-    description: 'Shows some options before searching',
+    description: 'Shows some options before searching.',
     placeholder: 'Search or select from initial options...',
-    className: 'w-96',
-    debounceMs: 300,
     initialOptions: MOCK_USERS.slice(0, 3),
   },
 };
@@ -204,13 +183,8 @@ export const WithInitialOptions: Story = {
 export const WithCustomErrorFormatter: Story = {
   args: {
     loadOptions: createMockLoadOptions(800, true),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
     label: 'Custom error formatting',
-    description: 'This example uses a custom formatError function',
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 300,
+    description: 'This example uses a custom formatError function.',
     formatError: (error: unknown) => {
       if (error instanceof Error) {
         if (error.message.includes('network')) {
@@ -228,15 +202,9 @@ export const WithCustomErrorFormatter: Story = {
 
 export const WithPreSelectedValue: Story = {
   args: {
-    loadOptions: createMockLoadOptions(600),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
     label: 'With pre-selected value',
     description:
-      'Uses initialOptions to provide the pre-selected option for display',
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 300,
+      'Uses initialOptions to provide the pre-selected option for display.',
     initialOptions: [MOCK_USERS[4]], // Charlie Wilson
     value: '5',
   },

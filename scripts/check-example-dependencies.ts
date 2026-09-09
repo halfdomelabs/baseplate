@@ -53,8 +53,7 @@ const UNREVIEWED_REASON = 'TODO: explain why this dependency is unused.';
  * Orders entries deterministically.
  *
  * `compareStrings` from `@baseplate-dev/utils` is the repo convention, but this
- * script runs standalone via `--experimental-strip-types` and does not resolve
- * workspace packages.
+ * script runs standalone and does not resolve workspace packages.
  */
 function compareEntries(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;

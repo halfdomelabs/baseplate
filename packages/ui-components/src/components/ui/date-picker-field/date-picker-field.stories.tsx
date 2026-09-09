@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { createFieldStates } from '#src/stories/field-states.js';
+
 import {
   DatePickerField,
   DatePickerFieldController,
@@ -35,105 +37,62 @@ const meta = {
     dateFormat: 'PPP',
     disabled: false,
   },
+  render: function DatePickerFieldStory(args) {
+    const [date, setDate] = useState<string | null | undefined>(args.value);
+    return <DatePickerField {...args} value={date} onChange={setDate} />;
+  },
 } satisfies Meta<typeof DatePickerField>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: {},
-  render: (args) => {
-    const [date, setDate] = useState<string | null>();
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
-  },
-};
+const states = createFieldStates({
+  label: 'Birth date',
+  description: 'Please select your date of birth.',
+  error: 'Please select a valid date.',
+});
 
-export const WithLabel: Story = {
-  args: {
-    label: 'Select Date',
-  },
-  render: (args) => {
-    const [date, setDate] = useState<string | null>();
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
-  },
+export const Default: Story = { args: states.Default };
+export const WithLabel: Story = { args: states.WithLabel };
+export const WithDescription: Story = { args: states.WithDescription };
+export const DescriptionWithoutLabel: Story = {
+  args: states.DescriptionWithoutLabel,
 };
-
-export const WithDescription: Story = {
-  args: {
-    label: 'Birth Date',
-    description: 'Please select your date of birth',
-  },
-  render: (args) => {
-    const [date, setDate] = useState<string | null>();
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
-  },
-};
-
-export const WithError: Story = {
-  args: {
-    label: 'Due Date',
-    error: 'Please select a valid date',
-  },
-  render: (args) => {
-    const [date, setDate] = useState<string | null>();
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
-  },
-};
-
+export const WithError: Story = { args: states.WithError };
+export const ErrorOnly: Story = { args: states.ErrorOnly };
 export const Disabled: Story = {
-  args: {
-    label: 'Disabled Date',
-    disabled: true,
-  },
-  render: (args) => {
-    const [date, setDate] = useState<string | null>('2024-01-15');
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
-  },
+  args: { ...states.Disabled, value: '2024-01-15' },
+};
+
+export const Preselected: Story = {
+  args: { label: 'Preselected date', value: '2024-01-15' },
 };
 
 export const WithCustomFormat: Story = {
-  args: {
-    label: 'Custom Format',
-    dateFormat: 'MM/dd/yyyy',
-  },
-  render: (args) => {
-    const [date, setDate] = useState<string | null>();
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
-  },
+  args: { label: 'Custom format', dateFormat: 'MM/dd/yyyy' },
 };
 
 export const WithCustomPlaceholder: Story = {
-  args: {
-    label: 'Event Date',
-    placeholder: 'Choose event date',
-  },
-  render: (args) => {
-    const [date, setDate] = useState<string | null>();
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
-  },
+  args: { label: 'Event date', placeholder: 'Choose event date' },
 };
 
 export const WithCalendarProps: Story = {
   args: {
-    label: 'Meeting Date',
+    label: 'Meeting date',
     calendarProps: {
       captionLayout: 'dropdown',
       showOutsideDays: false,
       disabled: { before: new Date() },
     },
   },
-  render: (args) => {
-    const [date, setDate] = useState<string | null>();
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
-  },
 };
 
 export const WithFormController: Story = {
   args: {
-    label: 'Controlled Date',
-    description: 'This example uses react-hook-form integration',
+    label: 'Controlled date',
+    description: 'This example uses react-hook-form integration.',
   },
-  render: (args) => {
+  render: function DatePickerFieldControllerStory(args) {
     const { control, watch } = useForm<{ date: string | undefined }>({
       defaultValues: { date: undefined },
     });
@@ -153,10 +112,10 @@ export const WithFormController: Story = {
 
 export const WithFormValidation: Story = {
   args: {
-    label: 'Required Date',
-    description: 'This field is required',
+    label: 'Required date',
+    description: 'This field is required.',
   },
-  render: (args) => {
+  render: function DatePickerFieldValidationStory(args) {
     const {
       control,
       formState: { errors },
@@ -172,16 +131,5 @@ export const WithFormValidation: Story = {
         error={errors.date?.message}
       />
     );
-  },
-};
-
-export const Preselected: Story = {
-  args: {
-    label: 'Preselected Date',
-    description: 'This field has a default value',
-  },
-  render: (args) => {
-    const [date, setDate] = useState<string | null>('2024-01-15');
-    return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
