@@ -1,0 +1,23 @@
+{
+  "extends": "@baseplate-dev/tools/tsconfig.node.script.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.scripts.tsbuildinfo",
+    /* Relative imports between these scripts resolve `.ts` literally, because
+       Node's type stripping does not rewrite specifiers. */
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    /* DOM is needed alongside the Node libs: the `page.evaluate` callbacks in
+       storybook-snap.ts are shipped to the browser and run there. */
+    "lib": [
+      "ES2024",
+      "ESNext.Array",
+      "ESNext.Collection",
+      "ESNext.Error",
+      "ESNext.Iterator",
+      "ESNext.Promise",
+      "DOM",
+      "DOM.Iterable"
+    ]
+  },
+  "include": ["scripts/**/*"]
+}

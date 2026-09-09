@@ -183,7 +183,13 @@ export const DifferentSizes: Story = {
   ),
 };
 
+/**
+ * Drives itself from a timer, so it renders a different frame on every run.
+ * Tagged out of `storybook:snap`, which would otherwise report it as changed at
+ * random.
+ */
 export const AnimatedProgress: Story = {
+  tags: ['no-snapshot'],
   render: () => {
     const [progress, setProgress] = React.useState(0);
 

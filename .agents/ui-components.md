@@ -141,3 +141,59 @@ const handleDelete = async () => {
   }
 };
 ```
+
+### Visual Regression Checks (Local Only)
+
+When refactoring component styling, capture every story before and after and diff the two
+folders. This is on-demand and local: nothing is committed, no baselines exist, and no CI
+workflow runs it. Both captures must come from the same machine with the same flags, since
+screenshots are platform-specific.
+
+One-time setup: `pnpm exec playwright install chromium`
+
+```sh
+# on main (or a worktree of main)
+pnpm --filter @baseplate-dev/ui-components storybook:snap -- --out /tmp/fields-before
+
+# on the branch
+pnpm --filter @baseplate-dev/ui-components storybook:snap -- --out /tmp/fields-after
+
+pnpm --filter @baseplate-dev/ui-components storybook:snap:diff -- \
+  /tmp/fields-before /tmp/fields-after --open
+```
+
+The diff prints changed / added / removed story ids, exits 1 if any differ, and writes
+`report.html` into the after folder. Attach that report (or the changed-story PNGs) to the PR
+as the evidence for the visual pass. For a pure refactor the expected result is zero changed
+stories.
+
+The report is the review surface, not just a summary: it offers side-by-side, diff overlay,
+onion skin and blink comparison, with `j`/`k` to move between stories and `/` to filter.
+Onion skin and blink are what reveal a small shift — the red diff mask only shows where it
+is. Pass `--inline` to embed the images so the report is a single shareable file.
+
+Useful flags: `--grep <pattern>` limits capture to matching story ids or titles
+(`--grep Field` for a field refactor); `--theme dark` captures the dark palette;
+`--tolerance <n>` sets how many differing pixels a story may have before it counts as
+changed (absolute, default 20, to absorb antialiasing without hiding a 2px gap change).
+
+Two limitations worth knowing:
+
+- **Overlays are only captured when the story opens them.** Dialogs, popovers, tooltips and
+  sheets render into `document.body`; the capture unions that content with `#storybook-root`,
+  so an open overlay is captured in full. But a story that only renders a trigger captures the
+  trigger — nothing opens it. To cover an overlay, give it a story with `defaultOpen`, which
+  is declarative and therefore deterministic. Toasts are fired imperatively and auto-dismiss,
+  so they need their duration pinned in the story before a screenshot means anything.
+- **A story that never holds still must opt out.** Tag it `tags: ['no-snapshot']` and the
+  capture skips it. This is for stories driven by a timer or random data, which render a
+  different frame on every run without changing size, so no settling can make them
+  comparable — `CircularProgress`'s `AnimatedProgress` is the existing example. Do not reach
+  for it to silence a diff you simply have not explained.
+- **Story ids are the join key.** Renaming a story reports it as one removed plus one added,
+  with no pixel comparison between them.
+
+Field components share a canonical seven-state matrix — `Default`, `WithLabel`,
+`WithDescription`, `DescriptionWithoutLabel`, `WithError`, `ErrorOnly`, `Disabled` — built
+from `createFieldStates` in `src/stories/field-states.ts`. Keep those names identical across
+components so a diff of a field refactor stays readable, and put base args in `meta.args`.

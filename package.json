@@ -8,10 +8,10 @@
   "scripts": {
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
-    "changesets:check": "node --experimental-strip-types ./scripts/check-changesets.ts",
+    "changesets:check": "node ./scripts/check-changesets.ts",
     "check": "pnpm oxfmt:fix && pnpm oxlint:fix --type-check && turbo run test --affected --continue --output-logs=errors-only && pnpm run check:common",
     "check:common": "pnpm run knip && pnpm metadata:sync && pnpm versions:fix && echo 'Successfully completed checks!'",
-    "check:example-deps": "node --experimental-strip-types ./scripts/check-example-dependencies.ts",
+    "check:example-deps": "node ./scripts/check-example-dependencies.ts",
     "check:examples": "pnpm start diff-examples --fail-on-differences && pnpm run:examples -- pnpm check && pnpm run check:example-deps",
     "check:full": "pnpm oxfmt:fix && turbo run lint typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common && pnpm turbo run packages:dedupe",
     "clean": "turbo run clean",

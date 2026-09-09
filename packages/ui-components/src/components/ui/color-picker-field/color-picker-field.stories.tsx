@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { useState } from 'react';
 
+import { createFieldStates } from '#src/stories/field-states.js';
+
 import { ColorPickerField } from './color-picker-field.js';
 
 const meta = {
@@ -17,57 +19,33 @@ const meta = {
     placeholder: 'Pick a color',
     disabled: false,
   },
+  render: function ColorPickerFieldStory(args) {
+    const [color, setColor] = useState<string | undefined>(args.value);
+    return <ColorPickerField {...args} value={color} onChange={setColor} />;
+  },
 } satisfies Meta<typeof ColorPickerField>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: {},
-  render: (args) => {
-    const [color, setColor] = useState<string | undefined>();
-    return <ColorPickerField {...args} value={color} onChange={setColor} />;
-  },
-};
+const states = createFieldStates({
+  label: 'Brand color',
+  description: 'Choose a color for your brand identity.',
+  error: 'Color is required.',
+});
 
-export const WithLabel: Story = {
-  args: {
-    label: 'Brand Color',
-  },
-  render: (args) => {
-    const [color, setColor] = useState<string | undefined>();
-    return <ColorPickerField {...args} value={color} onChange={setColor} />;
-  },
+export const Default: Story = { args: states.Default };
+export const WithLabel: Story = { args: states.WithLabel };
+export const WithDescription: Story = { args: states.WithDescription };
+export const DescriptionWithoutLabel: Story = {
+  args: states.DescriptionWithoutLabel,
 };
-
-export const WithError: Story = {
-  args: {
-    label: 'Brand Color',
-    error: 'Color is required',
-  },
-  render: (args) => {
-    const [color, setColor] = useState<string | undefined>();
-    return <ColorPickerField {...args} value={color} onChange={setColor} />;
-  },
-};
-
-export const WithDescription: Story = {
-  args: {
-    label: 'Brand Color',
-    description: 'Choose a color for your brand identity',
-  },
-  render: (args) => {
-    const [color, setColor] = useState<string | undefined>();
-    return <ColorPickerField {...args} value={color} onChange={setColor} />;
-  },
+export const WithError: Story = { args: states.WithError };
+export const ErrorOnly: Story = { args: states.ErrorOnly };
+export const Disabled: Story = {
+  args: { ...states.Disabled, value: '#3b82f6' },
 };
 
 export const Preselected: Story = {
-  args: {
-    label: 'Theme Color',
-  },
-  render: (args) => {
-    const [color, setColor] = useState<string | undefined>('#3b82f6');
-    return <ColorPickerField {...args} value={color} onChange={setColor} />;
-  },
+  args: { label: 'Theme color', value: '#3b82f6' },
 };

@@ -112,8 +112,8 @@ export default {
       ],
     },
     'packages/ui-components': {
-      entry: ['src/index.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
+      entry: ['src/index.{ts,tsx}', 'scripts/*.ts'],
+      project: ['src/**/*.{ts,tsx}', 'scripts/**/*.ts'],
       paths: {
         '#src/*': ['./src/*'],
       },
