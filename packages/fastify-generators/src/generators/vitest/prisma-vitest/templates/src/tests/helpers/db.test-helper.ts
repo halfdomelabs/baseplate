@@ -21,11 +21,8 @@ const CLONE_MAX_ATTEMPTS = 5;
 /**
  * Age past which a run's databases are treated as leaked and reclaimed.
  *
- * Doubles as the concurrency guard: a run started minutes ago is nowhere near
- * the cutoff, so concurrent runs never consider each other's databases. Sized
- * for watch mode, which holds one run id open for as long as it is left
- * running, and which is idle — and so unprotected by the connection check
- * below — between reruns.
+ * A watch-mode run keeps one run id for as long as it is left running and holds
+ * no connections while idle, so the cutoff must outlast any plausible session.
  */
 const STALE_DATABASE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -107,9 +104,8 @@ async function listTestDatabases(client: PrismaClient): Promise<string[]> {
 /**
  * Reports whether any session is connected to one of the given databases.
  *
- * `DROP DATABASE` performs this check atomically for a single database; this
- * one covers a whole namespace at once, so that a run holding just one of its
- * databases open is not reclaimed by halves.
+ * Covers a whole namespace at once, so a run holding just one of its databases
+ * open is not reclaimed by halves.
  */
 async function hasActiveConnections(
   client: PrismaClient,
@@ -149,10 +145,8 @@ function groupStaleDatabasesByRun(databases: string[]): Map<string, string[]> {
  * A namespace is reclaimed whole or not at all: dropping half of one would
  * leave a run with worker databases but no template to restore them from.
  *
- * Reclamation uses a plain `DROP DATABASE`, which Postgres refuses while any
- * session is connected, so a run that is mid-query is never swept. An idle run
- * holds no connections to protect it; keeping those out of range is the TTL's
- * job, not this check's.
+ * The drop omits `WITH (FORCE)`, so Postgres refuses it while another run is
+ * connected.
  *
  * @param databaseUrl Maintenance database URL.
  * @returns Names of the databases dropped.
@@ -197,13 +191,9 @@ export async function dropRunTestDatabases(
   databaseUrl: string,
   runId: string,
 ): Promise<void> {
-  const runDatabasePattern = new RegExp(
-    String.raw`^${TEST_DATABASE_NAME}_${runId}_(?:tpl|\d+)$`,
-  );
-
   await withMaintenanceClient(databaseUrl, async (client) => {
-    const databases = (await listTestDatabases(client)).filter((datname) =>
-      runDatabasePattern.test(datname),
+    const databases = (await listTestDatabases(client)).filter(
+      (datname) => parseTestDatabaseName(datname)?.runId === runId,
     );
 
     for (const datname of databases) {

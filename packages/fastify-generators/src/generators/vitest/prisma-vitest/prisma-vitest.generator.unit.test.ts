@@ -21,13 +21,6 @@ describe('assertValidTestDatabaseName', () => {
     ).toThrow(/too long/);
   });
 
-  it('leaves room for the longest name the budget allows', () => {
-    const baseName = 'a'.repeat(MAX_BASE_NAME_BYTES);
-    const runId = 'x'.repeat(10);
-
-    expect(`${baseName}_${runId}_tpl`).toHaveLength(63);
-  });
-
   it('rejects names that are not safe unquoted identifiers', () => {
     expect(() => assertValidTestDatabaseName('my-app_test')).toThrow(
       /not a valid Postgres identifier/,

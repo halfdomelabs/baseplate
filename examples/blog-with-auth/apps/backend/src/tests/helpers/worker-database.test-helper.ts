@@ -10,12 +10,7 @@ export const TEST_DATABASE_NAME =
 /** Characters appended to the timestamp half of a run id. */
 const RUN_ID_RANDOM_LENGTH = 4;
 
-/**
- * Resolution of a run id's timestamp half.
- *
- * Reclamation works in hours and the whole name has 63 bytes to fit in, so
- * minutes buy three characters over milliseconds at no cost.
- */
+/** Resolution of a run id's timestamp half. */
 const RUN_ID_TIMESTAMP_UNIT_MS = 60_000;
 
 /** Alphabet the random half is drawn from, keeping a run id within `[a-z0-9]`. */
