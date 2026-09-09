@@ -2,6 +2,7 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { itSnapshotsTheFieldMatrix } from '#src/tests/field-matrix.test-helper.js';
 import { renderWithProviders } from '#src/tests/render.test-helper.js';
 
 import { AsyncComboboxField } from './async-combobox-field.js';
@@ -286,4 +287,13 @@ describe('AsyncComboboxField', () => {
       });
     });
   });
+});
+
+describe('AsyncComboboxField DOM structure', () => {
+  itSnapshotsTheFieldMatrix((props) => (
+    <AsyncComboboxField
+      {...props}
+      loadOptions={() => Promise.resolve<MockOption[]>([])}
+    />
+  ));
 });

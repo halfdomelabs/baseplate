@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { itSnapshotsTheFieldMatrix } from '#src/tests/field-matrix.test-helper.js';
 import { renderWithProviders } from '#src/tests/render.test-helper.js';
 
 import { InputField } from './input-field.js';
@@ -79,4 +80,8 @@ describe('InputField', () => {
       'Your full name',
     );
   });
+});
+
+describe('InputField DOM structure', () => {
+  itSnapshotsTheFieldMatrix((props) => <InputField {...props} />);
 });
