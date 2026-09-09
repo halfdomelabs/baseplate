@@ -13,8 +13,9 @@ const dbTestHelper = createTsTemplateFile({
   projectExports: {
     acquireWorkerDatabase: {},
     createTemplateDatabase: {},
-    dropStaleTestDatabases: {},
+    dropRunTestDatabases: {},
     getTestPrisma: {},
+    reclaimStaleTestDatabases: {},
   },
   referencedGeneratorTemplates: { workerDatabaseTestHelper: {} },
   source: {
@@ -76,12 +77,15 @@ const workerDatabaseTestHelper = createTsTemplateFile({
   importMapProviders: {},
   name: 'worker-database-test-helper',
   projectExports: {
-    clearWorkerDatabaseRecords: {},
+    createTestRunId: {},
+    createWorkerMarkerDirectory: {},
     ensureWorkerDatabase: {},
+    getTemplateDatabaseName: {},
     getTemplateDatabaseUrl: {},
     getWorkerDatabaseName: {},
     getWorkerDatabaseUrl: {},
-    TEMPLATE_DATABASE_NAME: {},
+    parseTestDatabaseName: {},
+    removeWorkerMarkerDirectory: {},
     TEST_DATABASE_NAME: {},
   },
   source: {
