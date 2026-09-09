@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { itSnapshotsTheFieldMatrix } from '#src/tests/field-matrix.test-helper.js';
 import { renderWithProviders } from '#src/tests/render.test-helper.js';
 
 import { MultiSwitchField } from './multi-switch-field.js';
@@ -40,4 +41,10 @@ describe('MultiSwitchField', () => {
       'channels',
     );
   });
+});
+
+describe('MultiSwitchField DOM structure', () => {
+  itSnapshotsTheFieldMatrix((props) => (
+    <MultiSwitchField {...props} options={options} />
+  ));
 });

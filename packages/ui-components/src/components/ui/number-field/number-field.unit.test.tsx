@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { describe, expect, it, vi } from 'vitest';
 
+import { itSnapshotsTheFieldMatrix } from '#src/tests/field-matrix.test-helper.js';
 import { renderWithProviders } from '#src/tests/render.test-helper.js';
 
 import { NumberField, NumberFieldController } from './number-field.js';
@@ -141,4 +142,8 @@ describe('NumberField', () => {
 
     errorSpy.mockRestore();
   });
+});
+
+describe('NumberField DOM structure', () => {
+  itSnapshotsTheFieldMatrix((props) => <NumberField {...props} />);
 });

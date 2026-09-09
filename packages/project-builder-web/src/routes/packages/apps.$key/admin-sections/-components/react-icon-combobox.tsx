@@ -15,6 +15,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  useFieldIds,
 } from '@baseplate-dev/ui-components';
 import { useState } from 'react';
 import { useController } from 'react-hook-form';
@@ -37,6 +38,8 @@ function IconPickerField({
   value,
   onChange,
 }: IconPickerFieldProps): React.ReactElement {
+  const { labelProps, controlProps, descriptionProps, errorProps } =
+    useFieldIds({ description, error });
   const [search, setSearch] = useState('');
   const [customValue, setCustomValue] = useState('');
   const [open, setOpen] = useState(false);
@@ -52,15 +55,17 @@ function IconPickerField({
 
   return (
     <Field data-invalid={!!error}>
-      {label ? <FieldLabel>{label}</FieldLabel> : null}
+      {label ? <FieldLabel {...labelProps}>{label}</FieldLabel> : null}
       <div className="flex items-center">
         <Popover open={open} onOpenChange={setOpen}>
           <div className="relative w-full">
             <PopoverTrigger
               render={
                 <Button
+                  {...controlProps}
                   variant="outline"
                   className="h-9 w-full justify-start pr-8"
+                  aria-invalid={!!error}
                 />
               }
             >
@@ -177,8 +182,8 @@ function IconPickerField({
           </PopoverContent>
         </Popover>
       </div>
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }

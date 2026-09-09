@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { itSnapshotsTheFieldMatrix } from '#src/tests/field-matrix.test-helper.js';
 import { renderWithProviders } from '#src/tests/render.test-helper.js';
 
 import { CodeEditorField } from './code-editor-field.js';
@@ -45,4 +46,8 @@ describe('CodeEditorField', () => {
     expect(getContent()).toHaveAccessibleDescription('JSON only Invalid');
     expect(getContent()).toHaveTextContent('{}');
   });
+});
+
+describe('CodeEditorField DOM structure', () => {
+  itSnapshotsTheFieldMatrix((props) => <CodeEditorField {...props} />);
 });
