@@ -25,7 +25,7 @@ export const CORE_PACKAGES = {
 
   // Testing
   vite: '8.2.0',
-  vitest: '4.1.10',
+  vitest: '4.1.11',
 
   // Utils
   axios: '1.18.1',
