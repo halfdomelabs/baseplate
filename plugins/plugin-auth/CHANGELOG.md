@@ -1,5 +1,21 @@
 # @baseplate-dev/plugin-auth
 
+## 0.6.20
+
+### Patch Changes
+
+- Updated dependencies [[`a46af22`](https://github.com/halfdomelabs/baseplate/commit/a46af223affa4b970a2f67f19cccea2db3e267a4), [`e4d40c9`](https://github.com/halfdomelabs/baseplate/commit/e4d40c9478e8359e2bb4bd234d8d5555b4c8878f), [`7ecb3de`](https://github.com/halfdomelabs/baseplate/commit/7ecb3de0d29d4cdf589f675599e8b3087b0a0a15), [`ead8efd`](https://github.com/halfdomelabs/baseplate/commit/ead8efd62f187b87bbd21d6cd749d9edd6adc216), [`ecfe3f1`](https://github.com/halfdomelabs/baseplate/commit/ecfe3f1b8839f351ff7e18e22286a446ecbce688), [`8f84be0`](https://github.com/halfdomelabs/baseplate/commit/8f84be0f95ef67f1c7cf2330bbc10b661e192aa7)]:
+  - @baseplate-dev/react-generators@0.6.20
+  - @baseplate-dev/ui-components@0.6.20
+  - @baseplate-dev/fastify-generators@0.6.20
+  - @baseplate-dev/sync@0.6.20
+  - @baseplate-dev/core-generators@0.6.20
+  - @baseplate-dev/plugin-email@0.6.20
+  - @baseplate-dev/project-builder-lib@0.6.20
+  - @baseplate-dev/plugin-queue@0.6.20
+  - @baseplate-dev/plugin-rate-limit@0.6.20
+  - @baseplate-dev/utils@0.6.20
+
 ## 0.6.19
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @baseplate-dev/plugin-storage
 
+## 0.6.20
+
+### Patch Changes
+
+- [#1049](https://github.com/halfdomelabs/baseplate/pull/1049) [`a46af22`](https://github.com/halfdomelabs/baseplate/commit/a46af223affa4b970a2f67f19cccea2db3e267a4) Thanks [@kingston](https://github.com/kingston)! - Form field descriptions and error messages are now announced by screen readers, radio and multi-switch groups get accessible names, and every field accepts an `id` and `aria-describedby` — including the file upload and icon picker fields, which previously associated nothing. The unused `FormItem`/`FormControl`/`useFormField` primitives have been removed from `@baseplate-dev/ui-components`.
+
+- [#1055](https://github.com/halfdomelabs/baseplate/pull/1055) [`e4d40c9`](https://github.com/halfdomelabs/baseplate/commit/e4d40c9478e8359e2bb4bd234d8d5555b4c8878f) Thanks [@kingston](https://github.com/kingston)! - Vertical form fields now render the description between the label and the control, so a format hint is visible before you type rather than after, and they no longer emit empty label or description elements when those slots are unused. Checkbox and switch fields are unchanged.
+
+- Updated dependencies [[`a46af22`](https://github.com/halfdomelabs/baseplate/commit/a46af223affa4b970a2f67f19cccea2db3e267a4), [`e4d40c9`](https://github.com/halfdomelabs/baseplate/commit/e4d40c9478e8359e2bb4bd234d8d5555b4c8878f), [`7ecb3de`](https://github.com/halfdomelabs/baseplate/commit/7ecb3de0d29d4cdf589f675599e8b3087b0a0a15), [`ead8efd`](https://github.com/halfdomelabs/baseplate/commit/ead8efd62f187b87bbd21d6cd749d9edd6adc216), [`ecfe3f1`](https://github.com/halfdomelabs/baseplate/commit/ecfe3f1b8839f351ff7e18e22286a446ecbce688), [`8f84be0`](https://github.com/halfdomelabs/baseplate/commit/8f84be0f95ef67f1c7cf2330bbc10b661e192aa7)]:
+  - @baseplate-dev/react-generators@0.6.20
+  - @baseplate-dev/ui-components@0.6.20
+  - @baseplate-dev/fastify-generators@0.6.20
+  - @baseplate-dev/sync@0.6.20
+  - @baseplate-dev/core-generators@0.6.20
+  - @baseplate-dev/project-builder-lib@0.6.20
+  - @baseplate-dev/plugin-ai@0.6.20
+  - @baseplate-dev/plugin-queue@0.6.20
+  - @baseplate-dev/utils@0.6.20
+
 ## 0.6.19
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @baseplate-dev/ui-components
 
+## 0.6.20
+
+### Patch Changes
+
+- [#1049](https://github.com/halfdomelabs/baseplate/pull/1049) [`a46af22`](https://github.com/halfdomelabs/baseplate/commit/a46af223affa4b970a2f67f19cccea2db3e267a4) Thanks [@kingston](https://github.com/kingston)! - Form field descriptions and error messages are now announced by screen readers, radio and multi-switch groups get accessible names, and every field accepts an `id` and `aria-describedby` — including the file upload and icon picker fields, which previously associated nothing. The unused `FormItem`/`FormControl`/`useFormField` primitives have been removed from `@baseplate-dev/ui-components`.
+
+- [#1055](https://github.com/halfdomelabs/baseplate/pull/1055) [`e4d40c9`](https://github.com/halfdomelabs/baseplate/commit/e4d40c9478e8359e2bb4bd234d8d5555b4c8878f) Thanks [@kingston](https://github.com/kingston)! - Vertical form fields now render the description between the label and the control, so a format hint is visible before you type rather than after, and they no longer emit empty label or description elements when those slots are unused. Checkbox and switch fields are unchanged.
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.20
+
 ## 0.6.19
 
 ### Patch Changes

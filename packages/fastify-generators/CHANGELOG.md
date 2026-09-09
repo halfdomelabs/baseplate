@@ -1,5 +1,16 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.20
+
+### Patch Changes
+
+- [#1054](https://github.com/halfdomelabs/baseplate/pull/1054) [`7ecb3de`](https://github.com/halfdomelabs/baseplate/commit/7ecb3de0d29d4cdf589f675599e8b3087b0a0a15) Thanks [@kingston](https://github.com/kingston)! - Backend test databases are now namespaced per run, so concurrent test runs against the same Postgres instance no longer drop or reuse each other's databases, and databases left behind by a crashed run are reclaimed on a later startup only once nothing is connected to them. Test code importing `TEMPLATE_DATABASE_NAME`, `dropStaleTestDatabases` or `clearWorkerDatabaseRecords` from the generated helpers needs updating.
+
+- Updated dependencies [[`ead8efd`](https://github.com/halfdomelabs/baseplate/commit/ead8efd62f187b87bbd21d6cd749d9edd6adc216), [`ecfe3f1`](https://github.com/halfdomelabs/baseplate/commit/ecfe3f1b8839f351ff7e18e22286a446ecbce688), [`8f84be0`](https://github.com/halfdomelabs/baseplate/commit/8f84be0f95ef67f1c7cf2330bbc10b661e192aa7)]:
+  - @baseplate-dev/sync@0.6.20
+  - @baseplate-dev/core-generators@0.6.20
+  - @baseplate-dev/utils@0.6.20
+
 ## 0.6.19
 
 ### Patch Changes

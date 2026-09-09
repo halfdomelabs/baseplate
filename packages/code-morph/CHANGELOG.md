@@ -1,5 +1,12 @@
 # @baseplate-dev/code-morph
 
+## 0.6.20
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.20
+
 ## 0.6.19
 
 ### Patch Changes
