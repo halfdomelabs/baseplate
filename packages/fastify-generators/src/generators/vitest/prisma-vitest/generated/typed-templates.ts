@@ -84,7 +84,7 @@ const workerDatabaseTestHelper = createTsTemplateFile({
     getTemplateDatabaseUrl: {},
     getWorkerDatabaseName: {},
     getWorkerDatabaseUrl: {},
-    parseTestDatabaseCreatedAt: {},
+    parseTestDatabaseName: {},
     removeWorkerMarkerDirectory: {},
     TEST_DATABASE_NAME: {},
   },

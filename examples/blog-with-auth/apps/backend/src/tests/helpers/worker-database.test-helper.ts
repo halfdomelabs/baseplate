@@ -75,21 +75,24 @@ export function createTestRunId(): string {
 }
 
 /**
- * Reads the creation time out of a test database's name.
+ * Reads the owning run and creation time out of a test database's name.
  *
  * @param databaseName Database name to inspect.
- * @returns Milliseconds since the epoch, or undefined if not one of ours.
+ * @returns The run id and its creation time in milliseconds since the epoch, or
+ * undefined if the name is not one of ours.
  */
-export function parseTestDatabaseCreatedAt(
+export function parseTestDatabaseName(
   databaseName: string,
-): number | undefined {
+): { runId: string; createdAt: number } | undefined {
   const runId = TEST_DATABASE_PATTERN.exec(databaseName)?.[1];
   if (runId === undefined) return undefined;
 
   // Only the random half is fixed-width, so the timestamp half may grow a
   // character without breaking this parse.
   const minutes = Number.parseInt(runId.slice(0, -RUN_ID_RANDOM_LENGTH), 36);
-  return Number.isNaN(minutes) ? undefined : minutes * RUN_ID_TIMESTAMP_UNIT_MS;
+  if (Number.isNaN(minutes)) return undefined;
+
+  return { runId, createdAt: minutes * RUN_ID_TIMESTAMP_UNIT_MS };
 }
 
 /**

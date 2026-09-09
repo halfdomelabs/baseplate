@@ -4,7 +4,7 @@ import {
   getTemplateDatabaseName,
   getTemplateDatabaseUrl,
   getWorkerDatabaseName,
-  parseTestDatabaseCreatedAt,
+  parseTestDatabaseName,
   TEST_DATABASE_NAME,
 } from '$workerDatabaseTestHelper';
 import { PrismaClient } from '%prismaGeneratedImports';
@@ -22,9 +22,12 @@ const CLONE_MAX_ATTEMPTS = 5;
  * Age past which a run's databases are treated as leaked and reclaimed.
  *
  * Doubles as the concurrency guard: a run started minutes ago is nowhere near
- * the cutoff, so concurrent runs never consider each other's databases.
+ * the cutoff, so concurrent runs never consider each other's databases. Sized
+ * for watch mode, which holds one run id open for as long as it is left
+ * running, and which is idle — and so unprotected by the connection check
+ * below — between reruns.
  */
-const STALE_DATABASE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const STALE_DATABASE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 /** Postgres SQLSTATE raised when a database still has sessions connected. */
 const OBJECT_IN_USE_SQLSTATE = '55006';
@@ -102,11 +105,54 @@ async function listTestDatabases(client: PrismaClient): Promise<string[]> {
 }
 
 /**
+ * Reports whether any session is connected to one of the given databases.
+ *
+ * `DROP DATABASE` performs this check atomically for a single database; this
+ * one covers a whole namespace at once, so that a run holding just one of its
+ * databases open is not reclaimed by halves.
+ */
+async function hasActiveConnections(
+  client: PrismaClient,
+  databases: string[],
+): Promise<boolean> {
+  const rows = await client.$queryRaw<{ inUse: boolean }[]>`
+    SELECT EXISTS (
+      SELECT 1 FROM pg_stat_activity WHERE datname = ANY(${databases})
+    ) AS "inUse"
+  `;
+  return rows[0]?.inUse ?? false;
+}
+
+/**
+ * Groups the databases of runs that are past the reclamation cutoff by run id.
+ */
+function groupStaleDatabasesByRun(databases: string[]): Map<string, string[]> {
+  const staleByRun = new Map<string, string[]>();
+
+  for (const datname of databases) {
+    const parsed = parseTestDatabaseName(datname);
+    if (!parsed) continue;
+    if (Date.now() - parsed.createdAt <= STALE_DATABASE_MAX_AGE_MS) continue;
+
+    staleByRun.set(parsed.runId, [
+      ...(staleByRun.get(parsed.runId) ?? []),
+      datname,
+    ]);
+  }
+
+  return staleByRun;
+}
+
+/**
  * Drops the databases of runs that ended without cleaning up after themselves.
  *
+ * A namespace is reclaimed whole or not at all: dropping half of one would
+ * leave a run with worker databases but no template to restore them from.
+ *
  * Reclamation uses a plain `DROP DATABASE`, which Postgres refuses while any
- * session is connected: that check is what keeps a long-lived run — watch mode
- * left open for days — from being swept by a run starting alongside it.
+ * session is connected, so a run that is mid-query is never swept. An idle run
+ * holds no connections to protect it; keeping those out of range is the TTL's
+ * job, not this check's.
  *
  * @param databaseUrl Maintenance database URL.
  * @returns Names of the databases dropped.
@@ -115,27 +161,26 @@ export async function reclaimStaleTestDatabases(
   databaseUrl: string,
 ): Promise<string[]> {
   return withMaintenanceClient(databaseUrl, async (client) => {
-    const staleDatabases = (await listTestDatabases(client)).filter(
-      (datname) => {
-        const createdAt = parseTestDatabaseCreatedAt(datname);
-        return (
-          createdAt !== undefined &&
-          Date.now() - createdAt > STALE_DATABASE_MAX_AGE_MS
-        );
-      },
+    const staleByRun = groupStaleDatabasesByRun(
+      await listTestDatabases(client),
     );
 
     const dropped: string[] = [];
-    for (const datname of staleDatabases) {
-      try {
-        await client.$executeRawUnsafe(
-          `DROP DATABASE IF EXISTS ${quoteIdentifier(datname)}`,
-        );
-        dropped.push(datname);
-      } catch (error) {
-        // Still in use, so its run is alive; the next run tries again.
-        if (isDatabaseInUseError(error)) continue;
-        console.warn(`Failed to reclaim test database ${datname}:`, error);
+    for (const databases of staleByRun.values()) {
+      if (await hasActiveConnections(client, databases)) continue;
+
+      for (const datname of databases) {
+        try {
+          await client.$executeRawUnsafe(
+            `DROP DATABASE IF EXISTS ${quoteIdentifier(datname)}`,
+          );
+          dropped.push(datname);
+        } catch (error) {
+          // A session opened since the check above, so the run is alive after
+          // all; leave the rest of its namespace for the next run to reclaim.
+          if (isDatabaseInUseError(error)) break;
+          console.warn(`Failed to reclaim test database ${datname}:`, error);
+        }
       }
     }
     return dropped;
