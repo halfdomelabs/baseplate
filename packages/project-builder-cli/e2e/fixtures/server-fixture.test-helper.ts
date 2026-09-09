@@ -6,6 +6,7 @@ import type { BuilderServiceManager } from '@baseplate-dev/project-builder-serve
 import type { FastifyInstance } from 'fastify';
 
 import { getLatestMigrationVersion } from '@baseplate-dev/project-builder-lib';
+import { generateProjectId } from '@baseplate-dev/project-builder-server/actions';
 import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { test as base } from '@playwright/test';
 import fs from 'node:fs/promises';
@@ -115,6 +116,14 @@ interface ProjectPayload {
   ) => Promise<void>;
 }
 
+/**
+ * Distinguishes projects created within a single worker process. Combined with
+ * the run-unique `workerIndex`, it gives every project its own directory — and
+ * so, via `generateProjectId`, its own service id — with no sharing between
+ * tests.
+ */
+let projectCounter = 0;
+
 // Extend the base Playwright test with our fixture
 export const test = base.extend<
   {
@@ -160,21 +169,18 @@ export const test = base.extend<
     },
     { scope: 'worker' },
   ],
-  addProject: async ({ server }, use, { parallelIndex }) => {
-    const temporaryDirectory = path.join(
-      os.tmpdir(),
-      `baseplate-test-${parallelIndex}`,
-    );
-    let projectIdx = 0;
+  addProject: async ({ server }, use, { workerIndex }) => {
+    const createdProjects: { id: string; directory: string }[] = [];
     try {
       await use(
         async (projectDefinition: ProjectDefinitionInput | undefined) => {
-          // Generate a unique temp directory for this test run
+          // Each project gets its own directory so an abandoned teardown from an
+          // earlier test can never remove a later test's files or service.
           const tempDir = path.join(
-            temporaryDirectory,
-            `project-${projectIdx}`,
+            os.tmpdir(),
+            `baseplate-test-${workerIndex}-${projectCounter}`,
           );
-          projectIdx++;
+          projectCounter++;
 
           // Delete the temp directory if it exists
           try {
@@ -241,14 +247,17 @@ export const test = base.extend<
             await writeProjectDefinition(projectDefinition);
           }
 
-          // Add service to the server
+          // Add service to the server, deriving the id from the directory the
+          // same way project discovery does for real projects.
+          const projectId = generateProjectId(tempDir);
           const service = server.builderServiceManager.addService({
-            id: 'test-project',
+            id: projectId,
             directory: tempDir,
             name: 'test-project',
             type: 'user',
             baseplateDirectory: path.join(tempDir, 'baseplate'),
           });
+          createdProjects.push({ id: projectId, directory: tempDir });
 
           return {
             id: service.id,
@@ -261,18 +270,25 @@ export const test = base.extend<
         },
       );
     } finally {
-      // Remove all services from the server
-      await server.builderServiceManager.removeAllServices();
-
-      // Clean up the temp directory
-      try {
-        await fs.rm(temporaryDirectory, { recursive: true, force: true });
-      } catch (err) {
-        console.warn(
-          `Failed to clean up temp directory: ${temporaryDirectory}`,
-          err,
-        );
-      }
+      // Only tear down what this test created, and never let a teardown failure
+      // mask the test's own failure.
+      await Promise.all(
+        createdProjects.map(async ({ id, directory }) => {
+          await server.builderServiceManager
+            .removeService(id)
+            .catch((err: unknown) => {
+              console.warn(`Failed to remove service ${id}: ${String(err)}`);
+            });
+          await fs
+            .rm(directory, { recursive: true, force: true })
+            .catch((err: unknown) => {
+              console.warn(
+                `Failed to clean up temp directory: ${directory}`,
+                err,
+              );
+            });
+        }),
+      );
     }
   },
   addInitializedProject: async ({ addProject }, use) => {

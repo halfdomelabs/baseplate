@@ -50,19 +50,22 @@ export class BuilderServiceManager {
     return [...this.services.values()];
   }
 
+  // Both removals detach from the map before awaiting close(): a close that is
+  // slow or abandoned must not delete a service re-registered under the same id
+  // in the meantime.
+
   async removeService(id: string): Promise<void> {
     const service = this.services.get(id);
     if (!service) {
       throw new Error(`Service with id ${id} not found`);
     }
-    await service.close();
     this.services.delete(id);
+    await service.close();
   }
 
   async removeAllServices(): Promise<void> {
-    await Promise.all(
-      [...this.services.values()].map((service) => service.close()),
-    );
+    const services = [...this.services.values()];
     this.services.clear();
+    await Promise.all(services.map((service) => service.close()));
   }
 }

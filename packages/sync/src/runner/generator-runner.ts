@@ -1,6 +1,7 @@
 import { enhanceErrorWithContext, mapGroupBy } from '@baseplate-dev/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
+import { throwIfSyncCancelled } from '#src/errors.js';
 import { sortTaskPhases } from '#src/phases/sort-task-phases.js';
 import { findDuplicates } from '#src/utils/find-duplicates.js';
 import { safeMergeMap } from '#src/utils/merge.js';
@@ -32,6 +33,7 @@ import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
  */
 interface ExecuteGeneratorEntryOptions {
   templateMetadataOptions?: TemplateMetadataOptions;
+  abortSignal?: AbortSignal;
 }
 
 /**
@@ -39,7 +41,7 @@ interface ExecuteGeneratorEntryOptions {
  */
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
-  { templateMetadataOptions }: ExecuteGeneratorEntryOptions = {},
+  { templateMetadataOptions, abortSignal }: ExecuteGeneratorEntryOptions = {},
 ): Promise<GeneratorOutput> {
   const { taskEntries, phases } =
     flattenGeneratorTaskEntriesAndPhases(rootEntry);
@@ -89,6 +91,10 @@ export async function executeGeneratorEntry(
       if (taskId === undefined) {
         throw new Error(`Invalid run step: ${runStep}`);
       }
+      // Checked outside the try: the catch below rewraps everything with
+      // enhanceErrorWithContext, which would strip the CancelledSyncError type
+      // that callers use to tell a cancelled sync from a failed one.
+      throwIfSyncCancelled(abortSignal);
       try {
         const entry = taskEntriesById[taskId];
         if (!entry) {

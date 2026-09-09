@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { CancelledSyncError } from '#src/errors.js';
 import { executeCommand } from '#src/utils/exec.js';
 
 import type { PostWriteCommand } from './types.js';
@@ -92,5 +93,45 @@ describe('runPostWriteCommands', () => {
       cwd: '/root',
       timeout: 600_000,
     });
+  });
+  it('throws CancelledSyncError instead of running remaining commands when aborted', async () => {
+    const abortController = new AbortController();
+    abortController.abort();
+
+    await expect(
+      runPostWriteCommands(
+        [{ command: 'pnpm install' }],
+        '/test/output',
+        mockLogger,
+        abortController.signal,
+      ),
+    ).rejects.toBeInstanceOf(CancelledSyncError);
+
+    expect(executeCommandMock).not.toHaveBeenCalled();
+  });
+
+  it('reports a command killed by the abort signal as cancelled, not failed', async () => {
+    const abortController = new AbortController();
+    // Mirrors execa's `reject: false` behaviour: a killed command resolves to a
+    // failed result rather than throwing.
+    executeCommandMock.mockImplementation(() => {
+      abortController.abort();
+      return Promise.resolve({ failed: true, exitCode: 1, output: 'killed' });
+    });
+
+    await expect(
+      runPostWriteCommands(
+        [{ command: 'pnpm install' }, { command: 'pnpm build' }],
+        '/test/output',
+        mockLogger,
+        abortController.signal,
+      ),
+    ).rejects.toBeInstanceOf(CancelledSyncError);
+
+    // The second command must never start.
+    expect(executeCommandMock).toHaveBeenCalledTimes(1);
+    // The kill is a cancellation, so it must not be surfaced to the user as a
+    // command failure.
+    expect(mockLogger.error).not.toHaveBeenCalled();
   });
 });

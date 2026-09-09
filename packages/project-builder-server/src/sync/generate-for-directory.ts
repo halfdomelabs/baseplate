@@ -5,7 +5,7 @@ import type {
   TemplateMetadataOptions,
 } from '@baseplate-dev/sync';
 
-import { CancelledSyncError, loadIgnorePatterns } from '@baseplate-dev/sync';
+import { loadIgnorePatterns, throwIfSyncCancelled } from '@baseplate-dev/sync';
 import { randomKey } from '@baseplate-dev/utils';
 import chalk from 'chalk';
 import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
@@ -65,9 +65,10 @@ export async function generateForDirectory({
   const project = await operations.buildGeneratorEntry(generatorBundle);
   const output = await operations.executeGeneratorEntry(project, {
     templateMetadataOptions: writeTemplateMetadataOptions,
+    abortSignal,
   });
 
-  if (abortSignal?.aborted) throw new CancelledSyncError();
+  throwIfSyncCancelled(abortSignal);
 
   const resolvedBaseplateDir = resolveBaseplateDir(
     baseDirectory,
