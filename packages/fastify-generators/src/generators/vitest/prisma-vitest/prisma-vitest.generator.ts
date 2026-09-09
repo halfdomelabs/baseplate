@@ -24,8 +24,17 @@ const descriptorSchema = z.object({});
 /** Longest identifier Postgres stores without silently truncating (bytes). */
 const POSTGRES_MAX_IDENTIFIER_BYTES = 63;
 
-/** Reserved for the `_template` suffix appended to the base test database name. */
-const TEMPLATE_SUFFIX_BYTES = '_template'.length;
+/**
+ * Bytes reserved for the run id every test database name is namespaced by.
+ *
+ * `createTestRunId` in the worker helper emits 9 characters — a base-36 minute
+ * timestamp followed by 4 random ones — so this leaves the timestamp half room
+ * to grow.
+ */
+const RUN_ID_RESERVED_BYTES = 10;
+
+/** Reserved for the `_<runId>_tpl` suffix appended to the base name. */
+const NAME_SUFFIX_BYTES = 1 + RUN_ID_RESERVED_BYTES + '_tpl'.length;
 
 /**
  * Cap on parallel Vitest workers for DB-backed runs. Each worker clones its own
@@ -47,22 +56,22 @@ const DB_BACKED_TEST_TIMEOUT_MS = 15_000;
  *
  * The name is interpolated into `CREATE`/`DROP DATABASE` in the generated test
  * helper, so it must be a safe unquoted identifier. It must also leave room for
- * the `_template` suffix within Postgres's 63-byte limit, or two workers would
- * alias onto one truncated database.
+ * the `_<runId>_tpl` suffix within Postgres's 63-byte limit, or two runs
+ * would alias onto one truncated database.
  *
  * @param baseName Base database name (package name with hyphens replaced).
  * @returns The validated name, unchanged.
  */
-function assertValidTestDatabaseName(baseName: string): string {
+export function assertValidTestDatabaseName(baseName: string): string {
   if (!/^[a-z_][a-z0-9_]*$/.test(baseName)) {
     throw new Error(
       `Test database name "${baseName}" is not a valid Postgres identifier. Expected only lowercase letters, digits and underscores.`,
     );
   }
-  const maxBaseBytes = POSTGRES_MAX_IDENTIFIER_BYTES - TEMPLATE_SUFFIX_BYTES;
+  const maxBaseBytes = POSTGRES_MAX_IDENTIFIER_BYTES - NAME_SUFFIX_BYTES;
   if (Buffer.byteLength(baseName) > maxBaseBytes) {
     throw new Error(
-      `Test database name "${baseName}" is too long (${Buffer.byteLength(baseName)} bytes); must be at most ${maxBaseBytes} bytes to leave room for the "_template" suffix.`,
+      `Test database name "${baseName}" is too long (${Buffer.byteLength(baseName)} bytes); must be at most ${maxBaseBytes} bytes to leave room for the "_<runId>_tpl" suffix.`,
     );
   }
   return baseName;
