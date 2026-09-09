@@ -1,14 +1,8 @@
-/**
- * Renders the `report.html` that a human reviews after `storybook:snap:diff`.
- *
- * A red diff mask is poor at showing a two-pixel shift, which is exactly the
- * kind of change these refactors produce — so the report also offers onion-skin
- * and blink comparison, which is where the eye actually catches it.
- */
+/** Renders the `report.html` that a human reviews after `storybook:snap:diff`. */
 
 import type { SnapManifest } from './snap-shared.ts';
 
-export type StoryStatus = 'changed' | 'added' | 'removed';
+type StoryStatus = 'changed' | 'added' | 'removed';
 
 export interface ReportStory {
   id: string;

@@ -49,11 +49,6 @@ const DEVICE_SCALE_FACTOR = 2;
 const FIXED_TIME = Date.UTC(2026, 0, 15, 12, 0, 0);
 
 /**
- * Kills anything that would make two captures of the same commit disagree:
- * in-flight transitions, the text caret, and the focus ring left behind by
- * Storybook's own autofocus.
- */
-/**
  * Opt-out for stories that never hold still. A story driving itself from a
  * timer (`CircularProgress`'s `AnimatedProgress` cycles every 500ms) renders a
  * different frame on every run without ever changing size, so no amount of
@@ -66,6 +61,11 @@ const SETTLE_POLL_MS = 50;
 const SETTLE_STABLE_READS = 8;
 const SETTLE_MAX_READS = 60;
 
+/**
+ * Kills anything that would make two captures of the same commit disagree:
+ * in-flight transitions, the text caret, and the focus ring left behind by
+ * Storybook's own autofocus.
+ */
 const FREEZE_CSS = `
   *, *::before, *::after {
     transition-duration: 0s !important;
@@ -372,16 +372,12 @@ function clampToViewport(rect: Rect): Rect | null {
   return { x, y, width: right - x, height: bottom - y };
 }
 
-async function captureStory(
-  page: Page,
-  origin: string,
-  theme: 'light' | 'dark',
-  story: StoryEntry,
-  outDir: string,
-): Promise<void> {
-  const url = `${origin}/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story&globals=theme:${theme}`;
-  await page.goto(url, { waitUntil: 'load', timeout: 60_000 });
-
+/**
+ * Storybook mounts the story asynchronously after `load`, so a render error can
+ * surface either side of the settle wait. Its display is positioned, which the
+ * capture region would otherwise measure as story content.
+ */
+async function throwIfStoryErrored(page: Page): Promise<void> {
   const errorText = await page
     .locator('#error-message')
     .textContent({ timeout: 500 })
@@ -391,9 +387,22 @@ async function captureStory(
       `story failed to render: ${errorText.trim().split('\n')[0]}`,
     );
   }
+}
+
+async function captureStory(
+  page: Page,
+  origin: string,
+  theme: 'light' | 'dark',
+  story: StoryEntry,
+  outDir: string,
+): Promise<void> {
+  const url = `${origin}/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story&globals=theme:${theme}`;
+  await page.goto(url, { waitUntil: 'load', timeout: 60_000 });
+  await throwIfStoryErrored(page);
 
   await page.addStyleTag({ content: FREEZE_CSS });
   const region = await waitForStorySettled(page);
+  await throwIfStoryErrored(page);
   const target = path.join(outDir, storyIdToFilename(story.id));
 
   // Portalled content is clipped in viewport coordinates, since overlays are

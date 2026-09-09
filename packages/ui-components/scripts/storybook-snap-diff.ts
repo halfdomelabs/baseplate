@@ -33,11 +33,7 @@ import {
 const ASSET_DIR = 'report-assets';
 const REPORT_FILENAME = 'report.html';
 
-/**
- * An absolute pixel budget, not a ratio: a ratio scales with the image, so it
- * would swallow a two-pixel gap change on a small field while still flagging
- * antialiasing noise on a large one.
- */
+/** Absolute differing-pixel budget, not a ratio. */
 const DEFAULT_TOLERANCE = 20;
 
 interface CliOptions {
@@ -205,9 +201,7 @@ function comparePngs(beforeRaw: Buffer, afterRaw: Buffer): Comparison {
 
 /**
  * Copies the reported PNGs into `report-assets/` and returns their relative
- * hrefs, or base64 data URLs under `--inline`. Copying rather than pointing at
- * the two source folders keeps the report from depending on `../` paths that
- * break the moment either folder moves.
+ * hrefs, or base64 data URLs under `--inline`.
  */
 class AssetWriter {
   readonly #dir: string;

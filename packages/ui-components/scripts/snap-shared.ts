@@ -41,10 +41,6 @@ export const COMPARABLE_MANIFEST_KEYS = [
   'deviceScaleFactor',
 ] as const;
 
-export function describeViewport(manifest: SnapManifest): string {
-  return `${manifest.viewport.width}x${manifest.viewport.height} @${manifest.deviceScaleFactor}x`;
-}
-
 /** Story ids are already lowercase and dash-separated, but never trust them as paths. */
 export function storyIdToFilename(storyId: string): string {
   return `${storyId.replaceAll(/[^a-z0-9-]/gi, '_')}.png`;
@@ -164,7 +160,7 @@ export function dim(message: string): string {
  * as opposed to a real visual difference. The entry scripts report these on
  * stderr and exit 2, keeping exit 1 to mean "there are changed stories".
  */
-export class SnapError extends Error {
+class SnapError extends Error {
   override name = 'SnapError';
 }
 

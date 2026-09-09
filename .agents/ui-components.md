@@ -177,7 +177,7 @@ Useful flags: `--grep <pattern>` limits capture to matching story ids or titles
 `--tolerance <n>` sets how many differing pixels a story may have before it counts as
 changed (absolute, default 20, to absorb antialiasing without hiding a 2px gap change).
 
-Two limitations worth knowing:
+Three limitations worth knowing:
 
 - **Overlays are only captured when the story opens them.** Dialogs, popovers, tooltips and
   sheets render into `document.body`; the capture unions that content with `#storybook-root`,
