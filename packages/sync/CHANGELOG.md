@@ -1,5 +1,16 @@
 # @baseplate-dev/sync
 
+## 0.6.20
+
+### Patch Changes
+
+- [#1051](https://github.com/halfdomelabs/baseplate/pull/1051) [`ead8efd`](https://github.com/halfdomelabs/baseplate/commit/ead8efd62f187b87bbd21d6cd749d9edd6adc216) Thanks [@kingston](https://github.com/kingston)! - Generated files are now formatted against the stylesheet the same sync produces, so introducing a Tailwind utility and its first usage together no longer leaves classes mis-sorted and failing `prettier --check` in sync, diff or snapshot output. Formatting also re-runs after a sync installs dependencies, so upgrading prettier or its plugins no longer leaves generated code formatted by the version being replaced.
+
+- [#1057](https://github.com/halfdomelabs/baseplate/pull/1057) [`ecfe3f1`](https://github.com/halfdomelabs/baseplate/commit/ecfe3f1b8839f351ff7e18e22286a446ecbce688) Thanks [@kingston](https://github.com/kingston)! - Cancelling a sync now stops at the next generator task or file instead of running the current app to completion, and a sync cancelled while post-write commands are running is reported as cancelled rather than as failed commands.
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.20
+
 ## 0.6.19
 
 ### Patch Changes
