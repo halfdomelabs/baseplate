@@ -21,6 +21,7 @@ interface SyncFileOptions {
   fileGlobs: string[];
   writeTemplateMetadataOptions?: TemplateMetadataOptions;
   operations?: GeneratorOperations;
+  abortSignal?: AbortSignal;
 }
 
 interface SyncFileResult {
@@ -44,6 +45,7 @@ export async function syncFile({
   fileGlobs,
   writeTemplateMetadataOptions,
   operations = DEFAULT_GENERATOR_OPERATIONS,
+  abortSignal,
 }: SyncFileOptions): Promise<SyncFileResult> {
   const { packageDirectory, name, generatorBundle } = appEntry;
   const projectDirectory = path.join(baseDirectory, packageDirectory);
@@ -54,6 +56,7 @@ export async function syncFile({
   const project = await operations.buildGeneratorEntry(generatorBundle);
   const output = await operations.executeGeneratorEntry(project, {
     templateMetadataOptions: writeTemplateMetadataOptions,
+    abortSignal,
   });
 
   logger.info(`Generator output contains ${output.files.size} files`);

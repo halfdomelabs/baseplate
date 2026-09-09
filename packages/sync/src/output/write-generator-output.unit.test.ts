@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { CancelledSyncError } from '#src/errors.js';
 import { createTestLogger } from '#src/tests/logger.test-utils.js';
 import { executeCommand } from '#src/utils/exec.js';
 
@@ -470,5 +471,64 @@ describe('writeGeneratorOutput', () => {
       'pnpm install',
       'prettier --write .',
     ]);
+  });
+  it('cancels before preparing files when already aborted', async () => {
+    vol.fromJSON({ [outputDirectory]: null });
+    const abortController = new AbortController();
+    abortController.abort();
+
+    const output: GeneratorOutput = {
+      files: new Map([
+        ['test.txt', { id: 'test-1', contents: 'test content' }],
+      ]),
+      globalFormatters: [],
+      postWriteCommands: [{ command: 'echo "test"', options: {} }],
+    };
+
+    await expect(
+      writeGeneratorOutput(output, outputDirectory, {
+        logger,
+        abortSignal: abortController.signal,
+      }),
+    ).rejects.toBeInstanceOf(CancelledSyncError);
+
+    expect(mockedExecuteCommand).not.toHaveBeenCalled();
+    expect(vol.existsSync(`${outputDirectory}/test.txt`)).toBe(false);
+  });
+
+  it('cancels without running post-write commands when aborted during preparation', async () => {
+    vol.fromJSON({ [outputDirectory]: null });
+    const abortController = new AbortController();
+    mockedExecuteCommand.mockResolvedValue({
+      failed: false,
+      exitCode: 0,
+      output: 'success',
+    });
+
+    const output: GeneratorOutput = {
+      files: new Map([
+        ['test.txt', { id: 'test-1', contents: 'test content' }],
+      ]),
+      globalFormatters: [
+        {
+          name: 'aborting-formatter',
+          fileExtensions: ['.txt'],
+          format: (contents) => {
+            abortController.abort();
+            return contents;
+          },
+        },
+      ],
+      postWriteCommands: [{ command: 'echo "test"', options: {} }],
+    };
+
+    await expect(
+      writeGeneratorOutput(output, outputDirectory, {
+        logger,
+        abortSignal: abortController.signal,
+      }),
+    ).rejects.toBeInstanceOf(CancelledSyncError);
+
+    expect(mockedExecuteCommand).not.toHaveBeenCalled();
   });
 });

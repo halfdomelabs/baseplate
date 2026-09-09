@@ -56,11 +56,6 @@ test('can initialize a project with the default plugin stack', async ({
     page.getByRole('heading', { name: 'Welcome to Baseplate' }),
   ).toBeVisible();
 
-  // The wizard should not leave a "Pending Changes" warning — required plugin
-  // models must be seeded inline (rate-limit's RateLimiterFlexible, auth's
-  // User/UserAccount/UserSession, etc.) so the project is fully synced.
-  await expect(page.getByText('Pending Changes')).toHaveCount(0);
-
   const projectDefinition = await readProjectDefinition();
   expect(projectDefinition.isInitialized).toBe(true);
   expect(projectDefinition.settings.general.name).toBe('full-stack-project');
@@ -87,8 +82,11 @@ test('can initialize a project with the default plugin stack', async ({
   );
   expect(pluginPackages).toContain('@baseplate-dev/plugin-ai:dev-agents');
 
-  // Required models for the seeded plugins must exist on the saved definition.
+  // The enabled plugins must seed their required models inline, in the same
+  // save, so the wizard leaves no definition warnings behind.
   const modelNames = projectDefinition.models.map((model) => model.name);
   expect(modelNames).toContain('RateLimiterFlexible');
   expect(modelNames).toContain('User');
+  expect(modelNames).toContain('UserAccount');
+  expect(modelNames).toContain('UserSession');
 });

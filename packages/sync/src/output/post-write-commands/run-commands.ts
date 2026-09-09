@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
+import { CancelledSyncError, throwIfSyncCancelled } from '#src/errors.js';
 import { executeCommand } from '#src/utils/exec.js';
 
 import type { PostWriteCommand } from './types.js';
@@ -40,19 +41,21 @@ export async function runPostWriteCommands(
 
     const commandString = command.command;
 
+    throwIfSyncCancelled(abortSignal);
+
     logger.info(`Running ${commandString}...`);
 
     try {
-      if (abortSignal?.aborted) {
-        throw new Error('Sync cancelled');
-      }
-
       const result = await executeCommand(commandString, {
         cwd: path.join(outputDirectory, workingDirectory),
         timeout: command.options?.timeout ?? COMMAND_TIMEOUT_MILLIS,
         env: command.options?.env,
         abortSignal,
       });
+
+      // executeCommand runs execa with `reject: false`, so a command killed by
+      // the abort signal comes back as a failed result rather than a throw.
+      throwIfSyncCancelled(abortSignal);
 
       if (result.failed) {
         logger.error(
@@ -68,6 +71,7 @@ export async function runPostWriteCommands(
         });
       }
     } catch (error) {
+      if (error instanceof CancelledSyncError) throw error;
       logger.error(
         chalk.red(`${commandString} failed to run: ${String(error)}`),
       );

@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
+import { CancelledSyncError } from '#src/errors.js';
 import { createTestLogger } from '#src/tests/logger.test-utils.js';
 
 import type { FileData } from '../generator-task-output.js';
@@ -124,5 +125,29 @@ describe('prepareGeneratorFiles', () => {
     expect(file2Result?.generatedContents).toEqual(
       Buffer.from('test contents'),
     );
+  });
+  it('throws CancelledSyncError without preparing files when aborted', async () => {
+    const format = vi.fn((contents: string) => contents);
+    const files = new Map([
+      ['file1.txt', createMockFileData()],
+      ['file2.txt', createMockFileData()],
+    ]);
+    const abortController = new AbortController();
+    abortController.abort();
+
+    const promise = prepareGeneratorFiles({
+      files,
+      context: createMockContext({
+        formatters: [
+          { name: 'test-formatter', fileExtensions: ['.txt'], format },
+        ],
+      }),
+      abortSignal: abortController.signal,
+    });
+
+    // Not wrapped in a PrepareGeneratorFilesError: callers distinguish a
+    // cancelled sync from a failed one by the error type.
+    await expect(promise).rejects.toBeInstanceOf(CancelledSyncError);
+    expect(format).not.toHaveBeenCalled();
   });
 });

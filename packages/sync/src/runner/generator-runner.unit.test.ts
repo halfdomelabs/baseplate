@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { GeneratorTaskOutputBuilder } from '#src/output/generator-task-output.js';
 import type { TaskPhase } from '#src/phases/types.js';
 
+import { CancelledSyncError } from '#src/errors.js';
 import { POST_WRITE_COMMAND_PRIORITY } from '#src/output/post-write-commands/types.js';
 
 import type {
@@ -707,5 +708,37 @@ describe('executeGeneratorEntry', () => {
       },
     });
     expect(outputProvider.generate).toHaveBeenCalled();
+  });
+
+  it('stops running tasks once the abort signal fires', async () => {
+    const run = vi.fn();
+    const build = vi.fn();
+    const entry = buildGeneratorEntry({ run, build });
+    const abortController = new AbortController();
+    abortController.abort();
+
+    await expect(
+      executeGeneratorEntry(entry, { abortSignal: abortController.signal }),
+    ).rejects.toBeInstanceOf(CancelledSyncError);
+
+    expect(run).not.toHaveBeenCalled();
+    expect(build).not.toHaveBeenCalled();
+  });
+
+  it('stops at the next step when aborted mid-run', async () => {
+    const abortController = new AbortController();
+    const build = vi.fn();
+    const entry = buildGeneratorEntry({
+      run: () => {
+        abortController.abort();
+      },
+      build,
+    });
+
+    await expect(
+      executeGeneratorEntry(entry, { abortSignal: abortController.signal }),
+    ).rejects.toBeInstanceOf(CancelledSyncError);
+
+    expect(build).not.toHaveBeenCalled();
   });
 });

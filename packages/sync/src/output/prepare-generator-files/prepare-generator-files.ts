@@ -1,5 +1,6 @@
 import pLimit from 'p-limit';
 
+import { throwIfSyncCancelled } from '#src/errors.js';
 import { getGenerationConcurrencyLimit } from '#src/utils/concurrency.js';
 
 import type { FileData } from '../generator-task-output.js';
@@ -23,6 +24,10 @@ interface PrepareGeneratorFilesInput {
    * Context for the generator output file writer
    */
   context: GeneratorOutputFileWriterContext;
+  /**
+   * Signal that stops preparing further files when aborted
+   */
+  abortSignal?: AbortSignal;
 }
 
 /**
@@ -48,20 +53,27 @@ interface PrepareGeneratorFilesResult {
 export async function prepareGeneratorFiles({
   files,
   context,
+  abortSignal,
 }: PrepareGeneratorFilesInput): Promise<PrepareGeneratorFilesResult> {
   const writeLimit = pLimit(getGenerationConcurrencyLimit());
   const fileResults = await Promise.all(
     Array.from(files.entries(), ([filename, file]) =>
-      writeLimit(() =>
-        prepareGeneratorFile({
+      writeLimit(() => {
+        // Checked outside the catch below so a cancellation propagates as a
+        // CancelledSyncError instead of being bundled into
+        // PrepareGeneratorFilesError. Files still queued behind the concurrency
+        // limit never start; the few already in flight run to completion, since
+        // prettier's format() takes no signal.
+        throwIfSyncCancelled(abortSignal);
+        return prepareGeneratorFile({
           relativePath: filename,
           data: file,
           context,
         }).catch((err: unknown) => ({
           relativePath: filename,
           cause: err,
-        })),
-      ),
+        }));
+      }),
     ),
   );
 

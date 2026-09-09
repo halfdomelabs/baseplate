@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
-import { CancelledSyncError } from '#src/errors.js';
+import { throwIfSyncCancelled } from '#src/errors.js';
 
 import type { GeneratorOutput } from './generator-task-output.js';
 import type { FailedCommandInfo } from './post-write-commands/index.js';
@@ -152,10 +152,11 @@ export async function writeGeneratorOutput(
         prepareGeneratorFiles({
           files: output.files,
           context: { ...fileWriterContext, materializedFormatterInputs },
+          abortSignal,
         }),
     );
 
-    if (abortSignal?.aborted) throw new CancelledSyncError();
+    throwIfSyncCancelled(abortSignal);
 
     await writeGeneratorFiles({
       fileOperations: files,
@@ -170,7 +171,7 @@ export async function writeGeneratorOutput(
       currentFileIdToRelativePathMap: fileIdToRelativePathMap,
     });
 
-    if (abortSignal?.aborted) throw new CancelledSyncError();
+    throwIfSyncCancelled(abortSignal);
 
     const modifiedRelativePaths = new Set(
       files
@@ -236,6 +237,7 @@ export async function writeGeneratorOutput(
       orderedCommands,
       outputDirectory,
       logger,
+      abortSignal,
     );
 
     return {
