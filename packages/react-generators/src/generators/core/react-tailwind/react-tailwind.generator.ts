@@ -75,10 +75,11 @@ export const reactTailwindGenerator = createGenerator({
         tailwindStylesheet: './src/styles.css',
       });
       // The plugin learns the project's utilities by reading the stylesheet from
-      // disk, which during a sync still holds the previous version. Both files
-      // are mirrored so the stylesheet's `@import './typeset.css'` still
-      // resolves from the mirror; a new cross-package import would need adding
-      // here too.
+      // disk. `typeset.css` is declared because the stylesheet's
+      // `@import './typeset.css'` resolves relative to the mirror, so a new
+      // relative import would need declaring here too. `@source` globs resolve
+      // to nothing in the mirror, which only affects which CSS is emitted rather
+      // than how classes are sorted.
       prettier.addMaterializedFormatterInput({
         path: 'src/styles.css',
         buildOptions: (materializedPath) => ({

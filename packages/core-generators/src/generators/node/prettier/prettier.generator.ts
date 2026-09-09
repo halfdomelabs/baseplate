@@ -219,11 +219,7 @@ export const prettierGenerator = createGenerator({
               ) {
                 return input;
               }
-              // Anchored on the project root rather than the file being
-              // formatted, whose directory depends on which file the
-              // concurrency limiter scheduled first.
-              const resolveBaseDir =
-                formatOptions?.outputDirectory ?? path.dirname(fullPath);
+              const resolveBaseDir = formatOptions.outputDirectory;
 
               prettierModulePromise ??= (async () => {
                 const result = await resolveModuleWithVersion(
@@ -285,12 +281,11 @@ export const prettierGenerator = createGenerator({
 
               const baseConfig = await prettierConfigPromise;
               // Applied per call rather than folded into the memoized config,
-              // which is shared across formatting operations with different
-              // mirror paths.
+              // which is shared across operations with different mirror paths.
               const materializedOverrides: Record<string, unknown> = {};
               for (const materializedFormatterInput of materializedFormatterInputs) {
                 const materializedPath =
-                  formatOptions?.materializedFormatterInputs?.get(
+                  formatOptions.materializedFormatterInputs?.get(
                     materializedFormatterInput.path,
                   );
                 if (
@@ -337,15 +332,10 @@ export const prettierGenerator = createGenerator({
               ),
             });
 
-            // Formatting happens in memory before anything is written or
-            // installed, so a sync that changes a file a plugin reads, the
-            // config, or the toolchain itself can only reach the right answer by
-            // re-running prettier against the finished working tree.
-            //
             // `package.json` mirrors the `pnpm install` trigger at
-            // DEPENDENCIES: whenever a sync reinstalls dependencies, the
-            // prettier and plugin versions used in memory may be the ones being
-            // replaced, so the result is re-formatted with what was installed.
+            // DEPENDENCIES, so a sync that reinstalls dependencies re-formats
+            // with the prettier and plugin versions it just installed rather
+            // than the ones the in-memory pass used.
             builder.addPostWriteCommand('prettier --write .', {
               priority: POST_WRITE_COMMAND_PRIORITY.FORMATTING,
               onlyIfChanged: [

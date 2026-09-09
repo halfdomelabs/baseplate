@@ -303,7 +303,7 @@ describe('writeGeneratorOutput', () => {
           materializedFormatterInputs: ['src/styles.css'],
           format: (contents, fullPath, _logger, formatOptions) => {
             const mirrored =
-              formatOptions?.materializedFormatterInputs?.get('src/styles.css');
+              formatOptions.materializedFormatterInputs?.get('src/styles.css');
             if (mirrored && fullPath.endsWith('component.tsx')) {
               mirroredPathSeen = mirrored;
               sheetsSeen.push(String(vol.readFileSync(mirrored, 'utf8')));
@@ -343,7 +343,7 @@ describe('writeGeneratorOutput', () => {
             for (const [
               key,
               value,
-            ] of formatOptions?.materializedFormatterInputs ?? []) {
+            ] of formatOptions.materializedFormatterInputs ?? []) {
               mirrored.push(
                 `${key}=${String(vol.readFileSync(value, 'utf8'))}`,
               );
@@ -363,15 +363,44 @@ describe('writeGeneratorOutput', () => {
     );
   });
 
-  it('should run a post-write command gated on a formatter input the sync creates', async () => {
+  it('should give each formatting operation its own mirror path', async () => {
+    const pathsSeen: string[] = [];
+
+    const buildOutput = (): GeneratorOutput => ({
+      files: new Map([['src/styles.css', { id: 'styles', contents: 'sheet' }]]),
+      globalFormatters: [
+        {
+          name: 'stylesheet-aware',
+          fileExtensions: ['.css'],
+          materializedFormatterInputs: ['src/styles.css'],
+          format: (contents, _fullPath, _logger, formatOptions) => {
+            const mirrored =
+              formatOptions.materializedFormatterInputs?.get('src/styles.css');
+            if (mirrored) pathsSeen.push(mirrored);
+            return contents;
+          },
+        },
+      ],
+      postWriteCommands: [],
+    });
+
+    await writeGeneratorOutput(buildOutput(), outputDirectory, { logger });
+    await writeGeneratorOutput(buildOutput(), outputDirectory, { logger });
+
+    // `prettier-plugin-tailwindcss` caches its design system by stylesheet path,
+    // so reusing a path across operations would serve a stale design system.
+    expect(new Set(pathsSeen).size).toBe(pathsSeen.length);
+  });
+
+  it('should fire a gated post-write command for a file the sync creates', async () => {
     mockedExecuteCommand.mockResolvedValue({
       failed: false,
       exitCode: 0,
       output: 'success',
     });
-    // A fresh project: nothing on disk, so nothing can be resolved and the
-    // in-memory format is degraded. The heal depends on the gate firing for a
-    // file this sync creates rather than modifies.
+    // A fresh project, where the in-memory format is degraded because nothing
+    // is resolvable yet. The heal depends on the gate firing for a file this
+    // sync creates rather than modifies.
     vol.fromJSON({});
 
     const output: GeneratorOutput = {

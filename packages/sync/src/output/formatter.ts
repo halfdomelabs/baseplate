@@ -8,18 +8,18 @@ export interface FormatFunctionOptions {
    * Absolute paths of the formatter's declared inputs, mirrored for this
    * formatting operation, keyed by the output-relative path that was declared.
    *
-   * Empty when materialization was skipped, in which case a formatter that reads
-   * project files should fall back to their working-tree locations.
+   * Undefined when there was nothing to mirror, in which case a formatter that
+   * reads project files should fall back to their working-tree locations.
    */
   readonly materializedFormatterInputs?: ReadonlyMap<string, string>;
   /**
    * Root of the project being formatted.
    *
-   * Formatters that resolve tooling from the project should anchor on this
-   * rather than the file being formatted, whose directory varies with which file
-   * the concurrency limiter happened to schedule first.
+   * Formatters that resolve tooling from the project must anchor on this rather
+   * than the file being formatted, whose directory varies with which file the
+   * concurrency limiter happened to schedule first.
    */
-  readonly outputDirectory?: string;
+  readonly outputDirectory: string;
 }
 
 /**
@@ -35,7 +35,7 @@ export type FormatFunction = (
   fileContents: string,
   fullPath: string,
   logger: Logger,
-  options?: FormatFunctionOptions,
+  options: FormatFunctionOptions,
 ) => Promise<string> | string;
 
 /**

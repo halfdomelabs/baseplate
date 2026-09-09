@@ -1,6 +1,9 @@
 import type { Logger, TemplateMetadataOptions } from '@baseplate-dev/sync';
 
-import { formatOutputFileContents } from '@baseplate-dev/sync';
+import {
+  formatOutputFileContents,
+  withFormatterInputSession,
+} from '@baseplate-dev/sync';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -70,53 +73,63 @@ export async function syncFile({
   const filesApplied: string[] = [];
   const errors: string[] = [];
 
-  // Process each matching file
-  for (const relativePath of matchingPaths) {
-    const fileData = output.files.get(relativePath);
-    if (!fileData) {
-      continue;
-    }
+  await withFormatterInputSession(
+    {
+      formatters: output.globalFormatters,
+      outputDirectory: projectDirectory,
+      files: output.files,
+    },
+    async (materializedFormatterInputs) => {
+      // Process each matching file
+      for (const relativePath of matchingPaths) {
+        const fileData = output.files.get(relativePath);
+        if (!fileData) {
+          continue;
+        }
 
-    try {
-      // Format the file contents
-      const formattedContents = await formatOutputFileContents(
-        relativePath,
-        fileData,
-        {
-          outputDirectory: projectDirectory,
-          formatters: output.globalFormatters,
-          logger,
-        },
-      );
+        try {
+          // Format the file contents
+          const formattedContents = await formatOutputFileContents(
+            relativePath,
+            fileData,
+            {
+              outputDirectory: projectDirectory,
+              formatters: output.globalFormatters,
+              logger,
+              materializedFormatterInputs,
+            },
+          );
 
-      // Normalize to buffer for writing
-      const contentsBuffer =
-        typeof formattedContents === 'string'
-          ? Buffer.from(formattedContents, 'utf8')
-          : formattedContents;
+          // Normalize to buffer for writing
+          const contentsBuffer =
+            typeof formattedContents === 'string'
+              ? Buffer.from(formattedContents, 'utf8')
+              : formattedContents;
 
-      // Write to working directory
-      const workingPath = path.join(projectDirectory, relativePath);
-      await mkdir(path.dirname(workingPath), { recursive: true });
-      await writeFile(workingPath, contentsBuffer);
+          // Write to working directory
+          const workingPath = path.join(projectDirectory, relativePath);
+          await mkdir(path.dirname(workingPath), { recursive: true });
+          await writeFile(workingPath, contentsBuffer);
 
-      // Write to generated directory
-      const generatedPath = path.join(
-        projectDirectory,
-        GENERATED_DIRECTORY,
-        relativePath,
-      );
-      await mkdir(path.dirname(generatedPath), { recursive: true });
-      await writeFile(generatedPath, contentsBuffer);
+          // Write to generated directory
+          const generatedPath = path.join(
+            projectDirectory,
+            GENERATED_DIRECTORY,
+            relativePath,
+          );
+          await mkdir(path.dirname(generatedPath), { recursive: true });
+          await writeFile(generatedPath, contentsBuffer);
 
-      filesApplied.push(relativePath);
-      logger.debug(`Applied: ${relativePath}`);
-    } catch (err) {
-      const errorMessage = `Failed to apply ${relativePath}: ${err instanceof Error ? err.message : String(err)}`;
-      errors.push(errorMessage);
-      logger.error(errorMessage);
-    }
-  }
+          filesApplied.push(relativePath);
+          logger.debug(`Applied: ${relativePath}`);
+        } catch (err) {
+          const errorMessage = `Failed to apply ${relativePath}: ${err instanceof Error ? err.message : String(err)}`;
+          errors.push(errorMessage);
+          logger.error(errorMessage);
+        }
+      }
+    },
+  );
 
   if (filesApplied.length > 0) {
     logger.info(`Successfully applied ${filesApplied.length} files`);
