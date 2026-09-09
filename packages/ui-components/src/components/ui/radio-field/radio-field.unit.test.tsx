@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { itSnapshotsTheFieldMatrix } from '#src/tests/field-matrix.test-helper.js';
 import { renderWithProviders } from '#src/tests/render.test-helper.js';
 
 import { RadioField } from './radio-field.js';
@@ -48,4 +49,10 @@ describe('RadioField', () => {
     expect(first).toHaveAttribute('aria-checked', 'false');
     expect(second).toHaveAttribute('aria-checked', 'true');
   });
+});
+
+describe('RadioField DOM structure', () => {
+  itSnapshotsTheFieldMatrix((props) => (
+    <RadioField {...props} options={options} />
+  ));
 });

@@ -495,7 +495,6 @@
       "pathRootRelativePath": "{components-root}/ui/input-field.tsx",
       "projectExports": { "InputField": {}, "InputFieldController": {} },
       "referencedGeneratorTemplates": [
-        "cn",
         "field",
         "hooks-use-field-ids",
         "input",

@@ -4,6 +4,7 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 import {
   Button,
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -55,7 +56,16 @@ function IconPickerField({
 
   return (
     <Field data-invalid={!!error}>
-      {label ? <FieldLabel {...labelProps}>{label}</FieldLabel> : null}
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       <div className="flex items-center">
         <Popover open={open} onOpenChange={setOpen}>
           <div className="relative w-full">
@@ -182,7 +192,6 @@ function IconPickerField({
           </PopoverContent>
         </Popover>
       </div>
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );

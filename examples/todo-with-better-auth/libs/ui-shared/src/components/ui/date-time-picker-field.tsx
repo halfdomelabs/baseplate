@@ -13,7 +13,13 @@ import { useFieldIds } from '../../hooks/use-field-ids.js';
 import { cn } from '../../utils/cn.js';
 import { Button } from './button.js';
 import { Calendar } from './calendar.js';
-import { Field, FieldDescription, FieldError, FieldLabel } from './field.js';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from './field.js';
 import { Input } from './input.js';
 import { Popover, PopoverContent, PopoverTrigger } from './popover.js';
 
@@ -192,11 +198,19 @@ function DateTimePickerField({
       <Field
         data-invalid={!!error}
         data-disabled={disabled ?? undefined}
-        className={cn('gap-2', wrapperClassName)}
+        className={wrapperClassName}
       >
-        <FieldLabel {...labelProps}>{label}</FieldLabel>
+        {(!!label || !!description) && (
+          <FieldContent>
+            {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+            {description && (
+              <FieldDescription {...descriptionProps}>
+                {description}
+              </FieldDescription>
+            )}
+          </FieldContent>
+        )}
         {inputComponent}
-        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
         <FieldError {...errorProps}>{error}</FieldError>
       </Field>
     );

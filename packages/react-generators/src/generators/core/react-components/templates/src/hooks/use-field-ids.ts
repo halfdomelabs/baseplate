@@ -30,8 +30,9 @@ export interface UseFieldIdsResult {
  * Generates the coordinated ids a form field needs to associate its label,
  * description and error with its control.
  *
- * Only slots with content are referenced by `aria-describedby`:
- * `FieldDescription` renders an empty `<p>` when there is no description.
+ * Only slots with content are referenced by `aria-describedby`. Vertical fields
+ * render no `FieldDescription` at all when there is no description; the
+ * horizontal ones (checkbox, switch) still render an empty `<p>`.
  */
 export function useFieldIds({
   id,

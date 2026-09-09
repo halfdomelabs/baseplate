@@ -62,6 +62,12 @@ function RadioField<OptionType>({
           {label}
         </FieldLegend>
       )}
+      {description && (
+        // Cancels upstream's -mt-1, which would otherwise fire only while no error follows.
+        <FieldDescription {...descriptionProps} className="nth-last-2:mt-0">
+          {description}
+        </FieldDescription>
+      )}
       <RadioGroup
         value={value}
         onValueChange={(val) => onChange?.(val as string | null)}
@@ -92,7 +98,6 @@ function RadioField<OptionType>({
           );
         })}
       </RadioGroup>
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldError {...errorProps}>{error}</FieldError>
     </FieldSet>
   );

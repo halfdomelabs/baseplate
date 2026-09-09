@@ -26,7 +26,13 @@ import {
   ComboboxValue,
   useComboboxAnchor,
 } from './combobox';
-import { Field, FieldDescription, FieldError, FieldLabel } from './field';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from './field';
 
 export interface MultiComboboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>, FormFieldProps {
@@ -77,7 +83,16 @@ function MultiComboboxField<OptionType>({
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      <FieldLabel {...labelProps}>{label}</FieldLabel>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       <Combobox
         multiple
         autoHighlight
@@ -130,7 +145,6 @@ function MultiComboboxField<OptionType>({
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );

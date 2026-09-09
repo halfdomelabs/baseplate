@@ -85,3 +85,23 @@ describe('InputField', () => {
 describe('InputField DOM structure', () => {
   itSnapshotsTheFieldMatrix((props) => <InputField {...props} />);
 });
+
+describe('InputField empty slots', () => {
+  it('renders no empty label, description or stack for absent slots', () => {
+    const { container, rerender } = renderWithProviders(<InputField />);
+
+    expect(container.querySelector('[data-slot="field-content"]')).toBeNull();
+    expect(container.querySelector('[data-slot="field-label"]')).toBeNull();
+    expect(
+      container.querySelector('[data-slot="field-description"]'),
+    ).toBeNull();
+
+    // A description without a label still stacks, but brings no empty label.
+    rerender(<InputField description="Your full name" />);
+
+    expect(
+      container.querySelector('[data-slot="field-content"]'),
+    ).not.toBeNull();
+    expect(container.querySelector('[data-slot="field-label"]')).toBeNull();
+  });
+});

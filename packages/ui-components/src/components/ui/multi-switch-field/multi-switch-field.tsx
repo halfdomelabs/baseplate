@@ -12,11 +12,11 @@ import type {
 
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 import { useFieldIds } from '#src/hooks/use-field-ids.js';
-import { cn } from '#src/utils/cn.js';
 import { genericForwardRef } from '#src/utils/generic-forward-ref.js';
 
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -71,12 +71,21 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
     <Field
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
-      className={cn('gap-3', className)}
+      className={className}
       id={fieldId}
       aria-labelledby={label ? labelId : undefined}
       aria-describedby={describedBy}
     >
-      <FieldLabel id={labelId}>{label}</FieldLabel>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel id={labelId}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       <div className="flex flex-wrap gap-4" ref={ref}>
         {options.map((option) => {
           const optionValue = getOptionValue(option);
@@ -109,7 +118,6 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
           );
         })}
       </div>
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );

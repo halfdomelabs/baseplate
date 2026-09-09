@@ -4,6 +4,7 @@ import {
   Badge,
   Button,
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -86,8 +87,12 @@ export function AllowedMimeTypesField<
 
   return (
     <Field data-invalid={!!error}>
-      <FieldLabel>{label}</FieldLabel>
-      <FieldDescription>{description}</FieldDescription>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel>{label}</FieldLabel>}
+          {description && <FieldDescription>{description}</FieldDescription>}
+        </FieldContent>
+      )}
       <div className="storage:space-y-3">
         <div className="storage:flex storage:flex-wrap storage:items-center storage:gap-2">
           <span className="storage:text-sm storage:text-muted-foreground">

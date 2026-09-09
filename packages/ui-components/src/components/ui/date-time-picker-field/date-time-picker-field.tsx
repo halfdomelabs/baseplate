@@ -16,6 +16,7 @@ import { Button } from '../button/button.js';
 import { Calendar } from '../calendar/calendar.js';
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -198,11 +199,19 @@ function DateTimePickerField({
       <Field
         data-invalid={!!error}
         data-disabled={disabled ?? undefined}
-        className={cn('gap-2', wrapperClassName)}
+        className={wrapperClassName}
       >
-        <FieldLabel {...labelProps}>{label}</FieldLabel>
+        {(!!label || !!description) && (
+          <FieldContent>
+            {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+            {description && (
+              <FieldDescription {...descriptionProps}>
+                {description}
+              </FieldDescription>
+            )}
+          </FieldContent>
+        )}
         {inputComponent}
-        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
         <FieldError {...errorProps}>{error}</FieldError>
       </Field>
     );

@@ -15,6 +15,7 @@ import type {
 
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError as FieldErrorDisplay,
   FieldLabel,
@@ -60,7 +61,16 @@ function TextareaField({
       data-invalid={!!error || undefined}
       data-disabled={disabled ?? undefined}
     >
-      <FieldLabel {...labelProps}>{label}</FieldLabel>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       <Textarea
         {...controlProps}
         size={size}
@@ -75,7 +85,6 @@ function TextareaField({
         {...props}
         {...register}
       />
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldErrorDisplay {...errorProps}>{error}</FieldErrorDisplay>
     </Field>
   );
