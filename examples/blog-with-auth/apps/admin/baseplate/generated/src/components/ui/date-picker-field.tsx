@@ -14,7 +14,13 @@ import { cn } from '@src/utils/cn';
 
 import { Button } from './button';
 import { Calendar } from './calendar';
-import { Field, FieldDescription, FieldError, FieldLabel } from './field';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from './field';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 export interface DatePickerFieldProps extends FormFieldProps {
@@ -115,11 +121,19 @@ function DatePickerField({
       <Field
         data-invalid={!!error}
         data-disabled={disabled ?? undefined}
-        className={cn('gap-2', wrapperClassName)}
+        className={wrapperClassName}
       >
-        <FieldLabel {...labelProps}>{label}</FieldLabel>
+        {(!!label || !!description) && (
+          <FieldContent>
+            {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+            {description && (
+              <FieldDescription {...descriptionProps}>
+                {description}
+              </FieldDescription>
+            )}
+          </FieldContent>
+        )}
         {inputComponent}
-        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
         <FieldError {...errorProps}>{error}</FieldError>
       </Field>
     );

@@ -15,7 +15,13 @@ import { buttonVariants } from '@src/styles/button';
 import { inputVariants } from '@src/styles/input';
 import { cn } from '@src/utils/cn';
 
-import { Field, FieldDescription, FieldError, FieldLabel } from './field';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from './field';
 
 export interface NumberFieldProps
   extends
@@ -70,9 +76,18 @@ function NumberField({
     <Field
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
-      className={cn('gap-1.5', className)}
+      className={className}
     >
-      <FieldLabel {...labelProps}>{label}</FieldLabel>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       {/* Base UI routes Root's id to the input, so the label resolves through it. */}
       <NumberFieldPrimitive.Root
         id={controlProps.id}
@@ -117,7 +132,6 @@ function NumberField({
           </NumberFieldPrimitive.Increment>
         </NumberFieldPrimitive.Group>
       </NumberFieldPrimitive.Root>
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );

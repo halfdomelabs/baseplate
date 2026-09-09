@@ -8,7 +8,13 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { Button } from '$button';
 import { Calendar } from '$calendar';
 import { cn } from '$cn';
-import { Field, FieldDescription, FieldError, FieldLabel } from '$field';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '$field';
 import { useControllerMerged } from '$hooksUseControllerMerged';
 import { useFieldIds } from '$hooksUseFieldIds';
 import { Input } from '$input';
@@ -192,11 +198,19 @@ function DateTimePickerField({
       <Field
         data-invalid={!!error}
         data-disabled={disabled ?? undefined}
-        className={cn('gap-2', wrapperClassName)}
+        className={wrapperClassName}
       >
-        <FieldLabel {...labelProps}>{label}</FieldLabel>
+        {(!!label || !!description) && (
+          <FieldContent>
+            {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+            {description && (
+              <FieldDescription {...descriptionProps}>
+                {description}
+              </FieldDescription>
+            )}
+          </FieldContent>
+        )}
         {inputComponent}
-        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
         <FieldError {...errorProps}>{error}</FieldError>
       </Field>
     );

@@ -499,7 +499,6 @@ const inputField = createTsTemplateFile({
   name: 'input-field',
   projectExports: { InputField: {}, InputFieldController: {} },
   referencedGeneratorTemplates: {
-    cn: {},
     field: {},
     hooksUseFieldIds: {},
     input: {},

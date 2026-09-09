@@ -12,9 +12,9 @@ import type {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 
-import { cn } from '$cn';
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError as FieldErrorDisplay,
   FieldLabel,
@@ -56,9 +56,18 @@ function InputField({
     <Field
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
-      className={cn('gap-1.5', className)}
+      className={className}
     >
-      <FieldLabel {...labelProps}>{label}</FieldLabel>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       <Input
         {...controlProps}
         size={size}
@@ -74,7 +83,6 @@ function InputField({
         {...props}
         {...register}
       />
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldErrorDisplay {...errorProps}>{error}</FieldErrorDisplay>
     </Field>
   );

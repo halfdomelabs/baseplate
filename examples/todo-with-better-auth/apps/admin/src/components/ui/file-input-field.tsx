@@ -5,6 +5,7 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 import {
   cn,
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -40,15 +41,23 @@ export function FileInputField({
   return (
     <Field
       data-invalid={!!error || undefined}
-      className={cn('flex flex-col gap-1.5', className)}
+      className={cn('flex flex-col', className)}
     >
-      <FieldLabel id={labelId}>{label}</FieldLabel>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel id={labelId}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       <FileInput
         {...props}
         aria-labelledby={label ? labelId : undefined}
         aria-describedby={describedBy}
       />
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );

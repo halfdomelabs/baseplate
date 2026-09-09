@@ -11,7 +11,13 @@ import type {
 
 import { useControllerMerged } from '../../hooks/use-controller-merged.js';
 import { useFieldIds } from '../../hooks/use-field-ids.js';
-import { Field, FieldDescription, FieldError, FieldLabel } from './field.js';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from './field.js';
 import {
   Select,
   SelectContent,
@@ -61,7 +67,16 @@ function SelectField<OptionType>({
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      <FieldLabel {...labelProps}>{label}</FieldLabel>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       <Select
         value={value}
         onValueChange={(val) => onChange?.(val)}
@@ -89,7 +104,6 @@ function SelectField<OptionType>({
           </SelectGroup>
         </SelectContent>
       </Select>
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );

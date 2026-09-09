@@ -16,6 +16,7 @@ import { cn } from '#src/utils/index.js';
 
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -74,9 +75,18 @@ function NumberField({
     <Field
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
-      className={cn('gap-1.5', className)}
+      className={className}
     >
-      <FieldLabel {...labelProps}>{label}</FieldLabel>
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel {...labelProps}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       {/* Base UI routes Root's id to the input, so the label resolves through it. */}
       <NumberFieldPrimitive.Root
         id={controlProps.id}
@@ -121,7 +131,6 @@ function NumberField({
           </NumberFieldPrimitive.Increment>
         </NumberFieldPrimitive.Group>
       </NumberFieldPrimitive.Root>
-      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
       <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );

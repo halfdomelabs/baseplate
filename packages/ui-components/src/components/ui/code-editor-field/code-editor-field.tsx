@@ -21,6 +21,7 @@ import { useFieldIds } from '#src/hooks/use-field-ids.js';
 
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -92,7 +93,16 @@ function CodeEditorField({
 
   return (
     <Field data-invalid={!!error} data-disabled={disabled ?? undefined}>
-      {label && <FieldLabel id={labelId}>{label}</FieldLabel>}
+      {(!!label || !!description) && (
+        <FieldContent>
+          {label && <FieldLabel id={labelId}>{label}</FieldLabel>}
+          {description && (
+            <FieldDescription {...descriptionProps}>
+              {description}
+            </FieldDescription>
+          )}
+        </FieldContent>
+      )}
       <div className={className} {...props}>
         <CodeMirror
           value={value}
@@ -112,9 +122,6 @@ function CodeEditorField({
           }}
         />
       </div>
-      {description && (
-        <FieldDescription {...descriptionProps}>{description}</FieldDescription>
-      )}
       <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
