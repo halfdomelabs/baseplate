@@ -14,6 +14,7 @@ import type {
 
 import { cleanDeletedFiles } from './clean-deleted-files.js';
 import { createCodebaseFileReaderFromDirectory } from './codebase-file-reader.js';
+import { withFormatterInputSession } from './formatter-input-session.js';
 import {
   filterPostWriteCommands,
   runPostWriteCommands,
@@ -141,10 +142,18 @@ export async function writeGeneratorOutput(
       overwriteOptions,
     };
 
-    const { files, fileIdToRelativePathMap } = await prepareGeneratorFiles({
-      files: output.files,
-      context: fileWriterContext,
-    });
+    const { files, fileIdToRelativePathMap } = await withFormatterInputSession(
+      {
+        formatters: output.globalFormatters,
+        outputDirectory,
+        files: output.files,
+      },
+      (materializedFormatterInputs) =>
+        prepareGeneratorFiles({
+          files: output.files,
+          context: { ...fileWriterContext, materializedFormatterInputs },
+        }),
+    );
 
     if (abortSignal?.aborted) throw new CancelledSyncError();
 

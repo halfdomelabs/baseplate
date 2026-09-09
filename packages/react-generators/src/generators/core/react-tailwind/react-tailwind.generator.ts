@@ -74,6 +74,19 @@ export const reactTailwindGenerator = createGenerator({
         tailwindFunctions: ['clsx', 'cn', 'cva'],
         tailwindStylesheet: './src/styles.css',
       });
+      // The plugin learns the project's utilities by reading the stylesheet from
+      // disk. `typeset.css` is declared because the stylesheet's
+      // `@import './typeset.css'` resolves relative to the mirror, so a new
+      // relative import would need declaring here too. `@source` globs resolve
+      // to nothing in the mirror, which only affects which CSS is emitted rather
+      // than how classes are sorted.
+      prettier.addMaterializedFormatterInput({
+        path: 'src/styles.css',
+        buildOptions: (materializedPath) => ({
+          tailwindStylesheet: materializedPath,
+        }),
+      });
+      prettier.addMaterializedFormatterInput({ path: 'src/typeset.css' });
     }),
     eslint: createProviderTask(eslintConfigProvider, (eslintConfig) => {
       eslintConfig.tailwind.set(true);

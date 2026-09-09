@@ -6,6 +6,7 @@ import type {
   WriteFileOptions,
 } from './generator-task-output.js';
 
+import { withFormatterInputSession } from './formatter-input-session.js';
 import { formatOutputFileContents } from './prepare-generator-files/prepare-generator-file.js';
 
 /**
@@ -60,24 +61,34 @@ export async function formatGeneratorOutput(
     { id: string; contents: Buffer | string; options?: WriteFileOptions }
   >();
 
-  // Process each file in the output
-  for (const [relativePath, fileData] of output.files.entries()) {
-    const formattedContents = await formatOutputFileContents(
-      relativePath,
-      fileData,
-      {
-        outputDirectory,
-        formatters: output.globalFormatters,
-        logger,
-      },
-    );
+  await withFormatterInputSession(
+    {
+      formatters: output.globalFormatters,
+      outputDirectory,
+      files: output.files,
+    },
+    async (materializedFormatterInputs) => {
+      // Process each file in the output
+      for (const [relativePath, fileData] of output.files.entries()) {
+        const formattedContents = await formatOutputFileContents(
+          relativePath,
+          fileData,
+          {
+            outputDirectory,
+            formatters: output.globalFormatters,
+            logger,
+            materializedFormatterInputs,
+          },
+        );
 
-    formattedFiles.set(relativePath, {
-      id: fileData.id,
-      contents: formattedContents,
-      options: fileData.options,
-    });
-  }
+        formattedFiles.set(relativePath, {
+          id: fileData.id,
+          contents: formattedContents,
+          options: fileData.options,
+        });
+      }
+    },
+  );
 
   return {
     files: formattedFiles,
