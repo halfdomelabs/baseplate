@@ -137,6 +137,10 @@ export interface FileInputProps {
    * place of MIME types. Falls back to MIME types when omitted.
    */
   allowedFileExtensions?: string[];
+  /** Ids naming the input, set by a field wrapping it. */
+  'aria-labelledby'?: string;
+  /** Ids describing the input, set by a field wrapping it. */
+  'aria-describedby'?: string;
 }
 
 function truncateFilenameWithExtension(filename: string, length = 20): string {
@@ -161,6 +165,8 @@ export function FileInput({
   imagePreview,
   allowedMimeTypes,
   allowedFileExtensions,
+  'aria-labelledby': ariaLabelledBy,
+  'aria-describedby': ariaDescribedBy,
 }: FileInputProps): ReactElement {
   const [createUploadUrl] = useMutation(fileInputCreateUploadUrlMutation);
 
@@ -390,7 +396,14 @@ export function FileInput({
                     name={name}
                     {...getInputProps()}
                     disabled={!isDraggable}
-                    aria-label={placeholder ?? 'Select a file'}
+                    aria-labelledby={ariaLabelledBy}
+                    aria-describedby={ariaDescribedBy}
+                    // An aria-label would win over the field's label element.
+                    aria-label={
+                      ariaLabelledBy
+                        ? undefined
+                        : (placeholder ?? 'Select a file')
+                    }
                   />
                   <MdUploadFile className="h-6 w-6" aria-hidden="true" />
                   <div className="text-sm font-medium">

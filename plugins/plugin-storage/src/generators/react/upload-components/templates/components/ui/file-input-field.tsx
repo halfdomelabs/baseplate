@@ -12,6 +12,7 @@ import {
   FieldDescription,
   FieldError,
   FieldLabel,
+  useFieldIds,
 } from '%reactComponentsImports';
 import { useController } from 'react-hook-form';
 
@@ -26,17 +27,29 @@ export function FileInputField({
   description,
   error,
   className,
+  'aria-describedby': ariaDescribedBy,
   ...props
 }: FileInputFieldProps): React.ReactElement {
+  // FileInput renders its `<input>` only while no file is selected, so the label
+  // is associated by `aria-labelledby` rather than a `htmlFor` that would dangle.
+  const { labelId, describedBy, descriptionProps, errorProps } = useFieldIds({
+    'aria-describedby': ariaDescribedBy,
+    description,
+    error,
+  });
   return (
     <Field
       data-invalid={!!error || undefined}
       className={cn('flex flex-col gap-1.5', className)}
     >
-      <FieldLabel>{label}</FieldLabel>
-      <FileInput {...props} />
-      <FieldDescription>{description}</FieldDescription>
-      <FieldError>{error}</FieldError>
+      <FieldLabel id={labelId}>{label}</FieldLabel>
+      <FileInput
+        {...props}
+        aria-labelledby={label ? labelId : undefined}
+        aria-describedby={describedBy}
+      />
+      <FieldDescription {...descriptionProps}>{description}</FieldDescription>
+      <FieldError {...errorProps}>{error}</FieldError>
     </Field>
   );
 }
