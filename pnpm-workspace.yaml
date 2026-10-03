@@ -51,6 +51,8 @@ saveWorkspaceProtocol: rolling
 
 dedupePeers: true
 
+autoDedupe: true
+
 allowBuilds:
   '@prisma/engines': false
   cpu-features: false

@@ -81,14 +81,9 @@ export const PACKAGES = {
 ### 5. Install and Resolve Dependencies
 
 ```bash
-# Install new versions
+# Install new versions (autoDedupe is enabled, so this also deduplicates the lockfile)
 pnpm install
-
-# Resolve duplicate dependencies and conflicts
-pnpm dedupe
 ```
-
-**Note:** `pnpm dedupe` is crucial as it resolves version conflicts that can occur when upgrading packages with complex dependency trees.
 
 ### 6. Sync Generated Projects
 
@@ -187,7 +182,6 @@ Common packages: `typescript`, `eslint`, `prettier`, `vitest`
 
 1. Check if newer versions of the package are available
 2. Look for compatibility matrices in package documentation
-3. Use `pnpm dedupe` to resolve conflicts
 
 ### Type Errors After Upgrade
 
