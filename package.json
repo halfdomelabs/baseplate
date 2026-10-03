@@ -13,7 +13,7 @@
     "check:common": "pnpm run knip && pnpm metadata:sync && pnpm versions:fix && echo 'Successfully completed checks!'",
     "check:example-deps": "node ./scripts/check-example-dependencies.ts",
     "check:examples": "pnpm start diff-examples --fail-on-differences && pnpm run:examples -- pnpm check && pnpm run check:example-deps",
-    "check:full": "pnpm oxfmt:fix && turbo run lint typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common && pnpm turbo run packages:dedupe",
+    "check:full": "pnpm oxfmt:fix && turbo run lint typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common",
     "clean": "turbo run clean",
     "dev:serve": "pnpm --color --reporter-hide-prefix --filter @baseplate-dev/project-builder-dev --filter @baseplate-dev/project-builder-web --parallel \"/dev:(serve|dev-server)/\"",
     "knip": "knip",
@@ -31,7 +31,6 @@
     "oxfmt:fix": "oxfmt",
     "oxlint:check": "oxlint",
     "oxlint:fix": "oxlint --fix",
-    "packages:dedupe": "pnpm dedupe",
     "prepare": "[ -w .git/hooks ] && husky || true",
     "project:generate": "pnpm --filter @baseplate-dev/project-builder-dev project:generate",
     "release": "pnpm build && node ./scripts/check-npm-registry.ts && pnpm changeset publish",
@@ -88,10 +87,10 @@
   },
   "engines": {
     "node": "^24.0.0",
-    "pnpm": "^11.18.0"
+    "pnpm": "^12.8.2"
   },
   "volta": {
     "node": "24.18.0"
   },
-  "packageManager": "pnpm@11.18.0"
+  "packageManager": "pnpm@12.8.2"
 }
