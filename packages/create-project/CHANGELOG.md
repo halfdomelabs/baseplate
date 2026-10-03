@@ -1,5 +1,16 @@
 # @baseplate-dev/create-project
 
+## 0.6.21
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-server@0.6.21
+  - @baseplate-dev/project-builder-cli@0.6.21
+  - @baseplate-dev/project-builder-lib@0.6.21
+  - @baseplate-dev/sync@0.6.21
+  - @baseplate-dev/utils@0.6.21
+
 ## 0.6.20
 
 ### Patch Changes
