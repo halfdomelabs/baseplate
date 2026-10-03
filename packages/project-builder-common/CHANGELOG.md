@@ -1,5 +1,23 @@
 # @baseplate-dev/project-builder-common
 
+## 0.6.21
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-server@0.6.21
+  - @baseplate-dev/plugin-ai@0.6.21
+  - @baseplate-dev/plugin-auth@0.6.21
+  - @baseplate-dev/plugin-email@0.6.21
+  - @baseplate-dev/plugin-notifications@0.6.21
+  - @baseplate-dev/plugin-observability@0.6.21
+  - @baseplate-dev/plugin-payments@0.6.21
+  - @baseplate-dev/plugin-queue@0.6.21
+  - @baseplate-dev/plugin-rate-limit@0.6.21
+  - @baseplate-dev/plugin-storage@0.6.21
+  - @baseplate-dev/project-builder-lib@0.6.21
+  - @baseplate-dev/sync@0.6.21
+
 ## 0.6.20
 
 ### Patch Changes
