@@ -60,7 +60,7 @@
     "@baseplate-dev/tools": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@types/node": "catalog:",
-    "concurrently": "10.0.4",
+    "concurrently": "10.0.6",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "oxlint": "catalog:",

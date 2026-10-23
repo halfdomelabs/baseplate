@@ -87,10 +87,10 @@
   },
   "engines": {
     "node": "^24.0.0",
-    "pnpm": "^12.8.2"
+    "pnpm": "^12.15.0"
   },
   "volta": {
-    "node": "24.18.0"
+    "node": "24.22.1"
   },
-  "packageManager": "pnpm@12.8.2"
+  "packageManager": "pnpm@12.15.0"
 }

@@ -86,7 +86,7 @@
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "@types/semver": "^7.7.1",
-    "concurrently": "10.0.4",
+    "concurrently": "10.0.6",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "memfs": "4.64.0",

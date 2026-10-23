@@ -13,7 +13,7 @@ export function generatePostgresDockerCompose(
   return {
     services: [
       `  db:
-    image: postgres:18.3-alpine
+    image: postgres:18.6-alpine
     container_name: \${COMPOSE_PROJECT_NAME:-${config.projectName}}-db
     restart: on-failure
     security_opt:

@@ -24,8 +24,8 @@ export const CORE_PACKAGES = {
   'prettier-plugin-packagejson': '3.0.2',
 
   // Testing
-  vite: '8.2.0',
-  vitest: '4.1.11',
+  vite: '8.3.5',
+  vitest: '4.1.12',
 
   // Utils
   axios: '1.20.0',

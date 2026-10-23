@@ -52,7 +52,7 @@
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
-    "@prisma/prisma-schema-wasm": "7.10.0-4.0edf323efd1d98336f3f0a68684b56f689b900d3",
+    "@prisma/prisma-schema-wasm": "8.1.0-1.d1b3f377ca835d73fd50954a5e22128b9ebdd6b8",
     "change-case": "^5.4.4",
     "es-toolkit": "^1.50.0",
     "indent-string": "^5.0.0",
@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
-    "concurrently": "10.0.4",
+    "concurrently": "10.0.6",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "oxlint": "catalog:",
