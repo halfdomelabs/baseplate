@@ -1,5 +1,15 @@
 # @baseplate-dev/project-builder-dev
 
+## 0.6.22
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-server@0.6.22
+  - @baseplate-dev/project-builder-web@0.6.22
+  - @baseplate-dev/project-builder-lib@0.6.22
+  - @baseplate-dev/utils@0.6.22
+
 ## 0.6.21
 
 ### Patch Changes

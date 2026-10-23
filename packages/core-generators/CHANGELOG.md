@@ -1,5 +1,15 @@
 # @baseplate-dev/core-generators
 
+## 0.6.22
+
+### Patch Changes
+
+- [#1061](https://github.com/halfdomelabs/baseplate/pull/1061) [`2ae6c70`](https://github.com/halfdomelabs/baseplate/commit/2ae6c70a0671af3c0c6ceda6a62f4d9c076206f1) Thanks [@kingston](https://github.com/kingston)! - Generated projects now use Node 24.22.1, pnpm 12.15.0, Postgres 18.6, Redis 8.10, and patched versions of vite, vitest, fastify, Prisma, and GraphQL Codegen.
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.22
+  - @baseplate-dev/utils@0.6.22
+
 ## 0.6.21
 
 ### Patch Changes
