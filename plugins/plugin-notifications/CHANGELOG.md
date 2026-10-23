@@ -1,5 +1,21 @@
 # @baseplate-dev/plugin-notifications
 
+## 0.6.22
+
+### Patch Changes
+
+- Updated dependencies [[`2ae6c70`](https://github.com/halfdomelabs/baseplate/commit/2ae6c70a0671af3c0c6ceda6a62f4d9c076206f1)]:
+  - @baseplate-dev/core-generators@0.6.22
+  - @baseplate-dev/fastify-generators@0.6.22
+  - @baseplate-dev/react-generators@0.6.22
+  - @baseplate-dev/plugin-ai@0.6.22
+  - @baseplate-dev/plugin-email@0.6.22
+  - @baseplate-dev/plugin-queue@0.6.22
+  - @baseplate-dev/project-builder-lib@0.6.22
+  - @baseplate-dev/sync@0.6.22
+  - @baseplate-dev/ui-components@0.6.22
+  - @baseplate-dev/utils@0.6.22
+
 ## 0.6.21
 
 ### Patch Changes
