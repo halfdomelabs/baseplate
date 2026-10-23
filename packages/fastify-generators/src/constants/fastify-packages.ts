@@ -1,6 +1,6 @@
 export const FASTIFY_PACKAGES = {
   // Fastify
-  fastify: '5.12.5',
+  fastify: '5.12.7',
   '@fastify/helmet': '13.1.0',
   'fastify-plugin': '6.0.0',
   nanoid: '6.0.1',
@@ -31,9 +31,9 @@ export const FASTIFY_PACKAGES = {
   '@graphql-yoga/redis-event-target': '2.0.0',
 
   // Prisma
-  '@prisma/client': '7.10.0',
-  prisma: '7.10.0',
-  '@prisma/adapter-pg': '7.10.0',
+  '@prisma/client': '7.10.1',
+  prisma: '7.10.1',
+  '@prisma/adapter-pg': '7.10.1',
 
   // Utils
   ms: '2.1.3',
@@ -44,7 +44,7 @@ export const FASTIFY_PACKAGES = {
 
   // Environment
   'cross-env': '10.1.0',
-  concurrently: '10.0.4',
+  concurrently: '10.0.6',
 
   // Compilation
   'tsc-alias': '1.8.10',
