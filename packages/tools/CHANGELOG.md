@@ -1,5 +1,11 @@
 # @baseplate-dev/tools
 
+## 0.6.23-next.0
+
+### Patch Changes
+
+- [#1064](https://github.com/halfdomelabs/baseplate/pull/1064) [`2f48a55`](https://github.com/halfdomelabs/baseplate/commit/2f48a5594c668a2c90c8af0fb8ac44e8a3ab8629) Thanks [@kingston](https://github.com/kingston)! - Baseplate is now released under the MIT License instead of MPL-2.0; earlier releases remain under MPL-2.0.
+
 ## 0.6.22
 
 ## 0.6.21
