@@ -5,7 +5,7 @@
  * - Validates non-private packages against their "files" array
  * - Ensures packages with changes are properly staged for publishing
  * - Optimized for PR use: parallel processing and only checks affected packages
- * - Uses the last git tag with prefix "@baseplate-dev/project-builder-cli@" as the comparison point
+ * - Uses the release tag for the current version (`baseplate@{version}`) as the comparison point
  */
 
 import { exec } from 'node:child_process';
@@ -196,34 +196,57 @@ async function extractAndValidatePackage(
 const CHANGESET_OUTPUT_FILE = 'changeset-output.json';
 
 /**
- * Gets the last git tag with the prefix "@baseplate-dev/project-builder-cli@"
- * @returns The last git tag or null if none found
+ * Gets the release tag (`baseplate@{version}`, created by
+ * scripts/create-github-release.ts) for the current published version.
+ * @returns The tag or null if it does not exist
  */
 async function getLastPackageTag(): Promise<string | null> {
   try {
-    // List all tags matching the prefix, sorted by version (assuming semver)
-    const { stdout } = await execAsync(
-      'git tag --list "@baseplate-dev/project-builder-cli@*" --sort=-v:refname',
-    );
+    const { version } = JSON.parse(
+      await fs.readFile('packages/utils/package.json', 'utf8'),
+    ) as { version: string };
+    const tag = `baseplate@${version}`;
 
-    // Most recent tag first, due to the --sort=-v:refname above.
-    const lastTag = stdout
-      .trim()
-      .split('\n')
-      .find((tag) => tag !== '');
-
-    if (lastTag === undefined) {
-      console.info(
-        'No previous tags found for @baseplate-dev/project-builder-cli',
-      );
+    const { stdout } = await execAsync(`git tag --list "${tag}"`);
+    if (stdout.trim() === '') {
+      console.info(`No release tag found for ${tag}`);
       return null;
     }
 
-    console.info(`Last tag for project-builder-cli: ${lastTag}`);
-    return lastTag;
+    console.info(`Last release tag: ${tag}`);
+    return tag;
   } catch (error) {
     console.warn('Error getting last tag:', error);
     return null;
+  }
+}
+
+/**
+ * Fails if any changeset declares a `major` bump on a package that is still
+ * below 1.0. Breaking changes below 1.0 must use `minor`.
+ */
+function assertNoMajorBelowOne(changesetData: ChangesetStatus): void {
+  const preOneMajorPackages = new Set(
+    changesetData.releases
+      .filter(
+        (release) =>
+          release.type === 'major' && release.oldVersion.startsWith('0.'),
+      )
+      .map((release) => release.name),
+  );
+  const offendingChangesets = changesetData.changesets.filter((changeset) =>
+    changeset.releases.some(
+      (release) =>
+        release.type === 'major' && preOneMajorPackages.has(release.name),
+    ),
+  );
+
+  if (offendingChangesets.length > 0) {
+    throw new Error(
+      `Changesets must not use \`major\` while packages are below 1.0; use \`minor\` for breaking changes instead: ${offendingChangesets
+        .map((changeset) => `.changeset/${changeset.id}.md`)
+        .join(', ')}`,
+    );
   }
 }
 
@@ -258,6 +281,8 @@ async function getPackagesToPublish(lastTag: string | null): Promise<string[]> {
     const changesetData = JSON.parse(
       await fs.readFile(CHANGESET_OUTPUT_FILE, 'utf8'),
     ) as ChangesetStatus;
+
+    assertNoMajorBelowOne(changesetData);
 
     // Extract packages that will be published (from the releases array)
     const packagesToPublish = changesetData.releases.map(

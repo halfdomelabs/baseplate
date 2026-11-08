@@ -33,7 +33,7 @@
     "oxlint:fix": "oxlint --fix",
     "prepare": "[ -w .git/hooks ] && husky || true",
     "project:generate": "pnpm --filter @baseplate-dev/project-builder-dev project:generate",
-    "release": "pnpm build && node ./scripts/check-npm-registry.ts && pnpm changeset publish",
+    "release": "pnpm build && node ./scripts/check-npm-registry.ts && pnpm changeset publish --no-git-tag",
     "run:all": "bash scripts/run-all.sh",
     "run:example": "bash scripts/run-example.sh",
     "run:examples": "bash scripts/run-examples.sh",
@@ -53,18 +53,18 @@
     "test-project:save": "pnpm --filter @baseplate-dev/project-builder-test test-project:save",
     "typecheck": "turbo run typecheck --affected --continue && pnpm run typecheck:root",
     "typecheck:root": "tsc --noEmit -p tsconfig.scripts.json",
-    "version": "pnpm changeset version && node ./scripts/fix-versions.ts",
+    "version": "node ./scripts/version-packages.ts",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",
     "watch": "turbo run watch:tsc:root watch --concurrency 20",
     "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
-    "@changesets/cli": "2.31.1"
+    "@changesets/cli": "3.0.3"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
-    "@changesets/changelog-github": "0.5.1",
+    "@changesets/changelog-github": "1.0.1",
     "@playwright/cli": "^0.1.17",
     "@types/node": "catalog:",
     "check-dependency-version-consistency": "6.0.0",

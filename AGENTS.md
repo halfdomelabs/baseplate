@@ -86,6 +86,8 @@ Baseplate consists of two main tiers:
   Description of the feature or change
   ```
 
+  **Bump type below 1.0:** use `patch` by default and `minor` for breaking changes. **Never use `major`**: all packages share one fixed version, so a single `major` would push every package to 1.0.0. `pnpm changesets:check` rejects it. See CONTRIBUTING.md.
+
   Good: `The notification feed is now cursor-paginated, so rows are no longer skipped or repeated when a notification arrives between page fetches.`
 
   Too long: the same thing plus the module that was split out, the file the query moved to, the index that changed, and the type signature that was tightened. Those belong in the PR description.

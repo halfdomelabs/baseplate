@@ -35,18 +35,20 @@ jobs:
 
       - name: Create Release Pull Request or Publish to NPM
         id: changesets
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          publish: pnpm release
-          version: pnpm run version
-          title: 'chore: Version Packages'
-          createGithubReleases: false
+          publish-script: pnpm release
+          version-script: pnpm run version
+          pr-title: 'chore: Version Packages'
+          # We create a single combined baseplate@{version} tag and release below
+          create-github-releases: false
+          push-git-tags: false
 
       - name: Create GitHub Release
         if: steps.changesets.outputs.published == 'true'
         run: node ./scripts/create-github-release.ts
         env:
-          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.published-packages }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Format Packages for Slack
@@ -55,7 +57,7 @@ jobs:
         run: |
           {
             echo "FORMATTED_PACKAGES<<EOF"
-            echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -c 'map(
+            echo '${{ steps.changesets.outputs.published-packages }}' | jq -c 'map(
               {
                 type: "rich_text_section",
                 elements: [

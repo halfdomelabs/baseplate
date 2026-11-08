@@ -1,12 +1,12 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
   "changelog": [
     "@changesets/changelog-github",
     { "repo": "halfdomelabs/baseplate" }
   ],
   "commit": false,
+  "format": "oxfmt",
   "fixed": [["@baseplate-dev/*"]],
-  "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

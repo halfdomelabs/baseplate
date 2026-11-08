@@ -3,14 +3,13 @@
 /**
  * fix-versions.ts
  *
- * Runs after `pnpm changeset version`. Reads scripts/published-version-skip-list.json
- * and for any @baseplate-dev/* package whose version matches a skipped version,
- * increments the patch to avoid attempting to publish an already-published version.
+ * Runs after `changeset version` (via scripts/version-packages.ts). Reads
+ * scripts/published-version-skip-list.json and for any @baseplate-dev/* package
+ * whose version matches a skipped version, increments the patch to avoid
+ * attempting to publish an already-published version. Only relevant once the
+ * packages reach 1.0, where several versions were mis-published in the past.
  *
- * Hooked into the changeset release action via root package.json:
- *   "version": "pnpm changeset version && node ./scripts/fix-versions.ts"
- *
- * REMOVE THIS SCRIPT (and the "version" script from package.json) once all
+ * REMOVE THIS SCRIPT (and its call in scripts/version-packages.ts) once all
  * packages have been published past the last mis-published version.
  */
 
@@ -61,16 +60,18 @@ for await (const p of glob(
   packageJsonPaths.push(p);
 }
 
-// Sanity check: all workspace packages must be on the same version before we proceed.
+// Sanity check: all published packages must be on the same version before we proceed.
 // If they're not, the fixed versioning group isn't in effect yet — bail safely.
+// Private packages are not versioned by changesets, so they are excluded.
 const packageVersions = new Map<string, string>();
 for (const relPath of packageJsonPaths) {
   const absPath = path.join(ROOT_DIR, relPath);
   const pkg = JSON.parse(readFileSync(absPath, 'utf8')) as {
     name: string;
     version: string;
+    private?: boolean;
   };
-  if (pkg.name && pkg.version) {
+  if (pkg.name && pkg.version && !pkg.private) {
     packageVersions.set(pkg.name, pkg.version);
   }
 }
@@ -97,30 +98,12 @@ if (major !== undefined && major > 1) {
   );
 }
 
-// changesets 2.x escalates a package to `major` when a peerDependency it declares
-// gets a `minor` bump, and the `fixed` group then drags every package to that major
-// (0.6.15 -> 1.0.0). Fixed upstream by changesets#2090, unreleased as of 3.0.0-next.
-// This has shipped an unintended 1.0 before, so require an explicit opt-in.
-// Runs after `changeset version`, which has already consumed the .changeset/*.md
-// files and rewritten every package.json — hence the `git restore .` below.
-const previousMajor = Number(
-  process.env.npm_package_version?.split('.')[0] ?? Number.NaN,
-);
-const escalatedMajor =
-  major !== undefined &&
-  major > 0 &&
-  (Number.isNaN(previousMajor) || major > previousMajor);
-
-if (escalatedMajor && !process.env.BASEPLATE_ALLOW_MAJOR_RELEASE) {
-  throw new Error(
-    `fix-versions: refusing to release ${currentVersion} — this bump escalates to a new major.\n` +
-      `  A 'minor' changeset in the fixed @baseplate-dev/* group bumps the whole group's major.\n` +
-      `  \`changeset version\` has already rewritten this working tree, so recover with:\n` +
-      `    1. git restore .   (restores the consumed .changeset/*.md files and versions)\n` +
-      `    2. downgrade the 'minor' changesets in .changeset/ to 'patch'\n` +
-      `    3. re-run the release\n` +
-      `  To genuinely release a new major, re-run with BASEPLATE_ALLOW_MAJOR_RELEASE=1.`,
+// Prerelease versions (e.g. 0.7.0-next.0) are never in the skip list.
+if (currentVersion.includes('-')) {
+  console.info(
+    `fix-versions: ${currentVersion} is a prerelease, nothing to do`,
   );
+  process.exit(0);
 }
 
 let bumped = 0;
@@ -130,10 +113,11 @@ for (const relPath of packageJsonPaths) {
   const pkg = JSON.parse(readFileSync(absPath, 'utf8')) as {
     name: string;
     version: string;
+    private?: boolean;
   };
   const { name, version } = pkg;
 
-  if (!name || !version) continue;
+  if (!name || !version || pkg.private) continue;
 
   if (!allSkippedVersions.has(version)) continue;
 

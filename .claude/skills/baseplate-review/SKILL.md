@@ -146,6 +146,7 @@ For user-facing or generated-output changes, a `.changeset/*.md` entry must exis
 packages, and read as a one-to-two-sentence release note for a **user of the generated code** — not
 a diff summary, rationale, file list, or ticket reference. A single continuous line, no internal
 newlines. Flag missing changesets and changesets that describe the refactor instead of the outcome.
+Below 1.0, flag any `major` bump: breaking changes must use `minor`.
 
 ## Validate Proportionally
 
