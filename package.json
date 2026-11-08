@@ -58,7 +58,7 @@
     "lint-staged": "17.3.0",
     "oxfmt": "0.61.0",
     "oxlint": "catalog:",
-    "oxlint-tsgolint": "0.23.0",
+    "oxlint-tsgolint": "7.0.2006",
     "turbo": "2.10.8",
     "typescript": "catalog:",
     "vitest": "catalog:",
