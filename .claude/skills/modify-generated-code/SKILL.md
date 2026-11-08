@@ -453,9 +453,9 @@ Brief description of the change
 
 **Changeset types:**
 
-- `patch`: Bug fixes, minor changes (most common)
-- `minor`: New features, non-breaking changes
-- `major`: Breaking changes
+- `patch`: Bug fixes, new features, non-breaking changes (most common)
+- `minor`: Breaking changes (packages are below 1.0)
+- Never use `major` below 1.0: it would push every package to 1.0.0. See CONTRIBUTING.md.
 
 **Package names** should match the package that was modified (e.g., `@baseplate-dev/plugin-auth`, `@baseplate-dev/fastify-generators`, `@baseplate-dev/react-generators`).
 

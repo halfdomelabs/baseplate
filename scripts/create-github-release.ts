@@ -19,7 +19,7 @@
  *   --version <ver>     Specify the version directly (useful with --dry-run)
  *
  * In CI, pass the version via the PUBLISHED_PACKAGES env var (JSON array of
- * {name, version} objects from `steps.changesets.outputs.publishedPackages`).
+ * {name, version} objects from `steps.changesets.outputs.published-packages`).
  */
 
 import { execFileSync } from 'node:child_process';
@@ -326,10 +326,14 @@ async function createGithubRelease(): Promise<void> {
 
   const releaseBody = buildReleaseBody(mergedEntries);
 
+  // Prereleases (e.g. 0.7.0-next.0) must not become the repo's "latest" release
+  const releaseFlag = version.includes('-') ? '--prerelease' : '--latest';
+
   if (isDryRun) {
     console.info('\n--- DRY RUN ---');
     console.info(`Tag:   ${tag}`);
     console.info(`Title: ${tag}`);
+    console.info(`Flag:  ${releaseFlag}`);
     console.info('\n--- Release Body ---\n');
     console.info(releaseBody || '(empty)');
     return;
@@ -344,7 +348,16 @@ async function createGithubRelease(): Promise<void> {
   console.info(`Creating GitHub release ${tag}…`);
   execFileSync(
     'gh',
-    ['release', 'create', tag, '--title', tag, '--notes-file', '-', '--latest'],
+    [
+      'release',
+      'create',
+      tag,
+      '--title',
+      tag,
+      '--notes-file',
+      '-',
+      releaseFlag,
+    ],
     {
       input: releaseBody,
       encoding: 'utf8',
