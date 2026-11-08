@@ -22,55 +22,25 @@ See .agents/testing.md for testing best practices.
 
 ## Repository Structure
 
-Baseplate is organized into several core packages:
+Baseplate is being rebuilt on a new stack. `main` holds only the packages the rebuild reuses:
 
-### Project Builder
-
-- **packages/project-builder-cli** (`@baseplate-dev/project-builder-cli`): End-user CLI (`baseplate` binary) for syncing, diffing, and serving projects
-- **packages/project-builder-dev** (`@baseplate-dev/project-builder-dev`): Developer tooling CLI (`baseplate-dev` binary) for plugin authors — templates, snapshots, sync-examples, sync, diff, serve, and full MCP server
-- **packages/project-builder-web** (`@baseplate-dev/project-builder-web`): React app for configuring project definitions
-- **packages/project-builder-server** (`@baseplate-dev/project-builder-server`): Fastify-based backend API for the web interface using TRPC
-- **packages/project-builder-lib** (`@baseplate-dev/project-builder-lib`): Shared library with common logic and schema definitions
-- **packages/project-builder-common** (`@baseplate-dev/project-builder-common`): Bundle package that provides default plugins (`plugin-auth`, `plugin-email`, `plugin-queue`, `plugin-rate-limit`, `plugin-storage`) and exposes `getDefaultPlugins()`
-- **packages/project-builder-test** (`@baseplate-dev/project-builder-test`): Test runner and utilities for integration testing
-- **packages/create-project** (`@baseplate-dev/create-project`): CLI tool for bootstrapping new Baseplate projects
+- **packages/sync** (`@baseplate-dev/sync`): Code generation engine: task runner, providers, phases, file identities, and diff3/JSON diff3 merging
+- **packages/core-generators** (`@baseplate-dev/core-generators`): TypeScript rendering primitives (`TsCodeFragment`, `TsCodeUtils`, import maps, template renderers and extractor) plus the minimal node/typescript generators they run on
+- **packages/project-builder-lib** (`@baseplate-dev/project-builder-lib`): Plugin system: plugin specs, spec store, plugin metadata, and the plugin loader
+- **packages/code-morph** (`@baseplate-dev/code-morph`): Codebase transformations
 - **packages/ui-components** (`@baseplate-dev/ui-components`): Reusable UI component library with Storybook
-
-### Sync Engine
-
-- **packages/sync** (`@baseplate-dev/sync`): Core package orchestrating code generation workflow
-- **packages/core-generators** (`@baseplate-dev/core-generators`): Generates TypeScript code and base abstractions
-- **packages/react-generators** (`@baseplate-dev/react-generators`): Generates React components and structure
-- **packages/fastify-generators** (`@baseplate-dev/fastify-generators`): Generates Fastify-based backend code
-
-### Utilities
-
-- **packages/code-morph** (`@baseplate-dev/code-morph`): Tools for codebase transformations
-- **packages/tools** (`@baseplate-dev/tools`): Common configurations (ESLint, Prettier, TSConfig, Vitest)
 - **packages/utils** (`@baseplate-dev/utils`): Utility functions
+- **packages/tools** (`@baseplate-dev/tools`): Common configurations (ESLint, oxlint, oxfmt, TSConfig, Vitest)
 
-### Plugins
+## Porting from Legacy
 
-- **plugins/plugin-auth** (`@baseplate-dev/plugin-auth`): Authentication plugin (includes Better Auth and local auth implementations)
-- **plugins/plugin-email** (`@baseplate-dev/plugin-email`): Email plugin
-- **plugins/plugin-storage** (`@baseplate-dev/plugin-storage`): Storage plugin (S3 and local file storage)
-- **plugins/plugin-queue** (`@baseplate-dev/plugin-queue`): Queue plugin (BullMQ and PgBoss)
-- **plugins/plugin-rate-limit** (`@baseplate-dev/plugin-rate-limit`): Rate limit plugin (Prisma/Redis)
+The original Baseplate (project builder web/server/CLI, React and Fastify generators, all plugins, and the example projects) is frozen on the `legacy` branch and `legacy-final` tag. It is not on `main`. When porting logic, check it out side by side instead of recreating deleted packages:
 
-## Architecture Overview
+```bash
+git worktree add ../baseplate-legacy legacy-final
+```
 
-Baseplate consists of two main tiers:
-
-1. **Project Builder**: UI-driven configuration tool that produces a project definition (JSON)
-   - Allows configuring data models, authentication, etc.
-   - Compiles high-level definitions into generator bundles
-
-2. **Sync Engine**: Code generation system that processes generator bundles
-   - Executes generators in dependency order
-   - Handles Task Phases for multi-stage code generation
-   - Manages Dynamic Tasks for data-driven generation
-   - Uses Provider Scopes for communication between tasks
-   - Merges generated code with existing codebase using Git Diff3
+Treat legacy code as reference only: its stack (Fastify, Pothos/GraphQL, Prisma) is being replaced, so port the logic, not the patterns.
 
 ## Key Reminders
 
@@ -96,7 +66,3 @@ Baseplate consists of two main tiers:
 
 - IMPORTANT: If you have to go through more than two cycles of edits to fix linting, type, or test errors, please stop and ask for help. Often fixing errors will cause worse changes so it's better to ask for help than to continue. Feel free to ask for help at any time for any issues.
 - IMPORTANT: If you notice you are looping, encountering contradictory instructions, or something seems off, stop and flag it to the user immediately. See .agents/code-style.md for the full list of glitch indicators.
-
-## Baseplate Development Server MCP
-
-See .agents/mcp-actions.md for detailed MCP action documentation.

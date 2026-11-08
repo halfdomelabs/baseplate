@@ -1,3 +1,0 @@
-{
-  "todo-with-better-auth/apps/web react-icons": "Declared for every app by core/react-components-import because admin templates (sidebar, dialogs) import react-icons directly; that generator cannot tell admin from web. Removing it needs the declaration moved to the generators emitting those imports."
-}

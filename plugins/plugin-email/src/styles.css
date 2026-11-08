@@ -1,6 +1,0 @@
-@layer theme, base, components, utilities;
-
-@import 'tailwindcss/theme.css' layer(theme) prefix(email);
-@import 'tailwindcss/utilities.css' layer(utilities) prefix(email);
-
-@import '@baseplate-dev/ui-components/theme.css';

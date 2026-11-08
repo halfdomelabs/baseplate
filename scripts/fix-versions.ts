@@ -49,14 +49,11 @@ function incrementPatch(version: string): string {
   return parts.join('.');
 }
 
-// Find all package.json files under packages/* and plugins/*
+// Find all package.json files under packages/*
 const packageJsonPaths: string[] = [];
-for await (const p of glob(
-  ['packages/*/package.json', 'plugins/*/package.json'],
-  {
-    cwd: ROOT_DIR,
-  },
-)) {
+for await (const p of glob(['packages/*/package.json'], {
+  cwd: ROOT_DIR,
+})) {
   packageJsonPaths.push(p);
 }
 

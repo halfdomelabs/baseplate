@@ -20,14 +20,8 @@
         "fileLocation": [
           "search",
           {
-            "include": [
-              "${workspaceFolder}/packages",
-              "${workspaceFolder}/plugins"
-            ],
-            "exclude": [
-              "${workspaceFolder}/packages/*/node_modules",
-              "${workspaceFolder}/plugins/*/node_modules"
-            ]
+            "include": ["${workspaceFolder}/packages"],
+            "exclude": ["${workspaceFolder}/packages/*/node_modules"]
           }
         ]
       }
@@ -140,25 +134,9 @@
       ]
     },
     {
-      "label": "Dev Serve",
-      "type": "shell",
-      "command": "mise x -- pnpm run dev:serve",
-      "group": "none",
-      "isBackground": true,
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "dedicated",
-        "close": true
-      },
-      "problemMatcher": []
-    },
-    {
       "label": "Reset to Main",
       "type": "shell",
-      "command": "git fetch origin main:main && git checkout main && pnpm run:all -- pnpm install",
+      "command": "git fetch origin main:main && git checkout main && pnpm install",
       "group": "none",
       "presentation": {
         "reveal": "always",

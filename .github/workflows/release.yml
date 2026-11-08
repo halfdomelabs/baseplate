@@ -1,15 +1,17 @@
 name: Release
 
+# Publishing is frozen during the rebuild. Re-enable the push trigger (or
+# replace this with the prerelease workflow, ENG-1323) for the first
+# early-access release.
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
     name: Release
+    if: false
     runs-on: ubuntu-latest
     environment: release
     permissions:

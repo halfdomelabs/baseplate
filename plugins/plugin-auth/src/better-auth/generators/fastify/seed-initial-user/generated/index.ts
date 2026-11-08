@@ -1,9 +1,0 @@
-import { BETTER_AUTH_SEED_INITIAL_USER_PATHS } from './template-paths.js';
-import { BETTER_AUTH_SEED_INITIAL_USER_RENDERERS } from './template-renderers.js';
-import { BETTER_AUTH_SEED_INITIAL_USER_TEMPLATES } from './typed-templates.js';
-
-export const BETTER_AUTH_SEED_INITIAL_USER_GENERATED = {
-  paths: BETTER_AUTH_SEED_INITIAL_USER_PATHS,
-  renderers: BETTER_AUTH_SEED_INITIAL_USER_RENDERERS,
-  templates: BETTER_AUTH_SEED_INITIAL_USER_TEMPLATES,
-};

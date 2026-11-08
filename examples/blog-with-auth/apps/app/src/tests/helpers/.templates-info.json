@@ -1,7 +1,0 @@
-{
-  "logger.test-helper.ts": {
-    "generator": "@baseplate-dev/core-generators#node/vitest",
-    "instanceData": {},
-    "template": "logger-test-helper"
-  }
-}

@@ -1,7 +1,0 @@
-{
-  "setup.ts": {
-    "generator": "@baseplate-dev/react-generators#vitest/react-vitest",
-    "instanceData": {},
-    "template": "setup"
-  }
-}

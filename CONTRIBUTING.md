@@ -10,7 +10,7 @@ Every change to a published package needs a changeset in `.changeset/`. Create o
 
 - All published `@baseplate-dev/*` packages are in one `fixed` group. Every release bumps all of them to the same version, even packages that did not change.
 - The repository is in Changesets prerelease mode (`.changeset/pre.json`, tag `next`). Releases are published as `0.x.y-next.N` on the `next` npm dist-tag. `latest` stays on the last stable release.
-- Private packages (examples, internal tooling) are not versioned or published.
+- Private packages (internal tooling) are not versioned or published.
 
 ### Below 1.0: breaking changes use `minor`
 
@@ -19,6 +19,8 @@ While packages are below 1.0, **never use `major`**. Use `minor` for breaking ch
 The first early-access changeset should be `minor`, so prereleases start at `0.7.0-next.0`, above the last stable release (0.6.x).
 
 ### Release flow
+
+> Publishing is frozen during the rebuild: `.github/workflows/release.yml` only runs on manual dispatch and its job is disabled. Restore the `push` trigger for the first early-access release.
 
 1. Merging to `main` makes the release workflow open or update a "Version Packages" PR.
 2. Merging that PR publishes every package to npm under `next`, and creates a single `baseplate@{version}` tag and GitHub prerelease.

@@ -19,10 +19,7 @@ function getProjectJsonDependencyKeys(packageJson: PackageJson): string[] {
 }
 
 // False positives for the Typescript project references
-const IGNORED_PACKAGES = new Set([
-  '@baseplate-dev/project-builder-web',
-  '@baseplate-dev/root',
-]);
+const IGNORED_PACKAGES = new Set(['@baseplate-dev/root']);
 
 interface TsconfigBuild {
   compilerOptions:

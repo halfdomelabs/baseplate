@@ -8,7 +8,7 @@ import { z } from 'zod';
  *   "extractors": {
  *     "ts": {
  *       "importProviders": [
- *         "@baseplate-dev/fastify-generators:authImportsProvider"
+ *         "@example/my-generators:authImportsProvider"
  *       ],
  *       "skipDefaultImportMap": false
  *     }

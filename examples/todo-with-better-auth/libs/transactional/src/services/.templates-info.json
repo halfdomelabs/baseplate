@@ -1,7 +1,0 @@
-{
-  "render-email.service.tsx": {
-    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
-    "instanceData": {},
-    "template": "services-render-email"
-  }
-}

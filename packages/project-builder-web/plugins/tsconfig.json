@@ -1,3 +1,0 @@
-{
-  "extends": "@baseplate-dev/tools/tsconfig.node.script.json"
-}

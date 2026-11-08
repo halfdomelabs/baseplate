@@ -5,25 +5,7 @@
       "path": "./packages/core-generators/tsconfig.build.json"
     },
     {
-      "path": "./packages/create-project/tsconfig.build.json"
-    },
-    {
-      "path": "./packages/fastify-generators/tsconfig.build.json"
-    },
-    {
-      "path": "./packages/project-builder-cli/tsconfig.build.json"
-    },
-    {
-      "path": "./packages/project-builder-dev/tsconfig.build.json"
-    },
-    {
       "path": "./packages/project-builder-lib/tsconfig.build.json"
-    },
-    {
-      "path": "./packages/project-builder-server/tsconfig.build.json"
-    },
-    {
-      "path": "./packages/react-generators/tsconfig.build.json"
     },
     {
       "path": "./packages/sync/tsconfig.build.json"
@@ -33,33 +15,6 @@
     },
     {
       "path": "./packages/utils/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-ai/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-auth/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-email/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-notifications/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-observability/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-payments/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-queue/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-rate-limit/tsconfig.build.json"
-    },
-    {
-      "path": "./plugins/plugin-storage/tsconfig.build.json"
     }
   ],
   "compilerOptions": {}
