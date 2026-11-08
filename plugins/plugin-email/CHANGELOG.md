@@ -1,5 +1,20 @@
 # @baseplate-dev/plugin-email
 
+## 0.6.23-next.0
+
+### Patch Changes
+
+- [#1064](https://github.com/halfdomelabs/baseplate/pull/1064) [`2f48a55`](https://github.com/halfdomelabs/baseplate/commit/2f48a5594c668a2c90c8af0fb8ac44e8a3ab8629) Thanks [@kingston](https://github.com/kingston)! - Baseplate is now released under the MIT License instead of MPL-2.0; earlier releases remain under MPL-2.0.
+- Updated dependencies [[`2f48a55`](https://github.com/halfdomelabs/baseplate/commit/2f48a5594c668a2c90c8af0fb8ac44e8a3ab8629)]:
+  - @baseplate-dev/core-generators@0.6.23-next.0
+  - @baseplate-dev/fastify-generators@0.6.23-next.0
+  - @baseplate-dev/project-builder-lib@0.6.23-next.0
+  - @baseplate-dev/react-generators@0.6.23-next.0
+  - @baseplate-dev/sync@0.6.23-next.0
+  - @baseplate-dev/ui-components@0.6.23-next.0
+  - @baseplate-dev/utils@0.6.23-next.0
+  - @baseplate-dev/plugin-queue@0.6.23-next.0
+
 ## 0.6.22
 
 ### Patch Changes
