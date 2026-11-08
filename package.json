@@ -2,7 +2,7 @@
   "name": "@baseplate-dev/root",
   "private": true,
   "homepage": "https://www.baseplate.dev",
-  "license": "MPL-2.0",
+  "license": "MIT",
   "author": "Half Dome Labs LLC",
   "type": "module",
   "scripts": {
