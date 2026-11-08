@@ -28,12 +28,12 @@ interface WorkspacePackage {
 
 /**
  * Discovers all non-private packages in the workspace by scanning every
- * package.json under `packages/` and `plugins/`.
+ * package.json under `packages/`.
  */
 async function getPublishablePackages(): Promise<WorkspacePackage[]> {
   const rootDir = new URL('..', import.meta.url).pathname;
 
-  const searchDirs = ['packages', 'plugins'];
+  const searchDirs = ['packages'];
   const results: WorkspacePackage[] = [];
 
   for (const searchDir of searchDirs) {

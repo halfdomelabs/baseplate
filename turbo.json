@@ -26,14 +26,6 @@
       "inputs": ["$TURBO_DEFAULT$"],
       "outputLogs": "errors-only"
     },
-    "test:e2e": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$"]
-    },
-    "test:gen": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$"]
-    },
     "typecheck": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$"]

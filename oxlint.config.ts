@@ -9,7 +9,6 @@ export default defineConfig({
   ignorePatterns: [
     ...oxlintIgnorePatterns,
     '**/node_modules/**',
-    'examples/**',
     '.turbo/**',
     '.pnpm-store/**',
     '**/build/**',

@@ -1,6 +1,6 @@
 ---
 name: add-component
-description: Workflow for adding a new UI component to ui-components (with Storybook + optional tests) and optionally to the react-generators template system.
+description: Workflow for adding a new UI component to ui-components (with Storybook + optional tests).
 ---
 
 # Add Component Skill
@@ -10,7 +10,6 @@ Use this skill when adding a new UI component to Baseplate. The workflow covers:
 1. Determining the component's source (shadcn/base-ui, existing code, or custom)
 2. Implementing it in `packages/ui-components` with stories and optional tests
 3. Pausing for user review
-4. Optionally integrating it into the react-generators template system
 
 ---
 
@@ -124,109 +123,21 @@ describe('ComponentName', () => {
 });
 ```
 
-### Keep the twin in sync
-
-`packages/react-generators` ships a copy of most of these components as generator
-templates, and `component-twins.unit.test.ts` fails if the two drift. You never
-edit the template directly — Phase 4 regenerates it from the example app — but
-after any change to a shared component run:
-
-```bash
-pnpm --filter @baseplate-dev/react-generators test component-twins
-```
-
-A twin that must differ goes in that test's `DEVIATIONS` list with the reason.
-The list rejects entries that have stopped differing, so it cannot go stale.
-
-### Register the export
-
-Add to `packages/ui-components/src/components/ui/index.ts` (keep alphabetically sorted):
-
-```typescript
-export * from './<component-name>/<component-name>.js';
-```
-
----
-
-## Phase 3: User Review — STOP HERE
+## Phase 3: User Review
 
 After creating the ui-components files, **stop and present**:
 
 - The list of files created/modified
 - Any notable design decisions (e.g., "used base-ui variant", "adapted from shadcn with these differences", "added dependency X")
-- Ask the user whether to proceed with generator integration (Phase 4)
-
-> Do NOT proceed to Phase 4 until the user explicitly confirms.
 
 ---
 
-## Phase 4: Generator Integration
-
-### 4a. Add to the blog-with-auth example apps
-
-Apply the change to **both** `apps/admin` and `apps/app` before extracting from
-either. They share templates, so extracting from one after editing only the
-other reverts the other's changes. The same holds for any file every web app
-carries, `src/styles.css` among them.
-
-Create `examples/blog-with-auth/apps/<app>/src/components/ui/<component-name>.tsx` in each app, with these adaptations from the ui-components version:
-
-1. **Single file** at `components/ui/<component-name>.tsx` (no sub-folder)
-2. **cn import**: `import { cn } from '@src/utils/cn';` (the example project's path alias)
-3. **Imports from other components**: Use the flat `@src/components/ui/<component-name>` alias instead of relative folder paths
-4. **Imports from hooks**: Use `@src/hooks/<hook-name>` alias
-5. **No `@ts-nocheck`** in the example file — the generator tooling adds it automatically during extraction
-6. Keep all other logic identical to the ui-components version
-
-Then validate the example builds:
-
-```bash
-pnpm run:example blog-with-auth -- pnpm typecheck
-pnpm run:example blog-with-auth -- pnpm lint
-```
-
-### 4b. Configure the ts template via MCP
-
-```javascript
-mcp__baseplate_dev_server__configure_ts_template({
-  filePath: 'src/components/ui/<component-name>.tsx',
-  generator: '@baseplate-dev/react-generators#core/react-components',
-  templateName: '<component-name>',
-  project: 'blog-with-auth',
-});
-```
-
-### 4c. Extract templates via MCP
-
-```javascript
-mcp__baseplate_dev_server__extract_templates({
-  project: 'blog-with-auth',
-  app: 'admin',
-});
-```
-
-### 4d. Fix type errors and validate
-
-```bash
-pnpm --filter @baseplate-dev/react-generators typecheck
-pnpm --filter @baseplate-dev/react-generators lint --fix
-```
-
-### 4e. Sync all projects
-
-```javascript
-mcp__baseplate_dev_server__sync_all_projects({
-  overwrite: true,
-});
-```
-
-### 4f. Add or update changeset
+## Phase 4: Changeset
 
 Check `.changeset/` for an existing changeset covering the same component. If found, add to it. Otherwise create `.changeset/<component-name>.md`:
 
 ```markdown
 ---
-'@baseplate-dev/react-generators': patch
 '@baseplate-dev/ui-components': patch
 ---
 
@@ -237,22 +148,15 @@ Add <ComponentName> component
 
 ## Reference Files
 
-| Purpose                     | Path                                                                                               |
-| --------------------------- | -------------------------------------------------------------------------------------------------- |
-| ui-components barrel export | `packages/ui-components/src/components/ui/index.ts`                                                |
-| ui-components test helper   | `packages/ui-components/src/tests/render.test-helper.tsx`                                          |
-| Example component (table)   | `packages/ui-components/src/components/ui/table/table.tsx`                                         |
-| Generator templates dir     | `packages/react-generators/src/generators/core/react-components/templates/components/ui/`          |
-| Generator extractor config  | `packages/react-generators/src/generators/core/react-components/extractor.json`                    |
-| Example template (table)    | `packages/react-generators/src/generators/core/react-components/templates/components/ui/table.tsx` |
-| Modify generated code skill | `.claude/skills/modify-generated-code/SKILL.md`                                                    |
-| Twin-drift test             | `packages/react-generators/src/generators/core/react-components/component-twins.unit.test.ts`      |
-| Design token layer          | `packages/ui-components/src/theme.css`, `packages/ui-components/src/base-styles.css`               |
-| Generated-app token twin    | `packages/react-generators/src/generators/core/react-tailwind/templates/src/styles.css`            |
+| Purpose                     | Path                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------ |
+| ui-components barrel export | `packages/ui-components/src/components/ui/index.ts`                                  |
+| ui-components test helper   | `packages/ui-components/src/tests/render.test-helper.tsx`                            |
+| Example component (table)   | `packages/ui-components/src/components/ui/table/table.tsx`                           |
+| Design token layer          | `packages/ui-components/src/theme.css`, `packages/ui-components/src/base-styles.css` |
 
 ---
 
 ## Important Notes
 
-- Never manually edit files in `generated/` directories — they are auto-generated.
-- If you hit more than two cycles of type/lint errors after extraction, stop and ask the user for help.
+- If you hit more than two cycles of type/lint errors, stop and ask the user for help.

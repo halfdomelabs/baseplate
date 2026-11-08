@@ -1,8 +1,0 @@
-{
-  "files": {
-    "added": ["CLAUDE.md", "Dockerfile", "build.sh", "render.yaml"],
-    "deleted": [],
-    "modified": []
-  },
-  "version": "1"
-}

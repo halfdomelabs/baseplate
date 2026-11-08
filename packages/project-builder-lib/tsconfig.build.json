@@ -10,16 +10,10 @@
   },
   "exclude": [
     "src/**/*.test.ts",
-    "src/!(testing)/**/*.test-helper.ts",
+    "src/**/*.test-helper.ts",
     "**/__mocks__/**/*"
   ],
   "references": [
-    {
-      "path": "../sync/tsconfig.build.json"
-    },
-    {
-      "path": "../ui-components/tsconfig.build.json"
-    },
     {
       "path": "../utils/tsconfig.build.json"
     }

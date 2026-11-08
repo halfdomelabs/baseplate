@@ -18,12 +18,7 @@ risks first, then explain the smallest reasonable correction.
    - Target: current `HEAD` **plus** staged, unstaged, and related untracked files.
 3. Enumerate the surface before deep review: changed-file status, diff stat, commits in scope when
    useful, and untracked files that appear related.
-4. **Ignore everything under `baseplate/generated/`** (e.g. `examples/<name>/baseplate/generated/`,
-   `examples/<name>/apps/<app>/baseplate/generated/`). These are sync bookkeeping artifacts, not
-   authored or reviewable code. Exclude them from the diff surface up front —
-   `git diff <base> -- . ':(exclude)**/baseplate/generated/**'` — so diff stats and file counts
-   reflect real changes. Never report findings against them.
-5. Exclude pre-existing problems unless the diff introduces, worsens, or exposes them.
+4. Exclude pre-existing problems unless the diff introduces, worsens, or exposes them.
 
 Do not mutate code during a review unless the user separately asks for fixes.
 
@@ -33,9 +28,8 @@ Always honor `AGENTS.md` and `.agents/code-style.md` (loaded via project instruc
 only what the changed area needs:
 
 - `.agents/testing.md` when tests are added, changed, or conspicuously missing.
-- `.agents/ui-rules.md` and `.agents/ui-components.md` when the diff touches `ui-components`,
-  `project-builder-web`, or plugin UI (`plugins/*/src/**` web code).
-- `.agents/mcp-actions.md` when the diff touches generators, templates, or generated output.
+- `.agents/ui-rules.md` and `.agents/ui-components.md` when the diff touches `ui-components` or
+  other UI code.
 
 ## Review in Risk Order
 
@@ -43,15 +37,13 @@ only what the changed area needs:
 
 Trace changed behavior end to end. Check invalid inputs, null/empty states, error paths,
 ordering/determinism of generated output (stable sorts via `compareStrings`), and partial failure
-during sync. Confirm schema changes flow through the project-definition → compiler → generator
-pipeline consistently.
+during sync.
 
 **When generators or templates changed, review in this order — generated code first, generator
 second:**
 
-1. **Read the generated output as a downstream user would.** Start with the example diffs under
-   `examples/**` (excluding `baseplate/generated/**`) and the template sources under
-   `generators/**/generated/**`. Judge that code on its own merits: is it correct, idiomatic, well
+1. **Read the generated output as a downstream user would.** Start with the generated output
+   (snapshot or fixture diffs) and the template sources. Judge that code on its own merits: is it correct, idiomatic, well
    typed, free of dead code and authoring commentary, and something you would accept in a
    hand-written project? A generator bug ships to every downstream project, so a flaw here outranks
    anything in the generator itself.
@@ -65,13 +57,8 @@ Do not review the generator first and infer the output from it; read what actual
 
 ### 2. Generator and Template Hygiene
 
-- **No hand-edits to generated artifacts.** Templates under `generators/**/generated/**` must be
-  authored through the template extraction workflow (Baseplate MCP tools / `/modify-generated-code`),
-  never edited directly. Flag diffs to generated files that lack a corresponding template or
-  generator change.
 - **No test scaffolding in generated code.** Generated output must not contain test code, debug
-  helpers, or development leftovers. Test files that belong to an example project should be
-  **snapshotted** (`snapshot-add` / `snapshot-save`) rather than emitted by a generator.
+  helpers, or development leftovers.
 - **No authoring commentary in generated code.** Comments in templates ship verbatim into every
   user's project. Flag comments explaining the template's own construction, change rationale, or
   anything a downstream user would not benefit from.
@@ -79,9 +66,6 @@ Do not review the generator first and infer the output from it; read what actual
   content by concatenating strings or ts-fragments by hand, flag it if a template file (text, raw,
   or ts template) would express the same output more maintainably. Hand composition is acceptable
   only for genuinely dynamic structure a template cannot express.
-- **Examples must stay in sync.** When generators or templates changed, examples under `examples/`
-  must be regenerated (`pnpm start sync-examples --overwrite`) and committed. Verify example diffs
-  are consistent with the generator change — nothing more, nothing less.
 
 ### 3. Repository Conventions and Type Safety
 
@@ -127,8 +111,7 @@ Actively hunt for these; they are findings, not preferences:
 ### 6. UI Conventions (when UI is touched)
 
 Components come from `@baseplate-dev/ui-components` (ShadCN-based), styling is Tailwind-only,
-icons come from `react-icons/md`, plugin Tailwind classes carry the plugin prefix (`auth-`,
-`storage-`, …). New `ui-components` components need Storybook stories.
+icons come from `react-icons/md`. New `ui-components` components need Storybook stories.
 
 ### 7. Tests — Judicious, Both Directions
 
@@ -154,9 +137,7 @@ Run the narrowest useful checks; never mutate code to make them pass.
 
 1. Focused tests for risky changed paths: `pnpm --filter @baseplate-dev/<pkg> test <file>`.
 2. `pnpm typecheck` / `pnpm lint:only:affected` when the diff is broad or types look fragile.
-3. When generators or templates changed: `pnpm start diff-examples --fail-on-differences` (or
-   scoped `pnpm start diff <example>`) to confirm examples are in sync.
-4. Do not claim behavior is safe solely because types, lint, or generated output pass.
+3. Do not claim behavior is safe solely because types, lint, or generated output pass.
 
 ## Finding Bar
 

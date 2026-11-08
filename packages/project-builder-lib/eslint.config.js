@@ -1,5 +1,5 @@
-import { defineReactEslintConfig } from '@baseplate-dev/tools/eslint-react';
+import { defineNodeEslintConfig } from '@baseplate-dev/tools/eslint-node';
 
-export default defineReactEslintConfig({
+export default defineNodeEslintConfig({
   dirname: import.meta.dirname,
 });

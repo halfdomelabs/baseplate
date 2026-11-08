@@ -1,7 +1,0 @@
-{
-  "notification-topics.ts": {
-    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
-    "instanceData": {},
-    "template": "constants-notification-topics"
-  }
-}

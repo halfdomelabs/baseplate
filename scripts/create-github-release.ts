@@ -67,12 +67,11 @@ const isDryRun = values['dry-run'];
 // ---------------------------------------------------------------------------
 
 /**
- * Discovers all non-private packages in the workspace by scanning `packages/`
- * and `plugins/` top-level directories.
+ * Discovers all non-private packages in the workspace by scanning `packages/`.
  */
 async function getWorkspacePackages(): Promise<WorkspacePackage[]> {
   const rootDir = new URL('..', import.meta.url).pathname;
-  const searchDirs = ['packages', 'plugins'];
+  const searchDirs = ['packages'];
   const results: WorkspacePackage[] = [];
 
   for (const searchDir of searchDirs) {

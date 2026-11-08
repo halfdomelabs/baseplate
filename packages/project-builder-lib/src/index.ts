@@ -1,14 +1,2 @@
-export * from './compiler/index.js';
-export * from './constants/index.js';
-export * from './definition/index.js';
-export { expressionParserCoreModule } from './expression-parsers/register-core-module.js';
-export * from './feature-flags/index.js';
-export * from './migrations/index.js';
-export * from './parser/index.js';
 export * from './plugins/index.js';
-export * from './references/index.js';
-export * from './schema/index.js';
-export * from './specs/index.js';
-export * from './tools/index.js';
-export * from './types/field-types.js';
 export * from './utils/index.js';

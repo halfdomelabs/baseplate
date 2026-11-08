@@ -5,7 +5,6 @@ export default {
   workspaces: {
     '.': {
       entry: ['.workspace-meta/config.ts', 'scripts/**/*.{js,ts}'],
-      ignore: ['oxlint.config.ts'],
     },
     'packages/*': {
       entry: ['src/index.{ts,tsx}'],
@@ -14,102 +13,6 @@ export default {
       paths: {
         '#src/*': ['./src/*'],
       },
-    },
-    'plugins/*': {
-      entry: [
-        'src/index.{ts,tsx}',
-        'src/web-export.{ts,tsx}',
-        'src/*/*/node.ts',
-        'src/*/*/web.ts',
-        'src/*/*/common.ts',
-      ],
-      project: 'src/**/*.{ts,tsx}',
-      paths: {
-        '#src/*': ['./src/*'],
-      },
-      ignoreDependencies: [
-        // react-dom and @types/react-dom are required for the vite/react build
-        'react-dom',
-        '@types/react-dom',
-        // shared as a module-federation singleton in vite.config.ts; a plugin
-        // may declare it before it ships any route templates that import it
-        '@tanstack/react-router',
-      ],
-    },
-    'packages/fastify-generators': {
-      entry: ['src/index.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
-      ignoreDependencies: [
-        // resolved at runtime via createRequire (CJS wasm module) in
-        // src/generators/prisma/prisma/format-prisma-schema.ts
-        '@prisma/prisma-schema-wasm',
-      ],
-      paths: {
-        '#src/*': ['./src/*'],
-      },
-    },
-    'packages/project-builder-web': {
-      entry: ['src/main.{ts,tsx}'],
-      project: ['src/**/*.{ts,tsx}', 'plugins/*.ts'],
-      ignore: [
-        // ignore generated files
-        '**/route-tree.gen.ts',
-        // we ignore this file because it may not always be used when there are no feature flags
-        'src/hooks/use-feature-flag.ts',
-        // weird bugs with knip :(
-        'src/services/schema-parser-context.ts',
-        'src/types/virtual-module-federation.d.ts',
-        'src/services/module-federation.ts',
-      ],
-      paths: {
-        '#src/*': ['./src/*'],
-      },
-    },
-    'packages/project-builder-cli': {
-      entry: ['src/index.{ts,tsx}', 'e2e/**/*.spec.{ts,tsx}'],
-      project: ['src/**/*.{ts,tsx}', 'e2e/**/*.{ts,tsx}'],
-      ignoreDependencies: [
-        // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
-        'pino-pretty',
-        // we resolve the package by string in src/server.ts
-        '@baseplate-dev/project-builder-web',
-      ],
-      paths: {
-        '#src/*': ['./src/*'],
-      },
-    },
-    'packages/project-builder-dev': {
-      entry: ['src/index.{ts,tsx}', 'src/e2e-runner/index.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
-      ignoreDependencies: [
-        // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
-        'pino-pretty',
-        // we resolve the package by string in src/commands/serve.ts
-        '@baseplate-dev/project-builder-web',
-      ],
-      paths: {
-        '#src/*': ['./src/*'],
-      },
-    },
-    'packages/project-builder-server': {
-      entry: ['src/index.{ts,tsx}', 'src/**/*worker-script*.ts'],
-      project: 'src/**/*.{ts,tsx}',
-      ignore: ['src/tests/**/*.ts'],
-    },
-    'packages/project-builder-test': {
-      entry: ['src/tests/*.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
-    },
-    'packages/project-builder-common': {
-      // project-builder-common has no src directory - it's a config package
-      project: ['*.js', '*.ts'],
-      ignoreDependencies: [
-        // we load the plugins dynamically from the package.json
-        '@baseplate-dev/plugin-*',
-        // bundled alongside eslint so generated projects can resolve a
-        // formatter, even though nothing here imports it directly
-        'prettier',
-      ],
     },
     'packages/ui-components': {
       entry: ['src/index.{ts,tsx}'],
@@ -144,30 +47,11 @@ export default {
       entry: ['*.js'],
       project: ['*.js', 'eslint-configs/*.js'],
     },
-    'packages/create-project': {
-      entry: ['src/create-baseplate-project.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
-      paths: {
-        '#src/*': ['./src/*'],
-      },
-    },
   },
-  ignore: [
-    'tests/**',
-    'examples/**',
-    '**/templates/**',
-    '**/morphers/tests/**',
-    '**/string-merge-algorithms/tests/**',
-    '**/generated/**',
-  ],
+  ignore: ['**/morphers/tests/**', '**/string-merge-algorithms/tests/**'],
   ignoreDependencies: [
-    // we're not using vitest coverage
-    '@vitest/coverage-v8',
-    'prettier-plugin-tailwindcss',
     // Tailwind v4 is not recognized as a dependency by Knip
     'tailwindcss',
-    // Needed for correct typings
-    '@baseplate-dev/utils',
     // Used for agentic testing
     '@playwright/cli',
   ],
