@@ -10,16 +10,14 @@
     "build:affected": "turbo run build --affected",
     "changesets:check": "node ./scripts/check-changesets.ts",
     "check": "pnpm oxfmt:fix && pnpm oxlint:fix --type-check && turbo run test --affected --continue --output-logs=errors-only && pnpm run check:common",
-    "check:common": "pnpm run knip && pnpm metadata:sync && pnpm versions:fix && echo 'Successfully completed checks!'",
+    "check:common": "pnpm run knip && pnpm metadata:sync && echo 'Successfully completed checks!'",
     "check:full": "pnpm oxfmt:fix && turbo run lint typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common",
     "clean": "turbo run clean",
     "knip": "knip",
-    "lint": "turbo run lint --continue && pnpm run lint:root",
-    "lint:affected": "turbo run lint --affected --continue && pnpm run lint:root",
+    "lint": "turbo run lint --continue && oxlint scripts .workspace-meta *.ts *.js",
+    "lint:affected": "turbo run lint --affected --continue && oxlint scripts .workspace-meta *.ts *.js",
     "lint:only": "pnpm run -r lint",
     "lint:only:affected": "turbo run lint --affected --continue --only",
-    "lint:root": "eslint --no-warn-ignored scripts .workspace-meta *.js *.ts",
-    "lint:staged": "lint-staged",
     "metadata:check": "workspace-meta check",
     "metadata:generate": "workspace-meta generate",
     "metadata:sync": "workspace-meta sync",
@@ -27,7 +25,6 @@
     "oxfmt:fix": "oxfmt",
     "oxlint:check": "oxlint",
     "oxlint:fix": "oxlint --fix",
-    "prepare": "[ -w .git/hooks ] && husky || true",
     "release": "pnpm build && node ./scripts/check-npm-registry.ts && pnpm changeset publish --no-git-tag",
     "run:morpher": "pnpm --filter @baseplate-dev/code-morph run:morpher",
     "storybook:build": "turbo run storybook:build --filter=@baseplate-dev/ui-components",
@@ -37,8 +34,6 @@
     "typecheck": "turbo run typecheck --affected --continue && pnpm run typecheck:root",
     "typecheck:root": "tsc --noEmit -p tsconfig.scripts.json",
     "version": "node ./scripts/version-packages.ts",
-    "versions:check": "check-dependency-version-consistency .",
-    "versions:fix": "check-dependency-version-consistency . --fix",
     "watch": "turbo run watch:tsc:root watch --concurrency 20",
     "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
@@ -50,29 +45,19 @@
     "@changesets/changelog-github": "1.0.1",
     "@playwright/cli": "^0.1.17",
     "@types/node": "catalog:",
-    "check-dependency-version-consistency": "6.0.0",
-    "es-toolkit": "^1.50.0",
-    "eslint": "catalog:",
-    "husky": "9.1.7",
+    "es-toolkit": "catalog:",
     "knip": "6.31.0",
-    "lint-staged": "17.3.0",
     "oxfmt": "0.61.0",
     "oxlint": "catalog:",
-    "oxlint-tsgolint": "7.0.2006",
+    "oxlint-tsgolint": "0.23.0",
     "turbo": "2.10.8",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "workspace-meta": "0.1.5"
   },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx,json,jsonc,md,mdx,css,scss,yaml,yml,html}": "node scripts/format-and-lint.ts --no-eslint"
-  },
   "engines": {
     "node": "^24.0.0",
     "pnpm": "^12.15.0"
-  },
-  "volta": {
-    "node": "24.22.1"
   },
   "packageManager": "pnpm@12.15.0"
 }

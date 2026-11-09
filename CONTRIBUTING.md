@@ -2,6 +2,12 @@
 
 See [AGENTS.md](./AGENTS.md) for build commands, code style, and repository structure.
 
+## Toolchain
+
+[mise](https://mise.jdx.dev) pins the Node and pnpm versions in `mise.toml`, and CI installs them from the same file. Run `mise install` after cloning or when `mise.toml` changes. When bumping pnpm, update `packageManager` in `package.json` to match.
+
+Dependency versions shared by more than one package live in the `pnpm-workspace.yaml` catalog. Reference them with `catalog:`; `catalogMode: strict` makes `pnpm add` reject versions outside the catalog.
+
 ## Changesets and releases
 
 Every change to a published package needs a changeset in `.changeset/`. Create one with `pnpm changeset`. Write it as a one- or two-sentence release note for someone using the generated code.

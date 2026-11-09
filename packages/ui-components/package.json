@@ -46,7 +46,7 @@
     "build:css": "cpx \"src/**/*.css\" dist --clean",
     "build:tsc": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "oxlint && eslint .",
+    "lint": "oxlint",
     "storybook:build": "storybook build",
     "storybook:dev": "storybook dev -p 6006",
     "storybook:snap": "node ./scripts/storybook-snap.ts",
@@ -95,7 +95,6 @@
     "@types/pngjs": "^6.0.5",
     "@vitejs/plugin-react": "catalog:",
     "cpx2": "catalog:",
-    "eslint": "catalog:",
     "jsdom": "^30.0.1",
     "oxlint": "catalog:",
     "pixelmatch": "^7.2.0",
@@ -128,8 +127,5 @@
   },
   "engines": {
     "node": "^24.0.0"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

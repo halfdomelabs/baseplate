@@ -30,7 +30,7 @@ Baseplate is being rebuilt on a new stack. `main` holds only the packages the re
 - **packages/code-morph** (`@baseplate-dev/code-morph`): Codebase transformations
 - **packages/ui-components** (`@baseplate-dev/ui-components`): Reusable UI component library with Storybook
 - **packages/utils** (`@baseplate-dev/utils`): Utility functions
-- **packages/tools** (`@baseplate-dev/tools`): Common configurations (ESLint, oxlint, oxfmt, TSConfig, Vitest)
+- **packages/tools** (`@baseplate-dev/tools`): Common configurations (oxlint, oxfmt, TSConfig, Vitest)
 
 ## Porting from Legacy
 

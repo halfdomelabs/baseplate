@@ -42,7 +42,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "oxlint && eslint .",
+    "lint": "oxlint",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
@@ -50,14 +50,13 @@
   },
   "dependencies": {
     "@baseplate-dev/utils": "workspace:*",
-    "es-toolkit": "^1.50.0",
-    "globby": "^16.2.2"
+    "es-toolkit": "catalog:",
+    "globby": "catalog:"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
-    "memfs": "4.64.0",
+    "memfs": "catalog:",
     "oxlint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
@@ -67,8 +66,5 @@
   },
   "engines": {
     "node": "^24.0.0"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

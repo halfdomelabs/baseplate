@@ -65,26 +65,20 @@
     {
       "label": "Lint",
       "type": "shell",
-      "command": "mise x -- pnpm run lint",
+      "command": "mise x -- pnpm exec oxlint -f unix",
       "group": "build",
       "problemMatcher": {
-        "base": "$eslint-compact",
-        "pattern": [
-          {
-            "regexp": "^[^\\s]+: ([^\\s].*)$",
-            "file": 1
-          },
-          {
-            "regexp": "^[^\\s]+: \\s+(\\d+):(\\d+)\\s+(error|warning|info)\\s+(.*)\\s\\s+(.*)$",
-            "line": 1,
-            "column": 2,
-            "severity": 3,
-            "message": 4,
-            "code": 5,
-            "loop": true
-          }
-        ],
-        "fileLocation": ["absolute"]
+        "owner": "oxlint",
+        "pattern": {
+          "regexp": "^(.+?):(\\d+):(\\d+): (.*) \\[(Error|Warning)(?:/(.*))?\\]$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "message": 4,
+          "severity": 5,
+          "code": 6
+        },
+        "fileLocation": ["relative", "${workspaceFolder}"]
       }
     },
     {

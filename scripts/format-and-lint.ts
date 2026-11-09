@@ -2,10 +2,7 @@
 
 /**
  * Formatting and linting hook script: runs oxlint --fix then oxfmt on the given
- * files in one batch from the repo root.
- *
- * Flags such as `--no-eslint` are accepted and ignored for backwards compatibility
- * with existing hook configurations.
+ * files in one batch from the repo root. Flags (`--*`) are ignored.
  */
 
 import { execFile } from 'node:child_process';

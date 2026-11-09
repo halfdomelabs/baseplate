@@ -2,7 +2,7 @@
 name: upgrade-dependencies
 description: Upgrades dependencies across the Baseplate monorepo. With no arguments, fixes every vulnerable package `pnpm audit` reports without overrides, flagging major bumps instead of applying them. With package names, upgrades just those. Routes each bump to where its version actually lives (catalog, package.json, or generator constants).
 argument-hint: '[package...]'
-allowed-tools: Bash(.claude/skills/upgrade-dependencies/audit-summary.sh *), Bash(pnpm audit), Bash(pnpm update -r *), Bash(pnpm install), Bash(pnpm install *), Bash(pnpm why *), Bash(pnpm view *), Bash(npm view *), Bash(pnpm build), Bash(pnpm check), Bash(pnpm check:*), Bash(pnpm versions:check), Bash(git status *), Bash(git diff *), Bash(git grep *), Bash(git checkout -- *), Read, Edit, Write
+allowed-tools: Bash(.claude/skills/upgrade-dependencies/audit-summary.sh *), Bash(pnpm audit), Bash(pnpm update -r *), Bash(pnpm install), Bash(pnpm install *), Bash(pnpm why *), Bash(pnpm view *), Bash(npm view *), Bash(pnpm build), Bash(pnpm check), Bash(pnpm check:*), Bash(git status *), Bash(git diff *), Bash(git grep *), Bash(git checkout -- *), Read, Edit, Write
 ---
 
 # Upgrade Dependencies
@@ -23,7 +23,7 @@ Both modes share the same routing, guardrails, verification, and report.
 | Generated-code dep          | `CORE_PACKAGES` in `packages/core-generators/src/constants/core-packages.ts` |
 | Transitive dep              | The lockfile, via `pnpm update -r <pkg>`                                     |
 
-The same package can be both a generator constant and a monorepo direct dependency (`vitest`, `typescript`, …). Bump both together; `pnpm versions:check` catches drift inside the monorepo.
+The same package can be both a generator constant and a monorepo direct dependency (`vitest`, `typescript`, …). Bump both together. Shared monorepo versions live in the `pnpm-workspace.yaml` catalog, so bump the catalog entry rather than each package.json.
 
 ## Ground rules
 
@@ -119,5 +119,5 @@ pnpm check
 
 ## Troubleshooting
 
-- **Peer dependency warnings after a bump:** check whether the peer's ecosystem needs a matching bump (React, Vite, ESLint plugins) and bump those together.
+- **Peer dependency warnings after a bump:** check whether the peer's ecosystem needs a matching bump (React, Vite, Storybook) and bump those together.
 - **Type errors after a minor bump:** read the package changelog and fix call sites in the monorepo.

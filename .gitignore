@@ -39,9 +39,6 @@ jspm_packages/
 # Optional npm cache directory
 .npm
 
-# Optional eslint cache
-.eslintcache
-
 # Optional stylelint cache
 .stylelintcache
 
@@ -109,8 +106,5 @@ CLAUDE.local.md
 .pnpm-store
 /.devcontainer/mounts
 /.devcontainer/.env
-
-# @module-federation/vite virtual-module artifacts
-.__mf__temp/
 
 .playwright-mcp/
