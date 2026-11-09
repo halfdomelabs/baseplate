@@ -14,7 +14,7 @@ function Label({
   ...props
 }: React.ComponentProps<'label'>): React.ReactElement {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control -- htmlFor is passed via props by consumers (e.g. FormLabel)
+    // oxlint-disable-next-line jsx-a11y/label-has-associated-control -- htmlFor is passed via props by consumers (e.g. FormLabel)
     <label
       data-slot="label"
       className={cn(

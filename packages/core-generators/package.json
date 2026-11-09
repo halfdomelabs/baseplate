@@ -59,7 +59,7 @@
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
     "build:tsc": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "oxlint && eslint .",
+    "lint": "oxlint",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
@@ -69,13 +69,13 @@
   "dependencies": {
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
-    "change-case": "^5.4.4",
-    "es-toolkit": "^1.50.0",
+    "change-case": "catalog:",
+    "es-toolkit": "catalog:",
     "oxc-resolver": "^5.2.0",
-    "p-limit": "^7.3.1",
+    "p-limit": "catalog:",
     "semver": "^7.8.5",
     "sort-package-json": "^4.0.0",
-    "ts-morph": "^28.0.0",
+    "ts-morph": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -84,16 +84,12 @@
     "@types/semver": "^7.7.1",
     "concurrently": "10.0.6",
     "cpx2": "catalog:",
-    "eslint": "catalog:",
-    "memfs": "4.64.0",
+    "memfs": "catalog:",
     "oxlint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {
     "node": "^24.0.0"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

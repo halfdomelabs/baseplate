@@ -1,5 +1,7 @@
 /** @typedef {import('oxlint').OxlintConfig} OxlintConfig */
 
+import { fileURLToPath } from 'node:url';
+
 // ignorePatterns are not inherited via extends due to a known oxlint limitation:
 // https://github.com/oxc-project/oxc/issues/10223
 // Consumers should spread this into their own ignorePatterns.
@@ -13,12 +15,36 @@ export const oxlintIgnorePatterns = [
 ];
 
 export const oxlintConfigBase = {
-  plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'import', 'react'],
+  plugins: [
+    'eslint',
+    'typescript',
+    'unicorn',
+    'oxc',
+    'import',
+    'react',
+    'jsx-a11y',
+  ],
+  // Absolute path: relative jsPlugins entries resolve against the consuming config.
+  jsPlugins: [
+    fileURLToPath(new URL('oxlint-plugins/baseplate.js', import.meta.url)),
+  ],
   categories: {
     correctness: 'error',
     suspicious: 'error',
   },
   rules: {
+    'no-unused-vars': [
+      'error',
+      { varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
+    ],
+    'no-useless-rename': 'error',
+    'react/rules-of-hooks': 'error',
+    // Base UI's render prop pattern injects content via useRender
+    'jsx-a11y/anchor-has-content': 'off',
+    'jsx-a11y/heading-has-content': 'off',
+    // Not in jsx-a11y's recommended set
+    'jsx-a11y/control-has-associated-label': 'off',
+    'jsx-a11y/prefer-tag-over-role': 'off',
     // We want to flag any console.logs but other uses of console are allowed
     'no-console': ['error', { allow: ['debug', 'info', 'warn', 'error'] }],
     // Not necessary for React 17+
@@ -321,6 +347,43 @@ export const oxlintConfigBase = {
   },
   overrides: [
     {
+      files: ['**/*.generator.ts'],
+      rules: {
+        'baseplate/no-unused-generator-dependencies': 'error',
+      },
+    },
+    {
+      files: ['**/*.test.{ts,tsx,js,jsx}', '**/tests/**'],
+      plugins: ['vitest'],
+      rules: {
+        'vitest/no-focused-tests': 'error',
+        'vitest/require-mock-type-parameters': 'off',
+        'vitest/require-to-throw-message': 'error',
+        // Allow custom test functions created via test.extend()
+        'vitest/no-standalone-expect': [
+          'error',
+          { additionalTestBlockFunctions: ['test'] },
+        ],
+      },
+    },
+    {
+      // Storybook `render` functions are components but are not named like one
+      files: ['**/*.stories.tsx'],
+      rules: {
+        'react/rules-of-hooks': 'off',
+      },
+    },
+    {
+      // oxlint publishes no AST types for JS plugins
+      files: ['**/oxlint-plugins/*.js'],
+      rules: {
+        'typescript/no-unsafe-assignment': 'off',
+        'typescript/no-unsafe-call': 'off',
+        'typescript/no-unsafe-member-access': 'off',
+        'typescript/no-unsafe-return': 'off',
+      },
+    },
+    {
       files: ['*.test-helper.ts'],
       rules: {
         // Allow empty patterns in test helper files for vitest fixtures
@@ -334,13 +397,6 @@ export const oxlintConfigBase = {
         'import/no-unassigned-import': 'off',
       },
     },
-    {
-      files: ['eslint.config.js'],
-      rules: {
-        // Allow unsafe assignments in eslint config files
-        'typescript/no-unsafe-assignment': 'off',
-      },
-    },
   ],
   env: {
     builtin: true,
@@ -349,5 +405,6 @@ export const oxlintConfigBase = {
   globals: {},
   options: {
     typeAware: true,
+    reportUnusedDisableDirectives: 'error',
   },
 };

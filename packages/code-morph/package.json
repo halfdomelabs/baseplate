@@ -33,7 +33,7 @@
     }
   },
   "scripts": {
-    "lint": "oxlint && eslint .",
+    "lint": "oxlint",
     "run:morpher": "tsx -C development src/scripts/run-morpher.ts",
     "run:script": "tsx -C development",
     "test": "vitest",
@@ -42,20 +42,19 @@
   "dependencies": {
     "@baseplate-dev/utils": "workspace:*",
     "@inquirer/prompts": "^8.5.2",
-    "change-case": "^5.4.4",
+    "change-case": "catalog:",
     "commander": "^15.0.0",
-    "es-toolkit": "^1.50.0",
-    "globby": "^16.2.2",
+    "es-toolkit": "catalog:",
+    "globby": "catalog:",
     "ora": "^9.4.1",
     "prettier": "catalog:",
-    "ts-morph": "^28.0.0",
-    "yaml": "^2.8.3",
+    "ts-morph": "catalog:",
+    "yaml": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
     "oxlint": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
@@ -63,8 +62,5 @@
   },
   "engines": {
     "node": "^24.0.0"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

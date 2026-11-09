@@ -11,7 +11,6 @@ const meta = {
   argTypes: {
     children: {
       control: 'text',
-      defaultValue: 'Badge',
     },
   },
   args: {

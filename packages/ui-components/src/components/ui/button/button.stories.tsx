@@ -28,7 +28,6 @@ const meta = {
     },
     children: {
       control: 'text',
-      defaultValue: 'Click Me',
     },
     onClick: { table: { disable: true } },
   },

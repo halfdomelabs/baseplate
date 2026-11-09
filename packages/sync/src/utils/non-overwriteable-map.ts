@@ -171,7 +171,7 @@ export function createNonOverwriteableMap<T extends object>(
             Array.isArray(targetValue) &&
             Array.isArray(sourceValue)
           ) {
-            // oxlint-disable-next-line typescript/no-unsafe-return, @typescript-eslint/no-unsafe-assignment
+            // oxlint-disable-next-line typescript/no-unsafe-return, typescript/no-unsafe-assignment
             return uniq([...targetValue, ...sourceValue]);
           }
           // oxlint-disable-next-line typescript/no-unsafe-return
