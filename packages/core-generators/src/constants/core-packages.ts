@@ -4,7 +4,7 @@ export const CORE_PACKAGES = {
 
   // Linting
   '@eslint/js': '9.39.5',
-  '@vitest/eslint-plugin': '1.6.23',
+  '@vitest/eslint-plugin': '1.6.28',
   eslint: '9.39.5',
   'eslint-config-prettier': '10.1.8',
   'eslint-import-resolver-typescript': '4.4.4',
@@ -25,7 +25,7 @@ export const CORE_PACKAGES = {
 
   // Testing
   vite: '8.3.5',
-  vitest: '4.1.12',
+  vitest: '5.1.0',
 
   // Utils
   axios: '1.20.0',
