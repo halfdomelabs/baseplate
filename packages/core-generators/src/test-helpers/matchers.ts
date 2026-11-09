@@ -283,6 +283,9 @@ export interface FragmentMatchers<R = unknown> {
 }
 
 declare module 'vitest' {
-  // oxlint-disable-next-line typescript/no-empty-object-type, typescript/no-explicit-any
-  interface Matchers<T = any> extends FragmentMatchers<T> {}
+  interface Matchers<
+    R extends void | Promise<void> = void | Promise<void>,
+    T = unknown,
+    // oxlint-disable-next-line typescript/no-empty-object-type
+  > extends FragmentMatchers<R> {}
 }
